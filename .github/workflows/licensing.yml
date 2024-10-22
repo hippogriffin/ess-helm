@@ -1,0 +1,25 @@
+# Copyright 2024 New Vector Ltd
+#
+# SPDX-License-Identifier: AGPL-3.0-only OR LicenseRef-Element-Commercial
+
+name: Licensing checks
+
+on:
+  pull_request:
+  push:
+    branches:
+    - main
+
+jobs:
+  reuse-compliance-check:
+    # XXX switch to non-DIND or confirm it is fine before switching the repo to public
+    runs-on: dind-m
+    container: ubuntu
+    steps:
+    - name: Checkout
+      uses: actions/checkout@v4
+
+    # This action has run.image=Dockerfile so requires DIND
+    # We could fork and fix, go to DIND, or have a container with reuse built in and don't use the action
+    - name: reuse-lint
+      uses: fsfe/reuse-action@v4
