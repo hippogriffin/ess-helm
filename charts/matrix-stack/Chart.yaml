@@ -1,0 +1,9 @@
+# Copyright 2024 New Vector Ltd
+#
+# SPDX-License-Identifier: AGPL-3.0-only OR LicenseRef-Element-Commercial
+
+apiVersion: v2
+name: matrix-stack
+description: A Helm meta-chart for deploying a Matrix Stack from Element
+type: application
+version: "0.0.0-dev"
