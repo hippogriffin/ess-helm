@@ -1,0 +1,13 @@
+# Copyright 2024 New Vector Ltd
+#
+# SPDX-License-Identifier: AGPL-3.0-only OR LicenseRef-Element-Commercial
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  labels:
+    {{- include "element-io.element-web.labels" . | nindent 4 }}
+  name: {{ .Release.Name }}-element-web
+  namespace: {{ .Release.Namespace }}
+data:
+  config.json: |-
+    {{- include "element-io.element-web.config" . | nindent 4 }}
