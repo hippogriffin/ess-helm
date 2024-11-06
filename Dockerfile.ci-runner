@@ -4,6 +4,7 @@
 # SPDX-License-Identifier: AGPL-3.0-only OR LicenseRef-Element-Commercial
 FROM debian:bookworm-slim
 
+ARG HELM_VERSION=3.16.2
 ARG POETRY_VERSION=1.8.4
 ARG REUSE_VERSION=4.0.3
 ARG YQ_VERSION=4.44.3
@@ -21,6 +22,12 @@ RUN <<EOT bash
     python3 \
     shellcheck
   rm -rf /var/lib/apt/lists/*
+
+  # Helm
+  mkdir helm && pushd helm
+  curl -L https://get.helm.sh/helm-v${HELM_VERSION}-linux-amd64.tar.gz | tar -xzv
+  install -m u=rwx,g=rx,o=rx linux-amd64/helm /usr/local/bin/helm
+  popd && rm -rf helm
 
   # reuse
   pipx install reuse==${REUSE_VERSION}

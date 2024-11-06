@@ -3,5 +3,6 @@
 # SPDX-License-Identifier: AGPL-3.0-only OR LicenseRef-Element-Commercial
 
 .helmignore
+ci
 source/
 sub_schemas/
