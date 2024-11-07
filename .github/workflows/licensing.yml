@@ -10,16 +10,21 @@ on:
     branches:
     - main
 
+permissions:
+  contents: read
+  packages: read
+
 jobs:
   reuse-compliance-check:
-    # XXX switch to non-DIND or confirm it is fine before switching the repo to public
-    runs-on: dind-m
-    container: ubuntu
+    runs-on: cpu-s
+    container:
+      image: ghcr.io/${{ github.repository }}/ci-runner
+      credentials:
+        username: ${{ github.actor }}
+        password: ${{ secrets.GITHUB_TOKEN }}
     steps:
     - name: Checkout
       uses: actions/checkout@v4
 
-    # This action has run.image=Dockerfile so requires DIND
-    # We could fork and fix, go to DIND, or have a container with reuse built in and don't use the action
     - name: reuse-lint
-      uses: fsfe/reuse-action@v4
+      run: reuse lint

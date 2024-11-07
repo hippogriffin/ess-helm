@@ -1,0 +1,29 @@
+# syntax=docker/dockerfile:1
+# Copyright 2024 New Vector Ltd
+#
+# SPDX-License-Identifier: AGPL-3.0-only OR LicenseRef-Element-Commercial
+FROM debian:bookworm-slim
+
+ARG POETRY_VERSION=1.8.4
+ARG REUSE_VERSION=4.0.3
+
+ARG PIPX_BIN_DIR=/usr/local/bin
+
+RUN <<EOT bash
+  set -eux
+  apt -y update
+  apt -y --no-install-recommends install \
+    ca-certificates \
+    curl \
+    git \
+    pipx \
+    python3
+  rm -rf /var/lib/apt/lists/*
+
+  # reuse
+  pipx install reuse==${REUSE_VERSION}
+
+  # poetry
+  pipx install poetry==${POETRY_VERSION}
+
+EOT
