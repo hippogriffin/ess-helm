@@ -1,0 +1,65 @@
+# Copyright 2024 New Vector Ltd
+#
+# SPDX-License-Identifier: AGPL-3.0-only OR LicenseRef-Element-Commercial
+
+name: Helm Chart Building tests
+on:
+  pull_request:
+  push:
+    branches:
+    - main
+
+permissions:
+  contents: read
+  packages: read
+
+jobs:
+  # We build from source and commit all generated file changes so that we can see the impact in PRs
+  # We want to ensure that the commit of built changes does happen, so fail if building creates changes
+  # If this gets problematic we change to not committing the built schemas/values to git
+  no-changes-after-building:
+    runs-on: cpu-s
+    container:
+      image: ghcr.io/${{ github.repository }}/ci-runner
+      credentials:
+        username: ${{ github.actor }}
+        password: ${{ secrets.GITHUB_TOKEN }}
+    steps:
+    - name: Checkout
+      uses: actions/checkout@v4
+
+    - name: Define a cache for the virtual environment based on the dependencies lock file
+      uses: actions/cache@v3
+      with:
+        path: ./.venv
+        key: venv-${{ hashFiles('poetry.lock') }}
+
+    - name: Install venv
+      run: poetry install
+
+    - name: Build and check for changes
+      run: |
+        version=$(yq '.version' charts/matrix-stack/Chart.yaml)
+        poetry run scripts/construct_helm_charts.sh charts/ "$version"
+
+        git config --global --add safe.directory "$GITHUB_WORKSPACE"
+        git diff --exit-code
+
+  helm-lint:
+    runs-on: cpu-s
+    container:
+      image: ghcr.io/${{ github.repository }}/ci-runner
+      credentials:
+        username: ${{ github.actor }}
+        password: ${{ secrets.GITHUB_TOKEN }}
+    steps:
+    - name: Checkout
+      uses: actions/checkout@v4
+
+    - name: Set up chart-testing
+      uses: helm/chart-testing-action@v2.6.1
+
+    - name: Run chart-testing (lint)
+      run: |
+        git config --global --add safe.directory "$GITHUB_WORKSPACE"
+        ct lint --config ct.yaml

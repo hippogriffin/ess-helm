@@ -1,0 +1,63 @@
+# Copyright 2024 New Vector Ltd
+#
+# SPDX-License-Identifier: AGPL-3.0-only OR LicenseRef-Element-Commercial
+
+name: Scripts linting
+
+on:
+  pull_request:
+  push:
+    branches:
+    - main
+
+permissions:
+  contents: read
+  packages: read
+
+jobs:
+  shellcheck:
+    runs-on: cpu-s
+    container:
+      image: ghcr.io/${{ github.repository }}/ci-runner
+      credentials:
+        username: ${{ github.actor }}
+        password: ${{ secrets.GITHUB_TOKEN }}
+    steps:
+    - name: Checkout
+      uses: actions/checkout@v4
+
+    - name: Run ShellCheck
+      run: shellcheck scripts/*.sh
+
+  python:
+    runs-on: cpu-s
+    container:
+      image: ghcr.io/${{ github.repository }}/ci-runner
+      credentials:
+        username: ${{ github.actor }}
+        password: ${{ secrets.GITHUB_TOKEN }}
+    steps:
+    - name: Checkout
+      uses: actions/checkout@v4
+
+    - name: Define a cache for the virtual environment based on the dependencies lock file
+      uses: actions/cache@v3
+      with:
+        path: ./.venv
+        key: venv-${{ hashFiles('poetry.lock') }}
+
+    - name: Install venv
+      run: poetry install
+
+    - name: Run ruff check
+      uses: astral-sh/ruff-action@v1
+      with:
+        args: "check"
+
+    - name: Run ruff format
+      uses: astral-sh/ruff-action@v1
+      with:
+        args: "format --check"
+
+    - name: pytest scripts
+      run: poetry run pytest scripts

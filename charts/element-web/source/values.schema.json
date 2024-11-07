@@ -1,0 +1,65 @@
+{
+  "$id": "file://element-web",
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "type": "object",
+  "required": [
+    "defaultMatrixServer",
+    "ingress"
+  ],
+  "properties": {
+    "enabled": {
+      "type": "boolean"
+    },
+    "additional": {
+      "type": "object"
+    },
+    "defaultMatrixServer": {
+      "required": [
+        "baseUrl"
+      ],
+      "properties": {
+        "baseUrl": {
+          "type": "string"
+        },
+        "serverName": {
+          "type": "string"
+        }
+      },
+      "type": "object"
+    },
+    "replicas": {
+      "minimum": 1,
+      "type": "integer"
+    },
+    "global": {
+      "$ref": "file://./../../matrix-stack/sub_schemas/global.json"
+    },
+    "image": {
+      "$ref": "file://./../../matrix-stack/sub_schemas/image.json"
+    },
+    "ingress": {
+      "$ref": "file://./../../matrix-stack/sub_schemas/ingress.json"
+    },
+    "containersSecurityContext": {
+      "$ref": "file://./../../matrix-stack/sub_schemas/containersSecurityContext.json"
+    },
+    "extraEnv": {
+      "$ref": "file://./../../matrix-stack/sub_schemas/extraEnv.json"
+    },
+    "nodeSelector": {
+      "$ref": "file://./../../matrix-stack/sub_schemas/nodeSelector.json"
+    },
+    "podSecurityContext": {
+      "$ref": "file://./../../matrix-stack/sub_schemas/podSecurityContext.json"
+    },
+    "resources": {
+      "$ref": "file://./../../matrix-stack/sub_schemas/resources.json"
+    },
+    "tolerations": {
+      "$ref": "file://./../../matrix-stack/sub_schemas/tolerations.json"
+    },
+    "annotations": {
+      "$ref": "file://./../../matrix-stack/sub_schemas/workloadAnnotations.json"
+    }
+  }
+}
