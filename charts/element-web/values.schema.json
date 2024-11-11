@@ -164,25 +164,6 @@
       "type": "object",
       "additionalProperties": false
     },
-    "extraEnv": {
-      "type": "array",
-      "items": {
-        "type": "object",
-        "required": [
-          "name",
-          "value"
-        ],
-        "properties": {
-          "name": {
-            "type": "string"
-          },
-          "value": {
-            "type": "string"
-          }
-        },
-        "additionalProperties": false
-      }
-    },
     "nodeSelector": {
       "type": "object",
       "additionalProperties": {

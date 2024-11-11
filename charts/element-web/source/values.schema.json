@@ -43,9 +43,6 @@
     "containersSecurityContext": {
       "$ref": "file://./../../matrix-stack/sub_schemas/containersSecurityContext.json"
     },
-    "extraEnv": {
-      "$ref": "file://./../../matrix-stack/sub_schemas/extraEnv.json"
-    },
     "nodeSelector": {
       "$ref": "file://./../../matrix-stack/sub_schemas/nodeSelector.json"
     },
