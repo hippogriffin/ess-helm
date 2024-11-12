@@ -4,6 +4,7 @@
 # SPDX-License-Identifier: AGPL-3.0-only OR LicenseRef-Element-Commercial
 FROM debian:bookworm-slim
 
+ARG CHECKOV_VERSION=3.2.287
 ARG HELM_VERSION=3.16.2
 ARG POETRY_VERSION=1.8.4
 ARG REUSE_VERSION=4.0.3
@@ -22,6 +23,9 @@ RUN <<EOT bash
     python3 \
     shellcheck
   rm -rf /var/lib/apt/lists/*
+
+  # Checkov
+  pipx install checkov==${CHECKOV_VERSION}
 
   # Helm
   mkdir helm && pushd helm

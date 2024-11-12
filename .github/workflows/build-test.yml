@@ -63,3 +63,13 @@ jobs:
       run: |
         git config --global --add safe.directory "$GITHUB_WORKSPACE"
         ct lint --config ct.yaml
+
+    - name: Run checkov
+      run: |
+        export HELM_NAMESPACE=ess
+        for subchart in charts/*; do
+          for checkov_values in $(find "$subchart"/ci -name 'checkov*values.yaml'); do
+            echo "Testing $subchart with $checkov_values";
+            checkov -d "$subchart" --framework helm --var-file "$checkov_values" --quiet
+          done
+        done
