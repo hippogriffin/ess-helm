@@ -2,8 +2,7 @@
 #
 # SPDX-License-Identifier: AGPL-3.0-only OR LicenseRef-Element-Commercial
 
-element-web:
-  enabled: false
-
-synapse:
-  enabled: false
+.helmignore
+*.tgz
+ci/
+source/

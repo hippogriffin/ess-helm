@@ -1,0 +1,35 @@
+# Copyright 2024 New Vector Ltd
+#
+# SPDX-License-Identifier: AGPL-3.0-only OR LicenseRef-Element-Commercial
+{{- range $processType := prepend (keys .Values.workers) "main" }}
+apiVersion: v1
+kind: Service
+metadata:
+  labels:
+    {{- include "element-io.synapse.process.labels" (dict "ReleaseName" $.Release.Name "Version" ($.Values.image.tag | default $.Chart.AppVersion) "ProcessType" $processType) | nindent 4 }}
+    k8s.element.io/service-type: headless
+  name: {{ $.Release.Name }}-synapse-{{ $processType }}
+  namespace: {{ $.Release.Namespace }}
+spec:
+  clusterIP: None
+  ports:
+{{- if (include "element-io.synapse.process.hasHttp" .) }}
+  - name: synapse-http
+    port: 8008
+    targetPort: synapse-http
+{{- end }}
+{{- if (include "element-io.synapse.process.hasReplication" .) }}
+  - name: synapse-repl
+    port: 9093
+    targetPort: synapse-repl
+{{- end }}
+  - name: synapse-health
+    port: 8080
+    targetPort: synapse-health
+  - name: synapse-metrics
+    port: 9001
+    targetPort: synapse-metrics
+  selector:
+    app.kubernetes.io/instance: {{ $.Release.Name }}-synapse-{{ $processType }}
+---
+{{- end }}

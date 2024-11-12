@@ -1,0 +1,19 @@
+# Copyright 2024 New Vector Ltd
+#
+# SPDX-License-Identifier: AGPL-3.0-only OR LicenseRef-Element-Commercial
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  labels:
+    {{- include "element-io.synapse.haproxy.labels" $ | nindent 4 }}
+  name: {{ .Release.Name }}-synapse-haproxy
+  namespace: {{ .Release.Namespace }}
+data:
+  haproxy.cfg: |
+    {{- tpl ($.Files.Get "configs/haproxy/haproxy.cfg.tpl") . | nindent 4 }}
+  path_map_file: |
+    {{- tpl ($.Files.Get "configs/haproxy/path_map_file.tpl") . | nindent 4 }}
+  path_map_file_get: |
+    {{- tpl ($.Files.Get "configs/haproxy/path_map_file_get.tpl") . | nindent 4 }}
+  429.http: |
+    {{- ($.Files.Get "configs/haproxy/429.http") | nindent 4 }}
