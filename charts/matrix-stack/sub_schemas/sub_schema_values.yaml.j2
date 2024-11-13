@@ -167,6 +167,26 @@ SPDX-License-Identifier: AGPL-3.0-only OR LicenseRef-Element-Commercial
   supplementalGroups: []
 {%- endmacro %}
 
+{% macro postgresLibPQ(key="postgres") %}
+## Details of the Postgres Database to use
+{{ key }}:
+  ## PostgreSQL database host
+  # host:
+
+  ## PostgreSQL port
+  port: 5432
+
+  ## PostgreSQL username
+  # user:
+
+  ## PostgreSQL database name
+  # database:
+
+  ## TLS settins to use for the PostgreSQL connection
+  sslMode: require
+{{ credential("PostgreSQL password", "password") | indent(2) }}
+{%- endmacro %}
+
 {% macro resources(requests_memory, requests_cpu, limits_memory, key='resources') %}
 ## Kubernetes resources to allocate to each instance.
 {{ key }}:
