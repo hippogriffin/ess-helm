@@ -12,8 +12,8 @@ app.kubernetes.io/version: {{ .Values.image.tag | default $.Chart.AppVersion }}
 
 {{- define "element-io.element-web.config" }}
 {{- $config := dict }}
+{{- $serverName := required "Element Web requires global.ess.server_name set" .Values.global.ess.server_name }}
 {{- with .Values.defaultMatrixServer }}
-{{- $serverName := .serverName | default .baseUrl }}
 {{- $mHomeserver := dict "base_url" .baseUrl "server_name" $serverName }}
 {{- $defaultServerConfig := dict "m.homeserver" $mHomeserver -}}
 {{- $_ := set $config "default_server_config" $defaultServerConfig }}

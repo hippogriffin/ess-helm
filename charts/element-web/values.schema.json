@@ -21,9 +21,6 @@
       "properties": {
         "baseUrl": {
           "type": "string"
-        },
-        "serverName": {
-          "type": "string"
         }
       },
       "type": "object",
@@ -35,7 +32,18 @@
     },
     "global": {
       "type": "object",
-      "additionalProperties": false
+      "additionalProperties": true,
+      "properties": {
+        "ess": {
+          "type": "object",
+          "properties": {
+            "server_name": {
+              "type": "string"
+            }
+          },
+          "additionalProperties": false
+        }
+      }
     },
     "image": {
       "type": "object",

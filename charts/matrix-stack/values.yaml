@@ -4,5 +4,13 @@
 
 # This file is generated. Do not edit directly. Edit source/values.yaml.j2 instead to make changes
 
+## Global values available to all sub-charts
+global:
+  ## ESS specific globals, namespaced to avoid interference with other charts
+  ess: {}
+    ## The server name of the Matrix Stack. This gets embedded in user IDs & room IDs
+    ## It can not change after the initial deployment.
+    # server_name: ess.localhost
+
 element-web:
   enabled: true
