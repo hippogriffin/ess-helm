@@ -17,8 +17,10 @@ Requirements for development:
 
 Optional Tools:
 * [chart-testing](https://github.com/helm/chart-testing) for Helm linting
-* [reuse](https://reuse.software/)
 * [shellcheck](https://www.shellcheck.net/)
+* Managed via Poetry and so should be available after `poetry install`
+  * [checkov](https://www.checkov.io/)
+  * [reuse](https://reuse.software/)
 
 Changes to chart templates are directly made to `chart/<chart>/templates`.
 
