@@ -39,6 +39,16 @@ The output of `construct_helm_charts.sh` must be committed to Git or CI fails. T
 for this is so that the values files and schemas can be easily viewed in the repo and diffs
 seen in PRs
 
+### Inspecting temlates
+
+Often you wish to see what a template looks like whilst developing. From the chart directory:
+`helm template -f ci/<values file> . -s <path to template in question>`
+
+If the rendered template is invalid YAML add `--debug` to see what the issue is. If the is
+Helm syntax error `--debug` often gets in the way of seeing the error from Helm.
+
+Values can be tweaked further with `--set property.path=value`.
+
 ## Linting
 
 Each of the linters will be run in CI in a way that either covers the relevant part (or all)
