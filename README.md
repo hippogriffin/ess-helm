@@ -38,3 +38,46 @@ components without copy-pasting. Shared schema snippets can be found at
 The output of `construct_helm_charts.sh` must be committed to Git or CI fails. The rationale
 for this is so that the values files and schemas can be easily viewed in the repo and diffs
 seen in PRs
+
+## Linting
+
+Each of the linters will be run in CI in a way that either covers the relevant part (or all)
+of the repository or all charts. Instructions on how to run them locally can be found below.
+
+### chart-testing
+
+Wrapper over `helm lint` with other Helm based linting checks.
+
+From the project root: `ct lint`
+
+This will iterate over all charts in `charts/` and test them with all values files matching
+`charts/<chart name>/ci/*-values.yaml`.
+
+From a sub-chart directory: `ct lint --charts . --validate-maintainers=false`
+
+### checkov
+
+Detects misconfigurations and lack of hardening in the manifests.
+
+From a sub-chart directory: `checkov -d . --framework helm --quiet --var-file ci/<checkov values file>`
+
+Other values files can be used but the values files named `checkov<something>values.yaml` will have
+any test suppression annotations required.
+
+### kubeconform
+
+Validates the generated manifests against their schemas.
+
+From a sub-chart directory: `helm template -f ci/<values file> . | kubeconform -summary`
+
+### reuse
+
+Validates that all files have the correct copyright and licensing information.
+
+From the project root: `reuse lint`
+
+### shellcheck
+
+Detects common mistakes in shell scripts.
+
+From the project root: `shellcheck scripts/*.sh`
