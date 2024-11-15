@@ -18,6 +18,7 @@ ruff = "^0.7.2"
 jinja2 = "^3.1.4"
 checkov = "^3.2.296"
 reuse = "^5.0.2"
+signedjson = "^1.1.4"
 
 [build-system]
 requires = ["poetry-core"]
