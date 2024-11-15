@@ -17,6 +17,7 @@ Requirements for development:
 
 Optional Tools:
 * [chart-testing](https://github.com/helm/chart-testing) for Helm linting
+* [kubeconform](https://github.com/yannh/kubeconform) for Kubernetes manifest validation
 * [shellcheck](https://www.shellcheck.net/)
 * Managed via Poetry and so should be available after `poetry install`
   * [checkov](https://www.checkov.io/)

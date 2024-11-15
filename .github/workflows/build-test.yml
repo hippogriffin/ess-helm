@@ -86,6 +86,15 @@ jobs:
         poetry install
         echo "$(poetry env info -p)/bin" >> "${GITHUB_PATH}"
 
+    - name: Run kubeconform
+      run: |
+        for subchart in charts/*; do
+          for values in $(find "$subchart"/ci -name '*values.yaml'); do
+            echo "Testing $subchart with $values";
+            helm template -f "$values" "$subchart" | kubeconform -summary
+          done
+        done
+
     - name: Run checkov
       run: |
         checkov --version
