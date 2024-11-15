@@ -39,6 +39,17 @@ The output of `construct_helm_charts.sh` must be committed to Git or CI fails. T
 for this is so that the values files and schemas can be easily viewed in the repo and diffs
 seen in PRs
 
+### Running a test cluster
+
+A test cluster can be constructed with `./scripts/setup_test_cluster.sh`.
+
+It will bind to port 80 & 443 on localhost such that `http://anything.localhost` or `https://anything.localhost`
+both work. It will construct a self-signed CA and puts its cert and key in `./.ca`. This will be persisted
+over cluster recreation so you can trust it once and use it repeatedly.
+
+The test cluster can then be deployed to with
+`helm upgrade -i ess charts/matrix-stack -f charts/matrix-stack/ci/test-cluster-mixin.yaml -f <your values file>`
+
 ### Inspecting temlates
 
 Often you wish to see what a template looks like whilst developing. From the chart directory:
