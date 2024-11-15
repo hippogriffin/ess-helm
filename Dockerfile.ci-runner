@@ -22,12 +22,15 @@ RUN <<EOT bash
     python3 \
     shellcheck
   rm -rf /var/lib/apt/lists/*
+  python3 --version
+  shellcheck --version
 
   # Helm
   mkdir helm && pushd helm
   curl -L https://get.helm.sh/helm-v${HELM_VERSION}-linux-amd64.tar.gz | tar -xzv
   install -m u=rwx,g=rx,o=rx linux-amd64/helm /usr/local/bin/helm
   popd && rm -rf helm
+  helm version
 
   # Kubeconform
   mkdir kubeconform && pushd kubeconform
@@ -38,8 +41,10 @@ RUN <<EOT bash
 
   # poetry
   pipx install poetry==${POETRY_VERSION}
+  poetry --version
 
   # yq
   curl -L -o /usr/local/bin/yq https://github.com/mikefarah/yq/releases/download/v${YQ_VERSION}/yq_linux_amd64 && chmod +x /usr/local/bin/yq
+  yq --version
 
 EOT
