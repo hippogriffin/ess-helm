@@ -140,6 +140,22 @@ global:
 # {{ key }}: {}
 {%- endmacro %}
 
+{% macro persistentVolumeClaim(key) %}
+## Configures the PersistentVolumeClaim to be used for storage
+{{ key }}:
+  ## Name of an existing PersistentVolumeClaim in this namespace that should be used
+  # existingClaim:
+
+  ## The size of a PersistentVolumeClaim to be constructed
+  ## Ignored if existingClaim is provided
+  size: 10Gi
+
+  ## The StorageClass to be used by the constructed PersistentVolumeClaim.
+  ## Will use the cluster default if not provided
+  ## Ignored if existingClaim is provided
+  # storageClass:
+{%- endmacro %}
+
 {% macro podSecurityContext(user_id, group_id, filesystem_group_id=-1, key='podSecurityContext') %}
 ## A subset of PodSecurityContext. PodSecurityContext holds pod-level security attributes and common container settings
 {{ key }}:
