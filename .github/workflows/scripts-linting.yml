@@ -47,7 +47,10 @@ jobs:
         key: venv-${{ hashFiles('poetry.lock') }}
 
     - name: Install venv
-      run: poetry install
+      run: |
+        poetry env info
+        poetry install
+        echo "$(poetry env info -p)/bin" >> "${GITHUB_PATH}"
 
     - name: Run ruff check
       uses: astral-sh/ruff-action@v1
@@ -60,4 +63,6 @@ jobs:
         args: "format --check"
 
     - name: pytest scripts
-      run: poetry run pytest scripts
+      run: |
+        pytest --version
+        pytest scripts

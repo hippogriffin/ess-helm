@@ -35,12 +35,15 @@ jobs:
         key: venv-${{ hashFiles('poetry.lock') }}
 
     - name: Install venv
-      run: poetry install
+      run: |
+        poetry env info
+        poetry install
+        echo "$(poetry env info -p)/bin" >> "${GITHUB_PATH}"
 
     - name: Build and check for changes
       run: |
         version=$(yq '.version' charts/matrix-stack/Chart.yaml)
-        poetry run scripts/construct_helm_charts.sh charts/ "$version"
+        scripts/construct_helm_charts.sh charts/ "$version"
 
         git config --global --add safe.directory "$GITHUB_WORKSPACE"
         git diff --exit-code
@@ -64,8 +67,37 @@ jobs:
         git config --global --add safe.directory "$GITHUB_WORKSPACE"
         ct lint --config ct.yaml
 
+    - name: Define a cache for the virtual environment based on the dependencies lock file
+      uses: actions/cache@v3
+      with:
+        path: ./.venv
+        key: venv-${{ hashFiles('poetry.lock') }}
+
+    - name: Install venv
+      run: |
+        # helm/chart-testing-action sets up its own venv that we have no control over
+        # We don't want to use it for this
+        unset VIRTUAL_ENV
+        # Or future actions
+        poetry_venv=$(poetry env info -p)
+        sed -i "s|^VIRTUAL_ENV=.*|VIRTUAL_ENV=$poetry_venv|" "${GITHUB_ENV}"
+
+        poetry env info
+        poetry install
+        echo "$(poetry env info -p)/bin" >> "${GITHUB_PATH}"
+
+    - name: Run kubeconform
+      run: |
+        for subchart in charts/*; do
+          for values in $(find "$subchart"/ci -name '*values.yaml'); do
+            echo "Testing $subchart with $values";
+            helm template -f "$values" "$subchart" | kubeconform -summary
+          done
+        done
+
     - name: Run checkov
       run: |
+        checkov --version
         export HELM_NAMESPACE=ess
         for subchart in charts/*; do
           for checkov_values in $(find "$subchart"/ci -name 'checkov*values.yaml'); do

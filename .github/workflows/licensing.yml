@@ -26,5 +26,20 @@ jobs:
     - name: Checkout
       uses: actions/checkout@v4
 
+    - name: Define a cache for the virtual environment based on the dependencies lock file
+      uses: actions/cache@v3
+      with:
+        path: ./.venv
+        key: venv-${{ hashFiles('poetry.lock') }}
+
+    - name: Install venv
+      run: |
+        poetry env info
+        poetry install
+        echo "$(poetry env info -p)/bin" >> "${GITHUB_PATH}"
+
     - name: reuse-lint
-      run: reuse lint
+      run: |
+        git config --global --add safe.directory "$GITHUB_WORKSPACE"
+        reuse --version
+        reuse lint

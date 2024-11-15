@@ -4,10 +4,9 @@
 # SPDX-License-Identifier: AGPL-3.0-only OR LicenseRef-Element-Commercial
 FROM debian:bookworm-slim
 
-ARG CHECKOV_VERSION=3.2.287
 ARG HELM_VERSION=3.16.2
+ARG KUBECONFORM_VERSION=0.6.7
 ARG POETRY_VERSION=1.8.4
-ARG REUSE_VERSION=5.0.2
 ARG YQ_VERSION=4.44.3
 
 ARG PIPX_BIN_DIR=/usr/local/bin
@@ -23,23 +22,29 @@ RUN <<EOT bash
     python3 \
     shellcheck
   rm -rf /var/lib/apt/lists/*
-
-  # Checkov
-  pipx install checkov==${CHECKOV_VERSION}
+  python3 --version
+  shellcheck --version
 
   # Helm
   mkdir helm && pushd helm
   curl -L https://get.helm.sh/helm-v${HELM_VERSION}-linux-amd64.tar.gz | tar -xzv
   install -m u=rwx,g=rx,o=rx linux-amd64/helm /usr/local/bin/helm
   popd && rm -rf helm
+  helm version
 
-  # reuse
-  pipx install reuse==${REUSE_VERSION}
+  # Kubeconform
+  mkdir kubeconform && pushd kubeconform
+  curl -L https://github.com/yannh/kubeconform/releases/download/v${KUBECONFORM_VERSION}/kubeconform-linux-amd64.tar.gz | tar -xzv
+  install -m u=rwx,g=rx,o=rx kubeconform /usr/local/bin/kubeconform
+  popd && rm -rf kubeconform
+  kubeconform -v
 
   # poetry
   pipx install poetry==${POETRY_VERSION}
+  poetry --version
 
   # yq
   curl -L -o /usr/local/bin/yq https://github.com/mikefarah/yq/releases/download/v${YQ_VERSION}/yq_linux_amd64 && chmod +x /usr/local/bin/yq
+  yq --version
 
 EOT
