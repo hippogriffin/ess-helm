@@ -1,0 +1,8 @@
+{
+  "properties": {
+    "resources": {
+      "$ref": "file://./../../matrix-stack/sub_schemas/resources.json"
+    }
+  },
+  "type": "object"
+}

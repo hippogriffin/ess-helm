@@ -1,0 +1,267 @@
+# Copyright 2024 New Vector Ltd
+#
+# SPDX-License-Identifier: AGPL-3.0-only OR LicenseRef-Element-Commercial
+
+global
+  maxconn 40000
+  log stdout format raw local0 info
+
+  # Allow for rewriting HTTP headers (e.g. Authorization) up to 4k
+  # https://github.com/haproxy/haproxy/issues/1743
+  tune.maxrewrite 4096
+
+  # Allow HAProxy Stats sockets
+  stats socket ipv4@127.0.0.1:1999 level admin
+
+defaults
+  mode http
+  fullconn 20000
+
+  maxconn 20000
+
+  log global
+  # same as http log, with %Th (handshake time)
+  log-format "%ci:%cp [%tr] %ft %b/%s %Th/%TR/%Tw/%Tc/%Tr/%Ta %ST %B %CC %CS %tsc %ac/%fc/%bc/%sc/%rc %sq/%bq %hr %hs %{+Q}r"
+
+  # wait for 5s when connecting to a server
+  timeout connect 5s
+
+  # ... but if there is a backlog of requests, wait for 60s before returning a 500
+  timeout queue 60s
+
+  # close client connections 5m after the last request
+  # (as recommened by https://support.cloudflare.com/hc/en-us/articles/212794707-General-Best-Practices-for-Load-Balancing-with-CloudFlare)
+  timeout client 900s
+
+  # give clients 5m between requests (otherwise it defaults to the value of 'timeout http-request')
+  timeout http-keep-alive 900s
+
+  # give clients 10s to complete a request (either time between handshake and first request, or time spent sending headers)
+  timeout http-request 10s
+
+  # time out server responses after 90s
+  timeout server 180s
+
+  # allow backend sessions to be shared across frontend sessions
+  http-reuse aggressive
+
+  # limit the number of concurrent requests to each server, to stop
+  # the python process having to juggle hundreds of queued
+  # requests. Any requests beyond this limit are held in a queue for
+  # up to <timeout-queue> seconds, before being rejected according
+  # to "errorfile 503" below.
+  #
+  # (bear in mind that we have two haproxies, each of which will use
+  # up to this number of connections, so the actual number of
+  # connections to the server may be up to twice this figure.)
+  #
+  # Note that this is overridden for some servers and backends.
+  default-server maxconn 500
+
+  option redispatch
+
+  compression algo gzip
+  compression type text/plain text/html text/xml application/json text/css
+
+  # if we hit the maxconn on a server, and the queue timeout expires, we want
+  # to avoid returning 503, since that will cause cloudflare to mark us down.
+  #
+  # https://cbonte.github.io/haproxy-dconv/1.8/configuration.html#1.3.1 says:
+  #
+  #   503  when no server was available to handle the request, or in response to
+  #        monitoring requests which match the "monitor fail" condition
+  #
+  errorfile 503 /usr/local/etc/haproxy/429.http
+
+  # Use a consistent hashing scheme so that worker with balancing going down doesn't cause
+  # the traffic for all others to be shuffled around.
+  hash-type consistent sdbm
+
+resolvers kubedns
+  parse-resolv-conf
+  hold timeout 600s
+  hold refused 600s
+
+frontend prometheus
+  bind *:8405
+  http-request use-service prometheus-exporter if { path /metrics }
+  no log
+
+frontend http-blackhole
+  bind *:8009
+
+  capture request header Host len 32
+  capture request header Referer len 200
+  capture request header User-Agent len 200
+
+  http-request deny content-type application/json string '{"errcode": "M_FORBIDDEN", "error": "Blocked"}'
+
+frontend http-in
+  bind *:8008
+
+  capture request header Host len 32
+  capture request header Referer len 200
+  capture request header User-Agent len 200
+
+  # before we change the 'src', stash it in a session variable
+  http-request set-var(sess.orig_src) src if !{ var(sess.orig_src) -m found }
+
+  # in case this is not the first request on the connection, restore the
+  # 'src' to the original, in case we fail to parse the x-f-f header.
+  http-request set-src var(sess.orig_src)
+
+  # Traditionally do this only for traffic from some limited IP addreses
+  # but the incoming router being what it is, means we have no fixed IP here.
+  http-request set-src hdr(x-forwarded-for)
+
+  # We always add a X-Forwarded-For header (clobbering any existing
+  # headers).
+  http-request set-header X-Forwarded-For %[src]
+
+  # Ingresses by definition run on both 80 & 443 and there's no customising of that
+  # It is up to the ingress controller and any annotations provided to it whether
+  # it sets any additional headers or not or whether it redirects http -> https
+  # We don't have control (or even visiblity) on what the ingress controller is or does
+  # So we can't guarantee the header is present
+  # https is a more sensible default than http for the missing header as we force public_baseurl to https
+  http-request set-header X-Forwarded-Proto https if !{ hdr(X-Forwarded-Proto) -m found }
+  http-response add-header Strict-Transport-Security max-age=31536000 if { hdr(X-Forward-Proto) -i "https" }
+
+  monitor-uri /haproxy_test
+  # If we get here then we want to proxy everything to synapse or a worker.
+
+  # try to extract a useful access token from either the auth header or a
+  # query-param
+  http-request set-var(req.access_token) urlp("access_token") if { urlp("access_token") -m found }
+  http-request set-var(req.access_token) req.fhdr(Authorization),word(2," ") if { hdr_beg("Authorization") -i "Bearer " }
+
+  # We also need a http header format to allow us to loadbalance and make decisions:
+  http-request set-header X-Access-Token %[var(req.access_token)]
+
+  # Disable Google FLoC
+  http-response set-header Permissions-Policy "interest-cohort=()"
+
+  # Load the backend from one of the map files.
+  acl has_get_map path -m reg -M -f /usr/local/etc/haproxy/path_map_file_get
+
+  http-request set-var(req.backend) path,map_reg(/usr/local/etc/haproxy/path_map_file_get,main) if has_get_map METH_GET
+  http-request set-var(req.backend) path,map_reg(/usr/local/etc/haproxy/path_map_file,main) unless { var(req.backend) -m found }
+
+  use_backend return_204 if { method OPTIONS }
+
+{{- range .Values.ingress.additionalPaths -}}
+{{- if eq .availability "internally_and_externally" }}
+
+{{- $additionalPathId := printf "%s_%s" .service.name (.service.port.name | default .service.port.number) }}
+  acl is_svc_{{ $additionalPathId }} path_beg {{ .path }}
+  use_backend be_{{ $additionalPathId }} if is_svc_{{ $additionalPathId }}
+{{- end }}
+{{- end }}
+{{- if hasKey .Values.workers "initial-synchrotron" }}
+
+  # special synchrotron backend for initialsyncs
+  acl is_sync path -m reg ^/_matrix/client/(r0|v3)/sync$
+  acl is_sync path -m reg ^/_matrix/client/(api/v1|r0|v3)/events$
+  use_backend initial-synchrotron if is_sync { urlp("full_state") -m str true }
+  use_backend initial-synchrotron if is_sync !{ urlp("since") -m found } !{ urlp("from") -m found }
+{{- end }}
+
+  use_backend %[var(req.backend)]
+
+backend main
+  default-server maxconn 250
+  # Use DNS SRV service discovery on the headless service
+  server-template main 1 _synapse-http._tcp.{{ .Release.Name }}-synapse-main.{{ .Release.Namespace }}.svc.cluster.local resolvers kubedns init-addr none
+
+{{- range $workerType, $workerDetails := .Values.workers }}
+{{- if include "element-io.synapse.process.hasHttp" $workerType }}
+
+backend {{ $workerType }}
+{{- if eq $workerType "event-creator" }}
+  # We want to balance based on the room, so try and pull it out of the path
+  http-request set-header X-Matrix-Room %[path]
+  http-request replace-header X-Matrix-Room rooms/([^/]+) \1
+  http-request replace-header X-Matrix-Room join/([^/]+) \1
+
+  balance hdr(X-Matrix-Room)
+
+{{- else if eq $workerType "federation-inbound" }}
+  # We balance by source IP so the same origin servers go to the same worker.
+  # That should be enough to ensure that transactions from the same origin go
+  # to the same worker, unless they change IP, in which case its not actually
+  # the end of the world if we process the same transaction twice.
+  balance source
+
+{{- else if eq $workerType "federation-reader" }}
+  # we balance by URI principally so that identical state_ids requests go to
+  # the same worker. They are expensive so we want to avoid duplicate work;
+  # on the other hand if we don't include the URI params then all the
+  # requests for a given room go to one worker, which tends to send it into
+  # a death spiral.
+  balance uri whole
+
+{{- else if eq $workerType "initial-synchrotron" }}
+  # increase the server timeout, as it can take a long time to generate and
+  # return the initial sync.
+  timeout server 180s
+
+  # Balance on hash of access token
+  balance hdr(X-Access-Token)
+
+  # limit the number of concurrent requests to each synchrotron,
+  # to stop the reactor tick time rocketing
+  default-server maxconn 50
+
+{{- else if has $workerType (list "sliding-sync" "synchrotron") }}
+  # Balance on the hash of the access token.
+  # When using stick tables, the stickiness only takes effect once the backend
+  # has responded at least once. If a user keeps timing out on their first
+  # incremental sync in a while, then they will keep 'bouncing' around
+  # different synchrotrons, preventing their sync from making progress.
+  #
+  # We can still use stick tables to ensure that once a client gets assigned
+  # to a Synchrotron it stays on that worker, allowing us to rebalance the
+  # pool without moving existing sessions.
+  #
+  # If the header doesn't exist it will round robin requests,
+  # though in that case they should all just be 4xx'd due
+  # to lack of an access token.
+  balance hdr(X-Access-Token)
+
+  # synchrotrons are long-polled, so we need to allow many
+  # concurrent connections.
+  default-server maxconn 2000
+
+  # if we *do* hit the limit, it's probably better we shed further
+  # requests quickly than let them queue up on the haproxy.
+  timeout queue 5s
+
+{{- end }}
+{{- $maxInstances := ternary 1 20 (not (empty (include "element-io.synapse.process.isSingle" $workerType))) }}
+{{- $workerTypeName := include "element-io.synapse.process.workerTypeName" $workerType }}
+  # Use DNS SRV service discovery on the headless service
+  server-template {{ $workerTypeName }} {{ $maxInstances }} _synapse-http._tcp.{{ $.Release.Name }}-synapse-{{ $workerTypeName }}.{{ $.Release.Namespace }}.svc.cluster.local resolvers kubedns init-addr none
+{{- end }}
+{{- end }}
+
+
+{{- range .Values.ingress.additionalPaths -}}
+{{- if eq .availability "internally_and_externally" }}
+{{- $additionalPathId := printf "%s_%s" .service.name (.service.port.name | default .service.port.number) }}
+backend be_{{ $additionalPathId }}
+{{- if .service.port.name }}
+  server-template {{ $additionalPathId }} 10 _{{ .service.port.name }}._tcp.{{ .service.name }}.{{ $.Release.Namespace }}.svc.cluster.local resolvers kubedns init-addr none
+{{- else }}
+  server-template {{ $additionalPathId }} 10 _{{ .service.name }}.{{ $.Release.Namespace }}.svc.cluster.local:{{ .service.port.number }} resolvers kubedns init-addr none
+{{- end }}
+{{- end }}
+{{- end }}
+
+# a backend which responds to everything with a 204
+backend return_204
+  http-request return status 204 hdr "Access-Control-Allow-Origin" "*" hdr "Access-Control-Allow-Methods" "GET, POST, PUT, DELETE, OPTIONS" hdr "Access-Control-Allow-Headers" "Origin, X-Requested-With, Content-Type, Accept, Authorization"
+
+# a fake backend which fonxes every request with a 500. Useful for
+# handling overloads etc.
+backend return_500
+  http-request deny deny_status 500

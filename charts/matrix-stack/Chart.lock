@@ -2,5 +2,8 @@ dependencies:
 - name: element-web
   repository: file://../element-web
   version: 0.0.0-dev
-digest: sha256:b784f0cc8eea3ad2d6e2a719507f35abc67d9a72dcf51898b18d4ab1c0d5de96
-generated: "2024-11-06T13:50:00.093918903Z"
+- name: synapse
+  repository: file://../synapse
+  version: 0.0.0-dev
+digest: sha256:85286a84f99006d71bbefd5bf4f0fbdd14ebff7e9ba1209041a19b9232654d50
+generated: "2024-11-14T15:39:30.48861898Z"

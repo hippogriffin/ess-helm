@@ -1,0 +1,12 @@
+{
+  "properties": {
+    "instances": {
+      "type": "integer",
+      "minimum": 1
+    },
+    "resources": {
+      "$ref": "file://./../../matrix-stack/sub_schemas/resources.json"
+    }
+  },
+  "type": "object"
+}

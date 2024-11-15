@@ -4,3 +4,6 @@
 
 element-web:
   enabled: false
+
+synapse:
+  enabled: false
