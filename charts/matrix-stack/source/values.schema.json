@@ -3,6 +3,9 @@
     "$schema": "https://json-schema.org/draft/2020-12/schema",
     "type": "object",
     "properties": {
+        "global": {
+          "$ref": "file://./../../matrix-stack/sub_schemas/global.json"
+        },
         "element-web": {
             "type": "object",
             "additionalProperties": true,

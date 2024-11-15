@@ -5,6 +5,7 @@ SPDX-License-Identifier: AGPL-3.0-only OR LicenseRef-Element-Commercial
 #}
 {% import 'sub_schema_values.yaml.j2' as sub_schema_values -%}
 {{ sub_schema_values.generatedFileWarning() }}
+{{ sub_schema_values.global() }}
 
 ## Arbitrary extra config to inject into Element Web's config.json a a YAML/JSON object
 additional: {}
@@ -13,9 +14,6 @@ additional: {}
 defaultMatrixServer: {}
   ## URL where the Matrix server is hosted
   # baseUrl:
-
-  ## Server name of the default Matrix server (if distinct from the baseUrl)
-  # serverName:
 
 # Number of Element Web replicas to start up
 replicas: 2

@@ -4,6 +4,14 @@
 
 # This file is generated. Do not edit directly. Edit source/values.yaml.j2 instead to make changes
 
+## Global values available to all sub-charts
+global:
+  ## ESS specific globals, namespaced to avoid interference with other charts
+  ess: {}
+    ## The server name of the Matrix Stack. This gets embedded in user IDs & room IDs
+    ## It can not change after the initial deployment.
+    # server_name: ess.localhost
+
 ## Arbitrary extra config to inject into Element Web's config.json a a YAML/JSON object
 additional: {}
 
@@ -11,9 +19,6 @@ additional: {}
 defaultMatrixServer: {}
   ## URL where the Matrix server is hosted
   # baseUrl:
-
-  ## Server name of the default Matrix server (if distinct from the baseUrl)
-  # serverName:
 
 # Number of Element Web replicas to start up
 replicas: 2

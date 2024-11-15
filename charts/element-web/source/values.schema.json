@@ -20,9 +20,6 @@
       "properties": {
         "baseUrl": {
           "type": "string"
-        },
-        "serverName": {
-          "type": "string"
         }
       },
       "type": "object"

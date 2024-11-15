@@ -1,3 +1,14 @@
 {
-  "type": "object"
+  "type": "object",
+  "additionalProperties": true,
+  "properties": {
+    "ess": {
+      "type": "object",
+      "properties": {
+        "server_name": {
+          "type": "string"
+        }
+      }
+    }
+  }
 }
