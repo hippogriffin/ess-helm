@@ -54,7 +54,6 @@ docker run \
 helm --kube-context $kind_context_name upgrade -i ingress-nginx --repo https://kubernetes.github.io/ingress-nginx ingress-nginx \
   --namespace ingress-nginx \
   --create-namespace \
-  --hide-notes \
   --set controller.ingressClassResource.default=true \
   --set controller.config.hsts=false \
   --set controller.hostPort.enabled=true \
@@ -62,13 +61,11 @@ helm --kube-context $kind_context_name upgrade -i ingress-nginx --repo https://k
 
 helm --kube-context $kind_context_name upgrade -i metrics-server --repo https://kubernetes-sigs.github.io/metrics-server metrics-server \
   --namespace kube-system \
-  --hide-notes \
   --set args[0]=--kubelet-insecure-tls
 
 helm --kube-context $kind_context_name upgrade -i cert-manager --repo https://charts.jetstack.io cert-manager \
   --namespace cert-manager \
   --create-namespace \
-  --hide-notes \
   --set crds.enabled=true
 
 # Create a new CA certificate
@@ -153,7 +150,6 @@ EOF
 
   helm --kube-context $kind_context_name upgrade -i postgres oci://registry-1.docker.io/bitnamicharts/postgresql \
     --namespace "$namespace" \
-    --hide-notes \
     --set fullnameOverride=ess-postgres \
     --set auth.database=synapse \
     --set auth.username=synapse_user \
