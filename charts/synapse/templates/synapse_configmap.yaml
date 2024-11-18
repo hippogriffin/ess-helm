@@ -73,6 +73,10 @@ data:
       output = {}
 
       for source_filename in [Path(source_filename) for source_filename in source_filenames]:
+        if not source_filename.exists():
+          print(f"{source_filename} doesn't exist. Exitting")
+          sys.exit(1)
+
         if not source_filename.is_file():
           continue
 
