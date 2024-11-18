@@ -15,9 +15,9 @@ k8s.element.io/synapse-instance: {{ .Release.Name }}-synapse
 app.kubernetes.io/part-of: matrix-stack
 app.kubernetes.io/component: matrix-server
 app.kubernetes.io/name: synapse-{{ .ProcessType }}
-app.kubernetes.io/instance: {{ .ReleaseName }}-synapse-{{ .ProcessType }}
-app.kubernetes.io/version: {{ .Version }}
-k8s.element.io/synapse-instance: {{ .ReleaseName }}-synapse
+app.kubernetes.io/instance: {{ .Release.Name }}-synapse-{{ .ProcessType }}
+app.kubernetes.io/version: {{ .Values.image.tag | default $.Chart.AppVersion }}
+k8s.element.io/synapse-instance: {{ .Release.Name }}-synapse
 {{- end }}
 
 {{- define "element-io.synapse.redis.labels" -}}

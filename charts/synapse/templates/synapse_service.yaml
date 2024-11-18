@@ -2,11 +2,12 @@
 #
 # SPDX-License-Identifier: AGPL-3.0-only OR LicenseRef-Element-Commercial
 {{- range $processType := prepend (keys .Values.workers) "main" }}
+{{- $perProcessRoot := merge (dict "ProcessType" $processType) $ }}
 apiVersion: v1
 kind: Service
 metadata:
   labels:
-    {{- include "element-io.synapse.process.labels" (dict "ReleaseName" $.Release.Name "Version" ($.Values.image.tag | default $.Chart.AppVersion) "ProcessType" $processType) | nindent 4 }}
+    {{- include "element-io.synapse.process.labels" $perProcessRoot | nindent 4 }}
     k8s.element.io/service-type: headless
   name: {{ $.Release.Name }}-synapse-{{ $processType }}
   namespace: {{ $.Release.Namespace }}
