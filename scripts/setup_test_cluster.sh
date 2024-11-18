@@ -143,6 +143,11 @@ helm --kube-context $kind_context_name upgrade -i postgres oci://registry-1.dock
   --set auth.username=synapse_user \
   --set primary.initdb.args='--locale=C --encoding=UTF8'
 
+helm --kube-context $kind_context_name upgrade -i metrics-server --repo https://kubernetes-sigs.github.io/metrics-server metrics-server \
+  --namespace kube-system \
+  --hide-notes \
+  --set args[0]=--kubelet-insecure-tls
+
 if [[ ! -f "$ca_folder"/ca.crt || ! -f "$ca_folder"/ca.pem ]]; then
   kubectl --context $kind_context_name -n cert-manager get secret ess-ca -o jsonpath="{.data['ca\.crt']}" | base64 -d > "$ca_folder"/ca.crt
   kubectl --context $kind_context_name -n cert-manager get secret ess-ca -o jsonpath="{.data['tls\.key']}" | base64 -d > "$ca_folder"/ca.pem
