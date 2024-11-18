@@ -27,7 +27,7 @@ database:
     port: {{ .Values.postgres.port }}
 
     application_name: ${APPLICATION_NAME}
-    sslmode: {{ .Values.postgres.sslmode }}
+    sslmode: {{ .Values.postgres.sslMode }}
     keepalives: 1
     keepalives_idle: 10
     keepalives_interval: 10
