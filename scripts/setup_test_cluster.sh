@@ -158,3 +158,5 @@ EOF
     --set auth.username=synapse_user \
     --set primary.initdb.args='--locale=C --encoding=UTF8'
 done
+
+helm dependency build charts/matrix-stack --skip-refresh
