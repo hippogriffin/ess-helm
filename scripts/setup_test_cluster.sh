@@ -135,7 +135,7 @@ metadata:
   name: ess-selfsigned
   namespace: ${namespace}
 spec:
-  commonName: "ess.localhost"
+  commonName: "${namespace}.localhost"
   secretName: ess-selfsigned
   privateKey:
     algorithm: RSA
