@@ -64,6 +64,13 @@ data:
     import yaml
 
 
+    def deep_merge_dicts(source, destination):
+      for key, value in source.items():
+        if isinstance(value, dict):
+          deep_merge_dicts(value, destination.setdefault(key, {}))
+        else:
+          destination[key] = value
+
     if __name__ == "__main__":
       if len(sys.argv) < 2:
         print(f"Usage {sys.argv[0]} <source files>")
@@ -91,6 +98,6 @@ data:
           replacement_value = json.dumps(os.environ[env_var], ensure_ascii=False)
           source_fragment = source_fragment.replace(f"${{ `{{{` }}env_var{{ `}}}` }}", replacement_value)
 
-        output.update(yaml.safe_load(source_fragment))
+        deep_merge_dicts(yaml.safe_load(source_fragment), output)
 
       print(yaml.dump(output, allow_unicode=True))
