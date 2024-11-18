@@ -7,14 +7,17 @@ set -e
 
 kind_cluster_name="ess-helm"
 kind_context_name="kind-$kind_cluster_name"
+# Space separated list of namespaces to use
+ess_namespaces=${ESS_NAMESPACES:-ess}
 
 ca_folder="$(git rev-parse --show-toplevel)/.ca"
 mkdir -p "$ca_folder"
 
-docker stop "${kind_cluster_name}-registry" || true
-docker rm "${kind_cluster_name}-registry" || true
-
-if kind get clusters | grep "$kind_cluster_name"; then
+if docker ps -a | grep "${kind_cluster_name}-registry"; then
+  docker stop "${kind_cluster_name}-registry" || true
+  docker rm "${kind_cluster_name}-registry" || true
+fi
+if kind get clusters 2>/dev/null | grep "$kind_cluster_name"; then
   echo "Cluster '$kind_cluster_name' is already provisioned by Kind"
 else
   echo "Creating new Kind cluster '$kind_cluster_name'"
@@ -48,21 +51,21 @@ docker run \
     -d --restart=always -p "127.0.0.1:5000:5000" --network "$network" --name "${kind_cluster_name}-registry" \
     registry:2
 
-kubectl --context $kind_context_name create namespace ess 2>/dev/null || true
-
 helm --kube-context $kind_context_name upgrade -i ingress-nginx --repo https://kubernetes.github.io/ingress-nginx ingress-nginx \
   --namespace ingress-nginx \
   --create-namespace \
-  --hide-notes \
   --set controller.ingressClassResource.default=true \
   --set controller.config.hsts=false \
   --set controller.hostPort.enabled=true \
   --set controller.service.enabled=false
 
+helm --kube-context $kind_context_name upgrade -i metrics-server --repo https://kubernetes-sigs.github.io/metrics-server metrics-server \
+  --namespace kube-system \
+  --set args[0]=--kubelet-insecure-tls
+
 helm --kube-context $kind_context_name upgrade -i cert-manager --repo https://charts.jetstack.io cert-manager \
   --namespace cert-manager \
   --create-namespace \
-  --hide-notes \
   --set crds.enabled=true
 
 # Create a new CA certificate
@@ -115,12 +118,22 @@ metadata:
 spec:
   ca:
     secretName: ess-ca
----
+EOF
+
+if [[ ! -f "$ca_folder"/ca.crt || ! -f "$ca_folder"/ca.pem ]]; then
+  kubectl --context $kind_context_name -n cert-manager get secret ess-ca -o jsonpath="{.data['ca\.crt']}" | base64 -d > "$ca_folder"/ca.crt
+  kubectl --context $kind_context_name -n cert-manager get secret ess-ca -o jsonpath="{.data['tls\.key']}" | base64 -d > "$ca_folder"/ca.pem
+fi
+
+for namespace in $ess_namespaces; do
+  echo "Constructing ESS dependencies in $namespace"
+  kubectl --context $kind_context_name create namespace "$namespace" 2>/dev/null || true
+  cat <<EOF | kubectl --context $kind_context_name --namespace "$namespace" apply -f -
 apiVersion: cert-manager.io/v1
 kind: Certificate
 metadata:
   name: ess-selfsigned
-  namespace: ess
+  namespace: ${namespace}
 spec:
   commonName: "ess.localhost"
   secretName: ess-selfsigned
@@ -131,24 +144,16 @@ spec:
     kind: ClusterIssuer
     group: cert-manager.io
   dnsNames:
-  - "ess.localhost"
-  - "*.ess.localhost"
+  - "${namespace}.localhost"
+  - "*.${namespace}.localhost"
 EOF
 
-helm --kube-context $kind_context_name upgrade -i postgres oci://registry-1.docker.io/bitnamicharts/postgresql \
-  --namespace ess \
-  --hide-notes \
-  --set fullnameOverride=ess-postgres \
-  --set auth.database=synapse \
-  --set auth.username=synapse_user \
-  --set primary.initdb.args='--locale=C --encoding=UTF8'
+  helm --kube-context $kind_context_name upgrade -i postgres oci://registry-1.docker.io/bitnamicharts/postgresql \
+    --namespace "$namespace" \
+    --set fullnameOverride=ess-postgres \
+    --set auth.database=synapse \
+    --set auth.username=synapse_user \
+    --set primary.initdb.args='--locale=C --encoding=UTF8'
+done
 
-helm --kube-context $kind_context_name upgrade -i metrics-server --repo https://kubernetes-sigs.github.io/metrics-server metrics-server \
-  --namespace kube-system \
-  --hide-notes \
-  --set args[0]=--kubelet-insecure-tls
-
-if [[ ! -f "$ca_folder"/ca.crt || ! -f "$ca_folder"/ca.pem ]]; then
-  kubectl --context $kind_context_name -n cert-manager get secret ess-ca -o jsonpath="{.data['ca\.crt']}" | base64 -d > "$ca_folder"/ca.crt
-  kubectl --context $kind_context_name -n cert-manager get secret ess-ca -o jsonpath="{.data['tls\.key']}" | base64 -d > "$ca_folder"/ca.pem
-fi
+helm dependency build charts/matrix-stack --skip-refresh
