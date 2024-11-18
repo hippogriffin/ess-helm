@@ -41,14 +41,23 @@ seen in PRs
 
 ### Running a test cluster
 
-A test cluster can be constructed with `./scripts/setup_test_cluster.sh`.
-
-It will bind to port 80 & 443 on localhost such that `http://anything.localhost` or `https://anything.localhost`
-both work. It will construct a self-signed CA and puts its cert and key in `./.ca`. This will be persisted
-over cluster recreation so you can trust it once and use it repeatedly.
+A test cluster can be constructed with `./scripts/setup_test_cluster.sh`. It will:
+* Install an ingress controller
+* Bind the ingress controller to port 80 & 443 on localhost outside of the cluster such
+  that `http://anything.localhost` or `https://anything.localhost` both work.
+* Install `metrics-server` into the cluster
+* Install `cert-manager` into the cluster
+* Construct a self-signed CA and puts its cert and key in `./.ca`.
+  This will be persisted over cluster recreation so you can trust it once and use it repeatedly.
+* Construct a set of application namespaces.
+  * This defaults to `ess` but can be controlled with the `ESS_NAMESPACES` environment variable
+    as a space separated list of namespaces.
+  * Within each namespace a wildcard certificate for `*.<namespace>.localhost` and
+    `<namespace>.localhost` will be created
+  * Within each namespace a Postgres will be available at `ess-postgres`
 
 The test cluster can then be deployed to with
-`helm upgrade -i ess charts/matrix-stack -f charts/matrix-stack/ci/test-cluster-mixin.yaml -f <your values file>`
+`helm -n <namespace> upgrade -i ess charts/matrix-stack -f charts/matrix-stack/ci/test-cluster-mixin.yaml -f <your values file>`.
 
 ### Inspecting temlates
 
