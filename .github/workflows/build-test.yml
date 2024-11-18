@@ -42,10 +42,15 @@ jobs:
 
     - name: Build and check for changes
       run: |
+        git config --global --add safe.directory "$GITHUB_WORKSPACE"
+
+        # Ensure all JSON files are consistently formatted
+        for file in $(git ls-files | grep json); do yq -iP --indent 2 -o json '.' $file; done
+
+        # Rebuild the charts with from the current source
         version=$(yq '.version' charts/matrix-stack/Chart.yaml)
         scripts/construct_helm_charts.sh charts/ "$version"
 
-        git config --global --add safe.directory "$GITHUB_WORKSPACE"
         git diff --exit-code
 
   helm-lint:

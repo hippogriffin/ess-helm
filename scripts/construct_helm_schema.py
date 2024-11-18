@@ -91,7 +91,7 @@ def construct_helm_schema(source_schema: Path, destination_schema: Path):
     for schema_manipulator in schema_manipulators:
         schema_contents = schema_walker(schema_contents, schema_manipulator)
 
-    destination_schema.write_text(json.dumps(schema_contents, indent=2))
+    destination_schema.write_text(json.dumps(schema_contents, indent=2) + "\n")
 
 
 def main():
