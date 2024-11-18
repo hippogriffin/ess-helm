@@ -1,9 +1,9 @@
 # Copyright 2024 New Vector Ltd
 #
 # SPDX-License-Identifier: AGPL-3.0-only OR LicenseRef-Element-Commercial
-{{ $rootValues := $.Values }}
 {{- range $processType, $unmergedProcessDetails := merge dict .Values.workers (dict "main" dict) }}
-{{- with dict "Values" (merge dict ($unmergedProcessDetails | deepCopy) ($rootValues | deepCopy)) }}
+{{- $perProcessRoot := merge (dict "ProcessType" $processType) $ }}
+{{- with dict "Values" (merge dict ($unmergedProcessDetails | deepCopy) ($.Values | deepCopy)) }}
 apiVersion: apps/v1
 kind: StatefulSet
 metadata:
@@ -12,7 +12,7 @@ metadata:
     {{- toYaml . | nindent 4 }}
 {{- end }}
   labels:
-    {{- include "element-io.synapse.process.labels" (dict "ReleaseName" $.Release.Name "Version" (.Values.image.tag | default $.Chart.AppVersion) "ProcessType" $processType) | nindent 4 }}
+    {{- include "element-io.synapse.process.labels" $perProcessRoot | nindent 4 }}
     k8s.element.io/confighash: "{{ include (print $.Template.BasePath "/synapse_secret.yaml") $ | sha1sum }}"
     k8s.element.io/logconfighash: "{{ include (print $.Template.BasePath "/synapse_configmap.yaml") $ | sha1sum }}"
 {{- range $index, $appservice := .Values.appservices }}
@@ -33,7 +33,7 @@ spec:
   template:
     metadata:
       labels:
-        {{- include "element-io.synapse.process.labels" (dict "ReleaseName" $.Release.Name "Version" (.Values.image.tag | default $.Chart.AppVersion) "ProcessType" $processType) | nindent 8 }}
+        {{- include "element-io.synapse.process.labels" $perProcessRoot | nindent 8 }}
         k8s.element.io/confighash: "{{ include (print $.Template.BasePath "/synapse_secret.yaml") $ | sha1sum }}"
         k8s.element.io/logconfighash: "{{ include (print $.Template.BasePath "/synapse_configmap.yaml") $ | sha1sum }}"
 {{- range $index, $appservice := .Values.appservices }}
@@ -244,7 +244,7 @@ We have an init container to render & merge the config for several reasons:
           name: "{{ $appservice.registrationFileConfigMap }}"
         name: {{ $appservice.registrationFileConfigMap }}
 {{- end }}
-{{- if (include "element-io.synapse.process.responsibleForMedia" (dict "processType" $processType "configuredWorkers" (keys $rootValues.workers))) }}
+{{- if (include "element-io.synapse.process.responsibleForMedia" (dict "processType" $processType "configuredWorkers" (keys .Values.workers))) }}
       - persistentVolumeClaim:
           claimName: {{ include "element-io.synapse.pvcName" $ }}
         name: "media"
