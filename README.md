@@ -62,6 +62,8 @@ The `setup_test_cluster.sh` script will do an initial `helm dependency build` bu
 changes to templates or values in the subcharts you must either re-run this directly or use
 `./scripts/construct_helm_charts.sh` as above which also updates the Helm dependencies.
 
+The test cluster can be taken down by running `./scripts/destroy_test_cluster.sh`
+
 ### Inspecting temlates
 
 Often you wish to see what a template looks like whilst developing. From the chart directory:

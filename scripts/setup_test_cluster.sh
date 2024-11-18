@@ -13,10 +13,11 @@ ess_namespaces=${ESS_NAMESPACES:-ess}
 ca_folder="$(git rev-parse --show-toplevel)/.ca"
 mkdir -p "$ca_folder"
 
-docker stop "${kind_cluster_name}-registry" || true
-docker rm "${kind_cluster_name}-registry" || true
-
-if kind get clusters | grep "$kind_cluster_name"; then
+if docker ps -a | grep "${kind_cluster_name}-registry"; then
+  docker stop "${kind_cluster_name}-registry" || true
+  docker rm "${kind_cluster_name}-registry" || true
+fi
+if kind get clusters 2>/dev/null | grep "$kind_cluster_name"; then
   echo "Cluster '$kind_cluster_name' is already provisioned by Kind"
 else
   echo "Creating new Kind cluster '$kind_cluster_name'"
