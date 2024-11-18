@@ -20,7 +20,7 @@ postgres:
   # database:
 
   ## TLS settins to use for the PostgreSQL connection
-  sslMode: require
+  sslMode: prefer
 
   ## PostgreSQL password.
   ## It can either be provided inline in the Helm chart e.g.:

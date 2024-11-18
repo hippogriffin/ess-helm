@@ -4,7 +4,11 @@
     "properties": {
       "effect": {
         "type": "string",
-        "enum": ["NoSchedule", "PreferNoSchedule", "NoExecute"]
+        "enum": [
+          "NoSchedule",
+          "PreferNoSchedule",
+          "NoExecute"
+        ]
       },
       "key": {
         "type": "string"

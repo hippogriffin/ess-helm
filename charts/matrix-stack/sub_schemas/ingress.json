@@ -1,35 +1,37 @@
 {
-    "type": "object",
-    "required": [
-        "host"
-    ],
-    "properties": {
-        "annotations": {
-            "type": "object",
-            "additionalProperties": true
-        },
-        "host": {
-            "type": "string"
-        },
-        "className": {
-            "type": "string"
-        },
-        "tlsSecret": {
-            "type": "string"
-        },
-        "service": {
-            "type": "object",
-            "required": ["type"],
-            "properties": {
-                "type": {
-                    "type": "string",
-                    "enum": [
-                        "ClusterIP",
-                        "NodePort",
-                        "LoadBalancer"
-                    ]
-                }
-            }
+  "type": "object",
+  "required": [
+    "host"
+  ],
+  "properties": {
+    "annotations": {
+      "type": "object",
+      "additionalProperties": true
+    },
+    "host": {
+      "type": "string"
+    },
+    "className": {
+      "type": "string"
+    },
+    "tlsSecret": {
+      "type": "string"
+    },
+    "service": {
+      "type": "object",
+      "required": [
+        "type"
+      ],
+      "properties": {
+        "type": {
+          "type": "string",
+          "enum": [
+            "ClusterIP",
+            "NodePort",
+            "LoadBalancer"
+          ]
         }
+      }
     }
+  }
 }

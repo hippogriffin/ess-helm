@@ -110,7 +110,7 @@ We have an init container to render & merge the config for several reasons:
           python3 /config-templates/render_config_with_secrets.py \
             /config-templates/01-homeserver-underrides.yaml \
           {{- if .Values.additional.config }}
-            /config-templates/02-homeserver-helm-user-provided.yaml \
+            /secrets/{{ $.Release.Name }}-synapse/02-homeserver-helm-user-provided.yaml \
           {{- end }}
           {{- if .Values.additional.configSecret }}
             /secrets/{{ .Values.additional.configSecret }}/{{ .Values.additional.configSecretKey }} \

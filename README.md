@@ -102,3 +102,17 @@ From the project root: `reuse lint`
 Detects common mistakes in shell scripts.
 
 From the project root: `shellcheck scripts/*.sh`
+
+## Design
+
+### Component Configuration
+
+The individual Helm charts focus on application construction, i.e.
+* Providing Kubernetes options
+* Exposing values to set required and very frequently set application settings
+* Exposing values to set arbitrary additional application configuration
+* Exposing values to set application configuration that for some reason can't be
+  set via a generic arbitrary additional application configuration setting. e.g.
+  it is a flag in the 2nd item in a predefined list.
+
+We are not going to expose every single application configuration option.

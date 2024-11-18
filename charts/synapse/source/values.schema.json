@@ -29,9 +29,20 @@
     "additional": {
       "type": "object",
       "anyOf": [
-        {"required": []},
-        {"required": ["config"]},
-        {"required": ["configSecret", "configSecretKey"]}
+        {
+          "required": []
+        },
+        {
+          "required": [
+            "config"
+          ]
+        },
+        {
+          "required": [
+            "configSecret",
+            "configSecretKey"
+          ]
+        }
       ],
       "properties": {
         "config": {
@@ -61,13 +72,25 @@
       "properties": {
         "rootLevel": {
           "type": "string",
-          "enum": ["CRITICAL", "ERROR", "WARNING", "INFO", "DEBUG"]
+          "enum": [
+            "CRITICAL",
+            "ERROR",
+            "WARNING",
+            "INFO",
+            "DEBUG"
+          ]
         },
         "levelOverrides": {
           "type": "object",
           "additionalProperties": {
             "type": "string",
-            "enum": ["CRITICAL", "ERROR", "WARNING", "INFO", "DEBUG"]
+            "enum": [
+              "CRITICAL",
+              "ERROR",
+              "WARNING",
+              "INFO",
+              "DEBUG"
+            ]
           }
         }
       }

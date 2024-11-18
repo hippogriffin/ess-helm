@@ -34,6 +34,20 @@ spec:
         {{- toYaml . | nindent 8 }}
 {{- end }}
     spec:
+{{- if gt (.replicas | int) 1 }}
+      affinity:
+        podAntiAffinity:
+          preferredDuringSchedulingIgnoredDuringExecution:
+          - weight: 100
+            podAffinityTerm:
+              labelSelector:
+                matchExpressions:
+                - key: app.kubernetes.io/instance
+                  operator: In
+                  values:
+                  - "{{ $.Release.Name }}-synapse-haproxy"
+              topologyKey: kubernetes.io/hostname
+{{- end }}
       automountServiceAccountToken: false
 {{- with .image.pullSecrets }}
       imagePullSecrets:
