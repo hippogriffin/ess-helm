@@ -1,7 +1,8 @@
 # Copyright 2024 New Vector Ltd
 #
 # SPDX-License-Identifier: AGPL-3.0-only OR LicenseRef-Element-Commercial
-{{- range $processType, $unmergedProcessDetails := merge dict .Values.workers (dict "main" dict) }}
+{{- $enabledWorkers := (include "element-io.synapse.enabledWorkers" $) | fromJson }}
+{{- range $processType, $unmergedProcessDetails := merge $enabledWorkers (dict "main" dict) }}
 {{- $perProcessRoot := merge (dict "ProcessType" $processType) $ }}
 {{- with dict "Values" (merge dict ($unmergedProcessDetails | deepCopy) ($.Values | deepCopy)) }}
 apiVersion: apps/v1
@@ -244,7 +245,7 @@ We have an init container to render & merge the config for several reasons:
           name: "{{ $appservice.registrationFileConfigMap }}"
         name: {{ $appservice.registrationFileConfigMap }}
 {{- end }}
-{{- if (include "element-io.synapse.process.responsibleForMedia" (dict "processType" $processType "configuredWorkers" (keys .Values.workers))) }}
+{{- if (include "element-io.synapse.process.responsibleForMedia" (dict "processType" $processType "enabledWorkerTypes" (keys $enabledWorkers))) }}
       - persistentVolumeClaim:
           claimName: {{ include "element-io.synapse.pvcName" $ }}
         name: "media"

@@ -1,5 +1,8 @@
 {
   "properties": {
+    "enabled": {
+      "type": "boolean"
+    },
     "resources": {
       "$ref": "file://./../../matrix-stack/sub_schemas/resources.json"
     }

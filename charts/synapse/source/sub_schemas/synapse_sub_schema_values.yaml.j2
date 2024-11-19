@@ -1,0 +1,28 @@
+{#
+Copyright 2024 New Vector Ltd
+
+SPDX-License-Identifier: AGPL-3.0-only OR LicenseRef-Element-Commercial
+#}
+
+{% macro single_worker(workerType) %}
+{{ workerType }}:
+  ## Set to true to deploy a single instance of this worker
+  enabled: false
+
+  ## Resources for this worker.
+  ## If omitted the global Synapse resources are used
+  # resources: {}
+{%- endmacro %}
+
+{% macro scalable_worker(workerType) %}
+{{ workerType }}:
+  ## Set to true to deploy instances of this worker
+  enabled: false
+
+  ## The number of instances of this worker to run
+  instances: 1
+
+  ## Resources for this worker.
+  ## If omitted the global Synapse resources are used
+  # resources: {}
+{%- endmacro %}

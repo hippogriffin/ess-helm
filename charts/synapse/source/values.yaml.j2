@@ -4,6 +4,7 @@ Copyright 2024 New Vector Ltd
 SPDX-License-Identifier: AGPL-3.0-only OR LicenseRef-Element-Commercial
 #}
 {% import 'sub_schema_values.yaml.j2' as sub_schema_values -%}
+{% import 'synapse_sub_schema_values.yaml.j2' as synapse_sub_schema_values -%}
 {{ sub_schema_values.generatedFileWarning() }}
 
 {{ sub_schema_values.postgresLibPQ() }}
@@ -41,7 +42,25 @@ appservices: []
 ##   client-reader:
 ##     instances: 2
 ##   event-creator: {}
-workers: {}
+workers:
+{{ synapse_sub_schema_values.single_worker('appservice') | indent(2) }}
+{{ synapse_sub_schema_values.single_worker('background') | indent(2) }}
+{{ synapse_sub_schema_values.scalable_worker('client-reader') | indent(2) }}
+{{ synapse_sub_schema_values.single_worker('encryption') | indent(2) }}
+{{ synapse_sub_schema_values.scalable_worker('event-creator') | indent(2) }}
+{{ synapse_sub_schema_values.scalable_worker('event-persister') | indent(2) }}
+{{ synapse_sub_schema_values.scalable_worker('federation-reader') | indent(2) }}
+{{ synapse_sub_schema_values.scalable_worker('federation-sender') | indent(2) }}
+{{ synapse_sub_schema_values.scalable_worker('initial-synchrotron') | indent(2) }}
+{{ synapse_sub_schema_values.single_worker('media-repository') | indent(2) }}
+{{ synapse_sub_schema_values.single_worker('presence-writer') | indent(2) }}
+{{ synapse_sub_schema_values.scalable_worker('pusher') | indent(2) }}
+{{ synapse_sub_schema_values.single_worker('receipts-account') | indent(2) }}
+{{ synapse_sub_schema_values.scalable_worker('sliding-sync') | indent(2) }}
+{{ synapse_sub_schema_values.single_worker('sso-login') | indent(2) }}
+{{ synapse_sub_schema_values.scalable_worker('synchrotron') | indent(2) }}
+{{ synapse_sub_schema_values.single_worker('typing-persister') | indent(2) }}
+{{ synapse_sub_schema_values.single_worker('user-dir') | indent(2) }}
 
 ## Synapse's logging settings
 logging:

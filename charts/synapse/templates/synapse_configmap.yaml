@@ -17,7 +17,7 @@ data:
     {{- include "element-io.synapse.config.shared-overrides" . | nindent 4 }}
   05-main.yaml: |
     {{- include "element-io.synapse.config.processSpecific" (dict "processType" "main" "Values" .Values) | nindent 4 }}
-{{- range $workerType, $workerDetails := .Values.workers }}
+{{- range $workerType, $workerDetails := (include "element-io.synapse.enabledWorkers" $) | fromJson }}
   05-{{ $workerType }}.yaml: |
     {{- include "element-io.synapse.config.processSpecific" (dict "processType" $workerType "Values" $.Values) | nindent 4 }}
 {{- end }}

@@ -157,7 +157,7 @@ frontend http-in
   use_backend be_{{ $additionalPathId }} if is_svc_{{ $additionalPathId }}
 {{- end }}
 {{- end }}
-{{- if hasKey .Values.workers "initial-synchrotron" }}
+{{- if dig "initial-synchrotron" "enabled" false .Values.workers }}
 
   # special synchrotron backend for initialsyncs
   acl is_sync path -m reg ^/_matrix/client/(r0|v3)/sync$
@@ -173,7 +173,7 @@ backend main
   # Use DNS SRV service discovery on the headless service
   server-template main 1 _synapse-http._tcp.{{ .Release.Name }}-synapse-main.{{ .Release.Namespace }}.svc.cluster.local resolvers kubedns init-addr none
 
-{{- range $workerType, $workerDetails := .Values.workers }}
+{{- range $workerType, $workerDetails := (include "element-io.synapse.enabledWorkers" $) | fromJson }}
 {{- if include "element-io.synapse.process.hasHttp" $workerType }}
 
 backend {{ $workerType }}

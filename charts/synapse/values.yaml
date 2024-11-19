@@ -110,7 +110,178 @@ appservices: []
 ##   client-reader:
 ##     instances: 2
 ##   event-creator: {}
-workers: {}
+workers:
+
+  appservice:
+    ## Set to true to deploy a single instance of this worker
+    enabled: false
+
+    ## Resources for this worker.
+    ## If omitted the global Synapse resources are used
+    # resources: {}
+
+  background:
+    ## Set to true to deploy a single instance of this worker
+    enabled: false
+
+    ## Resources for this worker.
+    ## If omitted the global Synapse resources are used
+    # resources: {}
+
+  client-reader:
+    ## Set to true to deploy instances of this worker
+    enabled: false
+
+    ## The number of instances of this worker to run
+    instances: 1
+
+    ## Resources for this worker.
+    ## If omitted the global Synapse resources are used
+    # resources: {}
+
+  encryption:
+    ## Set to true to deploy a single instance of this worker
+    enabled: false
+
+    ## Resources for this worker.
+    ## If omitted the global Synapse resources are used
+    # resources: {}
+
+  event-creator:
+    ## Set to true to deploy instances of this worker
+    enabled: false
+
+    ## The number of instances of this worker to run
+    instances: 1
+
+    ## Resources for this worker.
+    ## If omitted the global Synapse resources are used
+    # resources: {}
+
+  event-persister:
+    ## Set to true to deploy instances of this worker
+    enabled: false
+
+    ## The number of instances of this worker to run
+    instances: 1
+
+    ## Resources for this worker.
+    ## If omitted the global Synapse resources are used
+    # resources: {}
+
+  federation-reader:
+    ## Set to true to deploy instances of this worker
+    enabled: false
+
+    ## The number of instances of this worker to run
+    instances: 1
+
+    ## Resources for this worker.
+    ## If omitted the global Synapse resources are used
+    # resources: {}
+
+  federation-sender:
+    ## Set to true to deploy instances of this worker
+    enabled: false
+
+    ## The number of instances of this worker to run
+    instances: 1
+
+    ## Resources for this worker.
+    ## If omitted the global Synapse resources are used
+    # resources: {}
+
+  initial-synchrotron:
+    ## Set to true to deploy instances of this worker
+    enabled: false
+
+    ## The number of instances of this worker to run
+    instances: 1
+
+    ## Resources for this worker.
+    ## If omitted the global Synapse resources are used
+    # resources: {}
+
+  media-repository:
+    ## Set to true to deploy a single instance of this worker
+    enabled: false
+
+    ## Resources for this worker.
+    ## If omitted the global Synapse resources are used
+    # resources: {}
+
+  presence-writer:
+    ## Set to true to deploy a single instance of this worker
+    enabled: false
+
+    ## Resources for this worker.
+    ## If omitted the global Synapse resources are used
+    # resources: {}
+
+  pusher:
+    ## Set to true to deploy instances of this worker
+    enabled: false
+
+    ## The number of instances of this worker to run
+    instances: 1
+
+    ## Resources for this worker.
+    ## If omitted the global Synapse resources are used
+    # resources: {}
+
+  receipts-account:
+    ## Set to true to deploy a single instance of this worker
+    enabled: false
+
+    ## Resources for this worker.
+    ## If omitted the global Synapse resources are used
+    # resources: {}
+
+  sliding-sync:
+    ## Set to true to deploy instances of this worker
+    enabled: false
+
+    ## The number of instances of this worker to run
+    instances: 1
+
+    ## Resources for this worker.
+    ## If omitted the global Synapse resources are used
+    # resources: {}
+
+  sso-login:
+    ## Set to true to deploy a single instance of this worker
+    enabled: false
+
+    ## Resources for this worker.
+    ## If omitted the global Synapse resources are used
+    # resources: {}
+
+  synchrotron:
+    ## Set to true to deploy instances of this worker
+    enabled: false
+
+    ## The number of instances of this worker to run
+    instances: 1
+
+    ## Resources for this worker.
+    ## If omitted the global Synapse resources are used
+    # resources: {}
+
+  typing-persister:
+    ## Set to true to deploy a single instance of this worker
+    enabled: false
+
+    ## Resources for this worker.
+    ## If omitted the global Synapse resources are used
+    # resources: {}
+
+  user-dir:
+    ## Set to true to deploy a single instance of this worker
+    enabled: false
+
+    ## Resources for this worker.
+    ## If omitted the global Synapse resources are used
+    # resources: {}
 
 ## Synapse's logging settings
 logging:

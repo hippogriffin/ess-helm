@@ -50,7 +50,7 @@ synapse.app.generic_worker
 {{- end }}
 
 {{- define "element-io.synapse.process.responsibleForMedia" -}}
-{{- if and (eq .processType "main") (not (has "media-repository" .configuredWorkers)) -}}
+{{- if and (eq .processType "main") (not (has "media-repository" .enabledWorkerTypes)) -}}
 responsibleForMedia
 {{- else if eq .processType "media-repository" -}}
 responsibleForMedia
@@ -75,7 +75,7 @@ responsibleForMedia
 
 {{- define "element-io.synapse.streamWriterWorkers" -}}
 {{ $streamWriterWorkers := list }}
-{{- range $workerType := keys .Values.workers }}
+{{- range $workerType := keys ((include "element-io.synapse.enabledWorkers" $) | fromJson) }}
 {{- if include "element-io.synapse.process.streamWriters" $workerType | fromJsonArray -}}
 {{ $streamWriterWorkers = append $streamWriterWorkers $workerType }}
 {{- end }}
@@ -222,7 +222,7 @@ responsibleForMedia
 {{- end }}
 
 {{- /* Route these paths to the initial-synchrotron is available otherwise use the standard synchrotron if we have it */}}
-{{- if or (eq .workerType "initial-synchrotron") (and (eq .workerType "synchrotron") (not (has "initial-synchrotron" .enabledWorkers))) }}
+{{- if or (eq .workerType "initial-synchrotron") (and (eq .workerType "synchrotron") (not (has "initial-synchrotron" .enabledWorkerTypes))) }}
 {{ $workerPaths = concat $workerPaths (list
   "^/_matrix/client/(api/v1|r0|v3)/initialSync$"
   "^/_matrix/client/(api/v1|r0|v3)/rooms/[^/]+/initialSync$"

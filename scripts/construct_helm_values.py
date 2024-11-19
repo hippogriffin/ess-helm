@@ -11,9 +11,10 @@ from jinja2 import Environment, FileSystemLoader, select_autoescape
 
 
 def construct_values_file(source_values_template_path: Path, destination_values_path: Path):
-    sub_schemas_path = Path(__file__).parent.parent / "charts" / "matrix-stack" / "sub_schemas"
+    shared_sub_schemas_path = Path(__file__).parent.parent / "charts" / "matrix-stack" / "sub_schemas"
+    chart_sub_schemas_path = source_values_template_path.parent / "sub_schemas"
     env = Environment(
-        loader=FileSystemLoader([source_values_template_path.parent, sub_schemas_path]),
+        loader=FileSystemLoader([source_values_template_path.parent, shared_sub_schemas_path, chart_sub_schemas_path]),
         autoescape=select_autoescape,
         keep_trailing_newline=True,
     )

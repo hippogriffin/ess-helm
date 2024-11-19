@@ -55,7 +55,7 @@ ip_range_blacklist:
 - 'ff00::/8'
 - 'fec0::/10'
 
-{{- if hasKey .Values.workers "appservice" }}
+{{- if dig "appservice" "enabled" false .Values.workers }}
 
 notify_appservices_from_worker: appservice-0
 {{- end }}
@@ -67,46 +67,55 @@ app_service_config_files:
 {{- end }}
 {{- end }}
 
-{{- if hasKey .Values.workers "background" }}
+{{- if dig "background" "enabled" false .Values.workers }}
 
 run_background_tasks_on: background-0
 {{- end }}
 
-send_federation: {{ not (hasKey .Values.workers "federation-sender") }}
-{{- if hasKey .Values.workers "federation-sender" }}
+{{- if dig "federation-sender" "enabled" false .Values.workers }}
+
+send_federation: false
 federation_sender_instances:
-{{- range $index := untilStep 0 ((index .Values.workers "federation-sender").instances | int | default 1) 1 }}
+{{- range $index := untilStep 0 ((index .Values.workers "federation-sender").instances | int) 1 }}
 - federation-sender-{{ $index }}
 {{- end }}
+{{- else }}
+
+send_federation: true
 {{- end }}
 
 # This is still required despite media_storage_providers as otherwise Synapse attempts to mkdir /media_store
 media_store_path: "/media/media_store"
-{{- if hasKey .Values.workers "media-repository" }}
+{{- if dig "media-repository" "enabled" false .Values.workers }}
 media_instance_running_background_jobs: "media-repository-0"
 {{- end }}
 
 presence:
-  enabled: {{ hasKey .Values.workers "presence-writer" }}
+  enabled: {{ dig "presence-writer" "enabled" false .Values.workers }}
 
-start_pushers: {{ not (hasKey .Values.workers "pusher") }}
-{{- if hasKey .Values.workers "pusher" }}
+{{- if dig "pusher" "enabled" false .Values.workers }}
+
+start_pushers: false
 pusher_instances:
-{{- range $index := untilStep 0 ((index .Values.workers "pusher").instances | int | default 1) 1 }}
+{{- range $index := untilStep 0 ((index .Values.workers "pusher").instances | int) 1 }}
 - pusher-{{ $index }}
 {{- end }}
+{{- else }}
+
+start_pushers: true
 {{- end }}
 
-{{- if hasKey .Values.workers "user-dir" }}
+{{- if dig "user-dir" "enabled" false .Values.workers }}
 
 update_user_directory_from_worker: user-dir-0
 {{- end }}
+{{- $enabledWorkers := (include "element-io.synapse.enabledWorkers" $) | fromJson }}
 
 instance_map:
   main:
     host: {{ $.Release.Name }}-synapse-main.{{ $.Release.Namespace }}.svc.cluster.local.
     port: 9093
-{{- range $workerType, $workerDetails := .Values.workers }}
+{{- range $workerType, $workerDetails := $enabledWorkers }}
 {{- if include "element-io.synapse.process.hasReplication" $workerType }}
 {{- range $index := untilStep 0 ($workerDetails.instances | int | default 1) 1 }}
   {{ $workerType }}-{{ $index }}:
@@ -116,7 +125,7 @@ instance_map:
 {{- end }}
 {{- end }}
 
-{{- if .Values.workers }}
+{{- if $enabledWorkers }}
 
 redis:
   enabled: true
@@ -124,7 +133,7 @@ redis:
 {{- if include "element-io.synapse.streamWriterWorkers" $ | fromJsonArray }}
 
 stream_writers:
-{{- range $workerType, $workerDetails := .Values.workers }}
+{{- range $workerType, $workerDetails := $enabledWorkers }}
 {{- if include "element-io.synapse.process.streamWriters" $workerType | fromJsonArray }}
 {{- range $stream_writer := include "element-io.synapse.process.streamWriters" $workerType | fromJsonArray }}
   {{ $stream_writer }}:
@@ -189,7 +198,8 @@ worker_listeners:
   - names: []
     compress: false
 
-{{- if (include "element-io.synapse.process.responsibleForMedia" (dict "processType" .processType "configuredWorkers" (keys .Values.workers))) }}
+{{- $enabledWorkers := (include "element-io.synapse.enabledWorkers" $) | fromJson }}
+{{- if (include "element-io.synapse.process.responsibleForMedia" (dict "processType" .processType "enabledWorkerTypes" (keys $enabledWorkers))) }}
 enable_media_repo: true
 {{- else }}
 # Stub out the media storage provider for processes not responsible for media

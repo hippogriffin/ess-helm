@@ -29,9 +29,12 @@ annotations:
   checkov.io/skip2: CKV_K8S_43=No digests
 
 workers:
-  appservice: {}
-  client-reader: {}
-  event-persister: {}
+  appservice:
+    enabled: true
+  client-reader:
+    enabled: true
+  event-persister:
+    enabled: true
 
 haproxy:
   annotations:
