@@ -98,7 +98,7 @@ macaroon: {}
 ##   configSecretKey: shared.yaml
 additional: {}
 
-## Details of Application Service registration files to giev to Synapse
+## Details of Application Service registration files to give to Synapse
 ## e.g.
 ## appservices:
 ## - registrationFileConfigMap: test-appservice
