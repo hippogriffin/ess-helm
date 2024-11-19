@@ -156,7 +156,7 @@ We have an init container to render & merge the config for several reasons:
           ls -lR /secrets;
           [ -e "/usr/lib/`uname -m`-linux-gnu/libjemalloc.so.2" ] && export LD_PRELOAD="/usr/lib/`uname -m`-linux-gnu/libjemalloc.so.2";
           python3 -m {{ include "element-io.synapse.process.app" $processType }} -c /conf/homeserver.yaml
-{{- with .Values.extaEnv }}
+{{- with .Values.extraEnv }}
         env:
           {{- toYaml . | nindent 10 }}
 {{- end }}
