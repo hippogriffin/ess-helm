@@ -57,6 +57,7 @@ helm --kube-context $kind_context_name upgrade -i ingress-nginx --repo https://k
   --set controller.ingressClassResource.default=true \
   --set controller.config.hsts=false \
   --set controller.hostPort.enabled=true \
+  --set controller.allowSnippetAnnotations=true \
   --set controller.service.enabled=false
 
 helm --kube-context $kind_context_name upgrade -i metrics-server --repo https://kubernetes-sigs.github.io/metrics-server metrics-server \
