@@ -36,6 +36,16 @@ app.kubernetes.io/instance: {{ .Release.Name }}-synapse-haproxy
 app.kubernetes.io/version: {{ .Values.haproxy.image.tag }}
 {{- end }}
 
+{{- define "element-io.synapse.enabledWorkers" -}}
+{{ $enabledWorkers := dict }}
+{{- range $workerType, $workerDetails := .Values.workers }}
+{{- if $workerDetails.enabled }}
+{{ $_ := set $enabledWorkers $workerType $workerDetails }}
+{{- end }}
+{{- end }}
+{{ $enabledWorkers | toJson }}
+{{- end }}
+
 {{- define "element-io.synapse.pvcName" -}}
 {{- if .Values.media.storage.existingClaim -}}
 {{ .Values.media.storage.existingClaim }}

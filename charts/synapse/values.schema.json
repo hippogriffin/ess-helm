@@ -690,6 +690,9 @@
       "properties": {
         "appservice": {
           "properties": {
+            "enabled": {
+              "type": "boolean"
+            },
             "resources": {
               "properties": {
                 "limits": {
@@ -730,6 +733,9 @@
         },
         "background": {
           "properties": {
+            "enabled": {
+              "type": "boolean"
+            },
             "resources": {
               "properties": {
                 "limits": {
@@ -769,7 +775,13 @@
           "additionalProperties": false
         },
         "client-reader": {
+          "required": [
+            "instances"
+          ],
           "properties": {
+            "enabled": {
+              "type": "boolean"
+            },
             "instances": {
               "type": "integer",
               "minimum": 1
@@ -814,6 +826,9 @@
         },
         "encryption": {
           "properties": {
+            "enabled": {
+              "type": "boolean"
+            },
             "resources": {
               "properties": {
                 "limits": {
@@ -853,7 +868,13 @@
           "additionalProperties": false
         },
         "event-creator": {
+          "required": [
+            "instances"
+          ],
           "properties": {
+            "enabled": {
+              "type": "boolean"
+            },
             "instances": {
               "type": "integer",
               "minimum": 1
@@ -897,7 +918,13 @@
           "additionalProperties": false
         },
         "event-persister": {
+          "required": [
+            "instances"
+          ],
           "properties": {
+            "enabled": {
+              "type": "boolean"
+            },
             "instances": {
               "type": "integer",
               "minimum": 1
@@ -941,7 +968,13 @@
           "additionalProperties": false
         },
         "federation-reader": {
+          "required": [
+            "instances"
+          ],
           "properties": {
+            "enabled": {
+              "type": "boolean"
+            },
             "instances": {
               "type": "integer",
               "minimum": 1
@@ -985,7 +1018,13 @@
           "additionalProperties": false
         },
         "federation-sender": {
+          "required": [
+            "instances"
+          ],
           "properties": {
+            "enabled": {
+              "type": "boolean"
+            },
             "instances": {
               "type": "integer",
               "minimum": 1
@@ -1029,7 +1068,13 @@
           "additionalProperties": false
         },
         "initial-synchrotron": {
+          "required": [
+            "instances"
+          ],
           "properties": {
+            "enabled": {
+              "type": "boolean"
+            },
             "instances": {
               "type": "integer",
               "minimum": 1
@@ -1074,6 +1119,9 @@
         },
         "media-repository": {
           "properties": {
+            "enabled": {
+              "type": "boolean"
+            },
             "resources": {
               "properties": {
                 "limits": {
@@ -1114,6 +1162,9 @@
         },
         "presence-writer": {
           "properties": {
+            "enabled": {
+              "type": "boolean"
+            },
             "resources": {
               "properties": {
                 "limits": {
@@ -1153,7 +1204,13 @@
           "additionalProperties": false
         },
         "pusher": {
+          "required": [
+            "instances"
+          ],
           "properties": {
+            "enabled": {
+              "type": "boolean"
+            },
             "instances": {
               "type": "integer",
               "minimum": 1
@@ -1198,6 +1255,9 @@
         },
         "receipts-account": {
           "properties": {
+            "enabled": {
+              "type": "boolean"
+            },
             "resources": {
               "properties": {
                 "limits": {
@@ -1237,7 +1297,13 @@
           "additionalProperties": false
         },
         "sliding-sync": {
+          "required": [
+            "instances"
+          ],
           "properties": {
+            "enabled": {
+              "type": "boolean"
+            },
             "instances": {
               "type": "integer",
               "minimum": 1
@@ -1282,6 +1348,9 @@
         },
         "sso-login": {
           "properties": {
+            "enabled": {
+              "type": "boolean"
+            },
             "resources": {
               "properties": {
                 "limits": {
@@ -1321,7 +1390,13 @@
           "additionalProperties": false
         },
         "synchrotron": {
+          "required": [
+            "instances"
+          ],
           "properties": {
+            "enabled": {
+              "type": "boolean"
+            },
             "instances": {
               "type": "integer",
               "minimum": 1
@@ -1366,6 +1441,9 @@
         },
         "typing-persister": {
           "properties": {
+            "enabled": {
+              "type": "boolean"
+            },
             "resources": {
               "properties": {
                 "limits": {
@@ -1406,6 +1484,9 @@
         },
         "user-dir": {
           "properties": {
+            "enabled": {
+              "type": "boolean"
+            },
             "resources": {
               "properties": {
                 "limits": {
