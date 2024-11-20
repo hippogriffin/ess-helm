@@ -4,6 +4,5 @@
 
 .helmignore
 synapse-*.tgz
-ci/
 source/
 user_values/

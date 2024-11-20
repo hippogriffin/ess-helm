@@ -4,5 +4,4 @@
 
 .helmignore
 *.tgz
-ci/
 source/
