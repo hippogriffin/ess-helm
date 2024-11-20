@@ -21,13 +21,21 @@ jobs:
         test-component: ["element-web"]
 
     steps:
-      - uses: actions/checkout@v3
-        with:
-          ref: ${{ github.event.pull_request.head.sha }}
-      - name: Install dependencies
-        run: |
-          poetry install
-      - name: Test with pytest
-        run: |
-          . tests/env/${{ matrix.test-component }}.rc
-          poetry run pytest tests
+    - uses: actions/checkout@v3
+      with:
+        ref: ${{ github.event.pull_request.head.sha }}
+
+    - name: Define a cache for the virtual environment based on the dependencies lock file
+      uses: actions/cache@v3
+      with:
+        path: ./.venv
+        key: venv-${{ hashFiles('poetry.lock') }}
+
+    - name: Install dependencies
+      run: |
+        poetry install
+
+    - name: Test with pytest
+      run: |
+        . tests/env/${{ matrix.test-component }}.rc
+        poetry run pytest tests
