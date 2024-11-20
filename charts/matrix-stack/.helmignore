@@ -7,3 +7,4 @@ matrix-stack-*.tgz
 ci/
 source/
 sub_schemas/
+user_values/

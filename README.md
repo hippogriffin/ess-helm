@@ -62,7 +62,12 @@ The `setup_test_cluster.sh` script will do an initial `helm dependency build` bu
 changes to templates or values in the subcharts you must either re-run this directly or use
 `./scripts/construct_helm_charts.sh` as above which also updates the Helm dependencies.
 
-The test cluster can be taken down by running `./scripts/destroy_test_cluster.sh`
+The test cluster can be taken down by running `./scripts/destroy_test_cluster.sh`.
+
+### User Values
+
+Each chart has a Git ignored folder at `charts/<chart name>/user_values`. Any `.yaml` placed in
+this directory will not be committed to Git.
 
 ### Inspecting temlates
 
