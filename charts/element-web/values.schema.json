@@ -12,7 +12,7 @@
     },
     "additional": {
       "type": "object",
-      "additionalProperties": false
+      "additionalProperties": true
     },
     "defaultMatrixServer": {
       "required": [
