@@ -2,7 +2,7 @@
 # Copyright 2024 New Vector Ltd
 #
 # SPDX-License-Identifier: AGPL-3.0-only OR LicenseRef-Element-Commercial
-FROM debian:bookworm-slim
+FROM python:3.12-slim-bookworm
 
 ARG HELM_VERSION=3.16.2
 ARG KUBECONFORM_VERSION=0.6.7
@@ -19,7 +19,6 @@ RUN <<EOT bash
     curl \
     git \
     pipx \
-    python3 \
     shellcheck
   rm -rf /var/lib/apt/lists/*
   python3 --version
