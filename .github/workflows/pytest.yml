@@ -1,0 +1,35 @@
+# Copyright 2024 New Vector Ltd
+#
+# SPDX-License-Identifier: AGPL-3.0-only OR LicenseRef-Element-Commercial
+
+name: Run Pytest tests
+
+on:
+  pull_request_target:
+    types: [labeled]
+
+
+jobs:
+  pytest:
+    if: contains(github.event.pull_request_target.labels.*.name, 'safe to test')
+    runs-on: gha-runners-element-hq-dind-m
+    container:
+      image: ghcr.io/${{ github.repository }}/ci-runner
+      credentials:
+        username: ${{ github.actor }}
+        password: ${{ secrets.GITHUB_TOKEN }}
+    strategy:
+      matrix:
+        test-component: ["ELEMENT_WEB"]
+
+    steps:
+      - uses: actions/checkout@v3
+        with:
+          ref: ${{ github.event.pull_request.head.sha }}
+      - name: Install dependencies
+        run: |
+          poetry install
+      - name: Test with pytest
+        run: |
+          export TEST_COMPONENT=${{ matrix.test-component }}
+          poetry run pytest tests
