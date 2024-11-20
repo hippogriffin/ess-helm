@@ -217,13 +217,13 @@ tests-mypy = ["mypy (>=1.11.1)", "pytest-mypy-plugins"]
 
 [[package]]
 name = "bc-detect-secrets"
-version = "1.5.22"
+version = "1.5.24"
 description = "Tool for detecting secrets in the codebase"
 optional = false
 python-versions = ">=3.8"
 files = [
-    {file = "bc_detect_secrets-1.5.22-py3-none-any.whl", hash = "sha256:785f567f4b9008a54a62317b59506f002fa8125ed50df25cc6e1e99cc9027c9d"},
-    {file = "bc_detect_secrets-1.5.22.tar.gz", hash = "sha256:74c2be955beb0fb708b8ccc5fcf30a2a803751126c1a1483bf6b0b95e1dad338"},
+    {file = "bc_detect_secrets-1.5.24-py3-none-any.whl", hash = "sha256:4f05ef39573857b83e5ca51f5d58836b5c25a23fb5286630572bfa5ed3cdf22a"},
+    {file = "bc_detect_secrets-1.5.24.tar.gz", hash = "sha256:b826f4db0294e7c465f59b9e238bed53559a1eb6aaea5516d650502b25a8f4af"},
 ]
 
 [package.dependencies]
@@ -349,13 +349,13 @@ crt = ["botocore[crt] (>=1.21.0,<2.0a0)"]
 
 [[package]]
 name = "botocore"
-version = "1.35.64"
+version = "1.35.65"
 description = "Low-level, data-driven core of boto 3."
 optional = false
 python-versions = ">=3.8"
 files = [
-    {file = "botocore-1.35.64-py3-none-any.whl", hash = "sha256:bbd96bf7f442b1d5e35b36f501076e4a588c83d8d84a1952e9ee1d767e5efb3e"},
-    {file = "botocore-1.35.64.tar.gz", hash = "sha256:2f95c83f31c9e38a66995c88810fc638c829790e125032ba00ab081a2cf48cb9"},
+    {file = "botocore-1.35.65-py3-none-any.whl", hash = "sha256:8fcaa82ab2338f412e1494449c4c57f9ca785623fb0303f6be5b279c4d27522c"},
+    {file = "botocore-1.35.65.tar.gz", hash = "sha256:46652f732f2b2fb395fffcc33cacb288d05ea283047c9a996fb59d6849464919"},
 ]
 
 [package.dependencies]
@@ -616,13 +616,13 @@ files = [
 
 [[package]]
 name = "checkov"
-version = "3.2.303"
+version = "3.2.305"
 description = "Infrastructure as code static analysis"
 optional = false
 python-versions = ">=3.8"
 files = [
-    {file = "checkov-3.2.303-py3-none-any.whl", hash = "sha256:5e7e34a67434ec8200a3ae8d5b406728175a2d1b407a3d4f7bb03fcf4f6dec8e"},
-    {file = "checkov-3.2.303.tar.gz", hash = "sha256:9d77b3edaef3b7a33fe06b9025471c19cffdedea74f7b78d8719f538e0e7bf7e"},
+    {file = "checkov-3.2.305-py3-none-any.whl", hash = "sha256:5888ed401eac32615e866c5bcfd99e934c2be1a159f11264107773a68b70c794"},
+    {file = "checkov-3.2.305.tar.gz", hash = "sha256:5e537a5d68282c9479decf496b919b08ff25db19f5c8df8ad1ed67d015092a70"},
 ]
 
 [package.dependencies]
@@ -630,7 +630,7 @@ aiodns = ">=3.0.0,<4.0.0"
 aiohttp = ">=3.8.0,<4.0.0"
 aiomultiprocess = ">=0.9.0,<0.10.0"
 argcomplete = ">=3.0.0,<4.0.0"
-bc-detect-secrets = "1.5.22"
+bc-detect-secrets = "1.5.24"
 bc-jsonpath-ng = "1.6.1"
 bc-python-hcl2 = "0.4.2"
 boto3 = "1.35.49"
@@ -3241,4 +3241,4 @@ type = ["pytest-mypy"]
 [metadata]
 lock-version = "2.0"
 python-versions = ">=3.12,<4.0"
-content-hash = "586a8d7cd438dcb939ca9ef7b7932be22cb6f4ae4c187c3786a7687ca04153c3"
+content-hash = "3d3667f621facbd4b12fac21ac2514d0bff618901d661a6b764159c92eaf8b90"

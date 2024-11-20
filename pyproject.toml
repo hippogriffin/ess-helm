@@ -10,6 +10,8 @@ package-mode = false
 
 [tool.poetry.dependencies]
 python = ">=3.12,<4.0"
+
+[tool.poetry.group.dev.dependencies]
 pyhelm3 = "^0.4.0"
 lightkube = "^0.15.5"
 pytz = "^2024.2"
@@ -18,8 +20,6 @@ platformdirs = "^4.3.6"
 python-on-whales = "^0.73.0"
 aiohttp = "^3.11.6"
 yamale = "^5.2.1"
-
-[tool.poetry.group.dev.dependencies]
 typer = "^0.12.5"
 pytest = "^8.3.3"
 ruff = "^0.7.2"
@@ -33,6 +33,10 @@ pytest-asyncio-cooperative = {git = "https://github.com/kylegentle/pytest-asynci
 [build-system]
 requires = ["poetry-core"]
 build-backend = "poetry.core.masonry.api"
+
+[tool.pytest.ini_options]
+# we use asyncio-cooperative
+addopts = "-p no:asyncio"
 
 [tool.ruff]
 line-length = 120
