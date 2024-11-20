@@ -31,6 +31,9 @@
     "global": {
       "$ref": "file://./../../matrix-stack/sub_schemas/global.json"
     },
+    "ess-library": {
+      "$ref": "file://./../../matrix-stack/sub_schemas/essLibrary.json"
+    },
     "image": {
       "$ref": "file://./../../matrix-stack/sub_schemas/image.json"
     },

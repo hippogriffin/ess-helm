@@ -45,6 +45,10 @@
         }
       }
     },
+    "ess-library": {
+      "type": "object",
+      "additionalProperties": true
+    },
     "image": {
       "type": "object",
       "required": [

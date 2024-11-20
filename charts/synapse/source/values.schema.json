@@ -98,6 +98,9 @@
     "global": {
       "$ref": "file://./../../matrix-stack/sub_schemas/global.json"
     },
+    "ess-library": {
+      "$ref": "file://./../../matrix-stack/sub_schemas/essLibrary.json"
+    },
     "ingress": {
       "$ref": "file://sub_schemas/ingress_with_additional_paths.json"
     },
