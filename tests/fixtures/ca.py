@@ -10,14 +10,14 @@ from ..artifacts import get_ca
 
 
 @pytest.fixture(autouse=True, scope="session")
-def ca():
+async def ca():
     root_ca = get_ca("ESS CA")
     delegated_ca = get_ca("ESS CA Delegated", root_ca)
     return delegated_ca
 
 
 @pytest.fixture(scope="session")
-def ssl_context(ca):
+async def ssl_context(ca):
     context = ssl.create_default_context()
     context.load_verify_locations(cadata=ca.cert_bundle_as_pem())
     return context
