@@ -47,7 +47,7 @@ spec:
 {{- end }}
     spec:
       automountServiceAccountToken: false
-{{- include "element-io.ess-library.pods.pullSecrets" .Values.image | nindent 6 }}
+{{- include "element-io.ess-library.pods.pullSecrets" (list $ .Values.image) | nindent 6 }}
 {{- with .Values.podSecurityContext }}
       securityContext:
         {{- toYaml . | nindent 8 }}
