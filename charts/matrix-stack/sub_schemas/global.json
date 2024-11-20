@@ -7,6 +7,17 @@
       "properties": {
         "server_name": {
           "type": "string"
+        },
+        "imagePullSecrets": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "properties": {
+              "name": {
+                "type": "string"
+              }
+            }
+          }
         }
       }
     }
