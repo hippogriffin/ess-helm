@@ -6,13 +6,11 @@ name: Run Pytest tests
 
 on:
   pull_request_target:
-    types: [labeled]
 
 
 jobs:
   pytest:
-    if: contains(github.event.pull_request_target.labels.*.name, 'safe to test')
-    runs-on: gha-runners-element-hq-dind-m
+    runs-on: dind-privileged-m
     container:
       image: ghcr.io/${{ github.repository }}/ci-runner
       credentials:
