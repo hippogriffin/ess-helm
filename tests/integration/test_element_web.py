@@ -15,7 +15,7 @@ from ..lib.helpers import kubernetes_tls_secret
 from ..lib.utils import aiottp_get_json
 
 
-@pytest.mark.skipif(os.environ.get("TEST_COMPONENT") != "ELEMENT_WEB", reason="ElementWeb not deployed")
+@pytest.mark.skipif(os.environ.get("TEST_ELEMENT_WEB") != "1", reason="ElementWeb not deployed")
 @pytest.mark.asyncio_cooperative
 async def test_element_web(
     cluster,
