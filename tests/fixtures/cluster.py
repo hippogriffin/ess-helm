@@ -21,9 +21,8 @@ from python_on_whales import docker
 async def cluster(request, registry):
     this_cluster = select_provider_manager()("ess")
     if isinstance(this_cluster, KindManager):
-        this_cluster.create(
-            ClusterOptions(cluster_config=Path(__file__).parent.resolve() / Path("files/clusters/kind.yml"))
-        )
+        kind_config = Path("files/clusters/kind-ci.yml") if os.environ.get("CI") else Path("files/clusters/kind.yml")
+        this_cluster.create(ClusterOptions(cluster_config=Path(__file__).parent.resolve() / kind_config))
     else:
         raise Exception("Cluster not managed")
     kind_network = docker.network.inspect("kind")
