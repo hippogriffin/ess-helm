@@ -68,12 +68,23 @@ RUN <<EOT bash
   chmod +x /usr/local/bin/kubectl
   kubectl version --client
 
-  # poetry
-  pipx install poetry==${POETRY_VERSION}
-  poetry --version
-
   # yq
   curl -L -o /usr/local/bin/yq https://github.com/mikefarah/yq/releases/download/v${YQ_VERSION}/yq_linux_amd64 && chmod +x /usr/local/bin/yq
   yq --version
 
+  useradd -rm -d /home/runner -s /bin/bash -u 1001 runner
+  python3 -m pip install --user pipx
+  python3 -m pipx ensurepath
+
+  python3 -m pipx install --global poetry==${POETRY_VERSION}
+EOT
+
+# Install pipx in user 1001 used by runAsUser of the github pod template
+USER runner
+
+RUN <<EOT bash
+  ls -l /usr/local/bin
+  pipx ensurepath
+  source ~/.bashrc
+  poetry --version
 EOT
