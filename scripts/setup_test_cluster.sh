@@ -149,9 +149,12 @@ spec:
   - "*.${namespace}.localhost"
 EOF
 
+  # Resources can be set via the POSTGRES_RESOURCES_PRESET env var to presets in
+  # https://github.com/bitnami/charts/blob/main/bitnami/common/templates/_resources.tpl#L15
   helm --kube-context $kind_context_name upgrade -i postgres oci://registry-1.docker.io/bitnamicharts/postgresql \
     --namespace "$namespace" \
     --set fullnameOverride=ess-postgres \
+    --set primary.resourcesPreset="${POSTGRES_RESOURCES_PRESET:-micro}" \
     --set auth.database=synapse \
     --set auth.username=synapse_user \
     --set primary.initdb.args='--locale=C --encoding=UTF8'
