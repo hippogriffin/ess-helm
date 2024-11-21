@@ -28,7 +28,7 @@ Changes to chart templates are directly made to `chart/<chart>/templates`.
 `chart/<chart>/values.yaml` and `chart/<chart>/values.schema.json` are generated files
 and should not be directly edited. Changes to chart values and the values schema are
 made in `chart/<chart>/source`. This is then built by running
-`scripts/construct_helm_charts.sh charts`.
+`scripts/construct_helm_charts.sh`.
 
 The rationale for this is so that shared values & schema snippets can be shared between
 components without copy-pasting. Shared schema snippets can be found at

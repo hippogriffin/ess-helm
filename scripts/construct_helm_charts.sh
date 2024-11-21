@@ -5,10 +5,10 @@
 
 set -euo pipefail
 
-[ "$#" -ne 1 ] && echo "Usage: construct_helm_charts.sh <path to matrix-stack chart>" && exit 1
+[ "$#" -ne 0 ] && echo "Usage: construct_helm_charts.sh" && exit 1
 
-chart_root="$1"
 scripts_dir=$( cd -- "$( dirname -- "${BASH_SOURCE[0]}" )" &> /dev/null && pwd )
+chart_root=$( cd "$scripts_dir/../charts" &> /dev/null && pwd )
 
 function construct_helm_chart() {
   chart_dir="$1"
