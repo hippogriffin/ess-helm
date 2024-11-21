@@ -160,4 +160,4 @@ EOF
     --set primary.initdb.args='--locale=C --encoding=UTF8'
 done
 
-helm dependency build charts/matrix-stack --skip-refresh
+./scripts/construct_helm_charts.sh

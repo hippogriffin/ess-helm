@@ -61,9 +61,10 @@ A test cluster can be constructed with `./scripts/setup_test_cluster.sh`. It wil
 
 The test cluster can then be deployed to with
 `helm -n <namespace> upgrade -i ess charts/matrix-stack -f charts/matrix-stack/ci/test-cluster-mixin.yaml -f <your values file>`.
-The `setup_test_cluster.sh` script will do an initial `helm dependency build` but if you make
-changes to templates or values in the subcharts you must either re-run this directly or use
-`./scripts/construct_helm_charts.sh` as above which also updates the Helm dependencies.
+The `setup_test_cluster.sh` script will do an initial `./scripts/construct_helm_charts.sh`
+to construct the dependencies between the sub-charts, but if you make changes to templates or
+values in the subcharts you must either re-run `./scripts/construct_helm_charts.sh` as above
+which also updates the Helm dependencies.
 
 The test cluster can be taken down by running `./scripts/destroy_test_cluster.sh`.
 
