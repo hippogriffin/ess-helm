@@ -79,6 +79,7 @@ defaults
 
 resolvers kubedns
   parse-resolv-conf
+  accepted_payload_size 8192
   hold timeout 600s
   hold refused 600s
 
