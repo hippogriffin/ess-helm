@@ -2,7 +2,6 @@
 #
 # SPDX-License-Identifier: AGPL-3.0-only OR LicenseRef-Element-Commercial
 
-import asyncio
 import base64
 import json
 import random
@@ -10,8 +9,6 @@ from dataclasses import dataclass
 from urllib.parse import urlparse
 
 import aiohttp
-from lightkube import AsyncClient, sort_objects
-from lightkube.core.resource import Resource
 
 
 @dataclass

@@ -50,25 +50,30 @@ async def kube_client(cluster):
 
 
 @pytest.fixture(autouse=True, scope="session")
-async def ingress(cluster, kube_client: AsyncClient):
-    async with httpx.AsyncClient() as client:
-        response = await client.get(
-            "https://raw.githubusercontent.com/kubernetes/ingress-nginx/main/deploy/static/provider/kind/deploy.yaml"
-        )
-        ingress_controller_yaml = response.text
-    resources = codecs.load_all_yaml(ingress_controller_yaml)
-    await batch_apply_ordered(kube_client, resources)
-    await asyncio.gather(
-        kube_client.wait(
-            Job, name="ingress-nginx-admission-create", namespace="ingress-nginx", for_conditions=["Complete"]
-        ),
-        kube_client.wait(
-            Job, name="ingress-nginx-admission-patch", namespace="ingress-nginx", for_conditions=["Complete"]
-        ),
-        kube_client.wait(
-            Deployment, name="ingress-nginx-controller", namespace="ingress-nginx", for_conditions=["Available"]
-        ),
+async def ingress(cluster, kube_client: AsyncClient, helm_client: pyhelm3.Client):
+    chart = await helm_client.get_chart("ingress-nginx", repo="https://kubernetes.github.io/ingress-nginx")
+
+    # Install or upgrade a release
+    await helm_client.install_or_upgrade_release(
+        "ingress-nginx",
+        chart,
+        {
+            "controller": {
+                "ingressClassResource": {"default": True},
+                "config": {"hsts": False},
+                "hostPort": {
+                    "enabled": True,
+                },
+                "allowSnippetAnnotations": True,
+                "service": {"enabled": False},
+            }
+        },
+        namespace="ingress-nginx",
+        create_namespace=True,
+        atomic=True,
+        wait=True,
     )
+
     await asyncio.to_thread(
         cluster.wait,
         name="endpoints/ingress-nginx-controller-admission",

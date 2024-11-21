@@ -52,7 +52,7 @@ async def test_element_web(
         cluster.wait,
         name=f"ingress/eleweb-{generated_data.secrets_random}-element-web",
         namespace=generated_data.ess_namespace,
-        waitfor="jsonpath='{.status.loadBalancer.ingress[0].hostname}'",
+        waitfor="jsonpath='{.status.loadBalancer.ingress[0].ip}'",
     )
 
     json_content = await aiottp_get_json("https://element.ess.localhost/config.json", ssl_context)
