@@ -666,6 +666,15 @@
       "type": "object",
       "additionalProperties": false
     },
+    "serviceMonitors": {
+      "type": "object",
+      "properties": {
+        "enabled": {
+          "type": "boolean"
+        }
+      },
+      "additionalProperties": false
+    },
     "tolerations": {
       "type": "array",
       "items": {
@@ -1743,6 +1752,15 @@
             }
           },
           "type": "object",
+          "additionalProperties": false
+        },
+        "serviceMonitors": {
+          "type": "object",
+          "properties": {
+            "enabled": {
+              "type": "boolean"
+            }
+          },
           "additionalProperties": false
         },
         "tolerations": {

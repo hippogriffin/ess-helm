@@ -125,6 +125,9 @@
     "resources": {
       "$ref": "file://./../../matrix-stack/sub_schemas/resources.json"
     },
+    "serviceMonitors": {
+      "$ref": "file://./../../matrix-stack/sub_schemas/serviceMonitors.json"
+    },
     "tolerations": {
       "$ref": "file://./../../matrix-stack/sub_schemas/tolerations.json"
     },
@@ -211,6 +214,9 @@
         },
         "resources": {
           "$ref": "file://./../../matrix-stack/sub_schemas/resources.json"
+        },
+        "serviceMonitors": {
+          "$ref": "file://./../../matrix-stack/sub_schemas/serviceMonitors.json"
         },
         "tolerations": {
           "$ref": "file://./../../matrix-stack/sub_schemas/tolerations.json"

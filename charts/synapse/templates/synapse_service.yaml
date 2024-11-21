@@ -8,7 +8,6 @@ kind: Service
 metadata:
   labels:
     {{- include "element-io.synapse.process.labels" $perProcessRoot | nindent 4 }}
-    k8s.element.io/service-type: headless
   name: {{ $.Release.Name }}-synapse-{{ $processType }}
   namespace: {{ $.Release.Namespace }}
 spec:

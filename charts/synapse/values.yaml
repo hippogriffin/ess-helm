@@ -464,6 +464,11 @@ resources:
   limits:
     memory: 4Gi
 
+## Whether to deploy ServiceMonitors into the cluster for this component
+## Requires the ServiceMonitor CRDs to be in the cluster
+serviceMonitors:
+  enabled: true
+
 ## Workload tolerations
 ## The pod this Toleration is attached to tolerates any taint that matches the triple <key,value,effect> using the matching operator <operator>.
 ##
@@ -603,6 +608,11 @@ haproxy:
     ## Limits describes the maximum amount of compute resources allowed. More info: https://kubernetes.io/docs/concepts/configuration/manage-compute-resources-container/
     limits:
       memory: 200Mi
+
+  ## Whether to deploy ServiceMonitors into the cluster for this component
+  ## Requires the ServiceMonitor CRDs to be in the cluster
+  serviceMonitors:
+    enabled: true
 
   ## Workload tolerations
   ## The pod this Toleration is attached to tolerates any taint that matches the triple <key,value,effect> using the matching operator <operator>.
