@@ -5,33 +5,29 @@
 
 set -euo pipefail
 
-[ "$#" -ne 1 ] && echo "Usage: set_chart_version.sh <chart version>" && exit 1
+[ "$#" -ne 0 ] && echo "Usage: helm_dependency_update_recursive.sh" && exit 1
 
-version="$1"
 scripts_dir=$( cd -- "$( dirname -- "${BASH_SOURCE[0]}" )" &> /dev/null && pwd )
 chart_root=$( cd "$scripts_dir/../charts" &> /dev/null && pwd )
 
-function set_chart_version() {
+function helm_dependency_update() {
   chart_dir="$1"
 
   [ ! -d "$chart_dir" ] && echo "$chart_dir must be a directory that exists" && exit 1
   [ ! -f "$chart_dir/Chart.yaml" ] && echo "Chart.yaml not found in $chart_dir" && exit 1
 
-  echo "Setting version to $version for $chart_dir"
-  yq -i '(.dependencies[] | select(.repository | test("file://"))).version="'"$version"'"' "$chart_dir/Chart.yaml"
-  yq -i '.version="'"$version"'"' "$chart_dir/Chart.yaml"
+  echo "Updating dependencies for $chart_dir"
+  helm dependency update --skip-refresh "$chart_dir"
 }
 
 [ ! -d "$chart_root" ] && echo "$chart_root must be a directory that exists" && exit 1
 
-set_chart_version "$chart_root"/ess-library
+helm_dependency_update "$chart_root"/ess-library
 
 for subchart in "$chart_root"/*/; do
   [[ "$subchart" =~ /ess-library/?$ ]] && continue
   [[ "$subchart" =~ /matrix-stack/?$ ]] && continue
-  set_chart_version "$subchart"
+  helm_dependency_update "$subchart"
 done
 
-set_chart_version "$chart_root"/matrix-stack
-
-"$scripts_dir"/helm_dependency_update_recursive.sh
+helm_dependency_update "$chart_root"/matrix-stack

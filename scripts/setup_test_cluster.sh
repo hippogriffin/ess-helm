@@ -160,4 +160,4 @@ EOF
     --set primary.initdb.args='--locale=C --encoding=UTF8'
 done
 
-./scripts/construct_helm_charts.sh
+./scripts/helm_dependency_update_recursive.sh
