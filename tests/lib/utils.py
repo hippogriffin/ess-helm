@@ -47,7 +47,7 @@ async def aiottp_get_json(url, ssl_context):
     async with aiohttp.ClientSession(
         connector=aiohttp.TCPConnector(ssl=ssl_context), raise_for_status=True
     ) as session, session.get(
-        url,
+        url.replace(host, "127.0.0.1"),
         headers={"Host": host},
         server_hostname=host,
     ) as response:
