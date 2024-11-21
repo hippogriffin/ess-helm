@@ -22,7 +22,9 @@ jobs:
         password: ${{ secrets.GITHUB_TOKEN }}
     strategy:
       matrix:
-        test-component: ["element-web"]
+        test-component:
+        - element-web
+        - synapse
 
     steps:
     - uses: actions/checkout@v3
