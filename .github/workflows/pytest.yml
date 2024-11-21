@@ -35,6 +35,10 @@ jobs:
       run: |
         poetry install
 
+    - name: Build helm dependencies
+      run: |
+        scripts/helm_dependency_update_recursive.sh
+
     - name: Test with pytest
       run: |
         . tests/env/${{ matrix.test-component }}.rc
