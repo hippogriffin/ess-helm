@@ -64,6 +64,10 @@ helm --kube-context $kind_context_name upgrade -i metrics-server --repo https://
   --namespace kube-system \
   --set args[0]=--kubelet-insecure-tls
 
+helm --kube-context $kind_context_name upgrade -i prometheus-operator-crds --repo https://prometheus-community.github.io/helm-charts prometheus-operator-crds \
+  --namespace prometheus-operator \
+  --create-namespace
+
 helm --kube-context $kind_context_name upgrade -i cert-manager --repo https://charts.jetstack.io cert-manager \
   --namespace cert-manager \
   --create-namespace \
