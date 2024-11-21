@@ -10,6 +10,10 @@ on:
 
 jobs:
   pytest:
+    # /!!!!!!!!!!!!!\
+    # ~~~~WARNING~~~~
+    # This runner is highly-privileged and we can't go FOSS Until we redesign
+    # how we do CI tests
     runs-on: dind-privileged-m
     container:
       image: ghcr.io/${{ github.repository }}/ci-runner
