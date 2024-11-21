@@ -141,7 +141,7 @@ global:
     type: ClusterIP
 {%- endmacro %}
 
-{% macro nodeSelector(key='nodeSelector')%}
+{% macro nodeSelector(key='nodeSelector') %}
 ## NodeSelector is a selector which must be true for the pod to fit on a node. Selector which must match a node's labels for the pod to be scheduled on that node. More info: https://kubernetes.io/docs/concepts/configuration/assign-pod-node/
 # {{ key }}: {}
 {%- endmacro %}
@@ -248,7 +248,14 @@ global:
     memory: {{ limits_memory }}
 {%- endmacro %}
 
-{% macro tolerations(key='tolerations')%}
+{% macro serviceMonitors(key='serviceMonitors') %}
+## Whether to deploy ServiceMonitors into the cluster for this component
+## Requires the ServiceMonitor CRDs to be in the cluster
+{{ key }}:
+  enabled: true
+{%- endmacro %}
+
+{% macro tolerations(key='tolerations') %}
 ## Workload tolerations
 ## The pod this Toleration is attached to tolerates any taint that matches the triple <key,value,effect> using the matching operator <operator>.
 ##
@@ -268,7 +275,7 @@ global:
 {{ key }}: []
 {%- endmacro %}
 
-{% macro workloadAnnotations(key='annotations')%}
+{% macro workloadAnnotations(key='annotations') %}
 ## Defines the annotations to add to the workload
 # {{ key }}: {}
 {%- endmacro %}
