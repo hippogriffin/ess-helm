@@ -8,6 +8,8 @@ from dataclasses import dataclass
 
 import pytest
 import signedjson.key
+from lightkube.models.meta_v1 import ObjectMeta
+from lightkube.resources.core_v1 import Secret
 
 from ..artifacts import CertKey, generate_ca
 from ..lib.utils import random_string
@@ -35,6 +37,18 @@ class ESSData:
     @property
     def ess_namespace(self):
         return f"ess-{self.secrets_random}"
+
+    def ess_secret(self):
+        return Secret(
+            metadata=ObjectMeta(
+                name="ess-secrets", namespace=self.ess_namespace, labels={"app.kubernetes.io/created-by": "pytest"}
+            ),
+            stringData={
+                "registrationSharedSecret": self.registration_shared_secret,
+                "macaroon": self.macaroon,
+                "signingKey": self.signing_key,
+            },
+        )
 
 
 @pytest.fixture(scope="session")

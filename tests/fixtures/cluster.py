@@ -9,8 +9,9 @@ from pathlib import Path
 import pyhelm3
 import pytest
 from lightkube import AsyncClient, KubeConfig
+from lightkube.models.meta_v1 import ObjectMeta
 from lightkube.resources.apps_v1 import Deployment
-from lightkube.resources.core_v1 import Service
+from lightkube.resources.core_v1 import Namespace, Service
 from pytest_kubernetes.options import ClusterOptions
 from pytest_kubernetes.plugin import select_provider_manager
 from pytest_kubernetes.providers import KindManager
@@ -136,3 +137,8 @@ async def ingress_ip(kube_client: AsyncClient, ingress):
     )
     service = await kube_client.get(Service, name="ingress-nginx-controller", namespace="ingress-nginx")
     return service.spec.clusterIP
+
+
+@pytest.fixture(autouse=True, scope="session")
+async def ess_namespace(kube_client, generated_data):
+    await kube_client.create(Namespace(metadata=ObjectMeta(name=generated_data.ess_namespace)))
