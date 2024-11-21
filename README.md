@@ -28,16 +28,23 @@ Changes to chart templates are directly made to `chart/<chart>/templates`.
 `chart/<chart>/values.yaml` and `chart/<chart>/values.schema.json` are generated files
 and should not be directly edited. Changes to chart values and the values schema are
 made in `chart/<chart>/source`. This is then built by running
-`scripts/construct_helm_charts.sh charts <version>`.
+`scripts/assemble_helm_charts_from_fragments.sh`.
 
 The rationale for this is so that shared values & schema snippets can be shared between
 components without copy-pasting. Shared schema snippets can be found at
 `chart/matrix-stack/sub_schemas/*.json`. Shared values snippets can be found in
 `chart/matrix-stack/sub_schemas/sub_schemas.values.yaml.j2`
 
-The output of `construct_helm_charts.sh` must be committed to Git or CI fails. The rationale
-for this is so that the values files and schemas can be easily viewed in the repo and diffs
-seen in PRs
+The output of `assemble_helm_charts_from_fragments.sh` must be committed to Git or CI fails.
+The rationale for this is so that the values files and schemas can be easily viewed in
+the repo and diffs seen in PRs.
+
+Similarly the version number of the charts can be changed with
+`scripts/set_chart_version.sh <version>`. Any changes this makes must be committed to Git
+as well.
+
+If you make changes to templates or values in the sub-charts you must re-run
+`./scripts/helm_dependency_update_recursive.sh` so that the `matrix-stack` chart has all the latest dependencies
 
 ### Running a test cluster
 
@@ -58,9 +65,9 @@ A test cluster can be constructed with `./scripts/setup_test_cluster.sh`. It wil
 
 The test cluster can then be deployed to with
 `helm -n <namespace> upgrade -i ess charts/matrix-stack -f charts/matrix-stack/ci/test-cluster-mixin.yaml -f <your values file>`.
-The `setup_test_cluster.sh` script will do an initial `helm dependency build` but if you make
-changes to templates or values in the subcharts you must either re-run this directly or use
-`./scripts/construct_helm_charts.sh` as above which also updates the Helm dependencies.
+The `setup_test_cluster.sh` script will do an initial `./scripts/helm_dependency_update_recursive.sh`
+to construct the dependencies between the sub-charts, but as per the above you must re-run this
+after making changes to the sub-charts.
 
 The test cluster can be taken down by running `./scripts/destroy_test_cluster.sh`.
 

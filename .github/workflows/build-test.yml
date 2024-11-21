@@ -49,7 +49,8 @@ jobs:
 
         # Rebuild the charts with from the current source
         version=$(yq '.version' charts/matrix-stack/Chart.yaml)
-        scripts/construct_helm_charts.sh charts/ "$version"
+        scripts/assemble_helm_charts_from_fragments.sh
+        scripts/set_chart_version.sh "$version"
 
         git diff --exit-code
 

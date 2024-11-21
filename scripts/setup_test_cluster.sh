@@ -164,4 +164,4 @@ EOF
     --set primary.initdb.args='--locale=C --encoding=UTF8'
 done
 
-helm dependency build charts/matrix-stack --skip-refresh
+./scripts/helm_dependency_update_recursive.sh
