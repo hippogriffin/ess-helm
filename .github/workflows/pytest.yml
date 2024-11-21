@@ -1,0 +1,49 @@
+# Copyright 2024 New Vector Ltd
+#
+# SPDX-License-Identifier: AGPL-3.0-only OR LicenseRef-Element-Commercial
+
+name: Run Pytest tests
+
+on:
+  pull_request_target:
+
+
+jobs:
+  pytest:
+    # /!!!!!!!!!!!!!\
+    # ~~~~WARNING~~~~
+    # This runner is highly-privileged and we can't go FOSS Until we redesign
+    # how we do CI tests
+    runs-on: dind-privileged-m
+    container:
+      image: ghcr.io/${{ github.repository }}/ci-runner
+      credentials:
+        username: ${{ github.actor }}
+        password: ${{ secrets.GITHUB_TOKEN }}
+    strategy:
+      matrix:
+        test-component: ["element-web"]
+
+    steps:
+    - uses: actions/checkout@v3
+      with:
+        ref: ${{ github.event.pull_request.head.sha }}
+
+    - name: Define a cache for the virtual environment based on the dependencies lock file
+      uses: actions/cache@v3
+      with:
+        path: ./.venv
+        key: venv-${{ hashFiles('poetry.lock') }}
+
+    - name: Install dependencies
+      run: |
+        poetry install
+
+    - name: Build helm dependencies
+      run: |
+        scripts/helm_dependency_update_recursive.sh
+
+    - name: Test with pytest
+      run: |
+        . tests/env/${{ matrix.test-component }}.rc
+        poetry run pytest tests

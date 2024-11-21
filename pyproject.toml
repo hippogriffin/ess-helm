@@ -9,9 +9,17 @@ readme = "README.md"
 package-mode = false
 
 [tool.poetry.dependencies]
-python = ">=3.11,<4.0"
+python = ">=3.12,<4.0"
 
 [tool.poetry.group.dev.dependencies]
+pyhelm3 = "^0.4.0"
+lightkube = "^0.15.5"
+pytz = "^2024.2"
+cryptography = "^43.0.3"
+platformdirs = "^4.3.6"
+python-on-whales = "^0.73.0"
+aiohttp = "^3.11.6"
+yamale = "^5.2.1"
 typer = "^0.12.5"
 pytest = "^8.3.3"
 ruff = "^0.7.2"
@@ -19,10 +27,16 @@ jinja2 = "^3.1.4"
 checkov = "^3.2.296"
 reuse = "^5.0.2"
 signedjson = "^1.1.4"
+pytest-kubernetes = {git = "https://github.com/Blueshoe/pytest-kubernetes.git", rev = "feature/17_custom-configs"}
+pytest-asyncio-cooperative = {git = "https://github.com/kylegentle/pytest-asyncio-cooperative.git", rev = "fix/missing-kwargs"}
 
 [build-system]
 requires = ["poetry-core"]
 build-backend = "poetry.core.masonry.api"
+
+[tool.pytest.ini_options]
+# we use asyncio-cooperative
+addopts = "-p no:asyncio"
 
 [tool.ruff]
 line-length = 120

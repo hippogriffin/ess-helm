@@ -129,6 +129,18 @@ Detects common mistakes in shell scripts.
 
 From the project root: `shellcheck scripts/*.sh`
 
+### Integration tests
+
+Verifies that the deployed workloads behave as expected and integrates well together.
+
+From the project root : `pytest test`
+
+#### Available arguments
+- `--keep-cluster` : Do not destroy the cluster at the end of the test run. You must delete it using `kind delete cluster --name pytest-ess` manually before running any other test run.
+
+#### Usage
+Use `kind export kubeconfig --name pytest-ess` to get access to the cluster.
+
 ## Design
 
 ### Component Configuration
