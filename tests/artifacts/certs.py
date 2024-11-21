@@ -52,7 +52,7 @@ def get_ca(name, root_ca=None) -> CertKey:
     key_path = ca_filename.with_suffix(".key")
     bundle_path = (ca_filename.parent / (ca_filename.name + "-bundle")).with_suffix(".pem")
     if not ca_filename.parent.exists():
-        os.mkdir(ca_filename.parent)
+        os.makedirs(ca_filename.parent, exist_ok=True)
     certkey = None
 
     if os.path.exists(cert_path) and os.path.exists(key_path):
