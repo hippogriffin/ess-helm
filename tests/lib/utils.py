@@ -6,6 +6,8 @@ import base64
 import json
 import random
 from dataclasses import dataclass
+from ssl import SSLContext
+from typing import Any
 from urllib.parse import urlparse
 
 import aiohttp
@@ -38,7 +40,16 @@ def b64encode(value: str):
     return base64.b64encode(value.encode("utf-8")).decode("utf-8")
 
 
-async def aiottp_get_json(url, ssl_context):
+async def aiottp_get_json(url: str, ssl_context: SSLContext) -> Any:
+    """Do an async HTTP GET against a url, retry exponentially on 429s. It expects a JSON response.
+
+    Args:
+        url (str): The URL to hit
+        ssl_context (SSLContext): The SSL Context with test CA loaded
+
+    Returns:
+        Any: the Json dict response
+    """
     host = urlparse(url).hostname
 
     async with aiohttp.ClientSession(
@@ -47,5 +58,30 @@ async def aiottp_get_json(url, ssl_context):
         url.replace(host, "127.0.0.1"),
         headers={"Host": host},
         server_hostname=host,
+    ) as response:
+        return await response.json()
+
+
+async def aiohttp_post_json(url: str, data: dict, headers: dict, ssl_context: SSLContext) -> Any:
+    """Do an async HTTP POST against a url, retry exponentially on 429s. IT expects a JSON resposne.
+
+    Due to synapse bootstrap, when helm has finished deploying, HAProxy can still return
+    429s because it did not detect the backend servers ready yet.
+
+    Args:
+        url (str): The URL to hit
+        data (dict): The data to post
+        headers (dict): Headers to use
+        ssl_context (SSLContext): The SSL Context with test CA loaded
+
+    Returns:
+        Any: the Json dict response
+    """
+    host = urlparse(url).hostname
+
+    async with aiohttp.ClientSession(
+        connector=aiohttp.TCPConnector(ssl=ssl_context), raise_for_status=True
+    ) as session, RetryClient(session, retry_options=retry_options) as retry, retry.post(
+        url.replace(host, "127.0.0.1"), headers=headers | {"Host": host}, server_hostname=host, json=data
     ) as response:
         return await response.json()
