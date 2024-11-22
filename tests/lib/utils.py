@@ -2,6 +2,7 @@
 #
 # SPDX-License-Identifier: AGPL-3.0-only OR LicenseRef-Element-Commercial
 
+import asyncio
 import base64
 import json
 import random
@@ -12,6 +13,7 @@ from urllib.parse import urlparse
 
 import aiohttp
 from aiohttp_retry import ExponentialRetry, RetryClient
+from pytest_kubernetes.providers import AClusterManager
 
 retry_options = ExponentialRetry(
     attempts=30,
@@ -26,6 +28,18 @@ class DockerAuth:
     registry: str
     username: str
     password: str
+
+
+@dataclass
+class KubeCtl:
+    """A class to execute kubectl against a pod asynchronously"""
+
+    cluster: AClusterManager
+
+    async def exec(self, pod, namespace, cmd):
+        return await asyncio.to_thread(
+            self.cluster.kubectl, as_dict=False, args=["exec", "-t", pod, "-n", namespace, "--", *cmd]
+        )
 
 
 def random_string(choice, size):

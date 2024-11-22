@@ -4,9 +4,13 @@
 
 import hashlib
 import hmac
+import mimetypes
+from pathlib import Path
 from ssl import SSLContext
 
-from .utils import aiohttp_post_json, aiottp_get_json
+import aiohttp
+
+from .utils import KubeCtl, aiohttp_post_json, aiottp_get_json
 
 
 async def get_nonce(synapse_fqdn: str, ssl_context) -> str:
@@ -59,3 +63,70 @@ async def create_user(
     }
     response = await aiohttp_post_json(f"https://{synapse_fqdn}/_synapse/admin/v1/register", data, {}, ssl_context)
     return response["access_token"]
+
+
+async def upload_media(synapse_fqdn: str, user_access_token: str, file_path: Path, ssl_context: SSLContext):
+    headers = {}
+    headers["Authorization"] = f"Bearer {user_access_token}"
+    headers["Host"] = synapse_fqdn
+
+    content_type, _ = mimetypes.guess_type(file_path)
+    if not content_type:
+        content_type = "application/octet-stream"
+
+    params = {"filename": file_path.name}
+
+    with open(file_path, "rb") as f:
+        async with aiohttp.ClientSession(
+            connector=aiohttp.TCPConnector(ssl=ssl_context), raise_for_status=True
+        ) as session, session.post(
+            "https://127.0.0.1/_matrix/media/v3/upload",
+            server_hostname=synapse_fqdn,
+            headers=headers,
+            params=params,
+            data=f.read(),
+        ) as response:
+            response_json = await response.json()
+
+            assert response_json["content_uri"].startswith("mxc://")
+
+            return response_json
+
+
+async def download_media(
+    server_name: str, synapse_fqdn: str, user_access_token, content_upload_json: dict, ssl_context: SSLContext
+):
+    headers = {}
+    headers["Authorization"] = f"Bearer {user_access_token}"
+    headers["Host"] = synapse_fqdn
+    content_id = content_upload_json["content_uri"].replace(f"mxc://{server_name}/", "")
+
+    # Initialize SHA-256 hasher
+    sha256_hash = hashlib.sha256()
+    async with aiohttp.ClientSession(
+        connector=aiohttp.TCPConnector(ssl=ssl_context), raise_for_status=True
+    ) as session, session.get(
+        f"https://127.0.0.1/_matrix/client/v1/media/download/{server_name}/{content_id}",
+        headers=headers,
+        server_hostname=synapse_fqdn,
+    ) as response:
+        # Process the stream in chunks
+        while True:
+            chunk = await response.content.read(8192)  # 8KB chunks
+            if not chunk:
+                break
+            sha256_hash.update(chunk)
+    return sha256_hash.hexdigest()
+
+
+async def assert_downloaded_content(
+    kubectl: KubeCtl, media_pod, namespace, source_sha256, content_id, content_download_sha256
+):
+    assert source_sha256 == content_download_sha256.split(" ")[0]
+
+    # Look in Synapse's short-term disk storage for the file
+    path = f"local_content/{content_id[0:2]}/{content_id[2:4]}/{content_id[4:]}"
+    local_path = f"/media/media_store/{path}"
+
+    local_media_sha256 = await kubectl.exec(media_pod, namespace, ["sha256sum", local_path])
+    assert source_sha256 == local_media_sha256.split(" ")[0]

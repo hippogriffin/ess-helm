@@ -37,6 +37,8 @@ tolerations:
 workers:
   sliding-sync:
     enabled: true
+  media-repository:
+    enabled: true
 
 haproxy:
   replicas: 1
