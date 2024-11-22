@@ -37,7 +37,7 @@ class PostgresServer:
                 stringData={"adminPassword": secrets.token_urlsafe(36), "password": self.password},
             )
         )
-        chart = await helm_client.get_chart("postgresql", repo="https://charts.bitnami.com/bitnami")
+        chart = await helm_client.get_chart("postgresql", repo="https://charts.bitnami.com/bitnami", version="16.2.1")
 
         # Install or upgrade a release
         await helm_client.install_or_upgrade_release(
