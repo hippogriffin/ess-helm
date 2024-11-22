@@ -11,6 +11,14 @@ from typing import Any
 from urllib.parse import urlparse
 
 import aiohttp
+from aiohttp_retry import ExponentialRetry, RetryClient
+
+retry_options = ExponentialRetry(
+    attempts=30,
+    statuses=[429],
+    retry_all_server_errors=False,
+    exceptions=[aiohttp.client_exceptions.ClientResponseError],
+)
 
 
 @dataclass
@@ -54,7 +62,7 @@ async def aiottp_get_json(url: str, ssl_context: SSLContext) -> Any:
 
     async with aiohttp.ClientSession(
         connector=aiohttp.TCPConnector(ssl=ssl_context), raise_for_status=True
-    ) as session, session.get(
+    ) as session, RetryClient(session, retry_options=retry_options) as retry, retry.get(
         url.replace(host, "127.0.0.1"),
         headers={"Host": host},
         server_hostname=host,
