@@ -3,10 +3,17 @@
 # SPDX-License-Identifier: AGPL-3.0-only OR LicenseRef-Element-Commercial
 
 import asyncio
+import logging
 
 import pyhelm3
 import pytest
 from lightkube import AsyncClient
+
+from ..lib.synapse import create_user
+from .data import ESSData
+
+# Until synapse release is ready, this is complaining that the helm status command fails
+logging.getLogger("pyhelm3.commands").setLevel(logging.ERROR)
 
 
 @pytest.fixture(scope="session")
