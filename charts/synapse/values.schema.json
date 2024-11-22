@@ -302,6 +302,12 @@
             "server_name": {
               "type": "string"
             },
+            "labels": {
+              "type": "object",
+              "additionalProperties": {
+                "type": "string"
+              }
+            },
             "imagePullSecrets": {
               "type": "array",
               "items": {
@@ -475,6 +481,18 @@
         }
       },
       "additionalProperties": false
+    },
+    "labels": {
+      "type": "object",
+      "additionalProperties": {
+        "type": "string"
+      }
+    },
+    "annotations": {
+      "type": "object",
+      "additionalProperties": {
+        "type": "string"
+      }
     },
     "containersSecurityContext": {
       "properties": {
@@ -702,12 +720,6 @@
         },
         "type": "object",
         "additionalProperties": false
-      }
-    },
-    "annotations": {
-      "type": "object",
-      "additionalProperties": {
-        "type": "string"
       }
     },
     "workers": {
@@ -1601,6 +1613,18 @@
           },
           "additionalProperties": false
         },
+        "labels": {
+          "type": "object",
+          "additionalProperties": {
+            "type": "string"
+          }
+        },
+        "annotations": {
+          "type": "object",
+          "additionalProperties": {
+            "type": "string"
+          }
+        },
         "containersSecurityContext": {
           "properties": {
             "allowPrivilegeEscalation": {
@@ -1791,12 +1815,6 @@
             "type": "object",
             "additionalProperties": false
           }
-        },
-        "annotations": {
-          "type": "object",
-          "additionalProperties": {
-            "type": "string"
-          }
         }
       },
       "additionalProperties": false
@@ -1844,6 +1862,18 @@
             }
           },
           "additionalProperties": false
+        },
+        "labels": {
+          "type": "object",
+          "additionalProperties": {
+            "type": "string"
+          }
+        },
+        "annotations": {
+          "type": "object",
+          "additionalProperties": {
+            "type": "string"
+          }
         },
         "containersSecurityContext": {
           "properties": {
@@ -2025,12 +2055,6 @@
             },
             "type": "object",
             "additionalProperties": false
-          }
-        },
-        "annotations": {
-          "type": "object",
-          "additionalProperties": {
-            "type": "string"
           }
         }
       },

@@ -8,6 +8,9 @@
         "server_name": {
           "type": "string"
         },
+        "labels": {
+          "$ref": "file://./../../matrix-stack/sub_schemas/labels.json"
+        },
         "imagePullSecrets": {
           "type": "array",
           "items": {

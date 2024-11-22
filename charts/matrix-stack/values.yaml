@@ -12,6 +12,9 @@ global:
     ## It can not change after the initial deployment.
     # server_name: ess.localhost
 
+    ## Labels to add to all manifest in this chart and all sub-charts
+    labels: {}
+
     ## A list of Secrets in this namespace to use as pull Secrets.
     ## Ignored if a given component specifies its own pull Secrets.
     ## e.g.
