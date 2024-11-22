@@ -21,6 +21,11 @@ def generate_signing_key():
     return value
 
 
+def unsafe_token(size):
+    alphabet = string.ascii_letters + string.digits + string.punctuation
+    return "".join(secrets.choice(alphabet) for i in range(size))
+
+
 @dataclass
 class ESSData:
     synapse_postgres_password: str
@@ -54,7 +59,7 @@ class ESSData:
 @pytest.fixture(scope="session")
 def generated_data(ca):
     return ESSData(
-        synapse_postgres_password=secrets.token_urlsafe(36),
+        synapse_postgres_password=unsafe_token(36),
         macaroon=secrets.token_urlsafe(36),
         registration_shared_secret=secrets.token_urlsafe(36),
         generic_shared_secret=secrets.token_urlsafe(36),
