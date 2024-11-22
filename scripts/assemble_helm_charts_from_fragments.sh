@@ -21,7 +21,7 @@ function assemble_helm_chart_from_fragments() {
   echo "Building $chart_dir"
   "$scripts_dir/construct_helm_schema.py" "$chart_dir/source/values.schema.json" "$chart_dir/values.schema.json"
   "$scripts_dir/construct_helm_values.py" "$chart_dir/source/values.yaml.j2" "$chart_dir/values.yaml"
-  reuse annotate --copyright='New Vector Ltd' --year "$(date +%Y)" --license "AGPL-3.0-only OR LicenseRef-Element-Commercial" "$chart_dir/values.yaml"
+  reuse annotate --copyright="Copyright 2024 New Vector Ltd" --license "AGPL-3.0-only OR LicenseRef-Element-Commercial" "$chart_dir/values.yaml"
 }
 
 [ ! -d "$chart_root" ] && echo "$chart_root must be a directory that exists" && exit 1
