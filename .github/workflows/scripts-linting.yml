@@ -53,14 +53,12 @@ jobs:
         echo "$(poetry env info -p)/bin" >> "${GITHUB_PATH}"
 
     - name: Run ruff check
-      uses: astral-sh/ruff-action@v1
-      with:
-        args: "check"
+      run: |
+        ruff check
 
     - name: Run ruff format
-      uses: astral-sh/ruff-action@v1
-      with:
-        args: "format --check"
+      run: |
+        ruff format --check
 
     - name: pytest scripts
       run: |
