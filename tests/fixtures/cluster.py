@@ -10,8 +10,7 @@ import pyhelm3
 import pytest
 from lightkube import AsyncClient, KubeConfig
 from lightkube.models.meta_v1 import ObjectMeta
-from lightkube.resources.apps_v1 import Deployment
-from lightkube.resources.core_v1 import Namespace, Service
+from lightkube.resources.core_v1 import Namespace
 from pytest_kubernetes.options import ClusterOptions
 from pytest_kubernetes.plugin import select_provider_manager
 from pytest_kubernetes.providers import KindManager
