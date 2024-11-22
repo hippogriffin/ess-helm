@@ -1,6 +1,7 @@
 # Copyright 2024 New Vector Ltd
 #
 # SPDX-License-Identifier: AGPL-3.0-only OR LicenseRef-Element-Commercial
+
 {{- $enabledWorkers := (include "element-io.synapse.enabledWorkers" $) | fromJson }}
 {{- range $processType, $unmergedProcessDetails := merge $enabledWorkers (dict "main" dict) }}
 {{- $perProcessRoot := merge (dict "ProcessType" $processType) $ }}
