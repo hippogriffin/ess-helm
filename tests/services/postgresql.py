@@ -32,7 +32,7 @@ class PostgresServer:
                 metadata=ObjectMeta(
                     name=f"{self.name}-postgres-db",
                     namespace=self.namespace,
-                    labels={"app.kubernetes.io/created-by": "pytest"},
+                    labels={"app.kubernetes.io/managed-by": "pytest"},
                 ),
                 stringData={"adminPassword": secrets.token_urlsafe(36), "password": self.password},
             )
@@ -45,7 +45,7 @@ class PostgresServer:
             chart,
             {
                 "commonLabels": {
-                    "app.kubernetes.io/created-by": "pytest",
+                    "app.kubernetes.io/managed-by": "pytest",
                 },
                 "auth": {
                     "existingSecret": "{{ .Release.Name }}-postgres-db",

@@ -41,7 +41,7 @@ class ESSData:
     def ess_secret(self):
         return Secret(
             metadata=ObjectMeta(
-                name="ess-secrets", namespace=self.ess_namespace, labels={"app.kubernetes.io/created-by": "pytest"}
+                name="ess-secrets", namespace=self.ess_namespace, labels={"app.kubernetes.io/managed-by": "pytest"}
             ),
             stringData={
                 "registrationSharedSecret": self.registration_shared_secret,
