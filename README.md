@@ -135,8 +135,8 @@ Verifies that the deployed workloads behave as expected and integrates well toge
 
 From the project root : `pytest test`
 
-#### Available arguments
-- `--keep-cluster` : Do not destroy the cluster at the end of the test run. You must delete it using `kind delete cluster --name pytest-ess` manually before running any other test run.
+#### Special env variables
+- `PYTEST_KEEP_CLUSTER=1` : Do not destroy the cluster at the end of the test run. You must delete it using `kind delete cluster --name pytest-ess` manually before running any other test run.
 
 #### Usage
 Use `kind export kubeconfig --name pytest-ess` to get access to the cluster.

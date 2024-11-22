@@ -10,8 +10,7 @@ import pyhelm3
 import pytest
 from lightkube import AsyncClient, KubeConfig
 from lightkube.models.meta_v1 import ObjectMeta
-from lightkube.resources.apps_v1 import Deployment
-from lightkube.resources.core_v1 import Namespace, Service
+from lightkube.resources.core_v1 import Namespace
 from pytest_kubernetes.options import ClusterOptions
 from pytest_kubernetes.plugin import select_provider_manager
 from pytest_kubernetes.providers import KindManager
@@ -19,7 +18,7 @@ from python_on_whales import docker
 
 
 @pytest.fixture(autouse=True, scope="session")
-async def cluster(request, registry):
+async def cluster(registry):
     this_cluster = select_provider_manager()("ess")
     if isinstance(this_cluster, KindManager):
         kind_config = Path("files/clusters/kind-ci.yml") if os.environ.get("CI") else Path("files/clusters/kind.yml")
@@ -35,7 +34,7 @@ async def cluster(request, registry):
     else:
         docker.network.connect(kind_network, registry_container)
     yield this_cluster
-    if not request.config.getoption("keep_cluster"):
+    if os.environ.get("PYTEST_KEEP_CLUSTER", "") != "1":
         this_cluster.delete()
 
 
@@ -128,15 +127,6 @@ async def prometheus_operator_crds(helm_client):
             atomic=True,
             wait=True,
         )
-
-
-@pytest.fixture(scope="session")
-async def ingress_ip(kube_client: AsyncClient, ingress):
-    await kube_client.wait(
-        Deployment, name="ingress-nginx-controller", namespace="ingress-nginx", for_conditions=["Available"]
-    )
-    service = await kube_client.get(Service, name="ingress-nginx-controller", namespace="ingress-nginx")
-    return service.spec.clusterIP
 
 
 @pytest.fixture(autouse=True, scope="session")

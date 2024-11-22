@@ -57,7 +57,7 @@ class ESSData:
 
 
 @pytest.fixture(scope="session")
-def generated_data(ca):
+async def generated_data(ca):
     return ESSData(
         synapse_postgres_password=unsafe_token(36),
         macaroon=secrets.token_urlsafe(36),

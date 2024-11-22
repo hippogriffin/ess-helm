@@ -10,7 +10,7 @@ import yaml
 
 from ..fixtures import ESSData
 from ..lib.helpers import kubernetes_tls_secret
-from ..lib.utils import aiottp_get_json
+from ..lib.utils import aiohttp_post_json, aiottp_get_json
 from ..services import PostgresServer
 
 
@@ -64,3 +64,19 @@ async def test_synapse(
 
     json_content = await aiottp_get_json("https://synapse.ess.localhost/_matrix/client/versions", ssl_context)
     assert "unstable_features" in json_content
+
+
+@pytest.mark.skipif(os.environ.get("TEST_SYNAPSE") != "1", reason="Synapse not deployed")
+@pytest.mark.parametrize("synapse_users", [("sliding-sync-user",)], indirect=True)
+@pytest.mark.asyncio_cooperative
+async def test_simplified_sliding_sync_syncs(ssl_context, synapse_users, generated_data: ESSData):
+    access_token = synapse_users[0]
+
+    sync_result = await aiohttp_post_json(
+        "https://synapse.ess.localhost/_matrix/client/unstable/org.matrix.simplified_msc3575/sync",
+        {},
+        {"Authorization": f"Bearer {access_token}"},
+        ssl_context,
+    )
+
+    assert "pos" in sync_result
