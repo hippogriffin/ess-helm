@@ -10,6 +10,7 @@ __all__ = [  # noqa : 405 fixtures are all declared here
     "generated_data",
     "cluster",
     "ca",
+    "ess_namespace",
 ]
 
 

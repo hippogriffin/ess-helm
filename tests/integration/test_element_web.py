@@ -7,8 +7,6 @@ import os
 
 import pytest
 import yaml
-from lightkube.models.meta_v1 import ObjectMeta
-from lightkube.resources.core_v1 import Namespace
 
 from ..fixtures import ESSData
 from ..lib.helpers import kubernetes_tls_secret
@@ -25,7 +23,6 @@ async def test_element_web(
     ca,
     generated_data: ESSData,
 ):
-    await kube_client.create(Namespace(metadata=ObjectMeta(name=generated_data.ess_namespace)))
     resources = [
         kubernetes_tls_secret(
             "element-web-tls", generated_data.ess_namespace, ca, ["element.ess.localhost"], bundled=True

@@ -8,6 +8,8 @@ from dataclasses import dataclass
 
 import pytest
 import signedjson.key
+from lightkube.models.meta_v1 import ObjectMeta
+from lightkube.resources.core_v1 import Secret
 
 from ..artifacts import CertKey, generate_ca
 from ..lib.utils import random_string
@@ -17,6 +19,11 @@ def generate_signing_key():
     signing_key = signedjson.key.generate_signing_key(0)
     value = f"{signing_key.alg} {signing_key.version} " f"{signedjson.key.encode_signing_key_base64(signing_key)}"
     return value
+
+
+def unsafe_token(size):
+    alphabet = string.ascii_letters + string.digits + string.punctuation
+    return "".join(secrets.choice(alphabet) for i in range(size))
 
 
 @dataclass
@@ -36,11 +43,23 @@ class ESSData:
     def ess_namespace(self):
         return f"ess-{self.secrets_random}"
 
+    def ess_secret(self):
+        return Secret(
+            metadata=ObjectMeta(
+                name="ess-secrets", namespace=self.ess_namespace, labels={"app.kubernetes.io/managed-by": "pytest"}
+            ),
+            stringData={
+                "registrationSharedSecret": self.registration_shared_secret,
+                "macaroon": self.macaroon,
+                "signingKey": self.signing_key,
+            },
+        )
+
 
 @pytest.fixture(scope="session")
 def generated_data(ca):
     return ESSData(
-        synapse_postgres_password=secrets.token_urlsafe(36),
+        synapse_postgres_password=unsafe_token(36),
         macaroon=secrets.token_urlsafe(36),
         registration_shared_secret=secrets.token_urlsafe(36),
         generic_shared_secret=secrets.token_urlsafe(36),
