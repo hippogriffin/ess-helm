@@ -1,6 +1,7 @@
 # Copyright 2024 New Vector Ltd
 #
 # SPDX-License-Identifier: AGPL-3.0-only OR LicenseRef-Element-Commercial
+
 {{- if (include "element-io.synapse.enabledWorkers" $) | fromJson }}
 apiVersion: v1
 kind: ConfigMap

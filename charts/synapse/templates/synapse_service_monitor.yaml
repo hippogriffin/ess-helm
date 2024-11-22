@@ -1,6 +1,7 @@
 # Copyright 2024 New Vector Ltd
 #
 # SPDX-License-Identifier: AGPL-3.0-only OR LicenseRef-Element-Commercial
+
 {{- if .Capabilities.APIVersions.Has "monitoring.coreos.com/v1/ServiceMonitor" }}
 {{- if .Values.serviceMonitors.enabled }}
 apiVersion: monitoring.coreos.com/v1
