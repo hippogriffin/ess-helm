@@ -50,6 +50,7 @@ class PostgresServer:
                 "auth": {
                     "existingSecret": "{{ .Release.Name }}-postgres-db",
                     "username": self.user,
+                    "database": self.database,
                     "secretKeys": {
                         "adminPasswordKey": "adminPassword",
                         "userPasswordKey": "password",
@@ -66,19 +67,7 @@ class PostgresServer:
                             }
                         ]
                     },
-                    "initdb": {
-                        "scripts": {
-                            "init.sh": "#!/bin/sh\n"
-                            "(echo -n $POSTGRES_POSTGRES_PASSWORD | psql -W -U postgres -tc "
-                            '"SELECT 1 FROM pg_database WHERE datname = '
-                            f"'{self.database}' "
-                            '" | grep -q 1) || '
-                            "(echo -n $POSTGRES_POSTGRES_PASSWORD | createdb --encoding=UTF8 "
-                            "--locale=C --template=template0 "
-                            f"--owner={self.user} {self.database} -U postgres) "
-                        }
-                    },
-                    "persistence": {"enabled": True, "size": "8Gi"},
+                    "initdb": {"args": "--locale=C --encoding=UTF8"},
                 },
             },
             namespace=self.namespace,
