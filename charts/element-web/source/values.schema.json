@@ -41,6 +41,12 @@
     "ingress": {
       "$ref": "file://./../../matrix-stack/sub_schemas/ingress.json"
     },
+    "labels": {
+      "$ref": "file://./../../matrix-stack/sub_schemas/labels.json"
+    },
+    "annotations": {
+      "$ref": "file://./../../matrix-stack/sub_schemas/workloadAnnotations.json"
+    },
     "containersSecurityContext": {
       "$ref": "file://./../../matrix-stack/sub_schemas/containersSecurityContext.json"
     },
@@ -55,9 +61,6 @@
     },
     "tolerations": {
       "$ref": "file://./../../matrix-stack/sub_schemas/tolerations.json"
-    },
-    "annotations": {
-      "$ref": "file://./../../matrix-stack/sub_schemas/workloadAnnotations.json"
     }
   }
 }

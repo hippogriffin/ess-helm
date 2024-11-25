@@ -3,7 +3,7 @@
 # SPDX-License-Identifier: AGPL-3.0-only OR LicenseRef-Element-Commercial
 
 {{- define "element-io.element-web.labels" -}}
-app.kubernetes.io/part-of: matrix-stack
+{{ include "element-io.ess-library.labels.common" (list $ .Values.labels) }}
 app.kubernetes.io/component: matrix-client
 app.kubernetes.io/name: element-web
 app.kubernetes.io/instance: {{ .Release.Name }}-element-web

@@ -77,6 +77,8 @@ logging:
   levelOverrides: {}
 {{ sub_schema_values.image(registry='docker.io', repository='matrixdotorg/synapse') }}
 {{ sub_schema_values.ingress() }}
+{{ sub_schema_values.labels() }}
+{{ sub_schema_values.workloadAnnotations() }}
 {{ sub_schema_values.containersSecurityContext() }}
 {{ sub_schema_values.extraEnv() }}
 {{ sub_schema_values.hostAliases() }}
@@ -85,24 +87,25 @@ logging:
 {{ sub_schema_values.resources(requests_memory='100Mi', requests_cpu='100m', limits_memory='4Gi') }}
 {{ sub_schema_values.serviceMonitors() }}
 {{ sub_schema_values.tolerations() }}
-{{ sub_schema_values.workloadAnnotations() }}
 
 haproxy:
   replicas: 2
 {{ sub_schema_values.image(registry='docker.io', repository='library/haproxy', tag='3.0-alpine') | indent(2) }}
+{{ sub_schema_values.labels() | indent(2) }}
+{{ sub_schema_values.workloadAnnotations() | indent(2) }}
 {{ sub_schema_values.containersSecurityContext() | indent(2) }}
 {{ sub_schema_values.nodeSelector() | indent(2) }}
 {{ sub_schema_values.podSecurityContext(user_id='10001', group_id='10001') | indent(2) }}
 {{ sub_schema_values.resources(requests_memory='100Mi', requests_cpu='100m', limits_memory='200Mi') | indent(2) }}
 {{ sub_schema_values.serviceMonitors() | indent(2) }}
 {{ sub_schema_values.tolerations() | indent(2) }}
-{{ sub_schema_values.workloadAnnotations() | indent(2) }}
 
 redis:
 {{- sub_schema_values.image(registry='docker.io', repository='library/redis', tag='7.4-alpine') | indent(2) }}
+{{ sub_schema_values.labels() | indent(2) }}
+{{ sub_schema_values.workloadAnnotations() | indent(2) }}
 {{ sub_schema_values.containersSecurityContext() | indent(2) }}
 {{ sub_schema_values.nodeSelector() | indent(2) }}
 {{ sub_schema_values.podSecurityContext(user_id='10002', group_id='10002') | indent(2) }}
 {{ sub_schema_values.resources(requests_memory='50Mi', requests_cpu='50m', limits_memory='50Mi') | indent(2) }}
 {{ sub_schema_values.tolerations() | indent(2) }}
-{{ sub_schema_values.workloadAnnotations() | indent(2) }}

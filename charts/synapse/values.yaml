@@ -13,6 +13,9 @@ global:
     ## It can not change after the initial deployment.
     # server_name: ess.localhost
 
+    ## Labels to add to all manifest in this chart and all sub-charts
+    labels: {}
+
     ## A list of Secrets in this namespace to use as pull Secrets.
     ## Ignored if a given component specifies its own pull Secrets.
     ## e.g.
@@ -355,6 +358,12 @@ ingress:
   service:
     type: ClusterIP
 
+## Labels to add to all manifest in this chart
+labels: {}
+
+## Defines the annotations to add to the workload
+# annotations: {}
+
 ## A subset of SecurityContext. ContainersSecurityContext holds pod-level security attributes and common container settings
 containersSecurityContext:
   ## Controls whether a process can gain more privileges than its parent process.
@@ -487,9 +496,6 @@ serviceMonitors:
 
 tolerations: []
 
-## Defines the annotations to add to the workload
-# annotations: {}
-
 haproxy:
   replicas: 2
 
@@ -519,6 +525,12 @@ haproxy:
     ## pullSecrets:
     ## - name: dockerhub
     pullSecrets: []
+
+  ## Labels to add to all manifest in this chart
+  labels: {}
+
+  ## Defines the annotations to add to the workload
+  # annotations: {}
 
   ## A subset of SecurityContext. ContainersSecurityContext holds pod-level security attributes and common container settings
   containersSecurityContext:
@@ -632,9 +644,6 @@ haproxy:
 
   tolerations: []
 
-  ## Defines the annotations to add to the workload
-  # annotations: {}
-
 redis:
   # Details of the image to be used
   image:
@@ -662,6 +671,12 @@ redis:
     ## pullSecrets:
     ## - name: dockerhub
     pullSecrets: []
+
+  ## Labels to add to all manifest in this chart
+  labels: {}
+
+  ## Defines the annotations to add to the workload
+  # annotations: {}
 
   ## A subset of SecurityContext. ContainersSecurityContext holds pod-level security attributes and common container settings
   containersSecurityContext:
@@ -769,6 +784,3 @@ redis:
   ##   value:
 
   tolerations: []
-
-  ## Defines the annotations to add to the workload
-  # annotations: {}

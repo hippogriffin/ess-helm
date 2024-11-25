@@ -16,6 +16,7 @@ global:
     ## The server name of the Matrix Stack. This gets embedded in user IDs & room IDs
     ## It can not change after the initial deployment.
     # server_name: ess.localhost
+{{ labels(global=true) | indent(4) }}
 
     ## A list of Secrets in this namespace to use as pull Secrets.
     ## Ignored if a given component specifies its own pull Secrets.
@@ -139,6 +140,11 @@ global:
   ## How the service behind the ingress is constructed
   service:
     type: ClusterIP
+{%- endmacro %}
+
+{% macro labels(global=false, key='labels') %}
+## Labels to add to all manifest in this chart{{ ' and all sub-charts' if global else '' }}
+labels: {}
 {%- endmacro %}
 
 {% macro nodeSelector(key='nodeSelector') %}
