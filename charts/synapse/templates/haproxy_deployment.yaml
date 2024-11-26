@@ -50,6 +50,7 @@ spec:
               topologyKey: kubernetes.io/hostname
 {{- end }}
       automountServiceAccountToken: false
+      serviceAccountName: {{ include "element-io.synapse.haproxy.serviceAccountName" $ }}
 {{- include "element-io.ess-library.pods.pullSecrets" (list $ .image) | nindent 6 }}
 {{- with .podSecurityContext }}
       securityContext:

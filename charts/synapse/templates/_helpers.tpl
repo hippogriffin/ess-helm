@@ -38,6 +38,18 @@ app.kubernetes.io/instance: {{ .Release.Name }}-synapse-haproxy
 app.kubernetes.io/version: {{ .Values.haproxy.image.tag }}
 {{- end }}
 
+{{- define "element-io.synapse.serviceAccountName" -}}
+{{ default (printf "%s-synapse" .Release.Name ) .Values.serviceAccount.name }}
+{{- end }}
+
+{{- define "element-io.synapse.redis.serviceAccountName" -}}
+{{ default (printf "%s-synapse-redis" .Release.Name ) .Values.redis.serviceAccount.name }}
+{{- end }}
+
+{{- define "element-io.synapse.haproxy.serviceAccountName" -}}
+{{ default (printf "%s-synapse-haproxy" .Release.Name ) .Values.haproxy.serviceAccount.name }}
+{{- end }}
+
 {{- define "element-io.synapse.enabledWorkers" -}}
 {{ $enabledWorkers := dict }}
 {{- range $workerType, $workerDetails := .Values.workers }}

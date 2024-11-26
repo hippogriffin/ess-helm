@@ -59,6 +59,9 @@
     "resources": {
       "$ref": "file://./../../matrix-stack/sub_schemas/resources.json"
     },
+    "serviceAccount": {
+      "$ref": "file://./../../matrix-stack/sub_schemas/serviceAccount.json"
+    },
     "tolerations": {
       "$ref": "file://./../../matrix-stack/sub_schemas/tolerations.json"
     }

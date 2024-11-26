@@ -684,6 +684,24 @@
       "type": "object",
       "additionalProperties": false
     },
+    "serviceAccount": {
+      "type": "object",
+      "properties": {
+        "create": {
+          "type": "boolean"
+        },
+        "name": {
+          "type": "string"
+        },
+        "annotations": {
+          "type": "object",
+          "additionalProperties": {
+            "type": "string"
+          }
+        }
+      },
+      "additionalProperties": false
+    },
     "serviceMonitors": {
       "type": "object",
       "properties": {
@@ -1778,6 +1796,24 @@
           "type": "object",
           "additionalProperties": false
         },
+        "serviceAccount": {
+          "type": "object",
+          "properties": {
+            "create": {
+              "type": "boolean"
+            },
+            "name": {
+              "type": "string"
+            },
+            "annotations": {
+              "type": "object",
+              "additionalProperties": {
+                "type": "string"
+              }
+            }
+          },
+          "additionalProperties": false
+        },
         "serviceMonitors": {
           "type": "object",
           "properties": {
@@ -2026,6 +2062,24 @@
             }
           },
           "type": "object",
+          "additionalProperties": false
+        },
+        "serviceAccount": {
+          "type": "object",
+          "properties": {
+            "create": {
+              "type": "boolean"
+            },
+            "name": {
+              "type": "string"
+            },
+            "annotations": {
+              "type": "object",
+              "additionalProperties": {
+                "type": "string"
+              }
+            }
+          },
           "additionalProperties": false
         },
         "tolerations": {

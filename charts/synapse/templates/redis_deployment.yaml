@@ -37,6 +37,7 @@ spec:
 {{- end }}
     spec:
       automountServiceAccountToken: false
+      serviceAccountName: {{ include "element-io.synapse.redis.serviceAccountName" $ }}
 {{- include "element-io.ess-library.pods.pullSecrets" (list $ .image) | nindent 6 }}
 {{- with .podSecurityContext }}
       securityContext:

@@ -49,6 +49,7 @@ spec:
               topologyKey: kubernetes.io/hostname
 {{- end }}
       automountServiceAccountToken: false
+      serviceAccountName: {{ include "element-io.element-web.serviceAccountName" . }}
 {{- include "element-io.ess-library.pods.pullSecrets" (list $ .Values.image) | indent 6 }}
 {{- with .Values.podSecurityContext }}
       securityContext:

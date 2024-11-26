@@ -85,6 +85,7 @@ logging:
 {{ sub_schema_values.nodeSelector() }}
 {{ sub_schema_values.podSecurityContext(user_id='10091', group_id='10091') }}
 {{ sub_schema_values.resources(requests_memory='100Mi', requests_cpu='100m', limits_memory='4Gi') }}
+{{ sub_schema_values.serviceAccount() }}
 {{ sub_schema_values.serviceMonitors() }}
 {{ sub_schema_values.tolerations() }}
 
@@ -97,6 +98,7 @@ haproxy:
 {{ sub_schema_values.nodeSelector() | indent(2) }}
 {{ sub_schema_values.podSecurityContext(user_id='10001', group_id='10001') | indent(2) }}
 {{ sub_schema_values.resources(requests_memory='100Mi', requests_cpu='100m', limits_memory='200Mi') | indent(2) }}
+{{ sub_schema_values.serviceAccount() | indent(2) }}
 {{ sub_schema_values.serviceMonitors() | indent(2) }}
 {{ sub_schema_values.tolerations() | indent(2) }}
 
@@ -108,4 +110,5 @@ redis:
 {{ sub_schema_values.nodeSelector() | indent(2) }}
 {{ sub_schema_values.podSecurityContext(user_id='10002', group_id='10002') | indent(2) }}
 {{ sub_schema_values.resources(requests_memory='50Mi', requests_cpu='50m', limits_memory='50Mi') | indent(2) }}
+{{ sub_schema_values.serviceAccount() | indent(2) }}
 {{ sub_schema_values.tolerations() | indent(2) }}
