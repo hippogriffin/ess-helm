@@ -74,9 +74,9 @@ async def aiottp_get_json(url: str, ssl_context: SSLContext) -> Any:
     """
     host = urlparse(url).hostname
 
-    async with aiohttp.ClientSession(
-        connector=aiohttp.TCPConnector(ssl=ssl_context), raise_for_status=True
-    ) as session, RetryClient(session, retry_options=retry_options) as retry, retry.get(
+    async with aiohttp.ClientSession(connector=aiohttp.TCPConnector(ssl=ssl_context)) as session, RetryClient(
+        session, retry_options=retry_options, raise_for_status=True
+    ) as retry, retry.get(
         url.replace(host, "127.0.0.1"),
         headers={"Host": host},
         server_hostname=host,
@@ -101,9 +101,9 @@ async def aiohttp_post_json(url: str, data: dict, headers: dict, ssl_context: SS
     """
     host = urlparse(url).hostname
 
-    async with aiohttp.ClientSession(
-        connector=aiohttp.TCPConnector(ssl=ssl_context), raise_for_status=True
-    ) as session, RetryClient(session, retry_options=retry_options) as retry, retry.post(
+    async with aiohttp.ClientSession(connector=aiohttp.TCPConnector(ssl=ssl_context)) as session, RetryClient(
+        session, retry_options=retry_options, raise_for_status=True
+    ) as retry, retry.post(
         url.replace(host, "127.0.0.1"), headers=headers | {"Host": host}, server_hostname=host, json=data
     ) as response:
         return await response.json()
