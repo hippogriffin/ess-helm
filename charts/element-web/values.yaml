@@ -173,6 +173,17 @@ resources:
   limits:
     memory: 200Mi
 
+## Controls configuration of the ServiceAccount for this component
+serviceAccount:
+  ## Whether a ServiceAccount should be created by the chart or not
+  create: true
+
+  ## What name to give the ServiceAccount. If not provided the chart will provide the name automatically
+  name: ""
+
+  ## Annotations to add to the service account
+  annotations: {}
+
 ## Workload tolerations
 ## The pod this Toleration is attached to tolerates any taint that matches the triple <key,value,effect> using the matching operator <operator>.
 ##

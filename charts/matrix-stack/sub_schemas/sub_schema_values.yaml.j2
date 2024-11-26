@@ -254,6 +254,19 @@ labels: {}
     memory: {{ limits_memory }}
 {%- endmacro %}
 
+{% macro serviceAccount(key='serviceAccount') %}
+## Controls configuration of the ServiceAccount for this component
+{{ key }}:
+  ## Whether a ServiceAccount should be created by the chart or not
+  create: true
+
+  ## What name to give the ServiceAccount. If not provided the chart will provide the name automatically
+  name: ""
+
+  ## Annotations to add to the service account
+  annotations: {}
+{%- endmacro %}
+
 {% macro serviceMonitors(key='serviceMonitors') %}
 ## Whether to deploy ServiceMonitors into the cluster for this component
 ## Requires the ServiceMonitor CRDs to be in the cluster

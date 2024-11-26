@@ -10,6 +10,10 @@ app.kubernetes.io/instance: {{ .Release.Name }}-element-web
 app.kubernetes.io/version: {{ .Values.image.tag | default $.Chart.AppVersion }}
 {{- end }}
 
+{{- define "element-io.element-web.serviceAccountName" -}}
+{{ default (printf "%s-element-web" .Release.Name ) .Values.serviceAccount.name }}
+{{- end }}
+
 {{- define "element-io.element-web.config" }}
 {{- $config := dict }}
 {{- $serverName := required "Element Web requires global.ess.server_name set" .Values.global.ess.server_name }}
