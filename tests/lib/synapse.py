@@ -85,9 +85,9 @@ async def upload_media(synapse_fqdn: str, user_access_token: str, file_path: Pat
     params = {"filename": file_path.name}
 
     with open(file_path, "rb") as f:
-        async with aiohttp.ClientSession(
-            connector=aiohttp.TCPConnector(ssl=ssl_context), raise_for_status=True
-        ) as session, RetryClient(session, retry_options=retry_options) as retry, retry.post(
+        async with aiohttp.ClientSession(connector=aiohttp.TCPConnector(ssl=ssl_context)) as session, RetryClient(
+            session, retry_options=retry_options, raise_for_status=True
+        ) as retry, retry.post(
             "https://127.0.0.1/_matrix/media/v3/upload",
             server_hostname=synapse_fqdn,
             headers=headers,
@@ -111,9 +111,9 @@ async def download_media(
 
     # Initialize SHA-256 hasher
     sha256_hash = hashlib.sha256()
-    async with aiohttp.ClientSession(
-        connector=aiohttp.TCPConnector(ssl=ssl_context), raise_for_status=True
-    ) as session, RetryClient(session, retry_options=retry_options) as retry, retry.get(
+    async with aiohttp.ClientSession(connector=aiohttp.TCPConnector(ssl=ssl_context)) as session, RetryClient(
+        session, retry_options=retry_options, raise_for_status=True
+    ) as retry, retry.get(
         f"https://127.0.0.1/_matrix/client/v1/media/download/{server_name}/{content_id}",
         headers=headers,
         server_hostname=synapse_fqdn,
