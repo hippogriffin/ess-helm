@@ -8,9 +8,6 @@ SPDX-License-Identifier: AGPL-3.0-only OR LicenseRef-Element-Commercial
 {{- $root := .root -}}
 {{- with required "element-io.ess-library.check-credential missing context" .context -}}
 {{- $pullSecrets := list -}}
-{{- if $root.Values.global -}}
-{{- $pullSecrets := concat .pullSecrets $root.Values.global.ess.imagePullSecrets }}
-{{- end -}}
 {{- if $root.Values.ess -}}
 {{- $pullSecrets := concat .pullSecrets $root.Values.ess.imagePullSecrets }}
 {{- end -}}
