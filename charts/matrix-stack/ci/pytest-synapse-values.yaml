@@ -56,5 +56,5 @@ synapse:
           value: pytest
           effect: NoSchedule
 
-element-web:
+elementWeb:
   enabled: false

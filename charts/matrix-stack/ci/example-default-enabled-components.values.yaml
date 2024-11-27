@@ -8,17 +8,15 @@ global:
   ess:
     server_name: ess.localhost
 
-element-web:
-  elementWeb:
-    ess:
-      serverName: ess.localhost
+elementWeb:
+  ess:
+    serverName: ess.localhost
 
-    elementWeb:
-      defaultMatrixServer:
-        baseUrl: https://synapse.ess.localhost
+  defaultMatrixServer:
+    baseUrl: https://synapse.ess.localhost
 
-      ingress:
-        host: element.ess.localhost
+  ingress:
+    host: element.ess.localhost
 
 synapse:
   synapse:

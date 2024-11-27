@@ -6,9 +6,15 @@
     "global": {
       "$ref": "file://./../../matrix-stack/sub_schemas/global.json"
     },
-    "element-web": {
+    "ess": {
+      "$ref": "file://./../../matrix-stack/sub_schemas/ess.json"
+    },
+    "ess-library": {
       "type": "object",
       "additionalProperties": true
+    },
+    "elementWeb": {
+      "$ref": "file://./element-web/values.schema.json"
     },
     "synapse": {
       "type": "object",
