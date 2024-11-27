@@ -7,3 +7,4 @@ name: matrix-stack
 description: A Helm meta-chart for deploying a Matrix Stack from Element
 type: application
 version: "0.0.0-dev"
+dependencies: []

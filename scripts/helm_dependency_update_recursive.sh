@@ -23,10 +23,7 @@ function helm_dependency_update() {
 
 [ ! -d "$chart_root" ] && echo "$chart_root must be a directory that exists" && exit 1
 
-helm_dependency_update "$chart_root"/ess-library
-
 for subchart in "$chart_root"/*/; do
-  [[ "$subchart" =~ /ess-library/?$ ]] && continue
   [[ "$subchart" =~ /matrix-stack/?$ ]] && continue
   helm_dependency_update "$subchart"
 done

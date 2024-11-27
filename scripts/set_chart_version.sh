@@ -25,10 +25,7 @@ function set_chart_version() {
 
 [ ! -d "$chart_root" ] && echo "$chart_root must be a directory that exists" && exit 1
 
-set_chart_version "$chart_root"/ess-library
-
 for subchart in "$chart_root"/*/; do
-  [[ "$subchart" =~ /ess-library/?$ ]] && continue
   [[ "$subchart" =~ /matrix-stack/?$ ]] && continue
   set_chart_version "$subchart"
 done
