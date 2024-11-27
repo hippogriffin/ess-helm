@@ -53,7 +53,7 @@ spec:
 {{- end }}
       automountServiceAccountToken: false
       serviceAccountName: {{ include "element-io.element-web.serviceAccountName" (dict "root" $ "context" .) }}
-{{- include "element-io.ess-library.pods.pullSecrets" (list $ .image) | indent 6 }}
+{{- include "element-io.ess-library.pods.pullSecrets" (dict "root" $ "context" .image) | indent 6 }}
 {{- with .podSecurityContext }}
       securityContext:
         {{- toYaml . | nindent 8 }}

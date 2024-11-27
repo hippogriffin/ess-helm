@@ -7,7 +7,7 @@ SPDX-License-Identifier: AGPL-3.0-only OR LicenseRef-Element-Commercial
 {{- define "element-io.element-web.labels" -}}
 {{- $root := .root -}}
 {{- with required "element-io.element-web.labels missing context" .context -}}
-{{ include "element-io.ess-library.labels.common" (list $root .labels) }}
+{{ include "element-io.ess-library.labels.common" (dict "root" $root "context" .labels) }}
 app.kubernetes.io/component: matrix-client
 app.kubernetes.io/name: element-web
 app.kubernetes.io/instance: {{ $root.Release.Name }}-element-web

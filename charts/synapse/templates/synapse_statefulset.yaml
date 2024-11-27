@@ -53,7 +53,7 @@ spec:
     spec:
       automountServiceAccountToken: false
       serviceAccountName: {{ include "element-io.synapse.serviceAccountName" (dict "root" $ "context" .) }}
-{{- include "element-io.ess-library.pods.pullSecrets" (list $ .image) | nindent 6 }}
+{{- include "element-io.ess-library.pods.pullSecrets" (dict "root" $ "context" .image) | nindent 6 }}
 {{- with .podSecurityContext }}
       securityContext:
         {{- toYaml . | nindent 8 }}

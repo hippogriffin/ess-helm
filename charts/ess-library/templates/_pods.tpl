@@ -1,16 +1,18 @@
-# Copyright 2024 New Vector Ltd
-#
-# SPDX-License-Identifier: AGPL-3.0-only OR LicenseRef-Element-Commercial
+{{- /*
+Copyright 2024 New Vector Ltd
+
+SPDX-License-Identifier: AGPL-3.0-only OR LicenseRef-Element-Commercial
+*/ -}}
 
 {{- define "element-io.ess-library.pods.pullSecrets" -}}
-{{- $ := index . 0 }}
-{{- with index . 1 }}
+{{- $root := .root -}}
+{{- with required "element-io.ess-library.check-credential missing context" .context -}}
 {{- $pullSecrets := list -}}
-{{- if $.Values.root -}}
-{{- $pullSecrets := concat .pullSecrets $.Values.root.ess.imagePullSecrets }}
+{{- if $root.Values.global -}}
+{{- $pullSecrets := concat .pullSecrets $root.Values.global.ess.imagePullSecrets }}
 {{- end -}}
-{{- if $.Values.ess -}}
-{{- $pullSecrets := concat .pullSecrets $.Values.ess.imagePullSecrets }}
+{{- if $root.Values.ess -}}
+{{- $pullSecrets := concat .pullSecrets $root.Values.ess.imagePullSecrets }}
 {{- end -}}
 {{- with ($pullSecrets | uniq) }}
 imagePullSecrets:
