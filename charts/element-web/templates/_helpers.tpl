@@ -6,7 +6,7 @@ SPDX-License-Identifier: AGPL-3.0-only OR LicenseRef-Element-Commercial
 
 {{- define "element-io.element-web.labels" -}}
 {{- $global := .global -}}
-{{- with required "element-io.element-web.labels" .context -}}
+{{- with required "element-io.element-web.labels missing context" .context -}}
 {{ include "element-io.ess-library.labels.common" (list $global .labels) }}
 app.kubernetes.io/component: matrix-client
 app.kubernetes.io/name: element-web
@@ -17,7 +17,7 @@ app.kubernetes.io/version: {{ .image.tag | default $global.Chart.AppVersion }}
 
 {{- define "element-io.element-web.serviceAccountName" -}}
 {{- $global := .global -}}
-{{- with required "element-io.element-web.serviceAccountName" .context -}}
+{{- with required "element-io.element-web.serviceAccountName missing context" .context -}}
 {{ default (printf "%s-element-web" $global.Release.Name ) .serviceAccount.name }}
 {{- end }}
 {{- end }}
