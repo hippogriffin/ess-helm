@@ -27,11 +27,4 @@ function assemble_helm_chart_from_fragments() {
 
 [ ! -d "$chart_root" ] && echo "$chart_root must be a directory that exists" && exit 1
 
-for subchart in "$chart_root"/*/; do
-  [[ "$subchart" =~ /matrix-stack/?$ ]] && continue
-  assemble_helm_chart_from_fragments "$subchart"
-done
-
 assemble_helm_chart_from_fragments "$chart_root"/matrix-stack
-
-"$scripts_dir"/helm_dependency_update_recursive.sh

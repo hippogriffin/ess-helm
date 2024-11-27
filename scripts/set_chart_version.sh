@@ -25,11 +25,4 @@ function set_chart_version() {
 
 [ ! -d "$chart_root" ] && echo "$chart_root must be a directory that exists" && exit 1
 
-for subchart in "$chart_root"/*/; do
-  [[ "$subchart" =~ /matrix-stack/?$ ]] && continue
-  set_chart_version "$subchart"
-done
-
 set_chart_version "$chart_root"/matrix-stack
-
-"$scripts_dir"/helm_dependency_update_recursive.sh
