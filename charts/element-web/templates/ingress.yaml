@@ -1,36 +1,41 @@
-# Copyright 2024 New Vector Ltd
-#
-# SPDX-License-Identifier: AGPL-3.0-only OR LicenseRef-Element-Commercial
+{{- /*
+Copyright 2024 New Vector Ltd
 
+SPDX-License-Identifier: AGPL-3.0-only OR LicenseRef-Element-Commercial
+*/ -}}
+{{- with .Values.elementWeb -}}
+{{- if .enabled -}}
 apiVersion: networking.k8s.io/v1
 kind: Ingress
 metadata:
-{{- with .Values.ingress.annotations }}
+{{- with .ingress.annotations }}
   annotations:
     {{- toYaml . | nindent 4 }}
 {{- end }}
   labels:
-    {{- include "element-io.element-web.labels" . | nindent 4 }}
-  name: {{ .Release.Name }}-element-web
-  namespace: {{ .Release.Namespace }}
+    {{- include "element-io.element-web.labels" (dict "context" . "global" $) | nindent 4 }}
+  name: {{ $.Release.Name }}-element-web
+  namespace: {{ $.Release.Namespace }}
 spec:
-{{- if .Values.ingress.tlsSecret }}
+{{- if .ingress.tlsSecret }}
   tls:
   - hosts:
-    - {{ .Values.ingress.host | quote }}
-    secretName: {{ .Values.ingress.tlsSecret | quote }}
+    - {{ required "elementWeb.ingress.host is required" .ingress.host | quote }}
+    secretName: {{ .ingress.tlsSecret | quote }}
 {{- end }}
-{{- with .Values.ingress.className }}
+{{- with .ingress.className }}
   ingressClassName: {{ . | quote }}
 {{- end }}
   rules:
-  - host: {{ .Values.ingress.host | quote }}
+  - host: {{ .ingress.host | quote }}
     http:
       paths:
       - path: /
         pathType: Prefix
         backend:
           service:
-            name: {{ .Release.Name }}-element-web
+            name: {{ $.Release.Name }}-element-web
             port:
               number: 80
+{{- end }}
+{{- end }}

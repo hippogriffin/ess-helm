@@ -1,14 +1,17 @@
-# Copyright 2024 New Vector Ltd
-#
-# SPDX-License-Identifier: AGPL-3.0-only OR LicenseRef-Element-Commercial
+{{- /*
+Copyright 2024 New Vector Ltd
 
+SPDX-License-Identifier: AGPL-3.0-only OR LicenseRef-Element-Commercial
+*/ -}}
+{{- with .Values.elementWeb -}}
+{{- if .enabled -}}
 apiVersion: v1
 kind: ConfigMap
 metadata:
   labels:
-    {{- include "element-io.element-web.labels" . | nindent 4 }}
-  name: {{ .Release.Name }}-element-web-nginx
-  namespace: {{ .Release.Namespace }}
+    {{- include "element-io.element-web.labels" (dict "context" . "global" $) | nindent 4 }}
+  name: {{ $.Release.Name }}-element-web-nginx
+  namespace: {{ $.Release.Namespace }}
 data:
   nginx.conf: |-
     worker_processes  auto;
@@ -69,3 +72,5 @@ data:
             }
         }
     }
+{{- end }}
+{{- end }}
