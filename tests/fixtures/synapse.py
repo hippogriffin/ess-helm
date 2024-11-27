@@ -7,41 +7,19 @@ import logging
 
 import pyhelm3
 import pytest
-from lightkube import AsyncClient
 
 from ..lib.synapse import create_user
 from .data import ESSData
 
 # Until synapse release is ready, this is complaining that the helm status command fails
-logging.getLogger("pyhelm3.commands").setLevel(logging.ERROR)
+logging.getLogger("pyhelm3").setLevel(logging.ERROR)
 
 
 @pytest.fixture(scope="session")
-async def synapse_ready(
-    cluster, kube_client: AsyncClient, helm_client: pyhelm3.Client, ingress, ess_namespace, generated_data: ESSData
-):
-    counter = 0
-    while True:
-        try:
-            revision = await helm_client.get_current_revision(
-                f"synapse-{generated_data.secrets_random}",
-                namespace=generated_data.ess_namespace,
-            )
-            if revision.status == pyhelm3.ReleaseRevisionStatus.DEPLOYED:
-                break
-            elif revision.status != pyhelm3.ReleaseRevisionStatus.PENDING_INSTALL:
-                raise Exception("Synapse Release seems to have failed deploying")
-        except pyhelm3.errors.ReleaseNotFoundError:
-            continue
-
-        counter += 1
-        await asyncio.sleep(1)
-        if counter > 180:
-            raise Exception("Synapse Release did not become DEPLOYED after 180s")
-
+async def synapse_ready(cluster, helm_client: pyhelm3.Client, revision_deployed, generated_data: ESSData):
     await asyncio.to_thread(
         cluster.wait,
-        name=f"ingress/synapse-{generated_data.secrets_random}-synapse",
+        name=f"ingress/{generated_data.release_name}-synapse",
         namespace=generated_data.ess_namespace,
         waitfor="jsonpath='{.status.loadBalancer.ingress[0].ip}'",
     )
