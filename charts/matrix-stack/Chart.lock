@@ -1,9 +1,9 @@
 dependencies:
-- name: element-web
-  repository: file://../element-web
-  version: 0.0.0-dev
 - name: synapse
   repository: file://../synapse
   version: 0.0.0-dev
-digest: sha256:85286a84f99006d71bbefd5bf4f0fbdd14ebff7e9ba1209041a19b9232654d50
-generated: "2024-11-14T15:39:30.48861898Z"
+- name: ess-library
+  repository: file://../ess-library
+  version: 0.0.0-dev
+digest: sha256:ff4fa7d0f7eb859e0c55c36e9a462f03b045e9b2c3dcf0b9315d08bad918d5d8
+generated: "2024-11-27T16:08:11.722897922+01:00"

@@ -30,8 +30,8 @@ spec:
     metadata:
       labels:
         {{- include "element-io.element-web.labels" (dict "root" $ "context" .) | nindent 8 }}
-        k8s.element.io/confighash: "{{ include (print $.Template.BasePath "/configmap.yaml") $ | sha1sum }}"
-        k8s.element.io/nginxhash: "{{ include (print $.Template.BasePath "/nginx_configmap.yaml") $ | sha1sum }}"
+        k8s.element.io/confighash: "{{ include (print $.Template.BasePath "/element-web/configmap.yaml") $ | sha1sum }}"
+        k8s.element.io/nginxhash: "{{ include (print $.Template.BasePath "/element-web/nginx_configmap.yaml") $ | sha1sum }}"
 {{- with .annotations }}
       annotations:
         {{- toYaml . | nindent 8 }}
