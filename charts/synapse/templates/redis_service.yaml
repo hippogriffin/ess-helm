@@ -6,12 +6,12 @@ SPDX-License-Identifier: AGPL-3.0-only OR LicenseRef-Element-Commercial
 
 {{- with .Values.synapse -}}
 {{- if .enabled -}}
-{{- if (include "element-io.synapse.enabledWorkers" (dict "global" $ "context" .)) | fromJson }}
+{{- if (include "element-io.synapse.enabledWorkers" (dict "root" $ "context" .)) | fromJson }}
 apiVersion: v1
 kind: Service
 metadata:
   labels:
-    {{- include "element-io.synapse.redis.labels" (dict "global" $ "context" .) | nindent 4 }}
+    {{- include "element-io.synapse.redis.labels" (dict "root" $ "context" .) | nindent 4 }}
   name: {{ $.Release.Name }}-synapse-redis
   namespace: {{ $.Release.Namespace }}
 spec:

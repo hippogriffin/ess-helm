@@ -6,7 +6,7 @@ SPDX-License-Identifier: AGPL-3.0-only OR LicenseRef-Element-Commercial
 
 {{- with .Values.synapse -}}
 {{- if .enabled -}}
-{{- if (include "element-io.synapse.enabledWorkers" (dict "global" $ "context" .)) | fromJson }}
+{{- if (include "element-io.synapse.enabledWorkers" (dict "root" $ "context" .)) | fromJson }}
 {{- with .redis }}
 apiVersion: apps/v1
 kind: Deployment
@@ -16,7 +16,7 @@ metadata:
     {{- toYaml . | nindent 4 }}
 {{- end }}
   labels:
-    {{- include "element-io.synapse.redis.labels" (dict "global" $ "context" .) | nindent 4 }}
+    {{- include "element-io.synapse.redis.labels" (dict "root" $ "context" .) | nindent 4 }}
     k8s.element.io/confighash: "{{ include (print $.Template.BasePath "/redis_configmap.yaml") $ | sha1sum }}"
   name: {{ $.Release.Name }}-synapse-redis
   namespace: {{ $.Release.Namespace }}
@@ -33,7 +33,7 @@ spec:
   template:
     metadata:
       labels:
-        {{- include "element-io.synapse.redis.labels" (dict "global" $ "context" .) | nindent 8 }}
+        {{- include "element-io.synapse.redis.labels" (dict "root" $ "context" .) | nindent 8 }}
         k8s.element.io/confighash: "{{ include (print $.Template.BasePath "/redis_configmap.yaml") $ | sha1sum }}"
 {{- with .annotations }}
       annotations:
@@ -41,8 +41,8 @@ spec:
 {{- end }}
     spec:
       automountServiceAccountToken: false
-      serviceAccountName: {{ include "element-io.synapse.redis.serviceAccountName" (dict "global" $ "context" .) }}
-{{- include "element-io.ess-library.pods.pullSecrets" (list $ .image) | nindent 6 }}
+      serviceAccountName: {{ include "element-io.synapse.redis.serviceAccountName" (dict "root" $ "context" .) }}
+{{- include "element-io.ess-library.pods.pullSecrets" (dict "root" $ "context" .image) | nindent 6 }}
 {{- with .podSecurityContext }}
       securityContext:
         {{- toYaml . | nindent 8 }}

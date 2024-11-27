@@ -5,7 +5,7 @@ SPDX-License-Identifier: AGPL-3.0-only OR LicenseRef-Element-Commercial
 */ -}}
 
 {{- define "element-io.synapse.process.hasHttp" -}}
-{{- $global := .global -}}
+{{- $root := .root -}}
 {{- with required "element-io.synapse.process.hasHttp missing context" .context -}}
 {{ $hasHttp := (list "main" "client-reader" "encryption" "event-creator"
                      "federation-inbound" "federation-reader" "initial-synchrotron"
@@ -19,7 +19,7 @@ hasHttp
 {{- end }}
 
 {{- define "element-io.synapse.process.hasReplication" -}}
-{{- $global := .global -}}
+{{- $root := .root -}}
 {{- with required "element-io.synapse.process.hasReplication missing context" .context -}}
 {{- $hasReplication := (list "main" "encryption" "event-persister"
                              "presence-writer" "receipts-account"
@@ -31,7 +31,7 @@ hasReplication
 {{- end }}
 
 {{- define "element-io.synapse.process.isSingle" -}}
-{{- $global := .global -}}
+{{- $root := .root -}}
 {{- with required "element-io.synapse.process.isSingle missing context" .context -}}
 {{ $isSingle := (list "main" "appservice" "background" "encryption"
                       "media-repository" "presence-writer" "receipts-account"
@@ -43,7 +43,7 @@ isSingle
 {{- end }}
 
 {{- define "element-io.synapse.process.workerTypeName" -}}
-{{- $global := .global -}}
+{{- $root := .root -}}
 {{- with required "element-io.synapse.process.workerTypeName missing context" .context -}}
 {{- if eq . "initial-synchrotron" -}}
 initial-sync
@@ -54,7 +54,7 @@ initial-sync
 {{- end }}
 
 {{- define "element-io.synapse.process.app" -}}
-{{- $global := .global -}}
+{{- $root := .root -}}
 {{- with required "element-io.synapse.process.app missing context" .context -}}
 {{- if eq . "main" -}}
 synapse.app.homeserver
@@ -67,7 +67,7 @@ synapse.app.generic_worker
 {{- end }}
 
 {{- define "element-io.synapse.process.responsibleForMedia" -}}
-{{- $global := .global -}}
+{{- $root := .root -}}
 {{- with required "element-io.synapse.process.responsibleForMedia missing context" .context -}}
 {{- if and (eq .processType "main") (not (has "media-repository" .enabledWorkerTypes)) -}}
 responsibleForMedia
@@ -78,7 +78,7 @@ responsibleForMedia
 {{- end }}
 
 {{- define "element-io.synapse.process.streamWriters" -}}
-{{- $global := .global -}}
+{{- $root := .root -}}
 {{- with required "element-io.synapse.process.streamWriters missing context" .context -}}
 {{- if eq . "encryption" }}
 {{ list "to_device" | toJson }}
@@ -97,11 +97,11 @@ responsibleForMedia
 {{- end }}
 
 {{- define "element-io.synapse.streamWriterWorkers" -}}
-{{- $global := .global -}}
+{{- $root := .root -}}
 {{- with required "element-io.synapse.streamWriterWorkers missing context" .context -}}
 {{ $streamWriterWorkers := list }}
-{{- range $workerType := keys ((include "element-io.synapse.enabledWorkers" (dict "global" $global "context" .)) | fromJson) }}
-{{- if include "element-io.synapse.process.streamWriters" (dict "global" $global "context" $workerType) | fromJsonArray -}}
+{{- range $workerType := keys ((include "element-io.synapse.enabledWorkers" (dict "root" $root "context" .)) | fromJson) }}
+{{- if include "element-io.synapse.process.streamWriters" (dict "root" $root "context" $workerType) | fromJsonArray -}}
 {{ $streamWriterWorkers = append $streamWriterWorkers $workerType }}
 {{- end }}
 {{- end }}
@@ -110,9 +110,9 @@ responsibleForMedia
 {{- end }}
 
 {{- define "element-io.synapse.configSecrets" -}}
-{{- $global := .global -}}
+{{- $root := .root -}}
 {{- with required "element-io.synapse.configSecrets missing context" .context -}}
-{{ $configSecrets := list (printf "%s-synapse" $global.Release.Name) }}
+{{ $configSecrets := list (printf "%s-synapse" $root.Release.Name) }}
 {{- with .macaroon.secret -}}
 {{ $configSecrets = append $configSecrets . }}
 {{- end -}}
@@ -130,7 +130,7 @@ responsibleForMedia
 {{- end }}
 
 {{- define "element-io.synapse.process.workerPaths" -}}
-{{- $global := .global -}}
+{{- $root := .root -}}
 {{- with required "element-io.synapse.workerPaths missing context" .context -}}
 {{ $workerPaths := list }}
 

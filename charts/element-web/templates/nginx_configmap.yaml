@@ -9,7 +9,7 @@ apiVersion: v1
 kind: ConfigMap
 metadata:
   labels:
-    {{- include "element-io.element-web.labels" (dict "context" . "global" $) | nindent 4 }}
+    {{- include "element-io.element-web.labels" (dict "root" $ "context" .) | nindent 4 }}
   name: {{ $.Release.Name }}-element-web-nginx
   namespace: {{ $.Release.Namespace }}
 data:

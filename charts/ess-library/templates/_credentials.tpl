@@ -1,9 +1,11 @@
-# Copyright 2024 New Vector Ltd
-#
-# SPDX-License-Identifier: AGPL-3.0-only OR LicenseRef-Element-Commercial
+{{- /*
+Copyright 2024 New Vector Ltd
+
+SPDX-License-Identifier: AGPL-3.0-only OR LicenseRef-Element-Commercial
+*/ -}}
 
 {{- define "element-io.ess-library.check-credential" -}}
-{{- $global := .global -}}
+{{- $root := .root -}}
 {{- with required "element-io.ess-library.check-credential missing context" .context -}}
 {{- $secretPath := .secretPath -}}
 {{- $secretProperty := .secretProperty -}}

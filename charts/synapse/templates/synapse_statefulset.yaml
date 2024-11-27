@@ -6,7 +6,7 @@ SPDX-License-Identifier: AGPL-3.0-only OR LicenseRef-Element-Commercial
 
 {{- with .Values.synapse -}}
 {{- if .enabled -}}
-{{- $enabledWorkers := (include "element-io.synapse.enabledWorkers" (dict "global" $ "context" .)) | fromJson }}
+{{- $enabledWorkers := (include "element-io.synapse.enabledWorkers" (dict "root" $ "context" .)) | fromJson }}
 {{- range $processType, $unmergedProcessDetails := merge $enabledWorkers (dict "main" dict) }}
 {{- $perProcessRoot := merge (dict "ProcessType" $processType) $.Values.synapse }}
 {{- with (merge dict ($unmergedProcessDetails | deepCopy) ($.Values.synapse | deepCopy)) }}
@@ -18,7 +18,7 @@ metadata:
     {{- toYaml . | nindent 4 }}
 {{- end }}
   labels:
-    {{- include "element-io.synapse.process.labels" (dict "global" $ "context" $perProcessRoot) | nindent 4 }}
+    {{- include "element-io.synapse.process.labels" (dict "root" $ "context" $perProcessRoot) | nindent 4 }}
     k8s.element.io/confighash: "{{ include (print $.Template.BasePath "/synapse_secret.yaml") $ | sha1sum }}"
     k8s.element.io/logconfighash: "{{ include (print $.Template.BasePath "/synapse_configmap.yaml") $ | sha1sum }}"
 {{- range $index, $appservice := .appservices }}
@@ -39,7 +39,7 @@ spec:
   template:
     metadata:
       labels:
-        {{- include "element-io.synapse.process.labels" (dict "global" $ "context" $perProcessRoot) | nindent 8 }}
+        {{- include "element-io.synapse.process.labels" (dict "root" $ "context" $perProcessRoot) | nindent 8 }}
         k8s.element.io/confighash: "{{ include (print $.Template.BasePath "/synapse_secret.yaml") $ | sha1sum }}"
         k8s.element.io/logconfighash: "{{ include (print $.Template.BasePath "/synapse_configmap.yaml") $ | sha1sum }}"
 {{- range $index, $appservice := .appservices }}
@@ -52,8 +52,8 @@ spec:
 {{- end }}
     spec:
       automountServiceAccountToken: false
-      serviceAccountName: {{ include "element-io.synapse.serviceAccountName" (dict "global" $ "context" .) }}
-{{- include "element-io.ess-library.pods.pullSecrets" (list $ .image) | nindent 6 }}
+      serviceAccountName: {{ include "element-io.synapse.serviceAccountName" (dict "root" $ "context" .) }}
+{{- include "element-io.ess-library.pods.pullSecrets" (dict "root" $ "context" .image) | nindent 6 }}
 {{- with .podSecurityContext }}
       securityContext:
         {{- toYaml . | nindent 8 }}
@@ -130,7 +130,7 @@ We have an init container to render & merge the config for several reasons:
         - mountPath: /config-templates
           name: plain-config
           readOnly: true
-{{- range $secret := include "element-io.synapse.configSecrets" (dict "global" $ "context" .) | fromJsonArray }}
+{{- range $secret := include "element-io.synapse.configSecrets" (dict "root" $ "context" .) | fromJsonArray }}
         - mountPath: /secrets/{{ $secret }}
           name: "secret-{{ $secret }}"
           readOnly: true
@@ -159,18 +159,18 @@ We have an init container to render & merge the config for several reasons:
         - >
           ls -lR /secrets;
           [ -e "/usr/lib/`uname -m`-linux-gnu/libjemalloc.so.2" ] && export LD_PRELOAD="/usr/lib/`uname -m`-linux-gnu/libjemalloc.so.2";
-          python3 -m {{ include "element-io.synapse.process.app" (dict "global" $ "context" $processType) }} -c /conf/homeserver.yaml
+          python3 -m {{ include "element-io.synapse.process.app" (dict "root" $ "context" $processType) }} -c /conf/homeserver.yaml
 {{- with .extraEnv }}
         env:
           {{- toYaml . | nindent 10 }}
 {{- end }}
         ports:
-{{- if (include "element-io.synapse.process.hasHttp" (dict "global" $ "context" $processType)) }}
+{{- if (include "element-io.synapse.process.hasHttp" (dict "root" $ "context" $processType)) }}
         - containerPort: 8008
           name: synapse-http
           protocol: TCP
 {{- end }}
-{{- if (include "element-io.synapse.process.hasReplication" (dict "global" $ "context" $processType)) }}
+{{- if (include "element-io.synapse.process.hasReplication" (dict "root" $ "context" $processType)) }}
         - containerPort: 9093
           name: synapse-repl
           protocol: TCP
@@ -195,7 +195,7 @@ We have an init container to render & merge the config for several reasons:
           timeoutSeconds: 2
           {{- /* For Synapse processes where there can only be 1 instance we're more generous with the threshold.
                  This is because people can't scale the process up and so the impact of a restart is greater. */}}
-          failureThreshold: {{ ternary 8 3 (eq "isSingle" (include "element-io.synapse.process.isSingle" (dict "global" $ "context" $processType))) }}
+          failureThreshold: {{ ternary 8 3 (eq "isSingle" (include "element-io.synapse.process.isSingle" (dict "root" $ "context" $processType))) }}
         readinessProbe:
           httpGet:
             path: /health
@@ -203,13 +203,13 @@ We have an init container to render & merge the config for several reasons:
           periodSeconds: 2
           timeoutSeconds: 2
           successThreshold: 2
-          failureThreshold: {{ ternary 8 3 (eq "isSingle" (include "element-io.synapse.process.isSingle" (dict "global" $ "context" $processType))) }}
+          failureThreshold: {{ ternary 8 3 (eq "isSingle" (include "element-io.synapse.process.isSingle" (dict "root" $ "context" $processType))) }}
 {{- with .resources }}
         resources:
           {{- toYaml . | nindent 10 }}
 {{- end }}
         volumeMounts:
-{{- range $secret := include "element-io.synapse.configSecrets" (dict "global" $ "context" .) | fromJsonArray }}
+{{- range $secret := include "element-io.synapse.configSecrets" (dict "root" $ "context" .) | fromJsonArray }}
         - mountPath: /secrets/{{ $secret }}
           name: "secret-{{ $secret }}"
           readOnly: true
@@ -234,7 +234,7 @@ We have an init container to render & merge the config for several reasons:
           defaultMode: 420
           name: "{{ $.Release.Name }}-synapse"
         name: plain-config
-{{- range $secret := include "element-io.synapse.configSecrets" (dict "global" $ "context" .) | fromJsonArray }}
+{{- range $secret := include "element-io.synapse.configSecrets" (dict "root" $ "context" .) | fromJsonArray }}
       - secret:
           secretName: {{ $secret }}
         name: secret-{{ $secret }}
@@ -248,9 +248,9 @@ We have an init container to render & merge the config for several reasons:
           name: "{{ $appservice.registrationFileConfigMap }}"
         name: {{ $appservice.registrationFileConfigMap }}
 {{- end }}
-{{- if (include "element-io.synapse.process.responsibleForMedia" (dict "global" $ "context" (dict "processType" $processType "enabledWorkerTypes" (keys $enabledWorkers)))) }}
+{{- if (include "element-io.synapse.process.responsibleForMedia" (dict "root" $ "context" (dict "processType" $processType "enabledWorkerTypes" (keys $enabledWorkers)))) }}
       - persistentVolumeClaim:
-          claimName: {{ include "element-io.synapse.pvcName" (dict "global" $ "context" .) }}
+          claimName: {{ include "element-io.synapse.pvcName" (dict "root" $ "context" .) }}
         name: "media"
 {{- else }}
       - emptyDir:

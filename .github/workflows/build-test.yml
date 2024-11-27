@@ -77,6 +77,14 @@ jobs:
         git config --global --add safe.directory "$GITHUB_WORKSPACE"
         ct lint --config ct.yaml
 
+    - name: Ensure we don't use the helm $ root token in .tpl files
+      shell: bash
+      run: |
+        find . -type f -name '*.tpl' -exec grep -E '\{\{[^}]*\$[^a-zA-Z0-9_][^}]*\}\}' {} + && {
+          echo 'Error: $ is used in a .tpl files, but helm passes the local context to the special variable $ in included templates.'; exit 1 
+        } || echo "OK."
+
+
     - name: Define a cache for the virtual environment based on the dependencies lock file
       uses: actions/cache@v3
       with:

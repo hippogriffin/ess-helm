@@ -13,7 +13,7 @@ metadata:
     {{- toYaml . | nindent 4 }}
 {{- end }}
   labels:
-    {{- include "element-io.element-web.labels" (dict "context" . "global" $) | nindent 4 }}
+    {{- include "element-io.element-web.labels" (dict "root" $ "context" .) | nindent 4 }}
   name: {{ $.Release.Name }}-element-web
   namespace: {{ $.Release.Namespace }}
 spec:

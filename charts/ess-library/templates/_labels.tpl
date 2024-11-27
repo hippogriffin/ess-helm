@@ -1,17 +1,20 @@
-# Copyright 2024 New Vector Ltd
-#
-# SPDX-License-Identifier: AGPL-3.0-only OR LicenseRef-Element-Commercial
+{{- /*
+Copyright 2024 New Vector Ltd
+
+SPDX-License-Identifier: AGPL-3.0-only OR LicenseRef-Element-Commercial
+*/ -}}
 
 {{- define "element-io.ess-library.labels.common" -}}
-{{- $ := index . 0 }}
+{{- $root := .root -}}
+{{- with required "element-io.ess-library.check-credential missing context" .context -}}
 {{- $userLabels := dict -}}
-{{ with $.Values.global }}
+{{ with $root.Values.global }}
 {{- $userLabels = merge $userLabels (.ess.labels | default ) }}
 {{- end }}
-{{ with $.Values.ess }}
+{{ with $root.Values.ess }}
 {{- $userLabels = merge $userLabels (.labels | default ) }}
 {{- end }}
-{{- $userLabels = merge $userLabels ( index . 1) }}
+{{- $userLabels = merge $userLabels . }}
 {{- /* These labels are owned by the chart, don't allow overriding */}}
 {{- $userLabels = unset $userLabels "helm.sh/chart.sh" }}
 {{- $userLabels = unset $userLabels "app.kubernetes.io/managed-by" }}
@@ -23,7 +26,8 @@
 {{- if $userLabels }}
 {{- toYaml $userLabels }}
 {{- end }}
-helm.sh/chart: {{ $.Chart.Name }}-{{ $.Chart.Version | replace "+" "_" }}
-app.kubernetes.io/managed-by: {{ $.Release.Service }}
+helm.sh/chart: {{ $root.Chart.Name }}-{{ $root.Chart.Version | replace "+" "_" }}
+app.kubernetes.io/managed-by: {{ $root.Release.Service }}
 app.kubernetes.io/part-of: matrix-stack
+{{- end }}
 {{- end }}
