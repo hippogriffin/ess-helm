@@ -10,10 +10,10 @@ import typer
 from jinja2 import Environment, FileSystemLoader, select_autoescape
 
 
-def find_sub_dirs(root_dir, dir_name):
+def find_sub_dirs(root_dir):
     sub_schemas_dirs = []
 
-    for path in Path(root_dir).glob('*'):
+    for path in Path(root_dir).rglob('*'):
         if path.is_dir():
             sub_schemas_dirs.append(path)
     return sub_schemas_dirs
@@ -27,7 +27,7 @@ def construct_values_file(source_values_template_path: Path, destination_values_
             [
                 source_values_template_path.parent,
                 charts_path,
-                *find_sub_dirs(charts_path, "sub_schemas"),
+                *find_sub_dirs(charts_path),
             ]
         ),
         autoescape=select_autoescape,
