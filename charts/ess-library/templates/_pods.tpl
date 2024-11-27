@@ -6,8 +6,8 @@
 {{- $ := index . 0 }}
 {{- with index . 1 }}
 {{- $pullSecrets := list -}}
-{{- if $.Values.global -}}
-{{- $pullSecrets := concat .pullSecrets $.Values.global.ess.imagePullSecrets }}
+{{- if $.Values.root -}}
+{{- $pullSecrets := concat .pullSecrets $.Values.root.ess.imagePullSecrets }}
 {{- end -}}
 {{- if $.Values.ess -}}
 {{- $pullSecrets := concat .pullSecrets $.Values.ess.imagePullSecrets }}

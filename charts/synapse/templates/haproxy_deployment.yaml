@@ -16,7 +16,7 @@ metadata:
     {{- toYaml . | nindent 4 }}
 {{- end }}
   labels:
-    {{- include "element-io.synapse.haproxy.labels" (dict "global" $ "context" .) | nindent 4 }}
+    {{- include "element-io.synapse.haproxy.labels" (dict "root" $ "context" .) | nindent 4 }}
     k8s.element.io/confighash: "{{ include (print $.Template.BasePath "/haproxy_configmap.yaml") $ | sha1sum }}"
   name: {{ $.Release.Name }}-synapse-haproxy
   namespace: {{ $.Release.Namespace }}
@@ -33,7 +33,7 @@ spec:
   template:
     metadata:
       labels:
-        {{- include "element-io.synapse.haproxy.labels" (dict "global" $ "context" .) | nindent 8 }}
+        {{- include "element-io.synapse.haproxy.labels" (dict "root" $ "context" .) | nindent 8 }}
         k8s.element.io/confighash: "{{ include (print $.Template.BasePath "/haproxy_configmap.yaml") $ | sha1sum }}"
 {{- with .annotations }}
       annotations:
@@ -55,7 +55,7 @@ spec:
               topologyKey: kubernetes.io/hostname
 {{- end }}
       automountServiceAccountToken: false
-      serviceAccountName: {{ include "element-io.synapse.haproxy.serviceAccountName" (dict "global" $ "context" .) }}
+      serviceAccountName: {{ include "element-io.synapse.haproxy.serviceAccountName" (dict "root" $ "context" .) }}
 {{- include "element-io.ess-library.pods.pullSecrets" (list $ .image) | nindent 6 }}
 {{- with .podSecurityContext }}
       securityContext:

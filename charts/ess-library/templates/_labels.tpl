@@ -5,7 +5,7 @@
 {{- define "element-io.ess-library.labels.common" -}}
 {{- $ := index . 0 }}
 {{- $userLabels := dict -}}
-{{ with $.Values.global }}
+{{ with $.Values.root }}
 {{- $userLabels = merge $userLabels (.ess.labels | default ) }}
 {{- end }}
 {{ with $.Values.ess }}

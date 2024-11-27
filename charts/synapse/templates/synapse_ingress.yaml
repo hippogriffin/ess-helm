@@ -14,7 +14,7 @@ metadata:
     {{- toYaml . | nindent 4 }}
 {{- end }}
   labels:
-    {{- include "element-io.synapse.haproxy.labels" (dict "global" $ "context" .) | nindent 4 }}
+    {{- include "element-io.synapse.haproxy.labels" (dict "root" $ "context" .) | nindent 4 }}
   name: {{ $.Release.Name }}-synapse
   namespace: {{ $.Release.Namespace }}
 spec:

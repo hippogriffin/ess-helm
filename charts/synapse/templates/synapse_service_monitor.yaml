@@ -12,7 +12,7 @@ apiVersion: monitoring.coreos.com/v1
 kind: ServiceMonitor
 metadata:
   labels:
-    {{- include "element-io.synapse.labels" (dict "global" $ "context" .) | nindent 4 }}
+    {{- include "element-io.synapse.labels" (dict "root" $ "context" .) | nindent 4 }}
   name: {{ $.Release.Name }}-synapse
   namespace: {{ $.Release.Namespace }}
 spec:

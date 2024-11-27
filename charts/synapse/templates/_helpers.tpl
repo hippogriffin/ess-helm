@@ -5,76 +5,76 @@ SPDX-License-Identifier: AGPL-3.0-only OR LicenseRef-Element-Commercial
 */ -}}
 
 {{- define "element-io.synapse.labels" -}}
-{{- $global := .global -}}
+{{- $root := .root -}}
 {{- with required "element-io.synapse.labels missing context" .context -}}
-{{ include "element-io.ess-library.labels.common" (list $global .labels) }}
+{{ include "element-io.ess-library.labels.common" (list $root .labels) }}
 app.kubernetes.io/component: matrix-server
 app.kubernetes.io/name: synapse
-app.kubernetes.io/instance: {{ $global.Release.Name }}-synapse
-app.kubernetes.io/version: {{ .image.tag | default $global.Chart.AppVersion }}
-k8s.element.io/synapse-instance: {{ $global.Release.Name }}-synapse
+app.kubernetes.io/instance: {{ $root.Release.Name }}-synapse
+app.kubernetes.io/version: {{ .image.tag | default $root.Chart.AppVersion }}
+k8s.element.io/synapse-instance: {{ $root.Release.Name }}-synapse
 {{- end }}
 {{- end }}
 
 {{- define "element-io.synapse.process.labels" -}}
-{{- $global := .global -}}
+{{- $root := .root -}}
 {{- with required "element-io.synapse.labels missing context" .context -}}
-{{ include "element-io.ess-library.labels.common" (list $global .labels) }}
+{{ include "element-io.ess-library.labels.common" (list $root .labels) }}
 app.kubernetes.io/component: matrix-server
 app.kubernetes.io/name: synapse-{{ .ProcessType }}
-app.kubernetes.io/instance: {{ $global.Release.Name }}-synapse-{{ .ProcessType }}
-app.kubernetes.io/version: {{ .image.tag | default $global.Chart.AppVersion }}
-k8s.element.io/synapse-instance: {{ $global.Release.Name }}-synapse
+app.kubernetes.io/instance: {{ $root.Release.Name }}-synapse-{{ .ProcessType }}
+app.kubernetes.io/version: {{ .image.tag | default $root.Chart.AppVersion }}
+k8s.element.io/synapse-instance: {{ $root.Release.Name }}-synapse
 {{- end }}
 {{- end }}
 
 {{- define "element-io.synapse.redis.labels" -}}
-{{- $global := .global -}}
+{{- $root := .root -}}
 {{- with required "element-io.redis.labels missing context" .context -}}
-{{ include "element-io.ess-library.labels.common" (list $global .labels) }}
+{{ include "element-io.ess-library.labels.common" (list $root .labels) }}
 app.kubernetes.io/part-of: matrix-stack
 app.kubernetes.io/component: matrix-server-pubsub
 app.kubernetes.io/name: synapse-redis
-app.kubernetes.io/instance: {{ $global.Release.Name }}-synapse-redis
+app.kubernetes.io/instance: {{ $root.Release.Name }}-synapse-redis
 app.kubernetes.io/version: {{ .image.tag }}
 {{- end }}
 {{- end }}
 
 {{- define "element-io.synapse.haproxy.labels" -}}
-{{- $global := .global -}}
+{{- $root := .root -}}
 {{- with required "element-io.synapse.haproxy.labels missing context" .context -}}
-{{ include "element-io.ess-library.labels.common" (list $global .labels) }}
+{{ include "element-io.ess-library.labels.common" (list $root .labels) }}
 app.kubernetes.io/part-of: matrix-stack
 app.kubernetes.io/component: matrix-server-ingress
 app.kubernetes.io/name: synapse-haproxy
-app.kubernetes.io/instance: {{ $global.Release.Name }}-synapse-haproxy
+app.kubernetes.io/instance: {{ $root.Release.Name }}-synapse-haproxy
 app.kubernetes.io/version: {{ .image.tag }}
 {{- end }}
 {{- end }}
 
 {{- define "element-io.synapse.serviceAccountName" -}}
-{{- $global := .global -}}
+{{- $root := .root -}}
 {{- with required "element-io.synapse.serviceAccountName missing context" .context -}}
-{{ default (printf "%s-synapse" $global.Release.Name) .serviceAccount.name }}
+{{ default (printf "%s-synapse" $root.Release.Name) .serviceAccount.name }}
 {{- end }}
 {{- end }}
 
 {{- define "element-io.synapse.redis.serviceAccountName" -}}
-{{- $global := .global -}}
+{{- $root := .root -}}
 {{- with required "element-io.synapse.redis.serviceAccountName missing context" .context -}}
-{{ default (printf "%s-synapse-redis" $global.Release.Name) .serviceAccount.name }}
+{{ default (printf "%s-synapse-redis" $root.Release.Name) .serviceAccount.name }}
 {{- end }}
 {{- end }}
 
 {{- define "element-io.synapse.haproxy.serviceAccountName" -}}
-{{- $global := .global -}}
+{{- $root := .root -}}
 {{- with required "element-io.synapse.haproxy.serviceAccountName missing context" .context -}}
-{{ default (printf "%s-synapse-haproxy" $global.Release.Name) .serviceAccount.name }}
+{{ default (printf "%s-synapse-haproxy" $root.Release.Name) .serviceAccount.name }}
 {{- end }}
 {{- end }}
 
 {{- define "element-io.synapse.enabledWorkers" -}}
-{{- $global := .global -}}
+{{- $root := .root -}}
 {{- with required "element-io.synapse.enabledWorkers missing context" .context -}}
 {{ $enabledWorkers := dict }}
 {{- range $workerType, $workerDetails := .workers }}
@@ -87,12 +87,12 @@ app.kubernetes.io/version: {{ .image.tag }}
 {{- end }}
 
 {{- define "element-io.synapse.pvcName" -}}
-{{- $global := .global -}}
+{{- $root := .root -}}
 {{- with required "element-io.synapse.pvcName missing context" .context -}}
-{{- if $global.Values.synapse.media.storage.existingClaim -}}
-{{ $global.Values.synapse.media.storage.existingClaim }}
+{{- if $root.Values.synapse.media.storage.existingClaim -}}
+{{ $root.Values.synapse.media.storage.existingClaim }}
 {{- else -}}
-{{ $global.Release.Name }}-synapse-media
+{{ $root.Release.Name }}-synapse-media
 {{- end -}}
 {{- end }}
 {{- end }}

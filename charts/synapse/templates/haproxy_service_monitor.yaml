@@ -13,7 +13,7 @@ apiVersion: monitoring.coreos.com/v1
 kind: ServiceMonitor
 metadata:
   labels:
-    {{- include "element-io.synapse.haproxy.labels" (dict "global" $ "context" .) | nindent 4 }}
+    {{- include "element-io.synapse.haproxy.labels" (dict "root" $ "context" .) | nindent 4 }}
   name: {{ $.Release.Name }}-synapse-haproxy
   namespace: {{ $.Release.Namespace }}
 spec:

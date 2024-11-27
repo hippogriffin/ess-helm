@@ -5,7 +5,7 @@ SPDX-License-Identifier: AGPL-3.0-only OR LicenseRef-Element-Commercial
 */ -}}
 
 {{- define "element-io.synapse.config.shared-underrides" -}}
-{{- $global := .global -}}
+{{- $root := .root -}}
 {{- with required "element-io.synapse.config.shared-underrides missing context" .context -}}
 report_stats: false
 
@@ -14,11 +14,11 @@ require_auth_for_profile_requests: true
 {{ end }}
 
 {{- define "element-io.synapse.config.shared-overrides" -}}
-{{- $global := .global -}}
+{{- $root := .root -}}
 {{- with required "element-io.synapse.config.shared-overrides missing context" .context -}}
 public_baseurl: https://{{ .ingress.host }}
-server_name: {{ required "Synapse requires ess.serverName set" $global.Values.ess.serverName }}
-signing_key_path: /secrets/{{ .signingKey.secret | default (printf "%s-synapse" $global.Release.Name) }}/{{ .signingKey.secretKey | default "SIGNING_KEY" }}
+server_name: {{ required "Synapse requires ess.serverName set" $root.Values.ess.serverName }}
+signing_key_path: /secrets/{{ .signingKey.secret | default (printf "%s-synapse" $root.Release.Name) }}/{{ .signingKey.secretKey | default "SIGNING_KEY" }}
 enable_metrics: true
 log_config: "/conf/log_config.yaml"
 macaroon_secret_key: ${SYNAPSE_MACAROON}
@@ -116,17 +116,17 @@ start_pushers: true
 
 update_user_directory_from_worker: user-dir-0
 {{- end }}
-{{- $enabledWorkers := (include "element-io.synapse.enabledWorkers" (dict "global" $global "context" .)) | fromJson }}
+{{- $enabledWorkers := (include "element-io.synapse.enabledWorkers" (dict "root" $root "context" .)) | fromJson }}
 
 instance_map:
   main:
-    host: {{ $global.Release.Name }}-synapse-main.{{ $global.Release.Namespace }}.svc.cluster.local.
+    host: {{ $root.Release.Name }}-synapse-main.{{ $root.Release.Namespace }}.svc.cluster.local.
     port: 9093
 {{- range $workerType, $workerDetails := $enabledWorkers }}
-{{- if include "element-io.synapse.process.hasReplication" (dict "global" $global "context" $workerType) }}
+{{- if include "element-io.synapse.process.hasReplication" (dict "root" $root "context" $workerType) }}
 {{- range $index := untilStep 0 ($workerDetails.instances | int | default 1) 1 }}
   {{ $workerType }}-{{ $index }}:
-    host: {{ $global.Release.Name }}-synapse-{{ $workerType }}-{{ $index }}.{{ $global.Release.Name }}-synapse-{{ $workerType }}.{{ $global.Release.Namespace }}.svc.cluster.local.
+    host: {{ $root.Release.Name }}-synapse-{{ $workerType }}-{{ $index }}.{{ $root.Release.Name }}-synapse-{{ $workerType }}.{{ $root.Release.Namespace }}.svc.cluster.local.
     port: 9093
 {{- end }}
 {{- end }}
@@ -136,13 +136,13 @@ instance_map:
 
 redis:
   enabled: true
-  host: "{{ $global.Release.Name }}-synapse-redis.{{ $global.Release.Namespace }}.svc.cluster.local"
-{{- if include "element-io.synapse.streamWriterWorkers" (dict "global" $global "context" .) | fromJsonArray }}
+  host: "{{ $root.Release.Name }}-synapse-redis.{{ $root.Release.Namespace }}.svc.cluster.local"
+{{- if include "element-io.synapse.streamWriterWorkers" (dict "root" $root "context" .) | fromJsonArray }}
 
 stream_writers:
 {{- range $workerType, $workerDetails := $enabledWorkers }}
-{{- if include "element-io.synapse.process.streamWriters" (dict "global" $global "context" $workerType) | fromJsonArray }}
-{{- range $stream_writer := include "element-io.synapse.process.streamWriters" (dict "global" $global "context" $workerType) | fromJsonArray }}
+{{- if include "element-io.synapse.process.streamWriters" (dict "root" $root "context" $workerType) | fromJsonArray }}
+{{- range $stream_writer := include "element-io.synapse.process.streamWriters" (dict "root" $root "context" $workerType) | fromJsonArray }}
   {{ $stream_writer }}:
 {{- range $index := untilStep 0 ($workerDetails.instances | int | default 1) 1 }}
   - {{ $workerType }}-{{ $index }}
@@ -158,9 +158,9 @@ stream_writers:
 
 
 {{- define "element-io.synapse.config.processSpecific" -}}
-{{- $global := .global -}}
+{{- $root := .root -}}
 {{- with required "element-io.synapse.config.processSpecific missing context" .context -}}
-worker_app: {{ include "element-io.synapse.process.app" (dict "global" $global "context" .processType) }}
+worker_app: {{ include "element-io.synapse.process.app" (dict "root" $root "context" .processType) }}
 
 {{- if eq .processType "main" }}
 listeners:
@@ -169,7 +169,7 @@ worker_name: ${APPLICATION_NAME}
 
 worker_listeners:
 {{- end }}
-{{- if (include "element-io.synapse.process.hasHttp" (dict "global" $global "context" .processType)) }}
+{{- if (include "element-io.synapse.process.hasHttp" (dict "root" $root "context" .processType)) }}
 - port: 8008
   tls: false
   bind_addresses: ['0.0.0.0']
@@ -185,7 +185,7 @@ worker_listeners:
 {{- end }}
     compress: false
 {{- end }}
-{{- if (include "element-io.synapse.process.hasReplication" (dict "global" $global "context" .processType)) }}
+{{- if (include "element-io.synapse.process.hasReplication" (dict "root" $root "context" .processType)) }}
 - port: 9093
   tls: false
   bind_addresses: ['0.0.0.0']
@@ -208,8 +208,8 @@ worker_listeners:
   - names: []
     compress: false
 
-{{- $enabledWorkers := (include "element-io.synapse.enabledWorkers" (dict "global" $global "context" .)) | fromJson }}
-{{- if (include "element-io.synapse.process.responsibleForMedia" (dict "global" $global "context" (dict "processType" .processType "enabledWorkerTypes" (keys $enabledWorkers)))) }}
+{{- $enabledWorkers := (include "element-io.synapse.enabledWorkers" (dict "root" $root "context" .)) | fromJson }}
+{{- if (include "element-io.synapse.process.responsibleForMedia" (dict "root" $root "context" (dict "processType" .processType "enabledWorkerTypes" (keys $enabledWorkers)))) }}
 enable_media_repo: true
 {{- else }}
 # Stub out the media storage provider for processes not responsible for media
