@@ -7,8 +7,9 @@
 # usage of the test cluster
 
 element-web:
-  ingress:
-    tlsSecret: ess-selfsigned
+  elementWeb:
+    ingress:
+      tlsSecret: ess-selfsigned
 
 synapse:
   ingress:
