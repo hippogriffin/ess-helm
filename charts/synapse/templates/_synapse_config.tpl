@@ -17,7 +17,7 @@ require_auth_for_profile_requests: true
 {{- $global := .global -}}
 {{- with required "element-io.synapse.config.shared-overrides missing context" .context -}}
 public_baseurl: https://{{ .ingress.host }}
-serverName: {{ required "Synapse requires global.ess.serverName set" .global.ess.serverName }}
+server_name: {{ required "Synapse requires ess.serverName set" $global.Values.ess.serverName }}
 signing_key_path: /secrets/{{ .signingKey.secret | default (printf "%s-synapse" $global.Release.Name) }}/{{ .signingKey.secretKey | default "SIGNING_KEY" }}
 enable_metrics: true
 log_config: "/conf/log_config.yaml"

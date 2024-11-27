@@ -47,9 +47,7 @@ synapse:
     ## password:
     ##   secret: existing-secret
     ##   secretKey: key-in-secret
-    password:
-       secret: change-me
-       secretKey: change-me-key
+    password: {}
   ## Configures the media store for Synapse
   media:
     ## Configures the PersistentVolumeClaim to be used for storage
@@ -75,9 +73,7 @@ synapse:
   ## signingKey:
   ##   secret: existing-secret
   ##   secretKey: key-in-secret
-  signingKey:
-     secret: change-me
-     secretKey: change-me-key
+  signingKey: {}
   ## Shared Secret to registering users without having any users provisioned.
   ## It can either be provided inline in the Helm chart e.g.:
   ## registrationSharedSecret:
@@ -87,9 +83,7 @@ synapse:
   ## registrationSharedSecret:
   ##   secret: existing-secret
   ##   secretKey: key-in-secret
-  registrationSharedSecret:
-     secret: change-me
-     secretKey: change-me-key
+  registrationSharedSecret: {}
   ## Secret used to sign Synapse issued tokens.
   ## It can either be provided inline in the Helm chart e.g.:
   ## macaroon:
@@ -99,9 +93,7 @@ synapse:
   ## macaroon:
   ##   secret: existing-secret
   ##   secretKey: key-in-secret
-  macaroon:
-     secret: change-me
-     secretKey: change-me-key
+  macaroon: {}
 
   ## Additional configuration to provide to all Synapse processes.
   ## This can be provided in-line in the Helm Chart and/or via an existing Secret

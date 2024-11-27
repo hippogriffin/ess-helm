@@ -6,8 +6,9 @@ SPDX-License-Identifier: AGPL-3.0-only OR LicenseRef-Element-Commercial
 
 {{- with .Values.synapse -}}
 {{- if .enabled -}}
-{{- if .Capabilities.APIVersions.Has "monitoring.coreos.com/v1/ServiceMonitor" }}
-{{- if .haproxy.serviceMonitors.enabled }}
+{{- if $.Capabilities.APIVersions.Has "monitoring.coreos.com/v1/ServiceMonitor" }}
+{{- with .haproxy -}}
+{{- if .serviceMonitors.enabled }}
 apiVersion: monitoring.coreos.com/v1
 kind: ServiceMonitor
 metadata:
@@ -26,6 +27,7 @@ spec:
       app.kubernetes.io/instance: {{ $.Release.Name }}-synapse-haproxy
 {{- end }}
 {{- end }}
+{{- end -}}
 {{- end -}}
 {{- end -}}
 

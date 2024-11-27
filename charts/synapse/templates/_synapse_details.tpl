@@ -106,20 +106,20 @@ responsibleForMedia
 {{- end }}
 {{- end }}
 {{ $streamWriterWorkers | toJson }}
-{{- end }}
+{{- end }}q
 {{- end }}
 
 {{- define "element-io.synapse.configSecrets" -}}
 {{- $global := .global -}}
 {{- with required "element-io.synapse.configSecrets missing context" .context -}}
-{{ $configSecrets := list (printf "%s-synapse" $.Release.Name) }}
+{{ $configSecrets := list (printf "%s-synapse" $global.Release.Name) }}
 {{- with .macaroon.secret -}}
 {{ $configSecrets = append $configSecrets . }}
 {{- end -}}
 {{- with .postgres.password.secret -}}
 {{ $configSecrets = append $configSecrets . }}
 {{- end -}}
-{{- with .secrets.registrationSharedSecret.secret -}}
+{{- with .registrationSharedSecret.secret -}}
 {{ $configSecrets = append $configSecrets . }}
 {{- end -}}
 {{- with .signingKey.secret -}}

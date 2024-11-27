@@ -55,7 +55,7 @@ spec:
    defined additional paths. If so, let the other service handle it and don't
    add it here. */}}
 {{- $_pathAlreadyDefined := false }}
-{{- range $.ingress.additionalPaths -}}
+{{- range $.Values.synapse.ingress.additionalPaths -}}
 {{- if has .availability (list "only_externally" "blocked") }}
 {{- if hasPrefix .path $synapsePath }}
 {{- $_pathAlreadyDefined = true }}

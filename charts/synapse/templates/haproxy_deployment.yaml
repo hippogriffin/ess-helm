@@ -1,12 +1,11 @@
-{{- /*
-Copyright 2024 New Vector Ltd
+# Copyright 2024 New Vector Ltd
+#
+# SPDX-License-Identifier: AGPL-3.0-only OR LicenseRef-Element-Commercial
 
-SPDX-License-Identifier: AGPL-3.0-only OR LicenseRef-Element-Commercial
-*/ -}}
 
 {{- with .Values.synapse -}}
 {{- if .enabled -}}
-{{- with .haproxy }}
+{{- with .haproxy -}}
 apiVersion: apps/v1
 kind: Deployment
 metadata:
@@ -118,6 +117,6 @@ spec:
           name: "{{ $.Release.Name }}-synapse-haproxy"
           defaultMode: 420
         name: haproxy-config
+{{- end -}}
+{{- end -}}
 {{- end }}
-{{- end -}}
-{{- end -}}

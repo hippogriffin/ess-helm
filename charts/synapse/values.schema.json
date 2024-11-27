@@ -103,30 +103,6 @@
             },
             "password": {
               "type": "object",
-              "oneOf": [
-                {
-                  "required": [
-                    "value"
-                  ],
-                  "not": {
-                    "required": [
-                      "secret",
-                      "secretKey"
-                    ]
-                  }
-                },
-                {
-                  "required": [
-                    "secret",
-                    "secretKey"
-                  ],
-                  "not": {
-                    "required": [
-                      "value"
-                    ]
-                  }
-                }
-              ],
               "properties": {
                 "value": {
                   "type": "string"
@@ -166,30 +142,6 @@
         },
         "macaroon": {
           "type": "object",
-          "oneOf": [
-            {
-              "required": [
-                "value"
-              ],
-              "not": {
-                "required": [
-                  "secret",
-                  "secretKey"
-                ]
-              }
-            },
-            {
-              "required": [
-                "secret",
-                "secretKey"
-              ],
-              "not": {
-                "required": [
-                  "value"
-                ]
-              }
-            }
-          ],
           "properties": {
             "value": {
               "type": "string"
@@ -205,30 +157,6 @@
         },
         "registrationSharedSecret": {
           "type": "object",
-          "oneOf": [
-            {
-              "required": [
-                "value"
-              ],
-              "not": {
-                "required": [
-                  "secret",
-                  "secretKey"
-                ]
-              }
-            },
-            {
-              "required": [
-                "secret",
-                "secretKey"
-              ],
-              "not": {
-                "required": [
-                  "value"
-                ]
-              }
-            }
-          ],
           "properties": {
             "value": {
               "type": "string"
@@ -244,30 +172,6 @@
         },
         "signingKey": {
           "type": "object",
-          "oneOf": [
-            {
-              "required": [
-                "value"
-              ],
-              "not": {
-                "required": [
-                  "secret",
-                  "secretKey"
-                ]
-              }
-            },
-            {
-              "required": [
-                "secret",
-                "secretKey"
-              ],
-              "not": {
-                "required": [
-                  "value"
-                ]
-              }
-            }
-          ],
           "properties": {
             "value": {
               "type": "string"
