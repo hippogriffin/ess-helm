@@ -3,16 +3,15 @@
 # SPDX-License-Identifier: AGPL-3.0-only OR LicenseRef-Element-Commercial
 
 import asyncio
-import os
 
 import pytest
 
 from ..fixtures import ESSData
 from ..lib.helpers import install_matrix_stack, kubernetes_tls_secret
-from ..lib.utils import aiottp_get_json
+from ..lib.utils import aiottp_get_json, value_file_has
 
 
-@pytest.mark.skipif(os.environ.get("TEST_ELEMENT_WEB") != "1", reason="ElementWeb not deployed")
+@pytest.mark.skipif(value_file_has("elementWeb.enabled", False), reason="ElementWeb not deployed")
 @pytest.mark.asyncio_cooperative
 async def test_element_web(
     cluster,
@@ -32,7 +31,7 @@ async def test_element_web(
     await asyncio.gather(revision, *[kube_client.create(r) for r in resources])
 
 
-@pytest.mark.skipif(os.environ.get("TEST_ELEMENT_WEB") != "1", reason="ElementWeb not deployed")
+@pytest.mark.skipif(value_file_has("elementWeb.enabled", False), reason="ElementWeb not deployed")
 @pytest.mark.asyncio_cooperative
 async def test_can_access_config_json(cluster, revision_deployed, generated_data: ESSData, ssl_context):
     await asyncio.to_thread(

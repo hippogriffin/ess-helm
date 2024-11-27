@@ -5,6 +5,7 @@
 import asyncio
 import base64
 import json
+import os
 import random
 from dataclasses import dataclass
 from ssl import SSLContext
@@ -12,6 +13,7 @@ from typing import Any
 from urllib.parse import urlparse
 
 import aiohttp
+import yaml
 from aiohttp_retry import ExponentialRetry, RetryClient
 from pytest_kubernetes.providers import AClusterManager
 
@@ -107,3 +109,19 @@ async def aiohttp_post_json(url: str, data: dict, headers: dict, ssl_context: SS
         url.replace(host, "127.0.0.1"), headers=headers | {"Host": host}, server_hostname=host, json=data
     ) as response:
         return await response.json()
+
+
+def value_file_has(property_path, expected):
+    """
+    Check if a nested property (given as a dot-separated string) is set to true in the YAML file.
+    """
+    with open(os.environ["TEST_VALUES_FILE"]) as file:
+        data = yaml.safe_load(file)
+
+    keys = property_path.split(".")
+    for key in keys:
+        if isinstance(data, dict) and key in data:
+            data = data[key]
+        else:
+            return False
+    return data == expected

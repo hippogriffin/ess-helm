@@ -4,7 +4,6 @@
 
 import asyncio
 import hashlib
-import os
 from pathlib import Path
 
 import pytest
@@ -12,11 +11,11 @@ import pytest
 from ..fixtures import ESSData
 from ..lib.helpers import install_matrix_stack, kubernetes_tls_secret
 from ..lib.synapse import assert_downloaded_content, download_media, upload_media
-from ..lib.utils import KubeCtl, aiohttp_post_json, aiottp_get_json
+from ..lib.utils import KubeCtl, aiohttp_post_json, aiottp_get_json, value_file_has
 from ..services import PostgresServer
 
 
-@pytest.mark.skipif(os.environ.get("TEST_SYNAPSE") != "1", reason="Synapse not deployed")
+@pytest.mark.skipif(value_file_has("synapse.enabled", False), reason="Synapse not deployed")
 @pytest.mark.asyncio_cooperative
 async def test_synapse(
     cluster,
@@ -56,7 +55,7 @@ async def test_synapse(
     assert "unstable_features" in json_content
 
 
-@pytest.mark.skipif(os.environ.get("TEST_SYNAPSE") != "1", reason="Synapse not deployed")
+@pytest.mark.skipif(value_file_has("synapse.enabled", False), reason="Synapse not deployed")
 @pytest.mark.parametrize("synapse_users", [("sliding-sync-user",)], indirect=True)
 @pytest.mark.asyncio_cooperative
 async def test_simplified_sliding_sync_syncs(ssl_context, synapse_users, generated_data: ESSData):
@@ -72,7 +71,7 @@ async def test_simplified_sliding_sync_syncs(ssl_context, synapse_users, generat
     assert "pos" in sync_result
 
 
-@pytest.mark.skipif(os.environ.get("TEST_SYNAPSE") != "1", reason="Synapse not deployed")
+@pytest.mark.skipif(value_file_has("synapse.enabled", False), reason="Synapse not deployed")
 @pytest.mark.parametrize("synapse_users", [("media-upload-unauth",)], indirect=True)
 @pytest.mark.asyncio_cooperative
 async def test_synapse_media_upload_fetch_authenticated(
