@@ -2,7 +2,7 @@
 #
 # SPDX-License-Identifier: AGPL-3.0-only OR LicenseRef-Element-Commercial
 
-name: Helm Chart packaging
+name: Helm Chart packaging and releasing
 on:
   pull_request:
   push:
@@ -11,12 +11,11 @@ on:
     tags:
   workflow_dispatch:
 
-permissions:
-  contents: read
-  packages: write
-
 jobs:
   helm-package:
+    permissions:
+      contents: read
+      packages: write
     runs-on: cpu-s
     container:
       image: ghcr.io/${{ github.repository }}/ci-runner
@@ -54,3 +53,62 @@ jobs:
       with:
         name: helm-package
         path: charts/matrix-stack/*.tgz*
+        retention-days: 1
+
+  release:
+    if: ${{ !failure() && !cancelled() && startsWith(github.ref, 'refs/tags/') }}
+    permissions:
+      contents: write
+      packages: read
+      pull-requests: write
+    needs:
+    - helm-package
+    runs-on: cpu-s
+    container:
+      image: ghcr.io/${{ github.repository }}/ci-runner
+      credentials:
+        username: ${{ github.actor }}
+        password: ${{ secrets.GITHUB_TOKEN }}
+    steps:
+    - name: Checkout
+      uses: actions/checkout@v4
+
+    - name: Grab packaged chart
+      uses: actions/download-artifact@v4
+      with:
+        name: helm-package
+        path: charts/matrix-stack/
+
+    - name: Calculate versions
+      id: versions
+      run: |
+        this_version=$(ls charts/matrix-stack/matrix-stack-*.tgz | sed 's/.*matrix-stack-//;s/.tgz//')
+        next_version=$(echo $this_version | sed 's/-dev//' | awk -F'[ .]' '{print $1"."$2"."$3+1"-dev"}')
+        scripts/set_chart_version.sh "$next_version"
+
+        echo "this-version=$this_version" >> $GITHUB_OUTPUT
+        echo "next-version=$next_version" >> $GITHUB_OUTPUT
+
+    - name: Release
+      uses: softprops/action-gh-release@v2
+      with:
+        generate_release_notes: true
+        files: charts/matrix-stack/matrix-stack*.tgz*
+        fail_on_unmatched_files: true
+        # This could simply be omitted if we didn't want to test without a tag
+        tag_name: "${{ steps.versions.outputs.this-version }}"
+
+    - name: Create PR for next patch version
+      uses: peter-evans/create-pull-request@v7
+      with:
+        branch: "gha/bump-to-${{ steps.versions.outputs.next-version }}"
+        base: "main"
+        commit-message: "Bump chart version to ${{ steps.versions.outputs.next-version }}"
+        title: "Bump chart version to ${{ steps.versions.outputs.next-version }} after release"
+        labels: automated,version-bump
+        body: |
+          ${{ steps.versions.outputs.this-version }} has just been released.
+          This PR prepares the chart & dependencies for the next release:
+          ${{ steps.versions.outputs.next-version }}.
+
+          The target branch may be wrong. In which case this PR should be taken over and manually adjusted.
