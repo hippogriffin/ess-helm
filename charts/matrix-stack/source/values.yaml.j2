@@ -9,9 +9,9 @@ SPDX-License-Identifier: AGPL-3.0-only OR LicenseRef-Element-Commercial
 {{ sub_schema_values.ess() }}
 
 elementWeb:
-  {% macro elementWebValues() %}{% include 'components/element-web.yaml.j2'%}{% endmacro %}
+  {% macro elementWebValues() %}{% include 'element-web.yaml.j2'%}{% endmacro %}
   {{- elementWebValues() | trim | indent(2) }}
 
 synapse:
-  {% macro synapseValues() %}{% include 'components/synapse.yaml.j2'%}{% endmacro %}
+  {% macro synapseValues() %}{% include 'synapse.yaml.j2'%}{% endmacro %}
   {{- synapseValues() | trim | indent(2) }}

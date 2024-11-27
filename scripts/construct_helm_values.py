@@ -13,7 +13,7 @@ from jinja2 import Environment, FileSystemLoader, select_autoescape
 def find_sub_dirs(root_dir):
     sub_schemas_dirs = []
 
-    for path in Path(root_dir).rglob('*'):
+    for path in Path(root_dir).rglob("*"):
         if path.is_dir():
             sub_schemas_dirs.append(path)
     return sub_schemas_dirs

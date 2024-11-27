@@ -102,7 +102,7 @@
       "$ref": "file://./common/essLibrary.json"
     },
     "ingress": {
-      "$ref": "file://./components/synapse/ingress_with_additional_paths.json"
+      "$ref": "file://./synapse/ingress_with_additional_paths.json"
     },
     "image": {
       "$ref": "file://./common/image.json"
@@ -144,58 +144,58 @@
       "type": "object",
       "properties": {
         "appservice": {
-          "$ref": "file://./components/synapse/single_worker.json"
+          "$ref": "file://./synapse/single_worker.json"
         },
         "background": {
-          "$ref": "file://./components/synapse/single_worker.json"
+          "$ref": "file://./synapse/single_worker.json"
         },
         "client-reader": {
-          "$ref": "file://./components/synapse/scalable_worker.json"
+          "$ref": "file://./synapse/scalable_worker.json"
         },
         "encryption": {
-          "$ref": "file://./components/synapse/single_worker.json"
+          "$ref": "file://./synapse/single_worker.json"
         },
         "event-creator": {
-          "$ref": "file://./components/synapse/scalable_worker.json"
+          "$ref": "file://./synapse/scalable_worker.json"
         },
         "event-persister": {
-          "$ref": "file://./components/synapse/scalable_worker.json"
+          "$ref": "file://./synapse/scalable_worker.json"
         },
         "federation-reader": {
-          "$ref": "file://./components/synapse/scalable_worker.json"
+          "$ref": "file://./synapse/scalable_worker.json"
         },
         "federation-sender": {
-          "$ref": "file://./components/synapse/scalable_worker.json"
+          "$ref": "file://./synapse/scalable_worker.json"
         },
         "initial-synchrotron": {
-          "$ref": "file://./components/synapse/scalable_worker.json"
+          "$ref": "file://./synapse/scalable_worker.json"
         },
         "media-repository": {
-          "$ref": "file://./components/synapse/single_worker.json"
+          "$ref": "file://./synapse/single_worker.json"
         },
         "presence-writer": {
-          "$ref": "file://./components/synapse/single_worker.json"
+          "$ref": "file://./synapse/single_worker.json"
         },
         "pusher": {
-          "$ref": "file://./components/synapse/scalable_worker.json"
+          "$ref": "file://./synapse/scalable_worker.json"
         },
         "receipts-account": {
-          "$ref": "file://./components/synapse/single_worker.json"
+          "$ref": "file://./synapse/single_worker.json"
         },
         "sliding-sync": {
-          "$ref": "file://./components/synapse/scalable_worker.json"
+          "$ref": "file://./synapse/scalable_worker.json"
         },
         "sso-login": {
-          "$ref": "file://./components/synapse/single_worker.json"
+          "$ref": "file://./synapse/single_worker.json"
         },
         "synchrotron": {
-          "$ref": "file://./components/synapse/scalable_worker.json"
+          "$ref": "file://./synapse/scalable_worker.json"
         },
         "typing-persister": {
-          "$ref": "file://./components/synapse/single_worker.json"
+          "$ref": "file://./synapse/single_worker.json"
         },
         "user-dir": {
-          "$ref": "file://./components/synapse/single_worker.json"
+          "$ref": "file://./synapse/single_worker.json"
         }
       }
     },

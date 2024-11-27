@@ -10,10 +10,10 @@
       "$ref": "file://./common/ess.json"
     },
     "elementWeb": {
-      "$ref": "file://./components/element-web.json"
+      "$ref": "file://./element-web.json"
     },
     "synapse": {
-      "$ref": "file://./components/synapse.json"
+      "$ref": "file://./synapse.json"
     }
   }
 }
