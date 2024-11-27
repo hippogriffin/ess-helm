@@ -4,10 +4,10 @@
   "type": "object",
   "properties": {
     "global": {
-      "$ref": "file://./../../matrix-stack/sub_schemas/global.json"
+      "$ref": "file://./common/global.json"
     },
     "ess": {
-      "$ref": "file://./../../matrix-stack/sub_schemas/ess.json"
+      "$ref": "file://./common/ess.json"
     },
     "elementWeb": {
       "$ref": "file://./element-web/values.schema.json"

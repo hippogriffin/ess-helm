@@ -23,37 +23,37 @@
       "type": "integer"
     },
     "ess-library": {
-      "$ref": "file://./../sub_schemas/essLibrary.json"
+      "$ref": "file://./common/essLibrary.json"
     },
     "image": {
-      "$ref": "file://./../sub_schemas/image.json"
+      "$ref": "file://./common/image.json"
     },
     "ingress": {
-      "$ref": "file://./../sub_schemas/ingress.json"
+      "$ref": "file://./common/ingress.json"
     },
     "labels": {
-      "$ref": "file://./../sub_schemas/labels.json"
+      "$ref": "file://./common/labels.json"
     },
     "annotations": {
-      "$ref": "file://./../sub_schemas/workloadAnnotations.json"
+      "$ref": "file://./common/workloadAnnotations.json"
     },
     "containersSecurityContext": {
-      "$ref": "file://./../sub_schemas/containersSecurityContext.json"
+      "$ref": "file://./common/containersSecurityContext.json"
     },
     "nodeSelector": {
-      "$ref": "file://./../sub_schemas/nodeSelector.json"
+      "$ref": "file://./common/nodeSelector.json"
     },
     "podSecurityContext": {
-      "$ref": "file://./../sub_schemas/podSecurityContext.json"
+      "$ref": "file://./common/podSecurityContext.json"
     },
     "resources": {
-      "$ref": "file://./../sub_schemas/resources.json"
+      "$ref": "file://./common/resources.json"
     },
     "serviceAccount": {
-      "$ref": "file://./../sub_schemas/serviceAccount.json"
+      "$ref": "file://./common/serviceAccount.json"
     },
     "tolerations": {
-      "$ref": "file://./../sub_schemas/tolerations.json"
+      "$ref": "file://./common/tolerations.json"
     }
   }
 }

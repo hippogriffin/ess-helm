@@ -7,24 +7,24 @@
       "type": "boolean"
     },
     "postgres": {
-      "$ref": "file://../sub_schemas/postgres-libpq.json"
+      "$ref": "file://./common/postgres-libpq.json"
     },
     "media": {
       "type": "object",
       "properties": {
         "storage": {
-          "$ref": "file://../sub_schemas/persistentVolumeClaim.json"
+          "$ref": "file://./common/persistentVolumeClaim.json"
         }
       }
     },
     "macaroon": {
-      "$ref": "file://../sub_schemas/credential.json"
+      "$ref": "file://./common/credential.json"
     },
     "registrationSharedSecret": {
-      "$ref": "file://../sub_schemas/credential.json"
+      "$ref": "file://./common/credential.json"
     },
     "signingKey": {
-      "$ref": "file://../sub_schemas/credential.json"
+      "$ref": "file://./common/credential.json"
     },
     "additional": {
       "type": "object",
@@ -96,106 +96,106 @@
       }
     },
     "global": {
-      "$ref": "file://../sub_schemas/global.json"
+      "$ref": "file://./common/global.json"
     },
     "ess-library": {
-      "$ref": "file://../sub_schemas/essLibrary.json"
+      "$ref": "file://./common/essLibrary.json"
     },
     "ingress": {
-      "$ref": "file://./synapse/sub_schemas/ingress_with_additional_paths.json"
+      "$ref": "file://./synapse/ingress_with_additional_paths.json"
     },
     "image": {
-      "$ref": "file://../sub_schemas/image.json"
+      "$ref": "file://./common/image.json"
     },
     "labels": {
-      "$ref": "file://../sub_schemas/labels.json"
+      "$ref": "file://./common/labels.json"
     },
     "annotations": {
-      "$ref": "file://../sub_schemas/workloadAnnotations.json"
+      "$ref": "file://./common/workloadAnnotations.json"
     },
     "containersSecurityContext": {
-      "$ref": "file://../sub_schemas/containersSecurityContext.json"
+      "$ref": "file://./common/containersSecurityContext.json"
     },
     "extraEnv": {
-      "$ref": "file://../sub_schemas/extraEnv.json"
+      "$ref": "file://./common/extraEnv.json"
     },
     "hostAliases": {
-      "$ref": "file://../sub_schemas/hostAliases.json"
+      "$ref": "file://./common/hostAliases.json"
     },
     "nodeSelector": {
-      "$ref": "file://../sub_schemas/nodeSelector.json"
+      "$ref": "file://./common/nodeSelector.json"
     },
     "podSecurityContext": {
-      "$ref": "file://../sub_schemas/podSecurityContext.json"
+      "$ref": "file://./common/podSecurityContext.json"
     },
     "resources": {
-      "$ref": "file://../sub_schemas/resources.json"
+      "$ref": "file://./common/resources.json"
     },
     "serviceAccount": {
-      "$ref": "file://../sub_schemas/serviceAccount.json"
+      "$ref": "file://./common/serviceAccount.json"
     },
     "serviceMonitors": {
-      "$ref": "file://../sub_schemas/serviceMonitors.json"
+      "$ref": "file://./common/serviceMonitors.json"
     },
     "tolerations": {
-      "$ref": "file://../sub_schemas/tolerations.json"
+      "$ref": "file://./common/tolerations.json"
     },
     "workers": {
       "type": "object",
       "properties": {
         "appservice": {
-          "$ref": "file://./synapse/sub_schemas/single_worker.json"
+          "$ref": "file://./synapse/single_worker.json"
         },
         "background": {
-          "$ref": "file://./synapse/sub_schemas/single_worker.json"
+          "$ref": "file://./synapse/single_worker.json"
         },
         "client-reader": {
-          "$ref": "file://./synapse/sub_schemas/scalable_worker.json"
+          "$ref": "file://./synapse/scalable_worker.json"
         },
         "encryption": {
-          "$ref": "file://./synapse/sub_schemas/single_worker.json"
+          "$ref": "file://./synapse/single_worker.json"
         },
         "event-creator": {
-          "$ref": "file://./synapse/sub_schemas/scalable_worker.json"
+          "$ref": "file://./synapse/scalable_worker.json"
         },
         "event-persister": {
-          "$ref": "file://./synapse/sub_schemas/scalable_worker.json"
+          "$ref": "file://./synapse/scalable_worker.json"
         },
         "federation-reader": {
-          "$ref": "file://./synapse/sub_schemas/scalable_worker.json"
+          "$ref": "file://./synapse/scalable_worker.json"
         },
         "federation-sender": {
-          "$ref": "file://./synapse/sub_schemas/scalable_worker.json"
+          "$ref": "file://./synapse/scalable_worker.json"
         },
         "initial-synchrotron": {
-          "$ref": "file://./synapse/sub_schemas/scalable_worker.json"
+          "$ref": "file://./synapse/scalable_worker.json"
         },
         "media-repository": {
-          "$ref": "file://./synapse/sub_schemas/single_worker.json"
+          "$ref": "file://./synapse/single_worker.json"
         },
         "presence-writer": {
-          "$ref": "file://./synapse/sub_schemas/single_worker.json"
+          "$ref": "file://./synapse/single_worker.json"
         },
         "pusher": {
-          "$ref": "file://./synapse/sub_schemas/scalable_worker.json"
+          "$ref": "file://./synapse/scalable_worker.json"
         },
         "receipts-account": {
-          "$ref": "file://./synapse/sub_schemas/single_worker.json"
+          "$ref": "file://./synapse/single_worker.json"
         },
         "sliding-sync": {
-          "$ref": "file://./synapse/sub_schemas/scalable_worker.json"
+          "$ref": "file://./synapse/scalable_worker.json"
         },
         "sso-login": {
-          "$ref": "file://./synapse/sub_schemas/single_worker.json"
+          "$ref": "file://./synapse/single_worker.json"
         },
         "synchrotron": {
-          "$ref": "file://./synapse/sub_schemas/scalable_worker.json"
+          "$ref": "file://./synapse/scalable_worker.json"
         },
         "typing-persister": {
-          "$ref": "file://./synapse/sub_schemas/single_worker.json"
+          "$ref": "file://./synapse/single_worker.json"
         },
         "user-dir": {
-          "$ref": "file://./synapse/sub_schemas/single_worker.json"
+          "$ref": "file://./synapse/single_worker.json"
         }
       }
     },
@@ -207,34 +207,34 @@
           "type": "integer"
         },
         "image": {
-          "$ref": "file://../sub_schemas/image.json"
+          "$ref": "file://./common/image.json"
         },
         "labels": {
-          "$ref": "file://../sub_schemas/labels.json"
+          "$ref": "file://./common/labels.json"
         },
         "annotations": {
-          "$ref": "file://../sub_schemas/workloadAnnotations.json"
+          "$ref": "file://./common/workloadAnnotations.json"
         },
         "containersSecurityContext": {
-          "$ref": "file://../sub_schemas/containersSecurityContext.json"
+          "$ref": "file://./common/containersSecurityContext.json"
         },
         "nodeSelector": {
-          "$ref": "file://../sub_schemas/nodeSelector.json"
+          "$ref": "file://./common/nodeSelector.json"
         },
         "podSecurityContext": {
-          "$ref": "file://../sub_schemas/podSecurityContext.json"
+          "$ref": "file://./common/podSecurityContext.json"
         },
         "resources": {
-          "$ref": "file://../sub_schemas/resources.json"
+          "$ref": "file://./common/resources.json"
         },
         "serviceAccount": {
-          "$ref": "file://../sub_schemas/serviceAccount.json"
+          "$ref": "file://./common/serviceAccount.json"
         },
         "serviceMonitors": {
-          "$ref": "file://../sub_schemas/serviceMonitors.json"
+          "$ref": "file://./common/serviceMonitors.json"
         },
         "tolerations": {
-          "$ref": "file://../sub_schemas/tolerations.json"
+          "$ref": "file://./common/tolerations.json"
         }
       }
     },
@@ -242,31 +242,31 @@
       "type": "object",
       "properties": {
         "image": {
-          "$ref": "file://../sub_schemas/image.json"
+          "$ref": "file://./common/image.json"
         },
         "labels": {
-          "$ref": "file://../sub_schemas/labels.json"
+          "$ref": "file://./common/labels.json"
         },
         "annotations": {
-          "$ref": "file://../sub_schemas/workloadAnnotations.json"
+          "$ref": "file://./common/workloadAnnotations.json"
         },
         "containersSecurityContext": {
-          "$ref": "file://../sub_schemas/containersSecurityContext.json"
+          "$ref": "file://./common/containersSecurityContext.json"
         },
         "nodeSelector": {
-          "$ref": "file://../sub_schemas/nodeSelector.json"
+          "$ref": "file://./common/nodeSelector.json"
         },
         "podSecurityContext": {
-          "$ref": "file://../sub_schemas/podSecurityContext.json"
+          "$ref": "file://./common/podSecurityContext.json"
         },
         "resources": {
-          "$ref": "file://../sub_schemas/resources.json"
+          "$ref": "file://./common/resources.json"
         },
         "serviceAccount": {
-          "$ref": "file://../sub_schemas/serviceAccount.json"
+          "$ref": "file://./common/serviceAccount.json"
         },
         "tolerations": {
-          "$ref": "file://../sub_schemas/tolerations.json"
+          "$ref": "file://./common/tolerations.json"
         }
       }
     }
