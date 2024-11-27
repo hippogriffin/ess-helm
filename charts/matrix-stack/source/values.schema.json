@@ -17,8 +17,7 @@
       "$ref": "file://./element-web/values.schema.json"
     },
     "synapse": {
-      "type": "object",
-      "additionalProperties": true
+      "$ref": "file://./synapse/values.schema.json"
     }
   }
 }

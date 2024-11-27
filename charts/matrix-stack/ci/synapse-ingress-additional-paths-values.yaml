@@ -5,6 +5,9 @@
 ess:
   serverName: ess.localhost
 
+elementWeb:
+  enabled: false
+
 synapse:
   enabled: true
   ingress:
