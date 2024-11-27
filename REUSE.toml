@@ -11,7 +11,7 @@ SPDX-FileCopyrightText = "Copyright 2024 New Vector Ltd"
 SPDX-License-Identifier = "AGPL-3.0-only OR LicenseRef-Element-Commercial"
 
 [[annotations]]
-path = "charts/**/source/sub_schemas/*.json"
+path = "charts/**/sub_schemas/*.json"
 SPDX-FileCopyrightText = "Copyright 2024 New Vector Ltd"
 SPDX-License-Identifier = "AGPL-3.0-only OR LicenseRef-Element-Commercial"
 
