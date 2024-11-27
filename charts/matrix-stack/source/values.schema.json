@@ -8,12 +8,7 @@
     },
     "element-web": {
       "type": "object",
-      "additionalProperties": true,
-      "properties": {
-        "enabled": {
-          "type": "boolean"
-        }
-      }
+      "additionalProperties": true
     },
     "synapse": {
       "type": "object",

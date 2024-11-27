@@ -5,7 +5,12 @@
 {{- define "element-io.ess-library.labels.common" -}}
 {{- $ := index . 0 }}
 {{- $userLabels := dict -}}
-{{- $userLabels = merge $userLabels $.Values.global.ess.labels }}
+{{ with $.Values.global }}
+{{- $userLabels = merge $userLabels (.ess.labels | default ) }}
+{{- end }}
+{{ with $.Values.ess }}
+{{- $userLabels = merge $userLabels (.labels | default ) }}
+{{- end }}
 {{- $userLabels = merge $userLabels ( index . 1) }}
 {{- /* These labels are owned by the chart, don't allow overriding */}}
 {{- $userLabels = unset $userLabels "helm.sh/chart.sh" }}

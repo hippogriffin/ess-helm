@@ -1,0 +1,23 @@
+{
+  "type": "object",
+  "additionalProperties": true,
+  "properties": {
+    "serverName": {
+      "type": "string"
+    },
+    "labels": {
+      "$ref": "file://./../../matrix-stack/sub_schemas/labels.json"
+    },
+    "imagePullSecrets": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "name": {
+            "type": "string"
+          }
+        }
+      }
+    }
+  }
+}

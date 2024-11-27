@@ -8,6 +8,24 @@ SPDX-License-Identifier: AGPL-3.0-only OR LicenseRef-Element-Commercial
 # This file is generated. Do not edit directly. Edit source/values.yaml.j2 instead to make changes
 {%- endmacro %}
 
+{% macro ess() %}
+## ESS specific globals, namespaced to avoid interference with other charts
+ess:
+  ## The server name of the Matrix Stack. This gets embedded in user IDs & room IDs
+  ## It can not change after the initial deployment.
+  # serverName: ess.localhost
+
+  {{- labels() | indent(2) }}
+
+  ## A list of Secrets in this namespace to use as pull Secrets.
+  ## Ignored if a given component specifies its own pull Secrets.
+  ## e.g.
+  ## imagePullSecrets:
+  ## - name: ess-pull-secret
+  imagePullSecrets: []
+{%- endmacro %}
+
+
 {% macro global() %}
 ## Global values available to all sub-charts
 global:
