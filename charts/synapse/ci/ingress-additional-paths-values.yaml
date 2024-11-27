@@ -2,42 +2,43 @@
 #
 # SPDX-License-Identifier: AGPL-3.0-only OR LicenseRef-Element-Commercial
 
-global:
-  ess:
-    server_name: ess.localhost
+ess:
+  serverName: ess.localhost
 
-ingress:
-  host: synapse.ess.localhost
+synapse:
+  enabled: true
+  ingress:
+    host: synapse.ess.localhost
 
-  additionalPaths:
-  - path: /_matrix/identity
-    availability: only_externally
-    service:
-      name: sydent
-      port:
-        number: 8080
+    additionalPaths:
+    - path: /_matrix/identity
+      availability: only_externally
+      service:
+        name: sydent
+        port:
+          number: 8080
 
-  - path: /_synapse
-    availability: blocked
+    - path: /_synapse
+      availability: blocked
 
-  - path: /other
-    availability: internally_and_externally
-    service:
-      name: something
-      port:
-        name: http
+    - path: /other
+      availability: internally_and_externally
+      service:
+        name: something
+        port:
+          name: http
 
-registrationSharedSecret:
-  value: CHANGEME-ooWo6jeidahhei3Hae0eer9U
-macaroon:
-  value: CHANGEME-eek3Eigoh8ux8laeTingeej1
-signingKey:
-  value: ed25519 0 bNQOzBUDszff7Ax81z6w0uZ1IPWoxYaazT7emaZEfpw
+  registrationSharedSecret:
+    value: CHANGEME-ooWo6jeidahhei3Hae0eer9U
+  macaroon:
+    value: CHANGEME-eek3Eigoh8ux8laeTingeej1
+  signingKey:
+    value: ed25519 0 bNQOzBUDszff7Ax81z6w0uZ1IPWoxYaazT7emaZEfpw
 
-postgres:
-  host: ess-postgres
-  user: synapse_user
-  database: synapse
-  password:
-    secret: ess-postgres
-    secretKey: password
+  postgres:
+    host: ess-postgres
+    user: synapse_user
+    database: synapse
+    password:
+      secret: ess-postgres
+      secretKey: password

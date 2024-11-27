@@ -113,16 +113,16 @@ responsibleForMedia
 {{- $global := .global -}}
 {{- with required "element-io.synapse.configSecrets missing context" .context -}}
 {{ $configSecrets := list (printf "%s-synapse" $.Release.Name) }}
-{{- with .Values.macaroon.secret -}}
+{{- with .macaroon.secret -}}
 {{ $configSecrets = append $configSecrets . }}
 {{- end -}}
-{{- with .Values.postgres.password.secret -}}
+{{- with .postgres.password.secret -}}
 {{ $configSecrets = append $configSecrets . }}
 {{- end -}}
-{{- with .Values.registrationSharedSecret.secret -}}
+{{- with .secrets.registrationSharedSecret.secret -}}
 {{ $configSecrets = append $configSecrets . }}
 {{- end -}}
-{{- with .Values.signingKey.secret -}}
+{{- with .signingKey.secret -}}
 {{ $configSecrets = append $configSecrets . }}
 {{- end -}}
 {{ $configSecrets | uniq | toJson }}

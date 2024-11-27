@@ -17,7 +17,7 @@ require_auth_for_profile_requests: true
 {{- $global := .global -}}
 {{- with required "element-io.synapse.config.shared-overrides missing context" .context -}}
 public_baseurl: https://{{ .ingress.host }}
-server_name: {{ required "Synapse requires global.ess.server_name set" .global.ess.server_name }}
+serverName: {{ required "Synapse requires global.ess.serverName set" .global.ess.serverName }}
 signing_key_path: /secrets/{{ .signingKey.secret | default (printf "%s-synapse" $global.Release.Name) }}/{{ .signingKey.secretKey | default "SIGNING_KEY" }}
 enable_metrics: true
 log_config: "/conf/log_config.yaml"
@@ -27,11 +27,11 @@ registration_shared_secret: ${SYNAPSE_REGISTRATION_SHARED_SECRET}
 database:
   name: psycopg2
   args:
-    user: {{ .postgres.user }}
+    user: {{ required "Synapse requires postgres.user set" .postgres.user }}
     password: ${SYNAPSE_POSTGRES_PASSWORD}
-    database: {{ .postgres.database }}
-    host: {{ .postgres.host }}
-    port: {{ .postgres.port }}
+    database: {{ required "Synapse requires postgres.database set" .postgres.database }}
+    host: {{ required "Synapse requires postgres.host set" .postgres.host }}
+    port: {{ required "Synapse requires postgres.port set" .postgres.port }}
 
     application_name: ${APPLICATION_NAME}
     sslmode: {{ .postgres.sslMode }}

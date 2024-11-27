@@ -10,10 +10,10 @@ SPDX-License-Identifier: AGPL-3.0-only OR LicenseRef-Element-Commercial
 
 {{- sub_schema_values.ess() }}
 
-{{- sub_schema_values.postgresLibPQ() }}
 
 synapse:
   enabled: true
+  {{- sub_schema_values.postgresLibPQ() | indent(2) }}
   ## Configures the media store for Synapse
   media:
   {{- sub_schema_values.persistentVolumeClaim("storage") | indent(4) }}

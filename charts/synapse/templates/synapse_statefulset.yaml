@@ -9,7 +9,7 @@ SPDX-License-Identifier: AGPL-3.0-only OR LicenseRef-Element-Commercial
 {{- $enabledWorkers := (include "element-io.synapse.enabledWorkers" (dict "global" $ "context" .)) | fromJson }}
 {{- range $processType, $unmergedProcessDetails := merge $enabledWorkers (dict "main" dict) }}
 {{- $perProcessRoot := merge (dict "ProcessType" $processType) $ }}
-{{- with dict "Values" (merge dict ($unmergedProcessDetails | deepCopy) ($.Values | deepCopy)) }}
+{{- with dict "Values" (merge dict ($unmergedProcessDetails | deepCopy) ($.Values.synapse | deepCopy)) }}
 apiVersion: apps/v1
 kind: StatefulSet
 metadata:
@@ -105,7 +105,7 @@ We have an init container to render & merge the config for several reasons:
                  to allow extraEnv with valueFrom.secretKeyRef. */}}
           export SYNAPSE_MACAROON=$(cat /secrets/{{ .macaroon.secret | default (printf "%s-synapse" $.Release.Name) }}/{{ .macaroon.secretKey | default "MACAROON" }});
           export SYNAPSE_POSTGRES_PASSWORD=$(cat /secrets/{{ .postgres.password.secret | default (printf "%s-synapse" $.Release.Name) }}/{{ .postgres.password.secretKey | default "POSTGRES_PASSWORD" }});
-          export SYNAPSE_REGISTRATION_SHARED_SECRET=$(cat /secrets/{{ .registrationSharedSecret.secret | default (printf "%s-synapse" $.Release.Name) }}/{{ .registrationSharedSecret.secretKey | default "REGISTRATION_SHARED_SECRET" }});
+          export SYNAPSE_REGISTRATION_SHARED_SECRET=$(cat /secrets/{{ .secrets.registrationSharedSecret.secret | default (printf "%s-synapse" $.Release.Name) }}/{{ .secrets.registrationSharedSecret.secretKey | default "REGISTRATION_SHARED_SECRET" }});
 
           set -x;
           export APPLICATION_NAME=$(hostname -s | sed 's/.*-synapse-//g');

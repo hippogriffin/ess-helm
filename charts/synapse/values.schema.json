@@ -75,12 +75,6 @@
         },
         "postgres": {
           "type": "object",
-          "required": [
-            "host",
-            "user",
-            "database",
-            "password"
-          ],
           "properties": {
             "host": {
               "type": "string"
@@ -398,9 +392,6 @@
         },
         "ingress": {
           "type": "object",
-          "required": [
-            "host"
-          ],
           "properties": {
             "annotations": {
               "type": "object",

@@ -17,36 +17,39 @@ ess:
   ## imagePullSecrets:
   ## - name: ess-pull-secret
   imagePullSecrets: []
-## Details of the Postgres Database to use
-postgres:
-  ## PostgreSQL database host
-  # host:
 
-  ## PostgreSQL port
-  port: 5432
-
-  ## PostgreSQL username
-  # user:
-
-  ## PostgreSQL database name
-  # database:
-
-  ## TLS settins to use for the PostgreSQL connection
-  sslMode: prefer
-
-  ## PostgreSQL password.
-  ## It can either be provided inline in the Helm chart e.g.:
-  ## password:
-  ##   value: SecretValue
-  ##
-  ## Or it can be provided via an existing Secret e.g.:
-  ## password:
-  ##   secret: existing-secret
-  ##   secretKey: key-in-secret
-  password: {}
 
 synapse:
   enabled: true
+  ## Details of the Postgres Database to use
+  postgres:
+    ## PostgreSQL database host
+    # host:
+
+    ## PostgreSQL port
+    port: 5432
+
+    ## PostgreSQL username
+    # user:
+
+    ## PostgreSQL database name
+    # database:
+
+    ## TLS settins to use for the PostgreSQL connection
+    sslMode: prefer
+
+    ## PostgreSQL password.
+    ## It can either be provided inline in the Helm chart e.g.:
+    ## password:
+    ##   value: SecretValue
+    ##
+    ## Or it can be provided via an existing Secret e.g.:
+    ## password:
+    ##   secret: existing-secret
+    ##   secretKey: key-in-secret
+    password:
+       secret: change-me
+       secretKey: change-me-key
   ## Configures the media store for Synapse
   media:
     ## Configures the PersistentVolumeClaim to be used for storage
@@ -72,7 +75,9 @@ synapse:
   ## signingKey:
   ##   secret: existing-secret
   ##   secretKey: key-in-secret
-  signingKey: {}
+  signingKey:
+     secret: change-me
+     secretKey: change-me-key
   ## Shared Secret to registering users without having any users provisioned.
   ## It can either be provided inline in the Helm chart e.g.:
   ## registrationSharedSecret:
@@ -82,7 +87,9 @@ synapse:
   ## registrationSharedSecret:
   ##   secret: existing-secret
   ##   secretKey: key-in-secret
-  registrationSharedSecret: {}
+  registrationSharedSecret:
+     secret: change-me
+     secretKey: change-me-key
   ## Secret used to sign Synapse issued tokens.
   ## It can either be provided inline in the Helm chart e.g.:
   ## macaroon:
@@ -92,7 +99,9 @@ synapse:
   ## macaroon:
   ##   secret: existing-secret
   ##   secretKey: key-in-secret
-  macaroon: {}
+  macaroon:
+     secret: change-me
+     secretKey: change-me-key
 
   ## Additional configuration to provide to all Synapse processes.
   ## This can be provided in-line in the Helm Chart and/or via an existing Secret

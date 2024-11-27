@@ -80,7 +80,9 @@ global:
 ## {{ key }}:
 ##   secret: existing-secret
 ##   secretKey: key-in-secret
-{{ key }}: {}
+{{ key }}:
+   secret: change-me
+   secretKey: change-me-key
 {%- endmacro %}
 
 {% macro extraEnv(key='extraEnv') %}
