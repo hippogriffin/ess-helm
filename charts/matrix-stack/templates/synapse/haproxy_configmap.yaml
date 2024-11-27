@@ -15,7 +15,7 @@ metadata:
   namespace: {{ $.Release.Namespace }}
 data:
   haproxy.cfg: |
-    {{- tpl ($.Files.Get "configs/haproxy/haproxy.cfg.tpl") (dict "root" $ "context" .) | nindent 4 }}
+    {{- tpl ($.Files.Get "configs/synapse/haproxy.cfg.tpl") (dict "root" $ "context" .) | nindent 4 }}
   path_map_file: |
     # A map file that is used in haproxy config to map from matrix paths to the
     # named backend. The format is: path_regexp backend_name

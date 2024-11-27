@@ -1,9 +1,6 @@
 dependencies:
-- name: synapse
-  repository: file://../synapse
-  version: 0.0.0-dev
 - name: ess-library
   repository: file://../ess-library
   version: 0.0.0-dev
-digest: sha256:ff4fa7d0f7eb859e0c55c36e9a462f03b045e9b2c3dcf0b9315d08bad918d5d8
-generated: "2024-11-27T16:08:11.722897922+01:00"
+digest: sha256:1f7a32667f6336fd19d1b6e3a24fd2cb51f3d728bf5ec086d7718c5350352f26
+generated: "2024-11-27T16:30:57.671623029+01:00"

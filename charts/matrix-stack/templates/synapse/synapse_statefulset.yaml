@@ -19,8 +19,8 @@ metadata:
 {{- end }}
   labels:
     {{- include "element-io.synapse.process.labels" (dict "root" $ "context" $perProcessRoot) | nindent 4 }}
-    k8s.element.io/confighash: "{{ include (print $.Template.BasePath "/synapse_secret.yaml") $ | sha1sum }}"
-    k8s.element.io/logconfighash: "{{ include (print $.Template.BasePath "/synapse_configmap.yaml") $ | sha1sum }}"
+    k8s.element.io/confighash: "{{ include (print $.Template.BasePath "/synapse/synapse_secret.yaml") $ | sha1sum }}"
+    k8s.element.io/logconfighash: "{{ include (print $.Template.BasePath "/synapse/synapse_configmap.yaml") $ | sha1sum }}"
 {{- range $index, $appservice := .appservices }}
     k8s.element.io/as-registration-{{ $index }}-hash: "{{ (lookup "v1" "ConfigMap" $.Release.Namespace $appservice.registrationFileConfigMap) | toJson | sha1sum }}"
 {{- end }}
@@ -40,8 +40,8 @@ spec:
     metadata:
       labels:
         {{- include "element-io.synapse.process.labels" (dict "root" $ "context" $perProcessRoot) | nindent 8 }}
-        k8s.element.io/confighash: "{{ include (print $.Template.BasePath "/synapse_secret.yaml") $ | sha1sum }}"
-        k8s.element.io/logconfighash: "{{ include (print $.Template.BasePath "/synapse_configmap.yaml") $ | sha1sum }}"
+        k8s.element.io/confighash: "{{ include (print $.Template.BasePath "/synapse/synapse_secret.yaml") $ | sha1sum }}"
+        k8s.element.io/logconfighash: "{{ include (print $.Template.BasePath "/synapse/synapse_configmap.yaml") $ | sha1sum }}"
 {{- range $index, $appservice := .appservices }}
         k8s.element.io/as-registration-{{ $index }}-hash: "{{ (lookup "v1" "ConfigMap" $.Release.Namespace $appservice.registrationFileConfigMap) | toJson | sha1sum }}"
 {{- end }}

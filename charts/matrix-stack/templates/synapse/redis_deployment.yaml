@@ -17,7 +17,7 @@ metadata:
 {{- end }}
   labels:
     {{- include "element-io.synapse.redis.labels" (dict "root" $ "context" .) | nindent 4 }}
-    k8s.element.io/confighash: "{{ include (print $.Template.BasePath "/redis_configmap.yaml") $ | sha1sum }}"
+    k8s.element.io/confighash: "{{ include (print $.Template.BasePath "/synapse/redis_configmap.yaml") $ | sha1sum }}"
   name: {{ $.Release.Name }}-synapse-redis
   namespace: {{ $.Release.Namespace }}
 spec:
@@ -34,7 +34,7 @@ spec:
     metadata:
       labels:
         {{- include "element-io.synapse.redis.labels" (dict "root" $ "context" .) | nindent 8 }}
-        k8s.element.io/confighash: "{{ include (print $.Template.BasePath "/redis_configmap.yaml") $ | sha1sum }}"
+        k8s.element.io/confighash: "{{ include (print $.Template.BasePath "/synapse/redis_configmap.yaml") $ | sha1sum }}"
 {{- with .annotations }}
       annotations:
         {{- toYaml . | nindent 8 }}

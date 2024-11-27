@@ -6,5 +6,4 @@ elementWeb:
   enabled: false
 
 synapse:
-  synapse:
-    enabled: false
+  enabled: false
