@@ -1,8 +1,12 @@
-# Copyright 2024 New Vector Ltd
-#
-# SPDX-License-Identifier: AGPL-3.0-only OR LicenseRef-Element-Commercial
+{{- /*
+Copyright 2024 New Vector Ltd
+
+SPDX-License-Identifier: AGPL-3.0-only OR LicenseRef-Element-Commercial
+*/ -}}
 
 {{- define "element-io.synapse.process.hasHttp" -}}
+{{- $global := .global -}}
+{{- with required "element-io.synapse.process.hasHttp missing context" .context -}}
 {{ $hasHttp := (list "main" "client-reader" "encryption" "event-creator"
                      "federation-inbound" "federation-reader" "initial-synchrotron"
                      "media-repository" "presence-writer" "receipts-account"
@@ -11,35 +15,47 @@
 {{- if has . $hasHttp -}}
 hasHttp
 {{- end -}}
+{{- end -}}
 {{- end }}
 
 {{- define "element-io.synapse.process.hasReplication" -}}
+{{- $global := .global -}}
+{{- with required "element-io.synapse.process.hasReplication missing context" .context -}}
 {{- $hasReplication := (list "main" "encryption" "event-persister"
                              "presence-writer" "receipts-account"
                              "typing-persister") }}
 {{- if has . $hasReplication -}}
 hasReplication
 {{- end -}}
+{{- end -}}
 {{- end }}
 
 {{- define "element-io.synapse.process.isSingle" -}}
+{{- $global := .global -}}
+{{- with required "element-io.synapse.process.isSingle missing context" .context -}}
 {{ $isSingle := (list "main" "appservice" "background" "encryption"
                       "media-repository" "presence-writer" "receipts-account"
                       "sso-login" "typing-persister" "user-dir") }}
 {{- if has . $isSingle -}}
 isSingle
 {{- end -}}
+{{- end -}}
 {{- end }}
 
 {{- define "element-io.synapse.process.workerTypeName" -}}
+{{- $global := .global -}}
+{{- with required "element-io.synapse.process.workerTypeName missing context" .context -}}
 {{- if eq . "initial-synchrotron" -}}
 initial-sync
 {{- else -}}
 {{ . }}
 {{- end -}}
+{{- end -}}
 {{- end }}
 
 {{- define "element-io.synapse.process.app" -}}
+{{- $global := .global -}}
+{{- with required "element-io.synapse.process.app missing context" .context -}}
 {{- if eq . "main" -}}
 synapse.app.homeserver
 {{- else if eq . "media-repository" -}}
@@ -47,17 +63,23 @@ synapse.app.media_repository
 {{- else -}}
 synapse.app.generic_worker
 {{- end -}}
+{{- end -}}
 {{- end }}
 
 {{- define "element-io.synapse.process.responsibleForMedia" -}}
+{{- $global := .global -}}
+{{- with required "element-io.synapse.process.responsibleForMedia missing context" .context -}}
 {{- if and (eq .processType "main") (not (has "media-repository" .enabledWorkerTypes)) -}}
 responsibleForMedia
 {{- else if eq .processType "media-repository" -}}
 responsibleForMedia
 {{- end -}}
+{{- end -}}
 {{- end }}
 
 {{- define "element-io.synapse.process.streamWriters" -}}
+{{- $global := .global -}}
+{{- with required "element-io.synapse.process.streamWriters missing context" .context -}}
 {{- if eq . "encryption" }}
 {{ list "to_device" | toJson }}
 {{- else if eq . "event-persister" }}
@@ -72,18 +94,24 @@ responsibleForMedia
 {{ list | toJson }}
 {{- end }}
 {{- end }}
+{{- end }}
 
 {{- define "element-io.synapse.streamWriterWorkers" -}}
+{{- $global := .global -}}
+{{- with required "element-io.synapse.streamWriterWorkers missing context" .context -}}
 {{ $streamWriterWorkers := list }}
-{{- range $workerType := keys ((include "element-io.synapse.enabledWorkers" $) | fromJson) }}
-{{- if include "element-io.synapse.process.streamWriters" $workerType | fromJsonArray -}}
+{{- range $workerType := keys ((include "element-io.synapse.enabledWorkers" (dict "global" $global "context" .)) | fromJson) }}
+{{- if include "element-io.synapse.process.streamWriters" (dict "global" $global "context" $workerType) | fromJsonArray -}}
 {{ $streamWriterWorkers = append $streamWriterWorkers $workerType }}
 {{- end }}
 {{- end }}
 {{ $streamWriterWorkers | toJson }}
 {{- end }}
+{{- end }}
 
 {{- define "element-io.synapse.configSecrets" -}}
+{{- $global := .global -}}
+{{- with required "element-io.synapse.configSecrets missing context" .context -}}
 {{ $configSecrets := list (printf "%s-synapse" $.Release.Name) }}
 {{- with .Values.macaroon.secret -}}
 {{ $configSecrets = append $configSecrets . }}
@@ -99,8 +127,11 @@ responsibleForMedia
 {{- end -}}
 {{ $configSecrets | uniq | toJson }}
 {{- end }}
+{{- end }}
 
 {{- define "element-io.synapse.process.workerPaths" -}}
+{{- $global := .global -}}
+{{- with required "element-io.synapse.workerPaths missing context" .context -}}
 {{ $workerPaths := list }}
 
 {{- if eq .workerType "client-reader" }}
@@ -297,4 +328,5 @@ responsibleForMedia
 }}
 {{- end }}
 {{ $workerPaths | toJson }}
+{{- end }}
 {{- end }}

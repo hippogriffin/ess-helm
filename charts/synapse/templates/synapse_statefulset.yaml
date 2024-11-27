@@ -1,30 +1,34 @@
-# Copyright 2024 New Vector Ltd
-#
-# SPDX-License-Identifier: AGPL-3.0-only OR LicenseRef-Element-Commercial
+{{- /*
+Copyright 2024 New Vector Ltd
 
-{{- $enabledWorkers := (include "element-io.synapse.enabledWorkers" $) | fromJson }}
+SPDX-License-Identifier: AGPL-3.0-only OR LicenseRef-Element-Commercial
+*/ -}}
+
+{{- with .Values.synapse -}}
+{{- if .enabled -}}
+{{- $enabledWorkers := (include "element-io.synapse.enabledWorkers" (dict "global" $ "context" .)) | fromJson }}
 {{- range $processType, $unmergedProcessDetails := merge $enabledWorkers (dict "main" dict) }}
 {{- $perProcessRoot := merge (dict "ProcessType" $processType) $ }}
 {{- with dict "Values" (merge dict ($unmergedProcessDetails | deepCopy) ($.Values | deepCopy)) }}
 apiVersion: apps/v1
 kind: StatefulSet
 metadata:
-{{- with .Values.annotations }}
+{{- with .annotations }}
   annotations:
     {{- toYaml . | nindent 4 }}
 {{- end }}
   labels:
-    {{- include "element-io.synapse.process.labels" $perProcessRoot | nindent 4 }}
+    {{- include "element-io.synapse.process.labels" (dict "global" $ "context" $perProcessRoot) | nindent 4 }}
     k8s.element.io/confighash: "{{ include (print $.Template.BasePath "/synapse_secret.yaml") $ | sha1sum }}"
     k8s.element.io/logconfighash: "{{ include (print $.Template.BasePath "/synapse_configmap.yaml") $ | sha1sum }}"
-{{- range $index, $appservice := .Values.appservices }}
+{{- range $index, $appservice := .appservices }}
     k8s.element.io/as-registration-{{ $index }}-hash: "{{ (lookup "v1" "ConfigMap" $.Release.Namespace $appservice.registrationFileConfigMap) | toJson | sha1sum }}"
 {{- end }}
   name: {{ $.Release.Name }}-synapse-{{ $processType }}
   namespace: {{ $.Release.Namespace }}
 spec:
   serviceName: {{ $.Release.Name }}-synapse-{{ $processType }}
-  replicas: {{ .Values.instances | default 1 }}
+  replicas: {{ .instances | default 1 }}
   selector:
     matchLabels:
       app.kubernetes.io/instance: {{ $.Release.Name }}-synapse-{{ $processType }}
@@ -35,34 +39,34 @@ spec:
   template:
     metadata:
       labels:
-        {{- include "element-io.synapse.process.labels" $perProcessRoot | nindent 8 }}
+        {{- include "element-io.synapse.process.labels" (dict "global" $ "context" $perProcessRoot) | nindent 8 }}
         k8s.element.io/confighash: "{{ include (print $.Template.BasePath "/synapse_secret.yaml") $ | sha1sum }}"
         k8s.element.io/logconfighash: "{{ include (print $.Template.BasePath "/synapse_configmap.yaml") $ | sha1sum }}"
-{{- range $index, $appservice := .Values.appservices }}
+{{- range $index, $appservice := .appservices }}
         k8s.element.io/as-registration-{{ $index }}-hash: "{{ (lookup "v1" "ConfigMap" $.Release.Namespace $appservice.registrationFileConfigMap) | toJson | sha1sum }}"
 {{- end }}
 
-{{- with .Values.annotations }}
+{{- with .annotations }}
       annotations:
         {{- toYaml . | nindent 8 }}
 {{- end }}
     spec:
       automountServiceAccountToken: false
-      serviceAccountName: {{ include "element-io.synapse.serviceAccountName" $ }}
-{{- include "element-io.ess-library.pods.pullSecrets" (list $ .Values.image) | nindent 6 }}
-{{- with .Values.podSecurityContext }}
+      serviceAccountName: {{ include "element-io.synapse.serviceAccountName" (dict "global" $ "context" .) }}
+{{- include "element-io.ess-library.pods.pullSecrets" (list $ .image) | nindent 6 }}
+{{- with .podSecurityContext }}
       securityContext:
         {{- toYaml . | nindent 8 }}
 {{- end }}
-{{- with .Values.nodeSelector }}
+{{- with .nodeSelector }}
       nodeSelector:
         {{- toYaml . | nindent 8 }}
 {{- end }}
-{{- with .Values.tolerations }}
+{{- with .tolerations }}
       tolerations:
         {{- toYaml . | nindent 8 }}
 {{- end }}
-{{- with .Values.hostAliases }}
+{{- with .hostAliases }}
       hostAliases:
         {{- toYaml . | nindent 8 }}
 {{- end }}
@@ -75,7 +79,7 @@ We have an init container to render & merge the config for several reasons:
 */}}
       initContainers:
       - name: render-config
-{{- with .Values.image -}}
+{{- with .image -}}
 {{- if .digest }}
         image: "{{ .registry }}/{{ .repository }}@{{ .digest }}"
         imagePullPolicy: {{ .pullPolicy | default "IfNotPresent" }}
@@ -84,7 +88,7 @@ We have an init container to render & merge the config for several reasons:
         imagePullPolicy: {{ .pullPolicy | default "Always" }}
 {{- end }}
 {{- end }}
-{{- with .Values.containersSecurityContext }}
+{{- with .containersSecurityContext }}
         securityContext:
           {{- toYaml . | nindent 10 }}
 {{- end }}
@@ -99,9 +103,9 @@ We have an init container to render & merge the config for several reasons:
                  These could be done as env vars with valueFrom.secretKeyRef, but that triggers CKV_K8S_35.
                  If we wanted to allow for replacement of values in the user-provided config with external Secrets we could extend this init-container
                  to allow extraEnv with valueFrom.secretKeyRef. */}}
-          export SYNAPSE_MACAROON=$(cat /secrets/{{ .Values.macaroon.secret | default (printf "%s-synapse" $.Release.Name) }}/{{ .Values.macaroon.secretKey | default "MACAROON" }});
-          export SYNAPSE_POSTGRES_PASSWORD=$(cat /secrets/{{ .Values.postgres.password.secret | default (printf "%s-synapse" $.Release.Name) }}/{{ .Values.postgres.password.secretKey | default "POSTGRES_PASSWORD" }});
-          export SYNAPSE_REGISTRATION_SHARED_SECRET=$(cat /secrets/{{ .Values.registrationSharedSecret.secret | default (printf "%s-synapse" $.Release.Name) }}/{{ .Values.registrationSharedSecret.secretKey | default "REGISTRATION_SHARED_SECRET" }});
+          export SYNAPSE_MACAROON=$(cat /secrets/{{ .macaroon.secret | default (printf "%s-synapse" $.Release.Name) }}/{{ .macaroon.secretKey | default "MACAROON" }});
+          export SYNAPSE_POSTGRES_PASSWORD=$(cat /secrets/{{ .postgres.password.secret | default (printf "%s-synapse" $.Release.Name) }}/{{ .postgres.password.secretKey | default "POSTGRES_PASSWORD" }});
+          export SYNAPSE_REGISTRATION_SHARED_SECRET=$(cat /secrets/{{ .registrationSharedSecret.secret | default (printf "%s-synapse" $.Release.Name) }}/{{ .registrationSharedSecret.secretKey | default "REGISTRATION_SHARED_SECRET" }});
 
           set -x;
           export APPLICATION_NAME=$(hostname -s | sed 's/.*-synapse-//g');
@@ -109,16 +113,16 @@ We have an init container to render & merge the config for several reasons:
 
           python3 /config-templates/render_config_with_secrets.py \
             /config-templates/01-homeserver-underrides.yaml \
-          {{- if .Values.additional.config }}
+          {{- if .additional.config }}
             /secrets/{{ $.Release.Name }}-synapse/02-homeserver-helm-user-provided.yaml \
           {{- end }}
-          {{- if .Values.additional.configSecret }}
-            /secrets/{{ .Values.additional.configSecret }}/{{ .Values.additional.configSecretKey }} \
+          {{- if .additional.configSecret }}
+            /secrets/{{ .additional.configSecret }}/{{ .additional.configSecretKey }} \
           {{- end }}
             /config-templates/04-homeserver-overrides.yaml \
             /config-templates/05-{{ $processType }}.yaml \
             > /conf/homeserver.yaml;
-{{- with .Values.resources }}
+{{- with .resources }}
         resources:
           {{- toYaml . | nindent 10 }}
 {{- end }}
@@ -126,7 +130,7 @@ We have an init container to render & merge the config for several reasons:
         - mountPath: /config-templates
           name: plain-config
           readOnly: true
-{{- range $secret := include "element-io.synapse.configSecrets" $ | fromJsonArray }}
+{{- range $secret := include "element-io.synapse.configSecrets" (dict "global" $ "context" .) | fromJsonArray }}
         - mountPath: /secrets/{{ $secret }}
           name: "secret-{{ $secret }}"
           readOnly: true
@@ -136,7 +140,7 @@ We have an init container to render & merge the config for several reasons:
           readOnly: false
       containers:
       - name: synapse
-{{- with .Values.image -}}
+{{- with .image -}}
 {{- if .digest }}
         image: "{{ .registry }}/{{ .repository }}@{{ .digest }}"
         imagePullPolicy: {{ .pullPolicy | default "IfNotPresent" }}
@@ -145,7 +149,7 @@ We have an init container to render & merge the config for several reasons:
         imagePullPolicy: {{ .pullPolicy | default "Always" }}
 {{- end }}
 {{- end }}
-{{- with .Values.containersSecurityContext }}
+{{- with .containersSecurityContext }}
         securityContext:
           {{- toYaml . | nindent 10 }}
 {{- end }}
@@ -155,18 +159,18 @@ We have an init container to render & merge the config for several reasons:
         - >
           ls -lR /secrets;
           [ -e "/usr/lib/`uname -m`-linux-gnu/libjemalloc.so.2" ] && export LD_PRELOAD="/usr/lib/`uname -m`-linux-gnu/libjemalloc.so.2";
-          python3 -m {{ include "element-io.synapse.process.app" $processType }} -c /conf/homeserver.yaml
-{{- with .Values.extraEnv }}
+          python3 -m {{ include "element-io.synapse.process.app" (dict "global" $ "context" $processType) }} -c /conf/homeserver.yaml
+{{- with .extraEnv }}
         env:
           {{- toYaml . | nindent 10 }}
 {{- end }}
         ports:
-{{- if (include "element-io.synapse.process.hasHttp" $processType) }}
+{{- if (include "element-io.synapse.process.hasHttp" (dict "global" $ "context" $processType)) }}
         - containerPort: 8008
           name: synapse-http
           protocol: TCP
 {{- end }}
-{{- if (include "element-io.synapse.process.hasReplication" $processType) }}
+{{- if (include "element-io.synapse.process.hasReplication" (dict "global" $ "context" $processType)) }}
         - containerPort: 9093
           name: synapse-repl
           protocol: TCP
@@ -191,7 +195,7 @@ We have an init container to render & merge the config for several reasons:
           timeoutSeconds: 2
           {{- /* For Synapse processes where there can only be 1 instance we're more generous with the threshold.
                  This is because people can't scale the process up and so the impact of a restart is greater. */}}
-          failureThreshold: {{ ternary 8 3 (eq "isSingle" (include "element-io.synapse.process.isSingle" $processType)) }}
+          failureThreshold: {{ ternary 8 3 (eq "isSingle" (include "element-io.synapse.process.isSingle" (dict "global" $ "context" $processType))) }}
         readinessProbe:
           httpGet:
             path: /health
@@ -199,18 +203,18 @@ We have an init container to render & merge the config for several reasons:
           periodSeconds: 2
           timeoutSeconds: 2
           successThreshold: 2
-          failureThreshold: {{ ternary 8 3 (eq "isSingle" (include "element-io.synapse.process.isSingle" $processType)) }}
-{{- with .Values.resources }}
+          failureThreshold: {{ ternary 8 3 (eq "isSingle" (include "element-io.synapse.process.isSingle" (dict "global" $ "context" $processType))) }}
+{{- with .resources }}
         resources:
           {{- toYaml . | nindent 10 }}
 {{- end }}
         volumeMounts:
-{{- range $secret := include "element-io.synapse.configSecrets" $ | fromJsonArray }}
+{{- range $secret := include "element-io.synapse.configSecrets" (dict "global" $ "context" .) | fromJsonArray }}
         - mountPath: /secrets/{{ $secret }}
           name: "secret-{{ $secret }}"
           readOnly: true
 {{- end }}
-{{- range $appservice := .Values.appservices }}
+{{- range $appservice := .appservices }}
         - name: {{ $appservice.registrationFileConfigMap }}
           mountPath: /as/{{ $appservice.registrationFileConfigMap }}/registration.yaml
           readOnly: true
@@ -230,7 +234,7 @@ We have an init container to render & merge the config for several reasons:
           defaultMode: 420
           name: "{{ $.Release.Name }}-synapse"
         name: plain-config
-{{- range $secret := include "element-io.synapse.configSecrets" $ | fromJsonArray }}
+{{- range $secret := include "element-io.synapse.configSecrets" (dict "global" $ "context" .) | fromJsonArray }}
       - secret:
           secretName: {{ $secret }}
         name: secret-{{ $secret }}
@@ -238,7 +242,7 @@ We have an init container to render & merge the config for several reasons:
       - emptyDir:
           medium: Memory
         name: "rendered-config"
-{{- range $appservice := .Values.appservices }}
+{{- range $appservice := .appservices }}
       - configMap:
           defaultMode: 420
           name: "{{ $appservice.registrationFileConfigMap }}"
@@ -246,7 +250,7 @@ We have an init container to render & merge the config for several reasons:
 {{- end }}
 {{- if (include "element-io.synapse.process.responsibleForMedia" (dict "processType" $processType "enabledWorkerTypes" (keys $enabledWorkers))) }}
       - persistentVolumeClaim:
-          claimName: {{ include "element-io.synapse.pvcName" $ }}
+          claimName: {{ include "element-io.synapse.pvcName" (dict "global" $ "context" $processType) }}
         name: "media"
 {{- else }}
       - emptyDir:
@@ -259,3 +263,6 @@ We have an init container to render & merge the config for several reasons:
 ---
 {{- end }}
 {{- end }}
+{{- end -}}
+{{- end -}}
+
