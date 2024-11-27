@@ -1,13 +1,17 @@
-# Copyright 2024 New Vector Ltd
-#
-# SPDX-License-Identifier: AGPL-3.0-only OR LicenseRef-Element-Commercial
+{{- /*
+Copyright 2024 New Vector Ltd
 
-{{- if (include "element-io.synapse.enabledWorkers" $) | fromJson }}
+SPDX-License-Identifier: AGPL-3.0-only OR LicenseRef-Element-Commercial
+*/ -}}
+
+{{- with .Values.synapse -}}
+{{- if .enabled -}}
+{{- if (include "element-io.synapse.enabledWorkers" (dict "global" $ "context" .)) | fromJson }}
 apiVersion: v1
 kind: ConfigMap
 metadata:
   labels:
-    {{- include "element-io.synapse.redis.labels" $ | nindent 4 }}
+    {{- include "element-io.synapse.redis.labels" (dict "global" $ "context" .) | nindent 4 }}
   name: {{ $.Release.Name }}-synapse-redis
   namespace: {{ $.Release.Namespace }}
 data:
@@ -100,3 +104,5 @@ data:
     rdb-save-incremental-fsync yes
     jemalloc-bg-thread yes
 {{- end }}
+{{- end -}}
+{{- end -}}

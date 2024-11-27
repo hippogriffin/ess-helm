@@ -12,5 +12,6 @@ element-web:
       tlsSecret: ess-selfsigned
 
 synapse:
-  ingress:
-    tlsSecret: ess-selfsigned
+  synapse:
+    ingress:
+      tlsSecret: ess-selfsigned

@@ -1,22 +1,28 @@
-# Copyright 2024 New Vector Ltd
-#
-# SPDX-License-Identifier: AGPL-3.0-only OR LicenseRef-Element-Commercial
+{{- /*
+Copyright 2024 New Vector Ltd
 
-{{- if not .Values.media.storage.existingClaim }}
+SPDX-License-Identifier: AGPL-3.0-only OR LicenseRef-Element-Commercial
+*/ -}}
+
+{{- with .Values.synapse -}}
+{{- if .enabled -}}
+{{- if not .media.storage.existingClaim }}
 apiVersion: v1
 kind: PersistentVolumeClaim
 metadata:
   labels:
-    {{- include "element-io.synapse.labels" $ | nindent 4 }}
-  name: {{ .Release.Name }}-synapse-media
-  namespace: {{ .Release.Namespace }}
+    {{- include "element-io.synapse.labels" (dict "global" $ "context" .) | nindent 4 }}
+  name: {{ $.Release.Name }}-synapse-media
+  namespace: {{ $.Release.Namespace }}
 spec:
-{{- with .Values.media.storage.storageClassName }}
+{{- with .media.storage.storageClassName }}
   storageClassName: {{ . }}
 {{- end }}
   accessModes:
   - ReadWriteOnce
   resources:
     requests:
-      storage: {{ .Values.media.storage.size }}
+      storage: {{ .media.storage.size }}
 {{- end }}
+{{- end -}}
+{{- end -}}

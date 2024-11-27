@@ -1,25 +1,29 @@
-# Copyright 2024 New Vector Ltd
-#
-# SPDX-License-Identifier: AGPL-3.0-only OR LicenseRef-Element-Commercial
+{{- /*
+Copyright 2024 New Vector Ltd
 
-{{- range $processType := prepend (keys ((include "element-io.synapse.enabledWorkers" $) | fromJson)) "main" }}
-{{- $perProcessRoot := merge (dict "ProcessType" $processType) $ }}
+SPDX-License-Identifier: AGPL-3.0-only OR LicenseRef-Element-Commercial
+*/ -}}
+
+{{- with .Values.synapse -}}
+{{- if .enabled -}}
+{{- range $processType := prepend (keys ((include "element-io.synapse.enabledWorkers" (dict "global" $ "context" .)) | fromJson)) "main" }}
+{{- $perProcessRoot := merge (dict "ProcessType" $processType) $.Values.synapse }}
 apiVersion: v1
 kind: Service
 metadata:
   labels:
-    {{- include "element-io.synapse.process.labels" $perProcessRoot | nindent 4 }}
+    {{- include "element-io.synapse.process.labels" (dict "global" $ "context" $perProcessRoot) | nindent 4 }}
   name: {{ $.Release.Name }}-synapse-{{ $processType }}
   namespace: {{ $.Release.Namespace }}
 spec:
   clusterIP: None
   ports:
-{{- if (include "element-io.synapse.process.hasHttp" .) }}
+{{- if (include "element-io.synapse.process.hasHttp" (dict "global" $ "context" .)) }}
   - name: synapse-http
     port: 8008
     targetPort: synapse-http
 {{- end }}
-{{- if (include "element-io.synapse.process.hasReplication" .) }}
+{{- if (include "element-io.synapse.process.hasReplication" (dict "global" $ "context" .)) }}
   - name: synapse-repl
     port: 9093
     targetPort: synapse-repl
@@ -34,3 +38,5 @@ spec:
     app.kubernetes.io/instance: {{ $.Release.Name }}-synapse-{{ $processType }}
 ---
 {{- end }}
+{{- end -}}
+{{- end -}}

@@ -1,33 +1,37 @@
-# Copyright 2024 New Vector Ltd
-#
-# SPDX-License-Identifier: AGPL-3.0-only OR LicenseRef-Element-Commercial
+{{- /*
+Copyright 2024 New Vector Ltd
 
+SPDX-License-Identifier: AGPL-3.0-only OR LicenseRef-Element-Commercial
+*/ -}}
+
+{{- with .Values.synapse -}}
+{{- if .enabled -}}
 apiVersion: networking.k8s.io/v1
 kind: Ingress
 metadata:
-{{- with .Values.ingress.annotations }}
+{{- with .ingress.annotations }}
   annotations:
     {{- toYaml . | nindent 4 }}
 {{- end }}
   labels:
-    {{- include "element-io.synapse.haproxy.labels" $ | nindent 4 }}
-  name: {{ .Release.Name }}-synapse
-  namespace: {{ .Release.Namespace }}
+    {{- include "element-io.synapse.haproxy.labels" (dict "global" $ "context" .) | nindent 4 }}
+  name: {{ $.Release.Name }}-synapse
+  namespace: {{ $.Release.Namespace }}
 spec:
-{{- if .Values.ingress.tlsSecret }}
+{{- if .ingress.tlsSecret }}
   tls:
   - hosts:
-    - {{ .Values.ingress.host | quote }}
-    secretName: {{ .Values.ingress.tlsSecret | quote }}
+    - {{ .ingress.host | quote }}
+    secretName: {{ .ingress.tlsSecret | quote }}
 {{- end }}
-{{- with .Values.ingress.className }}
+{{- with .ingress.className }}
   ingressClassName: {{ . | quote }}
 {{- end }}
   rules:
-  - host: {{ .Values.ingress.host | quote }}
+  - host: {{ .ingress.host | quote }}
     http:
       paths:
-{{- range .Values.ingress.additionalPaths -}}
+{{- range .ingress.additionalPaths -}}
 {{- if eq .availability "only_externally" }}
       - path: {{ .path }}
         pathType: Prefix
@@ -51,7 +55,7 @@ spec:
    defined additional paths. If so, let the other service handle it and don't
    add it here. */}}
 {{- $_pathAlreadyDefined := false }}
-{{- range $.Values.ingress.additionalPaths -}}
+{{- range $.Values.synapse.ingress.additionalPaths -}}
 {{- if has .availability (list "only_externally" "blocked") }}
 {{- if hasPrefix .path $synapsePath }}
 {{- $_pathAlreadyDefined = true }}
@@ -70,3 +74,6 @@ spec:
               name: haproxy-http
 {{- end }}
 {{- end }}
+{{- end -}}
+{{- end -}}
+

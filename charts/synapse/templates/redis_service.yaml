@@ -1,19 +1,25 @@
-# Copyright 2024 New Vector Ltd
-#
-# SPDX-License-Identifier: AGPL-3.0-only OR LicenseRef-Element-Commercial
+{{- /*
+Copyright 2024 New Vector Ltd
 
-{{- if (include "element-io.synapse.enabledWorkers" $) | fromJson }}
+SPDX-License-Identifier: AGPL-3.0-only OR LicenseRef-Element-Commercial
+*/ -}}
+
+{{- with .Values.synapse -}}
+{{- if .enabled -}}
+{{- if (include "element-io.synapse.enabledWorkers" (dict "global" $ "context" .)) | fromJson }}
 apiVersion: v1
 kind: Service
 metadata:
   labels:
-    {{- include "element-io.synapse.redis.labels" $ | nindent 4 }}
-  name: {{ .Release.Name }}-synapse-redis
-  namespace: {{ .Release.Namespace }}
+    {{- include "element-io.synapse.redis.labels" (dict "global" $ "context" .) | nindent 4 }}
+  name: {{ $.Release.Name }}-synapse-redis
+  namespace: {{ $.Release.Namespace }}
 spec:
   ports:
   - port: 6379
     targetPort: redis
   selector:
-    app.kubernetes.io/instance: "{{ .Release.Name }}-synapse-redis"
+    app.kubernetes.io/instance: "{{ $.Release.Name }}-synapse-redis"
 {{- end }}
+{{- end -}}
+{{- end -}}

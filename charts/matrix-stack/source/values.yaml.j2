@@ -13,4 +13,5 @@ element-web:
   {{- elementWebValues() | trim | indent(2) }}
 
 synapse:
-  enabled: true
+  {% macro synapseValues() %}{% include 'synapse/source/values.yaml.j2'%}{% endmacro %}
+  {{- synapseValues() | trim | indent(2) }}
