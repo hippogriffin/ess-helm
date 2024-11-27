@@ -103,7 +103,7 @@ async def test_synapse_media_upload_fetch_authenticated(
     )
 
     media_pod_suffix = "synapse-media-repository-0"
-    media_pod = f"synapse-{generated_data.secrets_random}-{media_pod_suffix}"
+    media_pod = f"{generated_data.release_name}-{media_pod_suffix}"
 
     await assert_downloaded_content(
         KubeCtl(cluster),
