@@ -35,3 +35,6 @@ element-web:
             "feature_element_call_video_rooms": true,
           },
       }
+
+synapse:
+  enabled: false
