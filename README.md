@@ -44,9 +44,6 @@ Similarly the version number of the charts can be changed with
 `scripts/set_chart_version.sh <version>`. Any changes this makes must be committed to Git
 as well.
 
-If you make changes to templates or values in the sub-charts you must re-run
-`./scripts/helm_dependency_update_recursive.sh` so that the `matrix-stack` chart has all the latest dependencies
-
 ### Running a test cluster
 
 A test cluster can be constructed with `./scripts/setup_test_cluster.sh`. It will:
@@ -66,9 +63,6 @@ A test cluster can be constructed with `./scripts/setup_test_cluster.sh`. It wil
 
 The test cluster can then be deployed to with
 `helm -n <namespace> upgrade -i ess charts/matrix-stack -f charts/matrix-stack/ci/test-cluster-mixin.yaml -f <your values file>`.
-The `setup_test_cluster.sh` script will do an initial `./scripts/helm_dependency_update_recursive.sh`
-to construct the dependencies between the sub-charts, but as per the above you must re-run this
-after making changes to the sub-charts.
 
 The test cluster can be taken down by running `./scripts/destroy_test_cluster.sh`.
 

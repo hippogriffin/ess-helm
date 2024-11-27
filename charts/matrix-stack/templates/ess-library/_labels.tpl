@@ -8,9 +8,6 @@ SPDX-License-Identifier: AGPL-3.0-only OR LicenseRef-Element-Commercial
 {{- $root := .root -}}
 {{- with required "element-io.ess-library.check-credential missing context" .context -}}
 {{- $userLabels := dict -}}
-{{ with $root.Values.global }}
-{{- $userLabels = merge $userLabels (.ess.labels | default ) }}
-{{- end }}
 {{ with $root.Values.ess }}
 {{- $userLabels = merge $userLabels (.labels | default ) }}
 {{- end }}

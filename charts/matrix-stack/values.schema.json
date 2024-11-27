@@ -5,36 +5,7 @@
   "properties": {
     "global": {
       "type": "object",
-      "additionalProperties": true,
-      "properties": {
-        "ess": {
-          "type": "object",
-          "properties": {
-            "server_name": {
-              "type": "string"
-            },
-            "labels": {
-              "type": "object",
-              "additionalProperties": {
-                "type": "string"
-              }
-            },
-            "imagePullSecrets": {
-              "type": "array",
-              "items": {
-                "type": "object",
-                "properties": {
-                  "name": {
-                    "type": "string"
-                  }
-                },
-                "additionalProperties": false
-              }
-            }
-          },
-          "additionalProperties": false
-        }
-      }
+      "additionalProperties": true
     },
     "ess": {
       "type": "object",
@@ -62,10 +33,6 @@
           }
         }
       }
-    },
-    "ess-library": {
-      "type": "object",
-      "additionalProperties": true
     },
     "elementWeb": {
       "$id": "file://element-web",
@@ -582,36 +549,7 @@
         },
         "global": {
           "type": "object",
-          "additionalProperties": true,
-          "properties": {
-            "ess": {
-              "type": "object",
-              "properties": {
-                "server_name": {
-                  "type": "string"
-                },
-                "labels": {
-                  "type": "object",
-                  "additionalProperties": {
-                    "type": "string"
-                  }
-                },
-                "imagePullSecrets": {
-                  "type": "array",
-                  "items": {
-                    "type": "object",
-                    "properties": {
-                      "name": {
-                        "type": "string"
-                      }
-                    },
-                    "additionalProperties": false
-                  }
-                }
-              },
-              "additionalProperties": false
-            }
-          }
+          "additionalProperties": true
         },
         "ess-library": {
           "type": "object",

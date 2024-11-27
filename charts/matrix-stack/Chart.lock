@@ -1,6 +1,3 @@
-dependencies:
-- name: ess-library
-  repository: file://../ess-library
-  version: 0.0.0-dev
-digest: sha256:1f7a32667f6336fd19d1b6e3a24fd2cb51f3d728bf5ec086d7718c5350352f26
-generated: "2024-11-27T16:30:57.671623029+01:00"
+dependencies: []
+digest: sha256:643d5437104296e21d906ecb15b2c96ad278f20cfc4af53b12bb6069bd853726
+generated: "2024-11-27T17:44:49.9172119+01:00"

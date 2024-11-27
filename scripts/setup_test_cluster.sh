@@ -164,5 +164,3 @@ EOF
     --set auth.username=synapse_user \
     --set primary.initdb.args='--locale=C --encoding=UTF8'
 done
-
-./scripts/helm_dependency_update_recursive.sh

@@ -33,8 +33,6 @@ jobs:
         elif [ "$GITHUB_REF_NAME" != "main" ]; then
           version=$(yq '.version' charts/matrix-stack/Chart.yaml | sed "s/-dev/-sha$GITHUB_SHA/")
           scripts/set_chart_version.sh "$version"
-        else
-          scripts/helm_dependency_update_recursive.sh
         fi
 
     - name: Login to GitHub Container Registry
