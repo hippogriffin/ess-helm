@@ -1,0 +1,56 @@
+# Copyright 2024 New Vector Ltd
+#
+# SPDX-License-Identifier: AGPL-3.0-only OR LicenseRef-Element-Commercial
+
+name: Helm Chart packaging
+on:
+  pull_request:
+  push:
+    branches:
+    - main
+    tags:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  packages: write
+
+jobs:
+  helm-package:
+    runs-on: cpu-s
+    container:
+      image: ghcr.io/${{ github.repository }}/ci-runner
+      credentials:
+        username: ${{ github.actor }}
+        password: ${{ secrets.GITHUB_TOKEN }}
+    steps:
+    - name: Checkout
+      uses: actions/checkout@v4
+
+    - name: Set version
+      run: |
+        if [ "$GITHUB_REF_TYPE" = "tag" ]; then
+          scripts/set_chart_version "$GITHUB_REF_NAME"
+        elif [ "$GITHUB_REF_NAME" != "main" ]; then
+          version=$(yq '.version' charts/matrix-stack/Chart.yaml | sed "s/-dev/-sha$GITHUB_SHA/")
+          scripts/set_chart_version.sh "$version"
+        fi
+
+    - name: Login to GitHub Container Registry
+      uses: docker/login-action@v3
+      with:
+        registry: ghcr.io
+        username: ${{ github.actor }}
+        password: ${{ github.token }}
+
+    - name: Helm package
+      run: |
+        cd charts/matrix-stack
+        helm package .
+
+        helm push matrix-stack-*.tgz oci://ghcr.io/${{ github.repository }}
+
+    - uses: actions/upload-artifact@v4
+      with:
+        name: helm-package
+        path: charts/matrix-stack/*.tgz*
