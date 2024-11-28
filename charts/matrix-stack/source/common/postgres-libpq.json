@@ -27,7 +27,7 @@
       ]
     },
     "password": {
-      "$ref": "file://./../../matrix-stack/sub_schemas/credential.json"
+      "$ref": "file://./common/credential.json"
     }
   }
 }

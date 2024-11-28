@@ -6,7 +6,7 @@
       "type": "string"
     },
     "labels": {
-      "$ref": "file://./../../matrix-stack/sub_schemas/labels.json"
+      "$ref": "file://./common/labels.json"
     },
     "imagePullSecrets": {
       "type": "array",
