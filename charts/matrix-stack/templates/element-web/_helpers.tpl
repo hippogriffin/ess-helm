@@ -25,14 +25,19 @@ app.kubernetes.io/version: {{ .image.tag | default $root.Chart.AppVersion }}
 {{- define "element-io.element-web.config" }}
 {{- $root := .root -}}
 {{- with required "element-io.element-web.config missing context" .context -}}
-{{- $config := dict }}
-{{- $serverName := required "Element Web requires .ess.serverName set" $root.Values.ess.serverName }}
-{{- with required "elementWeb.defaultMatrixServer is required" .defaultMatrixServer }}
-{{- $baseUrl := required "elementWeb.defaultMatrixServer.baseUrl is required" .baseUrl -}}
-{{- $mHomeserver := dict "base_url" $baseUrl "serverName" $serverName }}
+{{- $config := dict -}}
+{{- $serverName := required "Element Web requires .ess.serverName set" $root.Values.ess.serverName -}}
+{{- if .defaultMatrixServer -}}
+{{- $baseUrl := required "elementWeb.defaultMatrixServer.baseUrl is required" .defaultMatrixServer.baseUrl -}}
+{{- else if $root.Values.synapse.enabled }}
+{{- $baseUrl := "https://{{ $root.Values.synapse.ingress.host }}" -}}
+{{- else }}
+{{- with required "In the absence of Synapse, elementWeb.defaultMatrixServer is required" .defaultMatrixServer }}
+{{- end -}}
+{{- $mHomeserver := dict "base_url" $baseUrl "serverName" $serverName -}}
 {{- $defaultServerConfig := dict "m.homeserver" $mHomeserver -}}
-{{- $_ := set $config "default_server_config" $defaultServerConfig }}
+{{- $_ := set $config "default_server_config" $defaultServerConfig -}}
 {{- end }}
-{{- toPrettyJson (merge $config .additional) }}
+{{- toPrettyJson (merge $config .additional) -}}
 {{- end }}
 {{- end }}
