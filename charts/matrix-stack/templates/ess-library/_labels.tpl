@@ -5,10 +5,10 @@ SPDX-License-Identifier: AGPL-3.0-only OR LicenseRef-Element-Commercial
 */ -}}
 
 {{- define "element-io.ess-library.labels.common" -}}
-{{- $root := .root -}}
-{{- with required "element-io.ess-library.check-credential missing context" .context -}}
-{{- $userLabels := dict -}}
-{{ with $root.Values.ess }}
+{{- $root := .root }}
+{{- with required "element-io.ess-library.check-credential missing context" .context }}
+{{- $userLabels := dict }}
+{{- with $root.Values.ess }}
 {{- $userLabels = merge $userLabels (.labels | default ) }}
 {{- end }}
 {{- $userLabels = merge $userLabels . }}
@@ -23,8 +23,8 @@ SPDX-License-Identifier: AGPL-3.0-only OR LicenseRef-Element-Commercial
 {{- if $userLabels }}
 {{- toYaml $userLabels }}
 {{- end }}
+{{- end }}
 helm.sh/chart: {{ $root.Chart.Name }}-{{ $root.Chart.Version | replace "+" "_" }}
 app.kubernetes.io/managed-by: {{ $root.Release.Service }}
 app.kubernetes.io/part-of: matrix-stack
-{{- end }}
 {{- end }}
