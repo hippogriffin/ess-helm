@@ -27,12 +27,13 @@ app.kubernetes.io/version: {{ .image.tag | default $root.Chart.AppVersion }}
 {{- with required "element-io.element-web.config missing context" .context -}}
 {{- $config := dict -}}
 {{- $serverName := required "Element Web requires .ess.serverName set" $root.Values.ess.serverName -}}
+{{- $mHomeserver := dict "server_name" $serverName }}
 {{- if $root.Values.synapse.enabled }}
 {{- $baseUrl := "https://{{ $root.Values.synapse.ingress.host }}" -}}
-{{- $mHomeserver := dict "base_url" $baseUrl "serverName" $serverName -}}
+{{- $mHomeserver := merge (dict "base_url" $baseUrl) $mHomeserver }}
+{{- end }}
 {{- $defaultServerConfig := dict "m.homeserver" $mHomeserver -}}
 {{- $_ := set $config "default_server_config" $defaultServerConfig -}}
-{{- end }}
 {{- toPrettyJson (merge $config .additional) -}}
 {{- end }}
 {{- end }}
