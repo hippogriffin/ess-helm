@@ -12,9 +12,6 @@ elementWeb:
   ess:
     serverName: ess.localhost
 
-  defaultMatrixServer:
-    baseUrl: https://synapse.ess.localhost
-
   ingress:
     host: element.ess.localhost
 

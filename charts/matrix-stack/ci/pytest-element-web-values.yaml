@@ -7,8 +7,6 @@ ess:
 
 elementWeb:
   enabled: true
-  defaultMatrixServer:
-    baseUrl: https://synapse.ess.localhost
 
   ingress:
     host: element.ess.localhost
@@ -24,6 +22,11 @@ elementWeb:
 
   additional:
     {
+      "default_server_config": {
+        "m.homeserver": {
+          "base_url": "https://synapse.ess.localhost",
+        }
+      },
       "element_call":
         {"url": "https://call.ess.localhost", "use_exclusively": true},
       "features":

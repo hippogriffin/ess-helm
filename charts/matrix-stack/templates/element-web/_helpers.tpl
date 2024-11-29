@@ -27,13 +27,8 @@ app.kubernetes.io/version: {{ .image.tag | default $root.Chart.AppVersion }}
 {{- with required "element-io.element-web.config missing context" .context -}}
 {{- $config := dict -}}
 {{- $serverName := required "Element Web requires .ess.serverName set" $root.Values.ess.serverName -}}
-{{- if .defaultMatrixServer -}}
-{{- $baseUrl := required "elementWeb.defaultMatrixServer.baseUrl is required" .defaultMatrixServer.baseUrl -}}
-{{- else if $root.Values.synapse.enabled }}
+{{- if $root.Values.synapse.enabled }}
 {{- $baseUrl := "https://{{ $root.Values.synapse.ingress.host }}" -}}
-{{- else }}
-{{- with required "In the absence of Synapse, elementWeb.defaultMatrixServer is required" .defaultMatrixServer }}
-{{- end -}}
 {{- $mHomeserver := dict "base_url" $baseUrl "serverName" $serverName -}}
 {{- $defaultServerConfig := dict "m.homeserver" $mHomeserver -}}
 {{- $_ := set $config "default_server_config" $defaultServerConfig -}}

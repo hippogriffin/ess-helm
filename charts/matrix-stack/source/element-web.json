@@ -10,14 +10,6 @@
       "type": "object",
       "additionalProperties": true
     },
-    "defaultMatrixServer": {
-      "properties": {
-        "baseUrl": {
-          "type": "string"
-        }
-      },
-      "type": "object"
-    },
     "replicas": {
       "minimum": 1,
       "type": "integer"

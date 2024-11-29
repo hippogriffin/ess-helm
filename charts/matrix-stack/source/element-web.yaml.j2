@@ -12,12 +12,6 @@ enabled: true
 ## Arbitrary extra config to inject into Element Web's config.json a a YAML/JSON object
 additional: {}
 
-## Defines which Matrix server this Element Web should point at.
-# If empty, it will try to use Synapse Ingress Host.
-defaultMatrixServer: {}
-  ## URL where the Matrix server is hosted
-  # baseUrl:
-
 # Number of Element Web replicas to start up
 replicas: 2
 {{- sub_schema_values.image(registry='docker.io', repository='vectorim/element-web', tag='v1.11.82') -}}
