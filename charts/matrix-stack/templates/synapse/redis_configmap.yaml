@@ -7,6 +7,7 @@ SPDX-License-Identifier: AGPL-3.0-only OR LicenseRef-Element-Commercial
 {{- with .Values.synapse -}}
 {{- if .enabled -}}
 {{- if (include "element-io.synapse.enabledWorkers" (dict "root" $ "context" .)) | fromJson }}
+{{- with .redis -}}
 apiVersion: v1
 kind: ConfigMap
 metadata:
@@ -104,5 +105,6 @@ data:
     rdb-save-incremental-fsync yes
     jemalloc-bg-thread yes
 {{- end }}
+{{- end -}}
 {{- end -}}
 {{- end -}}

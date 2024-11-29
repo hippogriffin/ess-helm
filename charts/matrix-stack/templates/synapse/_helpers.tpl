@@ -18,7 +18,7 @@ k8s.element.io/synapse-instance: {{ $root.Release.Name }}-synapse
 
 {{- define "element-io.synapse.process.labels" -}}
 {{- $root := .root -}}
-{{- with required "element-io.synapse.labels missing context" .context -}}
+{{- with required "element-io.synapse.process.labels missing context" .context -}}
 {{ include "element-io.ess-library.labels.common" (dict "root" $root "context" .labels) }}
 app.kubernetes.io/component: matrix-server
 app.kubernetes.io/name: synapse-{{ .ProcessType }}
