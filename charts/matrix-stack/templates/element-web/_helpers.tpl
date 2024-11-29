@@ -25,14 +25,15 @@ app.kubernetes.io/version: {{ .image.tag | default $root.Chart.AppVersion }}
 {{- define "element-io.element-web.config" }}
 {{- $root := .root -}}
 {{- with required "element-io.element-web.config missing context" .context -}}
-{{- $config := dict }}
-{{- $serverName := required "Element Web requires .ess.serverName set" $root.Values.ess.serverName }}
-{{- with required "elementWeb.defaultMatrixServer is required" .defaultMatrixServer }}
-{{- $baseUrl := required "elementWeb.defaultMatrixServer.baseUrl is required" .baseUrl -}}
-{{- $mHomeserver := dict "base_url" $baseUrl "serverName" $serverName }}
-{{- $defaultServerConfig := dict "m.homeserver" $mHomeserver -}}
-{{- $_ := set $config "default_server_config" $defaultServerConfig }}
+{{- $config := dict -}}
+{{- $serverName := required "Element Web requires .ess.serverName set" $root.Values.ess.serverName -}}
+{{- $mHomeserver := dict "server_name" $serverName }}
+{{- if $root.Values.synapse.enabled }}
+{{- $baseUrl := "https://{{ $root.Values.synapse.ingress.host }}" -}}
+{{- $mHomeserver := merge (dict "base_url" $baseUrl) $mHomeserver }}
 {{- end }}
-{{- toPrettyJson (merge $config .additional) }}
+{{- $defaultServerConfig := dict "m.homeserver" $mHomeserver -}}
+{{- $_ := set $config "default_server_config" $defaultServerConfig -}}
+{{- toPrettyJson (merge $config .additional) -}}
 {{- end }}
 {{- end }}

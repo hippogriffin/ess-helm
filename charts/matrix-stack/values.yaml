@@ -25,11 +25,6 @@ elementWeb:
   ## Arbitrary extra config to inject into Element Web's config.json a a YAML/JSON object
   additional: {}
 
-  ## Defines which Matrix server this Element Web should point at.
-  defaultMatrixServer: {}
-    ## URL where the Matrix server is hosted
-    # baseUrl:
-
   # Number of Element Web replicas to start up
   replicas: 2
   # Details of the image to be used
