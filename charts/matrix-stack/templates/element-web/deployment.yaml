@@ -66,6 +66,7 @@ spec:
       tolerations:
         {{- toYaml . | nindent 8 }}
 {{- end }}
+{{- include "element-io.ess-library.pods.topologySpreadConstraints" (dict "root" $ "context" (dict "instanceSuffix" "element-web" "deployment" true "topologySpreadConstraints" .topologySpreadConstraints)) | indent 6 }}
       containers:
       - name: element-web
 {{- with .image -}}

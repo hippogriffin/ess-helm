@@ -84,6 +84,7 @@ logging:
 {{- sub_schema_values.serviceAccount() }}
 {{- sub_schema_values.serviceMonitors() }}
 {{- sub_schema_values.tolerations() }}
+{{- sub_schema_values.topologySpreadConstraints() }}
 
 haproxy:
   replicas: 2
@@ -97,6 +98,7 @@ haproxy:
 {{- sub_schema_values.serviceAccount() | indent(2) }}
 {{- sub_schema_values.serviceMonitors() | indent(2) }}
 {{- sub_schema_values.tolerations() | indent(2) }}
+{{- sub_schema_values.topologySpreadConstraints() | indent(2) }}
 
 redis:
 {{- sub_schema_values.image(registry='docker.io', repository='library/redis', tag='7.4-alpine') | indent(2) }}

@@ -23,4 +23,5 @@ replicas: 2
 {{- sub_schema_values.podSecurityContext(user_id='10004', group_id='10004') -}}
 {{- sub_schema_values.resources(requests_memory='50Mi', requests_cpu='50m', limits_memory='200Mi') -}}
 {{- sub_schema_values.serviceAccount() -}}
-{{- sub_schema_values.tolerations() }}
+{{- sub_schema_values.tolerations() -}}
+{{- sub_schema_values.topologySpreadConstraints() }}

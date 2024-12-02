@@ -12,6 +12,9 @@
     },
     "resources": {
       "$ref": "file://./common/resources.json"
+    },
+    "topologySpreadConstraints": {
+      "$ref": "file://./common/topologySpreadConstraints.json"
     }
   },
   "type": "object"
