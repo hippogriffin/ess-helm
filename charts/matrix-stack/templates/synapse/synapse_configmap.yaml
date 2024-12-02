@@ -21,10 +21,10 @@ data:
   04-homeserver-overrides.yaml: |
     {{- include "element-io.synapse.config.shared-overrides" (dict "root" $ "context" .) | nindent 4 }}
   05-main.yaml: |
-    {{- include "element-io.synapse.config.processSpecific" (dict "root" $ "context" (dict "processType" "main" "Values" .)) | nindent 4 }}
+    {{- include "element-io.synapse.config.processSpecific" (dict "root" $ "context" (merge (dict "processType" "main") $.Values.synapse)) | nindent 4 }}
 {{- range $workerType, $workerDetails := (include "element-io.synapse.enabledWorkers" (dict "root" $ "context" .)) | fromJson }}
   05-{{ $workerType }}.yaml: |
-    {{- include "element-io.synapse.config.processSpecific" (dict "root" $ "context" (dict "processType" $workerType "Values" $.Values.synapse)) | nindent 4 }}
+    {{- include "element-io.synapse.config.processSpecific" (dict "root" $ "context" (merge (dict "processType" $workerType) $.Values.synapse)) | nindent 4 }}
 {{- end }}
   log_config.yaml: |
     # Copyright 2024 New Vector Ltd
