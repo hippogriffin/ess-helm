@@ -4,7 +4,7 @@
       "type": "boolean"
     },
     "resources": {
-      "$ref": "file://./common/resources.json"
+      "$ref": "file://common/resources.json"
     }
   },
   "type": "object"

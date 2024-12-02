@@ -15,40 +15,40 @@
       "type": "integer"
     },
     "ess-library": {
-      "$ref": "file://./common/essLibrary.json"
+      "$ref": "file://common/essLibrary.json"
     },
     "image": {
-      "$ref": "file://./common/image.json"
+      "$ref": "file://common/image.json"
     },
     "ingress": {
-      "$ref": "file://./common/ingress.json"
+      "$ref": "file://common/ingress.json"
     },
     "labels": {
-      "$ref": "file://./common/labels.json"
+      "$ref": "file://common/labels.json"
     },
     "annotations": {
-      "$ref": "file://./common/workloadAnnotations.json"
+      "$ref": "file://common/workloadAnnotations.json"
     },
     "containersSecurityContext": {
-      "$ref": "file://./common/containersSecurityContext.json"
+      "$ref": "file://common/containersSecurityContext.json"
     },
     "nodeSelector": {
-      "$ref": "file://./common/nodeSelector.json"
+      "$ref": "file://common/nodeSelector.json"
     },
     "podSecurityContext": {
-      "$ref": "file://./common/podSecurityContext.json"
+      "$ref": "file://common/podSecurityContext.json"
     },
     "resources": {
-      "$ref": "file://./common/resources.json"
+      "$ref": "file://common/resources.json"
     },
     "serviceAccount": {
-      "$ref": "file://./common/serviceAccount.json"
+      "$ref": "file://common/serviceAccount.json"
     },
     "tolerations": {
-      "$ref": "file://./common/tolerations.json"
+      "$ref": "file://common/tolerations.json"
     },
     "topologySpreadConstraints": {
-      "$ref": "file://./common/topologySpreadConstraints.json"
+      "$ref": "file://common/topologySpreadConstraints.json"
     }
   }
 }

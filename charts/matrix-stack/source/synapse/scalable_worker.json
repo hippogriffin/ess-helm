@@ -11,10 +11,10 @@
       "minimum": 1
     },
     "resources": {
-      "$ref": "file://./common/resources.json"
+      "$ref": "file://common/resources.json"
     },
     "topologySpreadConstraints": {
-      "$ref": "file://./common/topologySpreadConstraints.json"
+      "$ref": "file://common/topologySpreadConstraints.json"
     }
   },
   "type": "object"

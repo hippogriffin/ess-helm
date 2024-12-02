@@ -110,7 +110,7 @@ def test_leaves_schema_part_for_non_object_alone():
 
 def test_inline_sub_schema_returns_referenced_sub_schema():
     source_root = Path(__file__).parent / "testdata" / "schema_construction"
-    sub_schema = inline_sub_schemas(source_root / "schema.json", {"$ref": "file://./sub_schema1.json"})
+    sub_schema = inline_sub_schemas(source_root / "schema.json", {"$ref": "file://sub_schema1.json"})
     assert sub_schema["type"] == "object"
     assert sub_schema["properties"].keys() == set(["first", "second"])
 
@@ -120,20 +120,20 @@ def test_inline_sub_schemas_disallows_other_properties_on_attachment_point():
     with pytest.raises(AssertionError):
         inline_sub_schemas(
             source_root / "schema.json",
-            {"$ref": "file://./sub_schema1.json", "other": "disallowed"},
+            {"$ref": "file://sub_schema1.json", "other": "disallowed"},
         )
 
 
 def test_inline_sub_schemas_disallows_non_object_sub_schemas():
     source_root = Path(__file__).parent / "testdata" / "schema_construction"
     with pytest.raises(AssertionError):
-        inline_sub_schemas(source_root / "schema.json", {"$ref": "file://./invalid_sub_schema1.json"})
+        inline_sub_schemas(source_root / "schema.json", {"$ref": "file://invalid_sub_schema1.json"})
 
 
 def test_inline_sub_schemas_disallows_immediately_referencing_another_sub_schema():
     source_root = Path(__file__).parent / "testdata" / "schema_construction"
     with pytest.raises(AssertionError):
-        inline_sub_schemas(source_root / "schema.json", {"$ref": "file://./invalid_sub_schema2.json"})
+        inline_sub_schemas(source_root / "schema.json", {"$ref": "file://invalid_sub_schema2.json"})
 
 
 def test_sets_additionalProperties_false_for_objects_where_unspecified():

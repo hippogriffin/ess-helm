@@ -4,13 +4,13 @@
   "type": "object",
   "properties": {
     "global": {
-      "$ref": "file://./common/global.json"
+      "$ref": "file://common/global.json"
     },
     "serverName": {
       "type": "string"
     },
     "labels": {
-      "$ref": "file://./common/labels.json"
+      "$ref": "file://common/labels.json"
     },
     "imagePullSecrets": {
       "type": "array",
@@ -24,13 +24,13 @@
       }
     },
     "topologySpreadConstraints": {
-      "$ref": "file://./common/topologySpreadConstraints.json"
+      "$ref": "file://common/topologySpreadConstraints.json"
     },
     "elementWeb": {
-      "$ref": "file://./element-web.json"
+      "$ref": "file://element-web.json"
     },
     "synapse": {
-      "$ref": "file://./synapse.json"
+      "$ref": "file://synapse.json"
     }
   }
 }
