@@ -106,7 +106,7 @@ responsibleForMedia
 {{- end }}
 {{- end }}
 {{ $streamWriterWorkers | toJson }}
-{{- end }}q
+{{- end }}
 {{- end }}
 
 {{- define "element-io.synapse.configSecrets" -}}
