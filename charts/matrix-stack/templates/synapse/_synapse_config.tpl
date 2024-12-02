@@ -116,7 +116,7 @@ start_pushers: true
 
 update_user_directory_from_worker: user-dir-0
 {{- end }}
-{{- $enabledWorkers := (include "element-io.synapse.enabledWorkers" (dict "root" $root "context" .)) | fromJson }}
+{{- $enabledWorkers := (include "element-io.synapse.enabledWorkers" (dict "root" $root)) | fromJson }}
 
 instance_map:
   main:
@@ -208,7 +208,7 @@ worker_listeners:
   - names: []
     compress: false
 
-{{- $enabledWorkers := (include "element-io.synapse.enabledWorkers" (dict "root" $root "context" .)) | fromJson }}
+{{- $enabledWorkers := (include "element-io.synapse.enabledWorkers" (dict "root" $root)) | fromJson }}
 {{- if (include "element-io.synapse.process.responsibleForMedia" (dict "root" $root "context" (dict "processType" .processType "enabledWorkerTypes" (keys $enabledWorkers)))) }}
 enable_media_repo: true
 {{- else }}

@@ -179,7 +179,7 @@ backend main
   # Use DNS SRV service discovery on the headless service
   server-template main 1 _synapse-http._tcp.{{ $root.Release.Name }}-synapse-main.{{ $root.Release.Namespace }}.svc.cluster.local resolvers kubedns init-addr none
 
-{{- range $workerType, $workerDetails := (include "element-io.synapse.enabledWorkers" (dict "root" $root "context" .)) | fromJson }}
+{{- range $workerType, $workerDetails := (include "element-io.synapse.enabledWorkers" (dict "root" $root)) | fromJson }}
 {{- if include "element-io.synapse.process.hasHttp" (dict "root" $root "context" $workerType) }}
 
 backend {{ $workerType }}
