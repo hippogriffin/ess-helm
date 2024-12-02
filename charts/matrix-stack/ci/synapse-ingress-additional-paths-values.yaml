@@ -8,7 +8,6 @@ elementWeb:
   enabled: false
 
 synapse:
-  enabled: true
   ingress:
     host: synapse.ess.localhost
 

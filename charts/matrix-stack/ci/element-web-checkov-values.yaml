@@ -5,7 +5,6 @@
 serverName: ess.localhost
 
 elementWeb:
-  enabled: true
   additional: {
     "default_server_config": {
       "m.homeserver": {
