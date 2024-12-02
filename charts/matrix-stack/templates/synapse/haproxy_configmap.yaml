@@ -20,7 +20,7 @@ data:
     # A map file that is used in haproxy config to map from matrix paths to the
     # named backend. The format is: path_regexp backend_name
 
-    {{ $enabledWorkerTypes := keys ((include "element-io.synapse.enabledWorkers" (dict "root" $ "context" .)) | fromJson) }}
+    {{ $enabledWorkerTypes := keys ((include "element-io.synapse.enabledWorkers" (dict "root" $)) | fromJson) }}
     {{- range $workerType := $enabledWorkerTypes | sortAlpha }}
     {{- $workersPaths := (include "element-io.synapse.process.workerPaths" (dict "root" $ "context" (dict "workerType" $workerType "enabledWorkerTypes" $enabledWorkerTypes))) | fromJsonArray }}
     {{- if len $workersPaths }}

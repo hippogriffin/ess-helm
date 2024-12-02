@@ -75,15 +75,13 @@ app.kubernetes.io/version: {{ .image.tag }}
 
 {{- define "element-io.synapse.enabledWorkers" -}}
 {{- $root := .root -}}
-{{- with required "element-io.synapse.enabledWorkers missing context" .context -}}
 {{ $enabledWorkers := dict }}
-{{- range $workerType, $workerDetails := .workers }}
+{{- range $workerType, $workerDetails := $root.Values.synapse.workers }}
 {{- if $workerDetails.enabled }}
 {{ $_ := set $enabledWorkers $workerType $workerDetails }}
 {{- end }}
 {{- end }}
 {{ $enabledWorkers | toJson }}
-{{- end }}
 {{- end }}
 
 {{- define "element-io.synapse.pvcName" -}}

@@ -6,7 +6,7 @@ SPDX-License-Identifier: AGPL-3.0-only OR LicenseRef-Element-Commercial
 
 {{- with .Values.synapse -}}
 {{- if .enabled -}}
-{{- if (include "element-io.synapse.enabledWorkers" (dict "root" $ "context" .)) | fromJson }}
+{{- if (include "element-io.synapse.enabledWorkers" (dict "root" $)) | fromJson }}
 {{- with .redis }}
 apiVersion: apps/v1
 kind: Deployment

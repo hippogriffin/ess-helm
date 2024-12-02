@@ -6,7 +6,7 @@ SPDX-License-Identifier: AGPL-3.0-only OR LicenseRef-Element-Commercial
 
 {{- with .Values.synapse -}}
 {{- if .enabled -}}
-{{- $enabledWorkers := (include "element-io.synapse.enabledWorkers" (dict "root" $ "context" .)) | fromJson }}
+{{- $enabledWorkers := (include "element-io.synapse.enabledWorkers" (dict "root" $)) | fromJson }}
 {{- range $processType, $unmergedProcessDetails := merge $enabledWorkers (dict "main" dict) }}
 {{- $perProcessRoot := merge (dict "ProcessType" $processType) $.Values.synapse }}
 {{- with (merge dict ($unmergedProcessDetails | deepCopy) ($.Values.synapse | deepCopy)) }}
