@@ -27,7 +27,7 @@
       ]
     },
     "password": {
-      "$ref": "file://./common/credential.json"
+      "$ref": "file://common/credential.json"
     }
   }
 }

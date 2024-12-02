@@ -4,7 +4,7 @@
   "type": "object",
   "properties": {
     "merged": {
-      "$ref": "file://./sub_schema1.json"
+      "$ref": "file://sub_schema1.json"
     },
     "presentDirectly": {
       "type": "object"
