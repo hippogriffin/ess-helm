@@ -5,7 +5,6 @@
 serverName: ess.localhost
 
 synapse:
-  enabled: true
   registrationSharedSecret:
     secret: ess-secrets
     secretKey: registrationSharedSecret

@@ -5,8 +5,6 @@
 serverName: ess.localhost
 
 elementWeb:
-  enabled: true
-
   ingress:
     host: element.ess.localhost
     tlsSecret: element-web-tls
