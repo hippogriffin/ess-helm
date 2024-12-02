@@ -31,6 +31,106 @@
             },
             "additionalProperties": false
           }
+        },
+        "topologySpreadConstraints": {
+          "type": "array",
+          "items": {
+            "required": [
+              "maxSkew",
+              "topologyKey"
+            ],
+            "properties": {
+              "labelSelector": {
+                "type": "object",
+                "properties": {
+                  "matchExpressions": {
+                    "type": "array",
+                    "items": {
+                      "type": "object",
+                      "required": [
+                        "key",
+                        "operator"
+                      ],
+                      "properties": {
+                        "key": {
+                          "type": "string"
+                        },
+                        "operator": {
+                          "type": "string",
+                          "enum": [
+                            "In",
+                            "NotIn",
+                            "Exists",
+                            "DoesNotExist"
+                          ]
+                        },
+                        "values": {
+                          "type": "array",
+                          "items": {
+                            "type": "string"
+                          }
+                        }
+                      },
+                      "additionalProperties": false
+                    }
+                  },
+                  "matchLabels": {
+                    "type": [
+                      "object",
+                      "null"
+                    ],
+                    "additionalProperties": {
+                      "type": "string"
+                    }
+                  }
+                },
+                "additionalProperties": false
+              },
+              "matchLabelKeys": {
+                "type": [
+                  "array",
+                  "null"
+                ],
+                "items": {
+                  "type": "string"
+                }
+              },
+              "maxSkew": {
+                "type": "integer",
+                "minium": 1
+              },
+              "minDomains": {
+                "type": "integer",
+                "minium": 0
+              },
+              "nodeAffinityPolicy": {
+                "type": "string",
+                "enum": [
+                  "Honor",
+                  "Ignore"
+                ]
+              },
+              "nodeTaintsPolicy": {
+                "type": "string",
+                "enum": [
+                  "Honor",
+                  "Ignore"
+                ]
+              },
+              "topologyKey": {
+                "type": "string"
+              },
+              "whenUnsatisfiable": {
+                "type": "string",
+                "enum": [
+                  "DoNotSchedule",
+                  "ScheduleAnyway"
+                ]
+              }
+            },
+            "type": "object",
+            "additionalProperties": false
+          }
         }
       }
     },
@@ -337,6 +437,106 @@
               },
               "value": {
                 "type": "string"
+              }
+            },
+            "type": "object",
+            "additionalProperties": false
+          }
+        },
+        "topologySpreadConstraints": {
+          "type": "array",
+          "items": {
+            "required": [
+              "maxSkew",
+              "topologyKey"
+            ],
+            "properties": {
+              "labelSelector": {
+                "type": "object",
+                "properties": {
+                  "matchExpressions": {
+                    "type": "array",
+                    "items": {
+                      "type": "object",
+                      "required": [
+                        "key",
+                        "operator"
+                      ],
+                      "properties": {
+                        "key": {
+                          "type": "string"
+                        },
+                        "operator": {
+                          "type": "string",
+                          "enum": [
+                            "In",
+                            "NotIn",
+                            "Exists",
+                            "DoesNotExist"
+                          ]
+                        },
+                        "values": {
+                          "type": "array",
+                          "items": {
+                            "type": "string"
+                          }
+                        }
+                      },
+                      "additionalProperties": false
+                    }
+                  },
+                  "matchLabels": {
+                    "type": [
+                      "object",
+                      "null"
+                    ],
+                    "additionalProperties": {
+                      "type": "string"
+                    }
+                  }
+                },
+                "additionalProperties": false
+              },
+              "matchLabelKeys": {
+                "type": [
+                  "array",
+                  "null"
+                ],
+                "items": {
+                  "type": "string"
+                }
+              },
+              "maxSkew": {
+                "type": "integer",
+                "minium": 1
+              },
+              "minDomains": {
+                "type": "integer",
+                "minium": 0
+              },
+              "nodeAffinityPolicy": {
+                "type": "string",
+                "enum": [
+                  "Honor",
+                  "Ignore"
+                ]
+              },
+              "nodeTaintsPolicy": {
+                "type": "string",
+                "enum": [
+                  "Honor",
+                  "Ignore"
+                ]
+              },
+              "topologyKey": {
+                "type": "string"
+              },
+              "whenUnsatisfiable": {
+                "type": "string",
+                "enum": [
+                  "DoNotSchedule",
+                  "ScheduleAnyway"
+                ]
               }
             },
             "type": "object",
@@ -954,6 +1154,106 @@
             "additionalProperties": false
           }
         },
+        "topologySpreadConstraints": {
+          "type": "array",
+          "items": {
+            "required": [
+              "maxSkew",
+              "topologyKey"
+            ],
+            "properties": {
+              "labelSelector": {
+                "type": "object",
+                "properties": {
+                  "matchExpressions": {
+                    "type": "array",
+                    "items": {
+                      "type": "object",
+                      "required": [
+                        "key",
+                        "operator"
+                      ],
+                      "properties": {
+                        "key": {
+                          "type": "string"
+                        },
+                        "operator": {
+                          "type": "string",
+                          "enum": [
+                            "In",
+                            "NotIn",
+                            "Exists",
+                            "DoesNotExist"
+                          ]
+                        },
+                        "values": {
+                          "type": "array",
+                          "items": {
+                            "type": "string"
+                          }
+                        }
+                      },
+                      "additionalProperties": false
+                    }
+                  },
+                  "matchLabels": {
+                    "type": [
+                      "object",
+                      "null"
+                    ],
+                    "additionalProperties": {
+                      "type": "string"
+                    }
+                  }
+                },
+                "additionalProperties": false
+              },
+              "matchLabelKeys": {
+                "type": [
+                  "array",
+                  "null"
+                ],
+                "items": {
+                  "type": "string"
+                }
+              },
+              "maxSkew": {
+                "type": "integer",
+                "minium": 1
+              },
+              "minDomains": {
+                "type": "integer",
+                "minium": 0
+              },
+              "nodeAffinityPolicy": {
+                "type": "string",
+                "enum": [
+                  "Honor",
+                  "Ignore"
+                ]
+              },
+              "nodeTaintsPolicy": {
+                "type": "string",
+                "enum": [
+                  "Honor",
+                  "Ignore"
+                ]
+              },
+              "topologyKey": {
+                "type": "string"
+              },
+              "whenUnsatisfiable": {
+                "type": "string",
+                "enum": [
+                  "DoNotSchedule",
+                  "ScheduleAnyway"
+                ]
+              }
+            },
+            "type": "object",
+            "additionalProperties": false
+          }
+        },
         "workers": {
           "type": "object",
           "properties": {
@@ -1088,6 +1388,106 @@
                   },
                   "type": "object",
                   "additionalProperties": false
+                },
+                "topologySpreadConstraints": {
+                  "type": "array",
+                  "items": {
+                    "required": [
+                      "maxSkew",
+                      "topologyKey"
+                    ],
+                    "properties": {
+                      "labelSelector": {
+                        "type": "object",
+                        "properties": {
+                          "matchExpressions": {
+                            "type": "array",
+                            "items": {
+                              "type": "object",
+                              "required": [
+                                "key",
+                                "operator"
+                              ],
+                              "properties": {
+                                "key": {
+                                  "type": "string"
+                                },
+                                "operator": {
+                                  "type": "string",
+                                  "enum": [
+                                    "In",
+                                    "NotIn",
+                                    "Exists",
+                                    "DoesNotExist"
+                                  ]
+                                },
+                                "values": {
+                                  "type": "array",
+                                  "items": {
+                                    "type": "string"
+                                  }
+                                }
+                              },
+                              "additionalProperties": false
+                            }
+                          },
+                          "matchLabels": {
+                            "type": [
+                              "object",
+                              "null"
+                            ],
+                            "additionalProperties": {
+                              "type": "string"
+                            }
+                          }
+                        },
+                        "additionalProperties": false
+                      },
+                      "matchLabelKeys": {
+                        "type": [
+                          "array",
+                          "null"
+                        ],
+                        "items": {
+                          "type": "string"
+                        }
+                      },
+                      "maxSkew": {
+                        "type": "integer",
+                        "minium": 1
+                      },
+                      "minDomains": {
+                        "type": "integer",
+                        "minium": 0
+                      },
+                      "nodeAffinityPolicy": {
+                        "type": "string",
+                        "enum": [
+                          "Honor",
+                          "Ignore"
+                        ]
+                      },
+                      "nodeTaintsPolicy": {
+                        "type": "string",
+                        "enum": [
+                          "Honor",
+                          "Ignore"
+                        ]
+                      },
+                      "topologyKey": {
+                        "type": "string"
+                      },
+                      "whenUnsatisfiable": {
+                        "type": "string",
+                        "enum": [
+                          "DoNotSchedule",
+                          "ScheduleAnyway"
+                        ]
+                      }
+                    },
+                    "type": "object",
+                    "additionalProperties": false
+                  }
                 }
               },
               "type": "object",
@@ -1181,6 +1581,106 @@
                   },
                   "type": "object",
                   "additionalProperties": false
+                },
+                "topologySpreadConstraints": {
+                  "type": "array",
+                  "items": {
+                    "required": [
+                      "maxSkew",
+                      "topologyKey"
+                    ],
+                    "properties": {
+                      "labelSelector": {
+                        "type": "object",
+                        "properties": {
+                          "matchExpressions": {
+                            "type": "array",
+                            "items": {
+                              "type": "object",
+                              "required": [
+                                "key",
+                                "operator"
+                              ],
+                              "properties": {
+                                "key": {
+                                  "type": "string"
+                                },
+                                "operator": {
+                                  "type": "string",
+                                  "enum": [
+                                    "In",
+                                    "NotIn",
+                                    "Exists",
+                                    "DoesNotExist"
+                                  ]
+                                },
+                                "values": {
+                                  "type": "array",
+                                  "items": {
+                                    "type": "string"
+                                  }
+                                }
+                              },
+                              "additionalProperties": false
+                            }
+                          },
+                          "matchLabels": {
+                            "type": [
+                              "object",
+                              "null"
+                            ],
+                            "additionalProperties": {
+                              "type": "string"
+                            }
+                          }
+                        },
+                        "additionalProperties": false
+                      },
+                      "matchLabelKeys": {
+                        "type": [
+                          "array",
+                          "null"
+                        ],
+                        "items": {
+                          "type": "string"
+                        }
+                      },
+                      "maxSkew": {
+                        "type": "integer",
+                        "minium": 1
+                      },
+                      "minDomains": {
+                        "type": "integer",
+                        "minium": 0
+                      },
+                      "nodeAffinityPolicy": {
+                        "type": "string",
+                        "enum": [
+                          "Honor",
+                          "Ignore"
+                        ]
+                      },
+                      "nodeTaintsPolicy": {
+                        "type": "string",
+                        "enum": [
+                          "Honor",
+                          "Ignore"
+                        ]
+                      },
+                      "topologyKey": {
+                        "type": "string"
+                      },
+                      "whenUnsatisfiable": {
+                        "type": "string",
+                        "enum": [
+                          "DoNotSchedule",
+                          "ScheduleAnyway"
+                        ]
+                      }
+                    },
+                    "type": "object",
+                    "additionalProperties": false
+                  }
                 }
               },
               "type": "object",
@@ -1231,6 +1731,106 @@
                   },
                   "type": "object",
                   "additionalProperties": false
+                },
+                "topologySpreadConstraints": {
+                  "type": "array",
+                  "items": {
+                    "required": [
+                      "maxSkew",
+                      "topologyKey"
+                    ],
+                    "properties": {
+                      "labelSelector": {
+                        "type": "object",
+                        "properties": {
+                          "matchExpressions": {
+                            "type": "array",
+                            "items": {
+                              "type": "object",
+                              "required": [
+                                "key",
+                                "operator"
+                              ],
+                              "properties": {
+                                "key": {
+                                  "type": "string"
+                                },
+                                "operator": {
+                                  "type": "string",
+                                  "enum": [
+                                    "In",
+                                    "NotIn",
+                                    "Exists",
+                                    "DoesNotExist"
+                                  ]
+                                },
+                                "values": {
+                                  "type": "array",
+                                  "items": {
+                                    "type": "string"
+                                  }
+                                }
+                              },
+                              "additionalProperties": false
+                            }
+                          },
+                          "matchLabels": {
+                            "type": [
+                              "object",
+                              "null"
+                            ],
+                            "additionalProperties": {
+                              "type": "string"
+                            }
+                          }
+                        },
+                        "additionalProperties": false
+                      },
+                      "matchLabelKeys": {
+                        "type": [
+                          "array",
+                          "null"
+                        ],
+                        "items": {
+                          "type": "string"
+                        }
+                      },
+                      "maxSkew": {
+                        "type": "integer",
+                        "minium": 1
+                      },
+                      "minDomains": {
+                        "type": "integer",
+                        "minium": 0
+                      },
+                      "nodeAffinityPolicy": {
+                        "type": "string",
+                        "enum": [
+                          "Honor",
+                          "Ignore"
+                        ]
+                      },
+                      "nodeTaintsPolicy": {
+                        "type": "string",
+                        "enum": [
+                          "Honor",
+                          "Ignore"
+                        ]
+                      },
+                      "topologyKey": {
+                        "type": "string"
+                      },
+                      "whenUnsatisfiable": {
+                        "type": "string",
+                        "enum": [
+                          "DoNotSchedule",
+                          "ScheduleAnyway"
+                        ]
+                      }
+                    },
+                    "type": "object",
+                    "additionalProperties": false
+                  }
                 }
               },
               "type": "object",
@@ -1281,6 +1881,106 @@
                   },
                   "type": "object",
                   "additionalProperties": false
+                },
+                "topologySpreadConstraints": {
+                  "type": "array",
+                  "items": {
+                    "required": [
+                      "maxSkew",
+                      "topologyKey"
+                    ],
+                    "properties": {
+                      "labelSelector": {
+                        "type": "object",
+                        "properties": {
+                          "matchExpressions": {
+                            "type": "array",
+                            "items": {
+                              "type": "object",
+                              "required": [
+                                "key",
+                                "operator"
+                              ],
+                              "properties": {
+                                "key": {
+                                  "type": "string"
+                                },
+                                "operator": {
+                                  "type": "string",
+                                  "enum": [
+                                    "In",
+                                    "NotIn",
+                                    "Exists",
+                                    "DoesNotExist"
+                                  ]
+                                },
+                                "values": {
+                                  "type": "array",
+                                  "items": {
+                                    "type": "string"
+                                  }
+                                }
+                              },
+                              "additionalProperties": false
+                            }
+                          },
+                          "matchLabels": {
+                            "type": [
+                              "object",
+                              "null"
+                            ],
+                            "additionalProperties": {
+                              "type": "string"
+                            }
+                          }
+                        },
+                        "additionalProperties": false
+                      },
+                      "matchLabelKeys": {
+                        "type": [
+                          "array",
+                          "null"
+                        ],
+                        "items": {
+                          "type": "string"
+                        }
+                      },
+                      "maxSkew": {
+                        "type": "integer",
+                        "minium": 1
+                      },
+                      "minDomains": {
+                        "type": "integer",
+                        "minium": 0
+                      },
+                      "nodeAffinityPolicy": {
+                        "type": "string",
+                        "enum": [
+                          "Honor",
+                          "Ignore"
+                        ]
+                      },
+                      "nodeTaintsPolicy": {
+                        "type": "string",
+                        "enum": [
+                          "Honor",
+                          "Ignore"
+                        ]
+                      },
+                      "topologyKey": {
+                        "type": "string"
+                      },
+                      "whenUnsatisfiable": {
+                        "type": "string",
+                        "enum": [
+                          "DoNotSchedule",
+                          "ScheduleAnyway"
+                        ]
+                      }
+                    },
+                    "type": "object",
+                    "additionalProperties": false
+                  }
                 }
               },
               "type": "object",
@@ -1331,6 +2031,106 @@
                   },
                   "type": "object",
                   "additionalProperties": false
+                },
+                "topologySpreadConstraints": {
+                  "type": "array",
+                  "items": {
+                    "required": [
+                      "maxSkew",
+                      "topologyKey"
+                    ],
+                    "properties": {
+                      "labelSelector": {
+                        "type": "object",
+                        "properties": {
+                          "matchExpressions": {
+                            "type": "array",
+                            "items": {
+                              "type": "object",
+                              "required": [
+                                "key",
+                                "operator"
+                              ],
+                              "properties": {
+                                "key": {
+                                  "type": "string"
+                                },
+                                "operator": {
+                                  "type": "string",
+                                  "enum": [
+                                    "In",
+                                    "NotIn",
+                                    "Exists",
+                                    "DoesNotExist"
+                                  ]
+                                },
+                                "values": {
+                                  "type": "array",
+                                  "items": {
+                                    "type": "string"
+                                  }
+                                }
+                              },
+                              "additionalProperties": false
+                            }
+                          },
+                          "matchLabels": {
+                            "type": [
+                              "object",
+                              "null"
+                            ],
+                            "additionalProperties": {
+                              "type": "string"
+                            }
+                          }
+                        },
+                        "additionalProperties": false
+                      },
+                      "matchLabelKeys": {
+                        "type": [
+                          "array",
+                          "null"
+                        ],
+                        "items": {
+                          "type": "string"
+                        }
+                      },
+                      "maxSkew": {
+                        "type": "integer",
+                        "minium": 1
+                      },
+                      "minDomains": {
+                        "type": "integer",
+                        "minium": 0
+                      },
+                      "nodeAffinityPolicy": {
+                        "type": "string",
+                        "enum": [
+                          "Honor",
+                          "Ignore"
+                        ]
+                      },
+                      "nodeTaintsPolicy": {
+                        "type": "string",
+                        "enum": [
+                          "Honor",
+                          "Ignore"
+                        ]
+                      },
+                      "topologyKey": {
+                        "type": "string"
+                      },
+                      "whenUnsatisfiable": {
+                        "type": "string",
+                        "enum": [
+                          "DoNotSchedule",
+                          "ScheduleAnyway"
+                        ]
+                      }
+                    },
+                    "type": "object",
+                    "additionalProperties": false
+                  }
                 }
               },
               "type": "object",
@@ -1381,6 +2181,106 @@
                   },
                   "type": "object",
                   "additionalProperties": false
+                },
+                "topologySpreadConstraints": {
+                  "type": "array",
+                  "items": {
+                    "required": [
+                      "maxSkew",
+                      "topologyKey"
+                    ],
+                    "properties": {
+                      "labelSelector": {
+                        "type": "object",
+                        "properties": {
+                          "matchExpressions": {
+                            "type": "array",
+                            "items": {
+                              "type": "object",
+                              "required": [
+                                "key",
+                                "operator"
+                              ],
+                              "properties": {
+                                "key": {
+                                  "type": "string"
+                                },
+                                "operator": {
+                                  "type": "string",
+                                  "enum": [
+                                    "In",
+                                    "NotIn",
+                                    "Exists",
+                                    "DoesNotExist"
+                                  ]
+                                },
+                                "values": {
+                                  "type": "array",
+                                  "items": {
+                                    "type": "string"
+                                  }
+                                }
+                              },
+                              "additionalProperties": false
+                            }
+                          },
+                          "matchLabels": {
+                            "type": [
+                              "object",
+                              "null"
+                            ],
+                            "additionalProperties": {
+                              "type": "string"
+                            }
+                          }
+                        },
+                        "additionalProperties": false
+                      },
+                      "matchLabelKeys": {
+                        "type": [
+                          "array",
+                          "null"
+                        ],
+                        "items": {
+                          "type": "string"
+                        }
+                      },
+                      "maxSkew": {
+                        "type": "integer",
+                        "minium": 1
+                      },
+                      "minDomains": {
+                        "type": "integer",
+                        "minium": 0
+                      },
+                      "nodeAffinityPolicy": {
+                        "type": "string",
+                        "enum": [
+                          "Honor",
+                          "Ignore"
+                        ]
+                      },
+                      "nodeTaintsPolicy": {
+                        "type": "string",
+                        "enum": [
+                          "Honor",
+                          "Ignore"
+                        ]
+                      },
+                      "topologyKey": {
+                        "type": "string"
+                      },
+                      "whenUnsatisfiable": {
+                        "type": "string",
+                        "enum": [
+                          "DoNotSchedule",
+                          "ScheduleAnyway"
+                        ]
+                      }
+                    },
+                    "type": "object",
+                    "additionalProperties": false
+                  }
                 }
               },
               "type": "object",
@@ -1517,6 +2417,106 @@
                   },
                   "type": "object",
                   "additionalProperties": false
+                },
+                "topologySpreadConstraints": {
+                  "type": "array",
+                  "items": {
+                    "required": [
+                      "maxSkew",
+                      "topologyKey"
+                    ],
+                    "properties": {
+                      "labelSelector": {
+                        "type": "object",
+                        "properties": {
+                          "matchExpressions": {
+                            "type": "array",
+                            "items": {
+                              "type": "object",
+                              "required": [
+                                "key",
+                                "operator"
+                              ],
+                              "properties": {
+                                "key": {
+                                  "type": "string"
+                                },
+                                "operator": {
+                                  "type": "string",
+                                  "enum": [
+                                    "In",
+                                    "NotIn",
+                                    "Exists",
+                                    "DoesNotExist"
+                                  ]
+                                },
+                                "values": {
+                                  "type": "array",
+                                  "items": {
+                                    "type": "string"
+                                  }
+                                }
+                              },
+                              "additionalProperties": false
+                            }
+                          },
+                          "matchLabels": {
+                            "type": [
+                              "object",
+                              "null"
+                            ],
+                            "additionalProperties": {
+                              "type": "string"
+                            }
+                          }
+                        },
+                        "additionalProperties": false
+                      },
+                      "matchLabelKeys": {
+                        "type": [
+                          "array",
+                          "null"
+                        ],
+                        "items": {
+                          "type": "string"
+                        }
+                      },
+                      "maxSkew": {
+                        "type": "integer",
+                        "minium": 1
+                      },
+                      "minDomains": {
+                        "type": "integer",
+                        "minium": 0
+                      },
+                      "nodeAffinityPolicy": {
+                        "type": "string",
+                        "enum": [
+                          "Honor",
+                          "Ignore"
+                        ]
+                      },
+                      "nodeTaintsPolicy": {
+                        "type": "string",
+                        "enum": [
+                          "Honor",
+                          "Ignore"
+                        ]
+                      },
+                      "topologyKey": {
+                        "type": "string"
+                      },
+                      "whenUnsatisfiable": {
+                        "type": "string",
+                        "enum": [
+                          "DoNotSchedule",
+                          "ScheduleAnyway"
+                        ]
+                      }
+                    },
+                    "type": "object",
+                    "additionalProperties": false
+                  }
                 }
               },
               "type": "object",
@@ -1610,6 +2610,106 @@
                   },
                   "type": "object",
                   "additionalProperties": false
+                },
+                "topologySpreadConstraints": {
+                  "type": "array",
+                  "items": {
+                    "required": [
+                      "maxSkew",
+                      "topologyKey"
+                    ],
+                    "properties": {
+                      "labelSelector": {
+                        "type": "object",
+                        "properties": {
+                          "matchExpressions": {
+                            "type": "array",
+                            "items": {
+                              "type": "object",
+                              "required": [
+                                "key",
+                                "operator"
+                              ],
+                              "properties": {
+                                "key": {
+                                  "type": "string"
+                                },
+                                "operator": {
+                                  "type": "string",
+                                  "enum": [
+                                    "In",
+                                    "NotIn",
+                                    "Exists",
+                                    "DoesNotExist"
+                                  ]
+                                },
+                                "values": {
+                                  "type": "array",
+                                  "items": {
+                                    "type": "string"
+                                  }
+                                }
+                              },
+                              "additionalProperties": false
+                            }
+                          },
+                          "matchLabels": {
+                            "type": [
+                              "object",
+                              "null"
+                            ],
+                            "additionalProperties": {
+                              "type": "string"
+                            }
+                          }
+                        },
+                        "additionalProperties": false
+                      },
+                      "matchLabelKeys": {
+                        "type": [
+                          "array",
+                          "null"
+                        ],
+                        "items": {
+                          "type": "string"
+                        }
+                      },
+                      "maxSkew": {
+                        "type": "integer",
+                        "minium": 1
+                      },
+                      "minDomains": {
+                        "type": "integer",
+                        "minium": 0
+                      },
+                      "nodeAffinityPolicy": {
+                        "type": "string",
+                        "enum": [
+                          "Honor",
+                          "Ignore"
+                        ]
+                      },
+                      "nodeTaintsPolicy": {
+                        "type": "string",
+                        "enum": [
+                          "Honor",
+                          "Ignore"
+                        ]
+                      },
+                      "topologyKey": {
+                        "type": "string"
+                      },
+                      "whenUnsatisfiable": {
+                        "type": "string",
+                        "enum": [
+                          "DoNotSchedule",
+                          "ScheduleAnyway"
+                        ]
+                      }
+                    },
+                    "type": "object",
+                    "additionalProperties": false
+                  }
                 }
               },
               "type": "object",
@@ -1703,6 +2803,106 @@
                   },
                   "type": "object",
                   "additionalProperties": false
+                },
+                "topologySpreadConstraints": {
+                  "type": "array",
+                  "items": {
+                    "required": [
+                      "maxSkew",
+                      "topologyKey"
+                    ],
+                    "properties": {
+                      "labelSelector": {
+                        "type": "object",
+                        "properties": {
+                          "matchExpressions": {
+                            "type": "array",
+                            "items": {
+                              "type": "object",
+                              "required": [
+                                "key",
+                                "operator"
+                              ],
+                              "properties": {
+                                "key": {
+                                  "type": "string"
+                                },
+                                "operator": {
+                                  "type": "string",
+                                  "enum": [
+                                    "In",
+                                    "NotIn",
+                                    "Exists",
+                                    "DoesNotExist"
+                                  ]
+                                },
+                                "values": {
+                                  "type": "array",
+                                  "items": {
+                                    "type": "string"
+                                  }
+                                }
+                              },
+                              "additionalProperties": false
+                            }
+                          },
+                          "matchLabels": {
+                            "type": [
+                              "object",
+                              "null"
+                            ],
+                            "additionalProperties": {
+                              "type": "string"
+                            }
+                          }
+                        },
+                        "additionalProperties": false
+                      },
+                      "matchLabelKeys": {
+                        "type": [
+                          "array",
+                          "null"
+                        ],
+                        "items": {
+                          "type": "string"
+                        }
+                      },
+                      "maxSkew": {
+                        "type": "integer",
+                        "minium": 1
+                      },
+                      "minDomains": {
+                        "type": "integer",
+                        "minium": 0
+                      },
+                      "nodeAffinityPolicy": {
+                        "type": "string",
+                        "enum": [
+                          "Honor",
+                          "Ignore"
+                        ]
+                      },
+                      "nodeTaintsPolicy": {
+                        "type": "string",
+                        "enum": [
+                          "Honor",
+                          "Ignore"
+                        ]
+                      },
+                      "topologyKey": {
+                        "type": "string"
+                      },
+                      "whenUnsatisfiable": {
+                        "type": "string",
+                        "enum": [
+                          "DoNotSchedule",
+                          "ScheduleAnyway"
+                        ]
+                      }
+                    },
+                    "type": "object",
+                    "additionalProperties": false
+                  }
                 }
               },
               "type": "object",
@@ -2060,6 +3260,106 @@
                   },
                   "value": {
                     "type": "string"
+                  }
+                },
+                "type": "object",
+                "additionalProperties": false
+              }
+            },
+            "topologySpreadConstraints": {
+              "type": "array",
+              "items": {
+                "required": [
+                  "maxSkew",
+                  "topologyKey"
+                ],
+                "properties": {
+                  "labelSelector": {
+                    "type": "object",
+                    "properties": {
+                      "matchExpressions": {
+                        "type": "array",
+                        "items": {
+                          "type": "object",
+                          "required": [
+                            "key",
+                            "operator"
+                          ],
+                          "properties": {
+                            "key": {
+                              "type": "string"
+                            },
+                            "operator": {
+                              "type": "string",
+                              "enum": [
+                                "In",
+                                "NotIn",
+                                "Exists",
+                                "DoesNotExist"
+                              ]
+                            },
+                            "values": {
+                              "type": "array",
+                              "items": {
+                                "type": "string"
+                              }
+                            }
+                          },
+                          "additionalProperties": false
+                        }
+                      },
+                      "matchLabels": {
+                        "type": [
+                          "object",
+                          "null"
+                        ],
+                        "additionalProperties": {
+                          "type": "string"
+                        }
+                      }
+                    },
+                    "additionalProperties": false
+                  },
+                  "matchLabelKeys": {
+                    "type": [
+                      "array",
+                      "null"
+                    ],
+                    "items": {
+                      "type": "string"
+                    }
+                  },
+                  "maxSkew": {
+                    "type": "integer",
+                    "minium": 1
+                  },
+                  "minDomains": {
+                    "type": "integer",
+                    "minium": 0
+                  },
+                  "nodeAffinityPolicy": {
+                    "type": "string",
+                    "enum": [
+                      "Honor",
+                      "Ignore"
+                    ]
+                  },
+                  "nodeTaintsPolicy": {
+                    "type": "string",
+                    "enum": [
+                      "Honor",
+                      "Ignore"
+                    ]
+                  },
+                  "topologyKey": {
+                    "type": "string"
+                  },
+                  "whenUnsatisfiable": {
+                    "type": "string",
+                    "enum": [
+                      "DoNotSchedule",
+                      "ScheduleAnyway"
+                    ]
                   }
                 },
                 "type": "object",

@@ -18,6 +18,9 @@
           }
         }
       }
+    },
+    "topologySpreadConstraints": {
+      "$ref": "file://./common/topologySpreadConstraints.json"
     }
   }
 }

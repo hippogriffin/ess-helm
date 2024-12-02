@@ -18,6 +18,19 @@ ess:
   ## imagePullSecrets:
   ## - name: ess-pull-secret
   imagePullSecrets: []
+  ## TopologySpreadConstraints describes how Pods for a component should be spread between nodes.
+  ## https://kubernetes.io/docs/concepts/scheduling-eviction/topology-spread-constraints/ for in-depth details
+  ## labelSelector can be omitted and the chart will populate a sensible value for each component.
+  ## Similarly `pod-template-hash` will be aded to `matchLabelKeys` if appropriate for each component.
+  ## If any TopologySpreadConstraints are provided for a component any global TopologySpreadConstraints are ignored for that component.
+  ## e.g.
+  ## topologySpreadConstraints:
+  ## - maxSkew: 1
+  ##   topologyKey: topology.kubernetes.io/zone
+  ##   # nodeAffinityPolicy: Honor/Ignore
+  ##   # nodeTaintsPolicy: Honor/Ignore
+  ##   # whenUnsatisfiable: DoNotSchedule/ScheduleAnyway
+  topologySpreadConstraints: []
 
 elementWeb:
   enabled: true
@@ -186,6 +199,19 @@ elementWeb:
   ##   value:
 
   tolerations: []
+  ## TopologySpreadConstraints describes how Pods for this component should be spread between nodes.
+  ## https://kubernetes.io/docs/concepts/scheduling-eviction/topology-spread-constraints/ for in-depth details
+  ## labelSelector can be omitted and the chart will populate a sensible value for this component.
+  ## Similarly `pod-template-hash` will be aded to `matchLabelKeys` if appropriate for this component.
+  ## If any TopologySpreadConstraints are provided for a component any global TopologySpreadConstraints are ignored for that component.
+  ## e.g.
+  ## topologySpreadConstraints:
+  ## - maxSkew: 1
+  ##   topologyKey: topology.kubernetes.io/zone
+  ##   # nodeAffinityPolicy: Honor/Ignore
+  ##   # nodeTaintsPolicy: Honor/Ignore
+  ##   # whenUnsatisfiable: DoNotSchedule/ScheduleAnyway
+  topologySpreadConstraints: []
 
 synapse:
   enabled: true
@@ -634,6 +660,19 @@ synapse:
   ##   value:
 
   tolerations: []
+  ## TopologySpreadConstraints describes how Pods for this component should be spread between nodes.
+  ## https://kubernetes.io/docs/concepts/scheduling-eviction/topology-spread-constraints/ for in-depth details
+  ## labelSelector can be omitted and the chart will populate a sensible value for this component.
+  ## Similarly `pod-template-hash` will be aded to `matchLabelKeys` if appropriate for this component.
+  ## If any TopologySpreadConstraints are provided for a component any global TopologySpreadConstraints are ignored for that component.
+  ## e.g.
+  ## topologySpreadConstraints:
+  ## - maxSkew: 1
+  ##   topologyKey: topology.kubernetes.io/zone
+  ##   # nodeAffinityPolicy: Honor/Ignore
+  ##   # nodeTaintsPolicy: Honor/Ignore
+  ##   # whenUnsatisfiable: DoNotSchedule/ScheduleAnyway
+  topologySpreadConstraints: []
 
   haproxy:
     replicas: 2
@@ -783,6 +822,19 @@ synapse:
     ##   value:
 
     tolerations: []
+    ## TopologySpreadConstraints describes how Pods for this component should be spread between nodes.
+    ## https://kubernetes.io/docs/concepts/scheduling-eviction/topology-spread-constraints/ for in-depth details
+    ## labelSelector can be omitted and the chart will populate a sensible value for this component.
+    ## Similarly `pod-template-hash` will be aded to `matchLabelKeys` if appropriate for this component.
+    ## If any TopologySpreadConstraints are provided for a component any global TopologySpreadConstraints are ignored for that component.
+    ## e.g.
+    ## topologySpreadConstraints:
+    ## - maxSkew: 1
+    ##   topologyKey: topology.kubernetes.io/zone
+    ##   # nodeAffinityPolicy: Honor/Ignore
+    ##   # nodeTaintsPolicy: Honor/Ignore
+    ##   # whenUnsatisfiable: DoNotSchedule/ScheduleAnyway
+    topologySpreadConstraints: []
 
   redis:
     # Details of the image to be used
