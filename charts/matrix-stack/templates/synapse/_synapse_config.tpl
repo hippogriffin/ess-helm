@@ -137,7 +137,7 @@ instance_map:
 redis:
   enabled: true
   host: "{{ $root.Release.Name }}-synapse-redis.{{ $root.Release.Namespace }}.svc.cluster.local"
-{{- if include "element-io.synapse.streamWriterWorkers" (dict "root" $root "context" .) | fromJsonArray }}
+{{- if include "element-io.synapse.streamWriterWorkers" (dict "root" $root) | fromJsonArray }}
 
 stream_writers:
 {{- range $workerType, $workerDetails := $enabledWorkers }}

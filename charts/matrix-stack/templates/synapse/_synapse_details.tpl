@@ -98,7 +98,6 @@ responsibleForMedia
 
 {{- define "element-io.synapse.streamWriterWorkers" -}}
 {{- $root := .root -}}
-{{- with required "element-io.synapse.streamWriterWorkers missing context" .context -}}
 {{ $streamWriterWorkers := list }}
 {{- range $workerType := keys ((include "element-io.synapse.enabledWorkers" (dict "root" $root)) | fromJson) }}
 {{- if include "element-io.synapse.process.streamWriters" (dict "root" $root "context" $workerType) | fromJsonArray -}}
@@ -106,7 +105,6 @@ responsibleForMedia
 {{- end }}
 {{- end }}
 {{ $streamWriterWorkers | toJson }}
-{{- end }}
 {{- end }}
 
 {{- define "element-io.synapse.configSecrets" -}}
