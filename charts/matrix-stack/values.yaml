@@ -4,33 +4,37 @@
 
 # This file is generated. Do not edit directly. Edit source/values.yaml.j2 instead to make changes
 
-## ESS specific globals, namespaced to avoid interference with other charts
-ess:
-  ## The server name of the Matrix Stack. This gets embedded in user IDs & room IDs
-  ## It can not change after the initial deployment.
-  # serverName: ess.localhost
-  ## Labels to add to all manifest in this chart
-  labels: {}
+## Common configuration that impacts all components in the chart
 
-  ## A list of Secrets in this namespace to use as pull Secrets.
-  ## Ignored if a given component specifies its own pull Secrets.
-  ## e.g.
-  ## imagePullSecrets:
-  ## - name: ess-pull-secret
-  imagePullSecrets: []
-  ## TopologySpreadConstraints describes how Pods for a component should be spread between nodes.
-  ## https://kubernetes.io/docs/concepts/scheduling-eviction/topology-spread-constraints/ for in-depth details
-  ## labelSelector can be omitted and the chart will populate a sensible value for each component.
-  ## Similarly `pod-template-hash` will be aded to `matchLabelKeys` if appropriate for each component.
-  ## If any TopologySpreadConstraints are provided for a component any global TopologySpreadConstraints are ignored for that component.
-  ## e.g.
-  ## topologySpreadConstraints:
-  ## - maxSkew: 1
-  ##   topologyKey: topology.kubernetes.io/zone
-  ##   # nodeAffinityPolicy: Honor/Ignore
-  ##   # nodeTaintsPolicy: Honor/Ignore
-  ##   # whenUnsatisfiable: DoNotSchedule/ScheduleAnyway
-  topologySpreadConstraints: []
+## The server name of the Matrix Stack. This gets embedded in user IDs & room IDs
+## It can not change after the initial deployment.
+# serverName: ess.localhost
+
+## Labels to add to all manifest in this chart
+labels: {}
+
+## A list of Secrets in this namespace to use as pull Secrets.
+## Ignored if a given component specifies its own pull Secrets.
+## e.g.
+## imagePullSecrets:
+## - name: ess-pull-secret
+imagePullSecrets: []
+
+## TopologySpreadConstraints describes how Pods for a component should be spread between nodes.
+## https://kubernetes.io/docs/concepts/scheduling-eviction/topology-spread-constraints/ for in-depth details
+## labelSelector can be omitted and the chart will populate a sensible value for each component.
+## Similarly `pod-template-hash` will be aded to `matchLabelKeys` if appropriate for each component.
+## If any TopologySpreadConstraints are provided for a component any global TopologySpreadConstraints are ignored for that component.
+## e.g.
+## topologySpreadConstraints:
+## - maxSkew: 1
+##   topologyKey: topology.kubernetes.io/zone
+##   # nodeAffinityPolicy: Honor/Ignore
+##   # nodeTaintsPolicy: Honor/Ignore
+##   # whenUnsatisfiable: DoNotSchedule/ScheduleAnyway
+topologySpreadConstraints: []
+
+## Components
 
 elementWeb:
   enabled: true

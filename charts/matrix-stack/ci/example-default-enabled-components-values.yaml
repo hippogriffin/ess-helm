@@ -4,8 +4,7 @@
 
 ## Values file containing minimal values for components that are enabled by default only
 
-ess:
-  serverName: ess.localhost
+serverName: ess.localhost
 
 elementWeb:
   ingress:
