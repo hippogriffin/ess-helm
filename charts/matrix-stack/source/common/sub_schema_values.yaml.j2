@@ -9,41 +9,20 @@ SPDX-License-Identifier: AGPL-3.0-only OR LicenseRef-Element-Commercial
 {%- endmacro %}
 
 {% macro ess() %}
-## ESS specific globals, namespaced to avoid interference with other charts
-ess:
-  ## The server name of the Matrix Stack. This gets embedded in user IDs & room IDs
-  ## It can not change after the initial deployment.
-  # serverName: ess.localhost
+## Common configuration that impacts all components in the chart
 
-  {{- labels() | indent(2) }}
+## The server name of the Matrix Stack. This gets embedded in user IDs & room IDs
+## It can not change after the initial deployment.
+# serverName: ess.localhost
+{{ labels() }}
 
-  ## A list of Secrets in this namespace to use as pull Secrets.
-  ## Ignored if a given component specifies its own pull Secrets.
-  ## e.g.
-  ## imagePullSecrets:
-  ## - name: ess-pull-secret
-  imagePullSecrets: []
-
-  {{- topologySpreadConstraints(global=true) | indent(2) }}
-{%- endmacro %}
-
-
-{% macro global() %}
-## Global values available to all sub-charts
-global:
-  ## ESS specific globals, namespaced to avoid interference with other charts
-  ess:
-    ## The server name of the Matrix Stack. This gets embedded in user IDs & room IDs
-    ## It can not change after the initial deployment.
-    # server_name: ess.localhost
-{{ labels(global=true) | indent(4) }}
-
-    ## A list of Secrets in this namespace to use as pull Secrets.
-    ## Ignored if a given component specifies its own pull Secrets.
-    ## e.g.
-    ## imagePullSecrets:
-    ## - name: ess-pull-secret
-    imagePullSecrets: []
+## A list of Secrets in this namespace to use as pull Secrets.
+## Ignored if a given component specifies its own pull Secrets.
+## e.g.
+## imagePullSecrets:
+## - name: ess-pull-secret
+imagePullSecrets: []
+{{ topologySpreadConstraints(global=true) }}
 {%- endmacro %}
 
 {% macro containersSecurityContext(key='containersSecurityContext') %}

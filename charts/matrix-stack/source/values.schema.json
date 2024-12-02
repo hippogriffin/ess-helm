@@ -6,8 +6,25 @@
     "global": {
       "$ref": "file://./common/global.json"
     },
-    "ess": {
-      "$ref": "file://./common/ess.json"
+    "serverName": {
+      "type": "string"
+    },
+    "labels": {
+      "$ref": "file://./common/labels.json"
+    },
+    "imagePullSecrets": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "name": {
+            "type": "string"
+          }
+        }
+      }
+    },
+    "topologySpreadConstraints": {
+      "$ref": "file://./common/topologySpreadConstraints.json"
     },
     "elementWeb": {
       "$ref": "file://./element-web.json"
