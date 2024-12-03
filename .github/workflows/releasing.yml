@@ -30,7 +30,7 @@ jobs:
     - name: Set version
       run: |
         if [ "$GITHUB_REF_TYPE" = "tag" ]; then
-          scripts/set_chart_version "$GITHUB_REF_NAME"
+          scripts/set_chart_version.sh "$GITHUB_REF_NAME"
         elif [ "$GITHUB_REF_NAME" != "main" ]; then
           version=$(yq '.version' charts/matrix-stack/Chart.yaml | sed "s/-dev/-sha$GITHUB_SHA/")
           scripts/set_chart_version.sh "$version"
