@@ -15,15 +15,10 @@ from urllib.parse import urlparse
 
 import aiohttp
 import yaml
-from aiohttp_retry import ExponentialRetry, RetryClient
+from aiohttp_retry import JitterRetry, RetryClient
 from pytest_kubernetes.providers import AClusterManager
 
-retry_options = ExponentialRetry(
-    attempts=30,
-    statuses=[429],
-    retry_all_server_errors=False,
-    exceptions=[aiohttp.client_exceptions.ClientResponseError],
-)
+retry_options = JitterRetry(attempts=30, statuses=[429], retry_all_server_errors=False)
 
 
 @dataclass
