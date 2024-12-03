@@ -40,6 +40,9 @@ elementWeb:
   enabled: true
 
   ## Arbitrary extra config to inject into Element Web's config.json a a YAML/JSON object
+  ##
+  ## Full details on available configuration options can be found at https://github.com/element-hq/element-web/blob/develop/docs/config.md
+  ## Most settings are configurable but some settings are owned by the chart and can't be overwritten
   additional: {}
 
   # Number of Element Web replicas to start up
@@ -304,6 +307,9 @@ synapse:
   ## additional:
   ##   configSecret: custom-synapse-config
   ##   configSecretKey: shared.yaml
+  ##
+  ## Full details on available configuration options can be found at https://element-hq.github.io/synapse/latest/usage/configuration/config_documentation.html
+  ## Most settings are configurable but some settings are owned by the chart and can't overwritten
   additional: {}
 
   ## Details of Application Service registration files to give to Synapse
