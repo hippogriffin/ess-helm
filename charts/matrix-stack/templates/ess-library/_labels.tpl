@@ -6,7 +6,7 @@ SPDX-License-Identifier: AGPL-3.0-only OR LicenseRef-Element-Commercial
 
 {{- define "element-io.ess-library.labels.common" -}}
 {{- $root := .root }}
-{{- with required "element-io.ess-library.check-credential missing context" .context }}
+{{- with required "element-io.ess-library.labels.common missing context" .context }}
 {{- $userLabels := dict }}
 {{- with $root.Values.ess }}
 {{- $userLabels = merge $userLabels (.labels | default ) }}
