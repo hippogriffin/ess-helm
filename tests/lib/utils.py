@@ -8,12 +8,12 @@ import json
 import os
 import random
 from dataclasses import dataclass
+from pathlib import Path
 from ssl import SSLContext
 from typing import Any
 from urllib.parse import urlparse
 
 import aiohttp
-import pyhelm3
 import yaml
 from aiohttp_retry import ExponentialRetry, RetryClient
 from pytest_kubernetes.providers import AClusterManager
@@ -112,7 +112,7 @@ async def aiohttp_post_json(url: str, data: dict, headers: dict, ssl_context: SS
         return await response.json()
 
 
-def value_file_has(property_path, expected):
+def value_file_has(property_path, expected=None):
     """
     Check if a nested property (given as a dot-separated string) is would be true if the chart was installed/templated.
     """
@@ -132,13 +132,10 @@ def value_file_has(property_path, expected):
                 a[key] = b[key]
         return a
 
-    async def get_embedded_helm_values():
-        helm_client = pyhelm3.Client()
-        chart = await helm_client.get_chart("charts/matrix-stack")
-        return await chart.values()
-
-    with open(os.environ["TEST_VALUES_FILE"]) as test_value_file:
-        data = merge(asyncio.run(get_embedded_helm_values()), yaml.safe_load(test_value_file))
+    with open(Path().resolve() / "charts" / "matrix-stack" / "values.yaml") as base_value_file, open(
+        os.environ["TEST_VALUES_FILE"]
+    ) as test_value_file:
+        data = merge(yaml.safe_load(base_value_file), yaml.safe_load(test_value_file))
 
     keys = property_path.split(".")
     for key in keys:
