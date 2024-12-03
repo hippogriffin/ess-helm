@@ -4,6 +4,9 @@
 
 serverName: ess.localhost
 
+elementWeb:
+  enabled: false
+
 synapse:
   ingress:
     host: synapse.ess.localhost

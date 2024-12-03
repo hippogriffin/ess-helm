@@ -115,7 +115,7 @@ jobs:
         checkov --version
         export HELM_NAMESPACE=ess
         for subchart in charts/*; do
-          for checkov_values in $(find "$subchart"/ci -name 'checkov*values.yaml'); do
+          for checkov_values in $(find "$subchart"/ci -name '*checkov*values.yaml'); do
             echo "Testing $subchart with $checkov_values";
             checkov -d "$subchart" --framework helm --var-file "$checkov_values" --quiet
           done
