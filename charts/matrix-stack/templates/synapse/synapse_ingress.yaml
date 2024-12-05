@@ -21,14 +21,14 @@ spec:
 {{- if .ingress.tlsSecret }}
   tls:
   - hosts:
-    - {{ .ingress.host | quote }}
-    secretName: {{ .ingress.tlsSecret | quote }}
+    - {{ (tpl .ingress.host $) | quote }}
+    secretName: {{  (tpl .ingress.tlsSecret $) | quote }}
 {{- end }}
 {{- with .ingress.className }}
   ingressClassName: {{ . | quote }}
 {{- end }}
   rules:
-  - host: {{ .ingress.host | quote }}
+  - host: {{ (tpl .ingress.host $) | quote }}
     http:
       paths:
 {{- range .ingress.additionalPaths -}}
@@ -37,7 +37,7 @@ spec:
         pathType: Prefix
         backend:
           service:
-            name: "{{ .service.name }}"
+            name: {{ (tpl .service.name $) | quote }}
             port:
               {{ .service.port | toYaml }}
 {{- else if eq .availability "blocked" }}

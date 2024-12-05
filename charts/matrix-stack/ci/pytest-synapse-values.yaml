@@ -6,26 +6,26 @@ serverName: ess.localhost
 
 synapse:
   registrationSharedSecret:
-    secret: ess-secrets
+    secret: "{{ $.Release.Name }}-ess-secrets"
     secretKey: registrationSharedSecret
   macaroon:
-    secret: ess-secrets
+    secret: "{{ $.Release.Name }}-ess-secrets"
     secretKey: macaroon
   signingKey:
-    secret: ess-secrets
+    secret: "{{ $.Release.Name }}-ess-secrets"
     secretKey: signingKey
 
   postgres:
-    host: synapse-postgresql
+    host: "{{ $.Release.Name }}-synapse-postgresql"
     user: synapse_user
     database: synapse_db
     password:
-      secret: synapse-postgres-db
+      secret: "{{ $.Release.Name }}-synapse-postgres-db"
       secretKey: password
 
   ingress:
-    host: synapse.ess.localhost
-    tlsSecret: synapse-web-tls
+    host: synapse.{{ $.Values.serverName }}
+    tlsSecret: "{{ $.Release.Name }}-synapse-web-tls"
 
   tolerations:
     - key: context

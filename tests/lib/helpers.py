@@ -44,6 +44,8 @@ async def install_matrix_stack(helm_client: pyhelm3.Client, generated_data: ESSD
     with open(os.environ["TEST_VALUES_FILE"]) as stream:
         values = yaml.safe_load(stream)
 
+    values["serverName"] = generated_data.server_name
+
     chart = await helm_client.get_chart("charts/matrix-stack")
     # Install or upgrade a release
     revision = helm_client.install_or_upgrade_release(

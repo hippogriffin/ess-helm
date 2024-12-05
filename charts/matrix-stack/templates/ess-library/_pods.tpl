@@ -10,7 +10,7 @@ SPDX-License-Identifier: AGPL-3.0-only OR LicenseRef-Element-Commercial
 {{- $pullSecrets := concat .pullSecrets $root.Values.imagePullSecrets }}
 {{- with ($pullSecrets | uniq) }}
 imagePullSecrets:
-{{ toYaml . }}
+{{ tpl (toYaml .) $root }}
 {{- end }}
 {{- end }}
 {{- end }}

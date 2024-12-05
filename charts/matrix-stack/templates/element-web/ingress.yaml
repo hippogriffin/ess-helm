@@ -20,14 +20,14 @@ spec:
 {{- if .ingress.tlsSecret }}
   tls:
   - hosts:
-    - {{ required "elementWeb.ingress.host is required" .ingress.host | quote }}
-    secretName: {{ .ingress.tlsSecret | quote }}
+    - {{ (tpl (required "elementWeb.ingress.host is required" .ingress.host) $) | quote }}
+    secretName: {{ (tpl .ingress.tlsSecret $) | quote }}
 {{- end }}
 {{- with .ingress.className }}
   ingressClassName: {{ . | quote }}
 {{- end }}
   rules:
-  - host: {{ .ingress.host | quote }}
+  - host: {{ (tpl .ingress.host $) | quote }}
     http:
       paths:
       - path: /

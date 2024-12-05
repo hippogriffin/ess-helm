@@ -23,7 +23,11 @@ async def test_element_web(
 ):
     resources = [
         kubernetes_tls_secret(
-            "element-web-tls", generated_data.ess_namespace, ca, ["element.ess.localhost"], bundled=True
+            f"{generated_data.release_name}-element-web-tls",
+            generated_data.ess_namespace,
+            ca,
+            [f"element.{generated_data.server_name}"],
+            bundled=True,
         )
     ]
     revision = await install_matrix_stack(helm_client, generated_data)
@@ -41,7 +45,7 @@ async def test_can_access_config_json(cluster, revision_deployed, generated_data
         waitfor="jsonpath='{.status.loadBalancer.ingress[0].ip}'",
     )
 
-    json_content = await aiottp_get_json("https://element.ess.localhost/config.json", ssl_context)
+    json_content = await aiottp_get_json(f"https://element.{generated_data.server_name}/config.json", ssl_context)
     assert "element_call" in json_content
-    assert json_content["element_call"]["url"] == "https://call.ess.localhost"
+    assert json_content["element_call"]["url"] == f"https://call.{generated_data.server_name}"
     assert json_content["element_call"]["use_exclusively"]

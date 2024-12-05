@@ -35,6 +35,6 @@ app.kubernetes.io/version: {{ .image.tag | default $root.Chart.AppVersion }}
 {{- end }}
 {{- $defaultServerConfig := dict "m.homeserver" $mHomeserver -}}
 {{- $_ := set $config "default_server_config" $defaultServerConfig -}}
-{{- toPrettyJson (merge $config .additional) -}}
+{{- tpl (toPrettyJson (merge $config .additional)) $root -}}
 {{- end }}
 {{- end }}

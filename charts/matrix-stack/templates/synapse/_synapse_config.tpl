@@ -18,7 +18,7 @@ require_auth_for_profile_requests: true
 {{- with required "element-io.synapse.config.shared-overrides missing context" .context -}}
 public_baseurl: https://{{ .ingress.host }}
 server_name: {{ required "Synapse requires serverName set" $root.Values.serverName }}
-signing_key_path: /secrets/{{ .signingKey.secret | default (printf "%s-synapse" $root.Release.Name) }}/{{ .signingKey.secretKey | default "SIGNING_KEY" }}
+signing_key_path: /secrets/{{ (tpl (.signingKey.secret | default (printf "%s-synapse" $root.Release.Name)) $root) }}/{{ .signingKey.secretKey | default "SIGNING_KEY" }}
 enable_metrics: true
 log_config: "/conf/log_config.yaml"
 macaroon_secret_key: ${SYNAPSE_MACAROON}

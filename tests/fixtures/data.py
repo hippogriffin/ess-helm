@@ -47,10 +47,16 @@ class ESSData:
     def ess_namespace(self):
         return f"ess-{self.secrets_random}"
 
+    @property
+    def server_name(self):
+        return f"ess-test-{self.secrets_random}.localhost"
+
     def ess_secret(self):
         return Secret(
             metadata=ObjectMeta(
-                name="ess-secrets", namespace=self.ess_namespace, labels={"app.kubernetes.io/managed-by": "pytest"}
+                name=f"{self.release_name}-ess-secrets",
+                namespace=self.ess_namespace,
+                labels={"app.kubernetes.io/managed-by": "pytest"},
             ),
             stringData={
                 "registrationSharedSecret": self.registration_shared_secret,
