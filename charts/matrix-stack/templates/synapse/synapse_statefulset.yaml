@@ -118,7 +118,7 @@ We have an init container to render & merge the config for several reasons:
             /secrets/{{ $.Release.Name }}-synapse/02-homeserver-helm-user-provided.yaml \
           {{- end }}
           {{- if .additional.configSecret }}
-            /secrets/{{ .additional.configSecret }}/{{ .additional.configSecretKey }} \
+            /secrets/{{ tpl .additional.configSecret $ }}/{{ .additional.configSecretKey }} \
           {{- end }}
             /config-templates/04-homeserver-overrides.yaml \
             /config-templates/05-{{ $processType }}.yaml \
