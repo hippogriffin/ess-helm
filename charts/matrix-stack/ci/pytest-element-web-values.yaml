@@ -6,8 +6,8 @@ serverName: ess.localhost
 
 elementWeb:
   ingress:
-    host: element.ess.localhost
-    tlsSecret: element-web-tls
+    host: element.{{ $.Values.serverName }}
+    tlsSecret: "{{ $.Release.Name }}-element-web-tls"
 
   replicas: 1
 
@@ -21,11 +21,11 @@ elementWeb:
     {
       "default_server_config": {
         "m.homeserver": {
-          "base_url": "https://synapse.ess.localhost",
+          "base_url": "https://synapse.{{ $.Values.serverName }}",
         }
       },
       "element_call":
-        {"url": "https://call.ess.localhost", "use_exclusively": true},
+        {"url": "https://call.{{ $.Values.serverName }}", "use_exclusively": true},
       "features":
         {
           "feature_video_rooms": true,
