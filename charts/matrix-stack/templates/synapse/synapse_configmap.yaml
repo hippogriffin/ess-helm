@@ -15,16 +15,16 @@ metadata:
   namespace: {{ $.Release.Namespace }}
 data:
   01-homeserver-underrides.yaml: |
-    {{- include "element-io.synapse.config.shared-underrides" (dict "root" $ "context" .) | nindent 4  }}
+    {{- (tpl (include "element-io.synapse.config.shared-underrides" (dict "root" $ "context" .)) $) | nindent 4  }}
 {{- /*02 files are user provided in Helm values and end up in the Secret*/}}
 {{- /*03 files are user provided as secrets rather than directly in Helm*/}}
   04-homeserver-overrides.yaml: |
-    {{- include "element-io.synapse.config.shared-overrides" (dict "root" $ "context" .) | nindent 4 }}
+    {{- (tpl (include "element-io.synapse.config.shared-overrides" (dict "root" $ "context" .)) $) | nindent 4 }}
   05-main.yaml: |
-    {{- include "element-io.synapse.config.processSpecific" (dict "root" $ "context" (dict "processType" "main")) | nindent 4 }}
+    {{- (tpl (include "element-io.synapse.config.processSpecific" (dict "root" $ "context" (dict "processType" "main"))) $) | nindent 4 }}
 {{- range $workerType, $workerDetails := (include "element-io.synapse.enabledWorkers" (dict "root" $)) | fromJson }}
   05-{{ $workerType }}.yaml: |
-    {{- include "element-io.synapse.config.processSpecific" (dict "root" $ "context" (dict "processType" $workerType)) | nindent 4 }}
+    {{- (tpl (include "element-io.synapse.config.processSpecific" (dict "root" $ "context" (dict "processType" $workerType))) $) | nindent 4 }}
 {{- end }}
   log_config.yaml: |
     # Copyright 2024 New Vector Ltd

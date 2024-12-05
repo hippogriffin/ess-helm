@@ -31,7 +31,7 @@ async def synapse_users(request, generated_data: ESSData, ssl_context, synapse_r
     for user in request.param:
         wait_for_users.append(
             create_user(
-                "synapse.ess.localhost",
+                f"synapse.{generated_data.server_name}",
                 user,
                 generated_data.secrets_random,
                 False,

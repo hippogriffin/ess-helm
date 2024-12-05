@@ -27,13 +27,17 @@ async def test_synapse(
 ):
     resources = [
         kubernetes_tls_secret(
-            "synapse-web-tls", generated_data.ess_namespace, ca, ["synapse.ess.localhost"], bundled=True
+            f"{generated_data.release_name}-synapse-web-tls",
+            generated_data.ess_namespace,
+            ca,
+            [f"synapse.{generated_data.server_name}"],
+            bundled=True,
         ),
         generated_data.ess_secret(),
     ]
 
     postgres_setup = PostgresServer(
-        name="synapse",
+        name=f"{generated_data.release_name}-synapse",
         namespace=generated_data.ess_namespace,
         database="synapse_db",
         user="synapse_user",
@@ -51,7 +55,9 @@ async def test_synapse(
         waitfor="jsonpath='{.status.loadBalancer.ingress[0].ip}'",
     )
 
-    json_content = await aiottp_get_json("https://synapse.ess.localhost/_matrix/client/versions", ssl_context)
+    json_content = await aiottp_get_json(
+        f"https://synapse.{generated_data.server_name}/_matrix/client/versions", ssl_context
+    )
     assert "unstable_features" in json_content
 
 
@@ -62,7 +68,7 @@ async def test_simplified_sliding_sync_syncs(ssl_context, synapse_users, generat
     access_token = synapse_users[0]
 
     sync_result = await aiohttp_post_json(
-        "https://synapse.ess.localhost/_matrix/client/unstable/org.matrix.simplified_msc3575/sync",
+        f"https://synapse.{generated_data.server_name}/_matrix/client/unstable/org.matrix.simplified_msc3575/sync",
         {},
         {"Authorization": f"Bearer {access_token}"},
         ssl_context,
@@ -87,16 +93,16 @@ async def test_synapse_media_upload_fetch_authenticated(
         source_sha256 = hashlib.file_digest(file, "sha256").hexdigest()
 
     content_upload_json = await upload_media(
-        synapse_fqdn="synapse.ess.localhost",
+        synapse_fqdn=f"synapse.{generated_data.server_name}",
         user_access_token=user_access_token,
         file_path=filepath,
         ssl_context=ssl_context,
     )
 
     content_download_sha256 = await download_media(
-        server_name="ess.localhost",
+        server_name=generated_data.server_name,
         user_access_token=user_access_token,
-        synapse_fqdn="synapse.ess.localhost",
+        synapse_fqdn=f"synapse.{generated_data.server_name}",
         content_upload_json=content_upload_json,
         ssl_context=ssl_context,
     )
@@ -109,6 +115,6 @@ async def test_synapse_media_upload_fetch_authenticated(
         media_pod,
         generated_data.ess_namespace,
         source_sha256,
-        content_upload_json["content_uri"].replace("mxc://ess.localhost/", ""),
+        content_upload_json["content_uri"].replace(f"mxc://{generated_data.server_name}/", ""),
         content_download_sha256,
     )

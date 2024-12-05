@@ -88,7 +88,7 @@ app.kubernetes.io/version: {{ .image.tag }}
 {{- $root := .root -}}
 {{- with required "element-io.synapse.pvcName missing context" .context -}}
 {{- if $root.Values.synapse.media.storage.existingClaim -}}
-{{ $root.Values.synapse.media.storage.existingClaim }}
+{{ tpl $root.Values.synapse.media.storage.existingClaim $root }}
 {{- else -}}
 {{ $root.Release.Name }}-synapse-media
 {{- end -}}
