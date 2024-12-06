@@ -149,3 +149,18 @@ The individual Helm charts focus on application construction, i.e.
   it is a flag in the 2nd item in a predefined list.
 
 We are not going to expose every single application configuration option.
+
+## Releasing
+
+To create a release, just construct a tag with the desired version number.
+CI will run a workflow that constructs OCI and tarball artifacts with this version
+number. It will then create a draft release. The draft release will have release
+notes containing all the PR titles since the last release. Finally the workflow
+will then create a version bump the PR; the new version number will increment
+only the patch version vs the tag and suffix with `-dev`.
+
+The draft release can then be editted to adjust the release notes before being
+published.
+
+The tarball artifact will be attached to the release. The OCI artifact will be
+available at `oci://ghrc.io/element-hq/ess-helm:<tag>`
