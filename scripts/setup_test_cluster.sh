@@ -11,7 +11,8 @@ kind_context_name="kind-$kind_cluster_name"
 # Space separated list of namespaces to use
 ess_namespaces=${ESS_NAMESPACES:-ess}
 
-ca_folder="$(git rev-parse --show-toplevel)/.ca"
+root_folder="$(git rev-parse --show-toplevel)"
+ca_folder="$root_folder/.ca"
 mkdir -p "$ca_folder"
 
 if docker ps -a | grep "${kind_cluster_name}-registry"; then
@@ -22,29 +23,7 @@ if kind get clusters 2>/dev/null | grep "$kind_cluster_name"; then
   echo "Cluster '$kind_cluster_name' is already provisioned by Kind"
 else
   echo "Creating new Kind cluster '$kind_cluster_name'"
-  cat << EOF | kind create cluster --name "$kind_cluster_name" --config -
-apiVersion: kind.x-k8s.io/v1alpha4
-kind: Cluster
-nodes:
-  - role: control-plane
-    kubeadmConfigPatches:
-      - |-
-        kind: InitConfiguration
-        nodeRegistration:
-          kubeletExtraArgs:
-            node-labels: "ingress-ready=true"
-    extraPortMappings:
-      - containerPort: 80
-        hostPort: 80
-        protocol: TCP
-      - containerPort: 443
-        hostPort: 443
-        protocol: TCP
-containerdConfigPatches:
-  - |-
-    [plugins."io.containerd.grpc.v1.cri".registry.mirrors."localhost:5000"]
-      endpoint = ["http://${kind_cluster_name}-registry:5000"]
-EOF
+  kind create cluster --name "$kind_cluster_name" --config "$root_folder/tests/integration/fixtures/files/clusters/kind.yml"
 fi
 
 network=$(docker inspect $kind_cluster_name-control-plane | jq '.[0].NetworkSettings.Networks | keys | .[0]' -r)
