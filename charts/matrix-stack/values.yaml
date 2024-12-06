@@ -10,7 +10,7 @@
 ## It can not change after the initial deployment.
 # serverName: ess.localhost
 
-## Labels to add to all manifest in this chart
+## Labels to add to all manifest for all components in this chart
 labels: {}
 
 ## How all ingresses should be constructed by default, unless overridden
@@ -104,7 +104,7 @@ elementWeb:
 
     ## How the Service behind this Ingress is constructed
     service: {}
-  ## Labels to add to all manifest in this chart
+  ## Labels to add to all manifest for this component
   labels: {}
   ## Defines the annotations to add to the workload
   # annotations: {}
@@ -546,7 +546,7 @@ synapse:
 
     ## How the Service behind this Ingress is constructed
     service: {}
-  ## Labels to add to all manifest in this chart
+  ## Labels to add to all manifest for this component
   labels: {}
   ## Defines the annotations to add to the workload
   # annotations: {}
@@ -726,7 +726,7 @@ synapse:
       ## pullSecrets:
       ## - name: dockerhub
       pullSecrets: []
-    ## Labels to add to all manifest in this chart
+    ## Labels to add to all manifest for this component
     labels: {}
     ## Defines the annotations to add to the workload
     # annotations: {}
@@ -887,7 +887,7 @@ synapse:
       ## pullSecrets:
       ## - name: dockerhub
       pullSecrets: []
-    ## Labels to add to all manifest in this chart
+    ## Labels to add to all manifest for this component
     labels: {}
     ## Defines the annotations to add to the workload
     # annotations: {}
