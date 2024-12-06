@@ -23,6 +23,9 @@
         }
       }
     },
+    "ingress": {
+      "$ref": "file://common/ingress_without_host.json"
+    },
     "topologySpreadConstraints": {
       "$ref": "file://common/topologySpreadConstraints.json"
     },

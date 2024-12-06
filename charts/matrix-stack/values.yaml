@@ -13,6 +13,21 @@
 ## Labels to add to all manifest in this chart
 labels: {}
 
+## How all ingresses should be constructed by default, unless overridden
+ingress:
+  ## Annotations to be added to all Ingresses. Will be merged with component specific Ingress annotations
+  annotations: {}
+
+  ## What Ingress Class Name that should be used for all Ingresses by default
+  # className:
+
+  ## The name of the Secret containing the TLS certificate and the key that should be used for all Ingresses by default
+  # tlsSecret:
+
+  ## How the Services behind all Ingresses is constructed by default
+  service:
+    type: ClusterIP
+
 ## A list of Secrets in this namespace to use as pull Secrets.
 ## Ignored if a given component specifies its own pull Secrets.
 ## e.g.
@@ -81,15 +96,14 @@ elementWeb:
     ## Annotations to be added to this Ingress
     annotations: {}
 
-    ## What Ingress Class Name should be used for this Ingress
+    ## What Ingress Class Name that should be used for this Ingress
     # className:
 
-    ## The name of the Secret containing the TLS certificate and key should be used for this Ingress
+    ## The name of the Secret containing the TLS certificate and the key that should be used for this Ingress
     # tlsSecret:
 
-    ## How the service behind the ingress is constructed
-    service:
-      type: ClusterIP
+    ## How the Service behind this Ingress is constructed
+    service: {}
   ## Labels to add to all manifest in this chart
   labels: {}
   ## Defines the annotations to add to the workload
@@ -523,15 +537,14 @@ synapse:
     ## Annotations to be added to this Ingress
     annotations: {}
 
-    ## What Ingress Class Name should be used for this Ingress
+    ## What Ingress Class Name that should be used for this Ingress
     # className:
 
-    ## The name of the Secret containing the TLS certificate and key should be used for this Ingress
+    ## The name of the Secret containing the TLS certificate and the key that should be used for this Ingress
     # tlsSecret:
 
-    ## How the service behind the ingress is constructed
-    service:
-      type: ClusterIP
+    ## How the Service behind this Ingress is constructed
+    service: {}
   ## Labels to add to all manifest in this chart
   labels: {}
   ## Defines the annotations to add to the workload

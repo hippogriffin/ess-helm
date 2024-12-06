@@ -15,6 +15,7 @@ SPDX-License-Identifier: AGPL-3.0-only OR LicenseRef-Element-Commercial
 ## It can not change after the initial deployment.
 # serverName: ess.localhost
 {{ labels() }}
+{{ ingress(global=true) }}
 
 ## A list of Secrets in this namespace to use as pull Secrets.
 ## Ignored if a given component specifies its own pull Secrets.
@@ -121,24 +122,33 @@ imagePullSecrets: []
   pullSecrets: []
 {%- endmacro %}
 
-{% macro ingress(key='ingress') %}
+{% macro ingress(global=false, key='ingress') %}
+{%- if  global %}
+## How all ingresses should be constructed by default, unless overridden
+{%- else %}
 ## How this ingress should be constructed
+{%- endif %}
 {{ key }}:
+{%- if not global %}
   ## What hostname should be used for this Ingress
   # host:
-
-  ## Annotations to be added to this Ingress
+{% endif %}
+  ## Annotations to be added to {{ 'all Ingresses. Will be merged with component specific Ingress annotations' if global else 'this Ingress' }}
   annotations: {}
 
-  ## What Ingress Class Name should be used for this Ingress
+  ## What Ingress Class Name that should be used for {{ 'all Ingresses by default' if global else 'this Ingress' }}
   # className:
 
-  ## The name of the Secret containing the TLS certificate and key should be used for this Ingress
+  ## The name of the Secret containing the TLS certificate and the key that should be used for {{ 'all Ingresses by default' if global else 'this Ingress' }}
   # tlsSecret:
 
-  ## How the service behind the ingress is constructed
+  ## How the {{ 'Services' if global else 'Service' }} behind {{ 'all Ingresses' if global else 'this Ingress' }} is constructed{{ ' by default' if global else '' }}
+{%- if global %}
   service:
     type: ClusterIP
+{%- else %}
+  service: {}
+{%- endif %}
 {%- endmacro %}
 
 {% macro labels(global=false, key='labels') %}
