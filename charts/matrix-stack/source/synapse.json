@@ -28,31 +28,36 @@
     },
     "additional": {
       "type": "object",
-      "anyOf": [
-        {
-          "required": []
-        },
-        {
-          "required": [
-            "config"
-          ]
-        },
-        {
-          "required": [
-            "configSecret",
-            "configSecretKey"
-          ]
-        }
-      ],
-      "properties": {
-        "config": {
-          "type": "string"
-        },
-        "configSecret": {
-          "type": "string"
-        },
-        "configSecretKey": {
-          "type": "string"
+      "additionalProperties": {
+        "type": "object",
+        "anyOf": [
+          {
+            "required": []
+          },
+          {
+            "required": [
+              "config"
+            ]
+          },
+          {
+            "required": [
+              "configSecret",
+              "configSecretKey"
+            ]
+          }
+        ],
+        "properties": {
+          "properties": {
+            "config": {
+              "type": "string"
+            },
+            "configSecret": {
+              "type": "string"
+            },
+            "configSecretKey": {
+              "type": "string"
+            }
+          }
         }
       }
     },

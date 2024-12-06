@@ -662,34 +662,38 @@
         },
         "additional": {
           "type": "object",
-          "anyOf": [
-            {
-              "required": []
-            },
-            {
-              "required": [
-                "config"
-              ]
-            },
-            {
-              "required": [
-                "configSecret",
-                "configSecretKey"
-              ]
+          "additionalProperties": {
+            "type": "object",
+            "anyOf": [
+              {
+                "required": []
+              },
+              {
+                "required": [
+                  "config"
+                ]
+              },
+              {
+                "required": [
+                  "configSecret",
+                  "configSecretKey"
+                ]
+              }
+            ],
+            "properties": {
+              "properties": {
+                "config": {
+                  "type": "string"
+                },
+                "configSecret": {
+                  "type": "string"
+                },
+                "configSecretKey": {
+                  "type": "string"
+                }
+              }
             }
-          ],
-          "properties": {
-            "config": {
-              "type": "string"
-            },
-            "configSecret": {
-              "type": "string"
-            },
-            "configSecretKey": {
-              "type": "string"
-            }
-          },
-          "additionalProperties": false
+          }
         },
         "appservices": {
           "type": "array",
