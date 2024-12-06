@@ -8,9 +8,7 @@ SPDX-License-Identifier: AGPL-3.0-only OR LicenseRef-Element-Commercial
 {{- $root := .root }}
 {{- with required "element-io.ess-library.labels.common missing context" .context }}
 {{- $userLabels := dict }}
-{{- with $root.Values.ess }}
-{{- $userLabels = merge $userLabels (.labels | default ) }}
-{{- end }}
+{{- $userLabels = merge $userLabels $root.Values.labels }}
 {{- $userLabels = merge $userLabels . }}
 {{- /* These labels are owned by the chart, don't allow overriding */}}
 {{- $userLabels = unset $userLabels "helm.sh/chart.sh" }}
