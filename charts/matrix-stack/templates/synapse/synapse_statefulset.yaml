@@ -114,11 +114,14 @@ We have an init container to render & merge the config for several reasons:
 
           python3 /config-templates/render_config_with_secrets.py \
             /config-templates/01-homeserver-underrides.yaml \
-          {{- if .additional.config }}
+          {{- range $key := (.additional | keys | uniq | sortAlpha) -}}
+          {{- $prop := index $.Values.synapse.additional $key }}
+          {{- if $prop.config }}
             /secrets/{{ $.Release.Name }}-synapse/02-homeserver-helm-user-provided.yaml \
           {{- end }}
-          {{- if .additional.configSecret }}
-            /secrets/{{ tpl .additional.configSecret $ }}/{{ .additional.configSecretKey }} \
+          {{- if $prop.configSecret }}
+            /secrets/{{ tpl $prop.configSecret $ }}/{{ $prop.configSecretKey }} \
+          {{- end }}
           {{- end }}
             /config-templates/04-homeserver-overrides.yaml \
             /config-templates/05-{{ $processType }}.yaml \
