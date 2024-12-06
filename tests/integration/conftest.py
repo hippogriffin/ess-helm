@@ -3,5 +3,5 @@
 # SPDX-License-Identifier: AGPL-3.0-only OR LicenseRef-Element-Commercial
 
 pytest_plugins = [
-    "tests.fixtures",
+    "integration.fixtures",
 ]

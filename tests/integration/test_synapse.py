@@ -10,11 +10,11 @@ import pytest
 from lightkube.models.meta_v1 import ObjectMeta
 from lightkube.resources.core_v1 import Secret
 
-from ..fixtures import ESSData
-from ..lib.helpers import install_matrix_stack, kubernetes_tls_secret
-from ..lib.synapse import assert_downloaded_content, download_media, upload_media
-from ..lib.utils import KubeCtl, aiohttp_post_json, aiottp_get_json, value_file_has
-from ..services import PostgresServer
+from .fixtures import ESSData
+from .lib.helpers import install_matrix_stack, kubernetes_tls_secret
+from .lib.synapse import assert_downloaded_content, download_media, upload_media
+from .lib.utils import KubeCtl, aiohttp_post_json, aiottp_get_json, value_file_has
+from .services import PostgresServer
 
 
 @pytest.mark.skipif(value_file_has("synapse.enabled", False), reason="Synapse not deployed")
@@ -103,7 +103,7 @@ async def test_synapse_media_upload_fetch_authenticated(
 ):
     user_access_token = synapse_users[0]
 
-    filepath = Path(__file__).parent.parent.resolve() / Path("artifacts/files/minimal.png")
+    filepath = Path(__file__).parent.resolve() / Path("artifacts/files/minimal.png")
     with open(filepath, "rb") as file:
         source_sha256 = hashlib.file_digest(file, "sha256").hexdigest()
 

@@ -46,5 +46,5 @@ jobs:
 
     - name: Test with pytest
       run: |
-        . tests/env/${{ matrix.test-component }}.rc
-        poetry run pytest tests
+        . tests/integration/env/${{ matrix.test-component }}.rc
+        poetry run pytest tests/integration
