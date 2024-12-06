@@ -6,9 +6,9 @@ import asyncio
 
 import pytest
 
-from ..fixtures import ESSData
-from ..lib.helpers import install_matrix_stack, kubernetes_tls_secret
-from ..lib.utils import aiottp_get_json, value_file_has
+from .fixtures import ESSData
+from .lib.helpers import install_matrix_stack, kubernetes_tls_secret
+from .lib.utils import aiottp_get_json, value_file_has
 
 
 @pytest.mark.skipif(value_file_has("elementWeb.enabled", False), reason="ElementWeb not deployed")
