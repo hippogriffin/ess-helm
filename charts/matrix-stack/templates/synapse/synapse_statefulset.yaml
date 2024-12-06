@@ -117,7 +117,7 @@ We have an init container to render & merge the config for several reasons:
           {{- range $key := (.additional | keys | uniq | sortAlpha) -}}
           {{- $prop := index $.Values.synapse.additional $key }}
           {{- if $prop.config }}
-            /secrets/{{ $.Release.Name }}-synapse/02-homeserver-helm-user-provided.yaml \
+            /secrets/{{ $.Release.Name }}-synapse/{{ $key }} \
           {{- end }}
           {{- if $prop.configSecret }}
             /secrets/{{ tpl $prop.configSecret $ }}/{{ $prop.configSecretKey }} \
