@@ -7,6 +7,8 @@ import hashlib
 from pathlib import Path
 
 import pytest
+from lightkube.models.meta_v1 import ObjectMeta
+from lightkube.resources.core_v1 import Secret
 
 from ..fixtures import ESSData
 from ..lib.helpers import install_matrix_stack, kubernetes_tls_secret
@@ -34,6 +36,19 @@ async def test_synapse(
             bundled=True,
         ),
         generated_data.ess_secret(),
+        Secret(
+            metadata=ObjectMeta(
+                name=f"{generated_data.release_name}-synapse-secrets",
+                namespace=generated_data.ess_namespace,
+                labels={"app.kubernetes.io/managed-by": "pytest"},
+            ),
+            stringData={
+                "01-other-user-config.yaml": """
+retention:
+  enabled: false
+"""
+            },
+        ),
     ]
 
     postgres_setup = PostgresServer(
