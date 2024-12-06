@@ -4,7 +4,10 @@
     "annotations": {
       "type": "object",
       "additionalProperties": {
-        "type": "string"
+        "type": [
+          "string",
+          "null"
+        ]
       }
     },
     "host": {
@@ -18,9 +21,6 @@
     },
     "service": {
       "type": "object",
-      "required": [
-        "type"
-      ],
       "properties": {
         "type": {
           "type": "string",

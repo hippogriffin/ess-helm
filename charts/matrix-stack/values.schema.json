@@ -28,6 +28,41 @@
         "additionalProperties": false
       }
     },
+    "ingress": {
+      "type": "object",
+      "properties": {
+        "annotations": {
+          "type": "object",
+          "additionalProperties": {
+            "type": "string"
+          }
+        },
+        "className": {
+          "type": "string"
+        },
+        "tlsSecret": {
+          "type": "string"
+        },
+        "service": {
+          "type": "object",
+          "required": [
+            "type"
+          ],
+          "properties": {
+            "type": {
+              "type": "string",
+              "enum": [
+                "ClusterIP",
+                "NodePort",
+                "LoadBalancer"
+              ]
+            }
+          },
+          "additionalProperties": false
+        }
+      },
+      "additionalProperties": false
+    },
     "topologySpreadConstraints": {
       "type": "array",
       "items": {
@@ -194,7 +229,12 @@
           "properties": {
             "annotations": {
               "type": "object",
-              "additionalProperties": true
+              "additionalProperties": {
+                "type": [
+                  "string",
+                  "null"
+                ]
+              }
             },
             "host": {
               "type": "string"
@@ -207,9 +247,6 @@
             },
             "service": {
               "type": "object",
-              "required": [
-                "type"
-              ],
               "properties": {
                 "type": {
                   "type": "string",
@@ -750,7 +787,10 @@
             "annotations": {
               "type": "object",
               "additionalProperties": {
-                "type": "string"
+                "type": [
+                  "string",
+                  "null"
+                ]
               }
             },
             "host": {
@@ -764,9 +804,6 @@
             },
             "service": {
               "type": "object",
-              "required": [
-                "type"
-              ],
               "properties": {
                 "type": {
                   "type": "string",

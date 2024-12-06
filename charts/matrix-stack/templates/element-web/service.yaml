@@ -13,7 +13,7 @@ metadata:
   name: {{ $.Release.Name }}-element-web
   namespace: {{ $.Release.Namespace }}
 spec:
-  type: {{ .ingress.service.type }}
+  type: {{ .ingress.service.type | default $.Values.ingress.service.type }}
   ports:
   - port: 80
     targetPort: element
