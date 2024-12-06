@@ -6,12 +6,12 @@ SPDX-License-Identifier: AGPL-3.0-only OR LicenseRef-Element-Commercial
 
 {{- define "element-io.ess-library.labels.common" -}}
 {{- $root := .root }}
-{{- with required "element-io.ess-library.labels.common missing context" .context }}
-{{- $userLabels := dict }}
-{{- with $root.Values.ess }}
-{{- $userLabels = merge $userLabels (.labels | default ) }}
+{{- if not (hasKey . "context") -}}
+{{- fail "element-io.ess-library.labels.common missing context" -}}
 {{- end }}
-{{- $userLabels = merge $userLabels . }}
+{{- $userLabels := dict }}
+{{- $userLabels = mustMergeOverwrite $userLabels ($root.Values.labels | deepCopy) }}
+{{- $userLabels = mustMergeOverwrite $userLabels (.context | deepCopy) }}
 {{- /* These labels are owned by the chart, don't allow overriding */}}
 {{- $userLabels = unset $userLabels "helm.sh/chart.sh" }}
 {{- $userLabels = unset $userLabels "app.kubernetes.io/managed-by" }}
@@ -22,7 +22,6 @@ SPDX-License-Identifier: AGPL-3.0-only OR LicenseRef-Element-Commercial
 {{- $userLabels = unset $userLabels "app.kubernetes.io/version" }}
 {{- if $userLabels }}
 {{- toYaml $userLabels }}
-{{- end }}
 {{- end }}
 helm.sh/chart: {{ $root.Chart.Name }}-{{ $root.Chart.Version | replace "+" "_" }}
 app.kubernetes.io/managed-by: {{ $root.Release.Service }}

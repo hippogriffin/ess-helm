@@ -14,7 +14,7 @@ SPDX-License-Identifier: AGPL-3.0-only OR LicenseRef-Element-Commercial
 ## The server name of the Matrix Stack. This gets embedded in user IDs & room IDs
 ## It can not change after the initial deployment.
 # serverName: ess.localhost
-{{ labels() }}
+{{ labels(global=true) }}
 {{ ingress(global=true) }}
 
 ## A list of Secrets in this namespace to use as pull Secrets.
@@ -152,7 +152,7 @@ imagePullSecrets: []
 {%- endmacro %}
 
 {% macro labels(global=false, key='labels') %}
-## Labels to add to all manifest in this chart{{ ' and all sub-charts' if global else '' }}
+## Labels to add to all manifest {{ 'for all components in this chart' if global else 'for this component' }}
 labels: {}
 {%- endmacro %}
 

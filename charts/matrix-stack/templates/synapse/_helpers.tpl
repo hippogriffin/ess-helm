@@ -32,7 +32,6 @@ k8s.element.io/synapse-instance: {{ $root.Release.Name }}-synapse
 {{- $root := .root -}}
 {{- with required "element-io.redis.labels missing context" .context -}}
 {{ include "element-io.ess-library.labels.common" (dict "root" $root "context" .labels) }}
-app.kubernetes.io/part-of: matrix-stack
 app.kubernetes.io/component: matrix-server-pubsub
 app.kubernetes.io/name: synapse-redis
 app.kubernetes.io/instance: {{ $root.Release.Name }}-synapse-redis
@@ -44,7 +43,6 @@ app.kubernetes.io/version: {{ .image.tag }}
 {{- $root := .root -}}
 {{- with required "element-io.synapse.haproxy.labels missing context" .context -}}
 {{ include "element-io.ess-library.labels.common" (dict "root" $root "context" .labels) }}
-app.kubernetes.io/part-of: matrix-stack
 app.kubernetes.io/component: matrix-server-ingress
 app.kubernetes.io/name: synapse-haproxy
 app.kubernetes.io/instance: {{ $root.Release.Name }}-synapse-haproxy

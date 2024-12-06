@@ -13,7 +13,10 @@
     "labels": {
       "type": "object",
       "additionalProperties": {
-        "type": "string"
+        "type": [
+          "string",
+          "null"
+        ]
       }
     },
     "imagePullSecrets": {
@@ -265,7 +268,10 @@
         "labels": {
           "type": "object",
           "additionalProperties": {
-            "type": "string"
+            "type": [
+              "string",
+              "null"
+            ]
           }
         },
         "annotations": {
@@ -934,7 +940,10 @@
         "labels": {
           "type": "object",
           "additionalProperties": {
-            "type": "string"
+            "type": [
+              "string",
+              "null"
+            ]
           }
         },
         "annotations": {
@@ -3083,7 +3092,10 @@
             "labels": {
               "type": "object",
               "additionalProperties": {
-                "type": "string"
+                "type": [
+                  "string",
+                  "null"
+                ]
               }
             },
             "annotations": {
@@ -3451,7 +3463,10 @@
             "labels": {
               "type": "object",
               "additionalProperties": {
-                "type": "string"
+                "type": [
+                  "string",
+                  "null"
+                ]
               }
             },
             "annotations": {
