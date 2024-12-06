@@ -8,8 +8,8 @@ SPDX-License-Identifier: AGPL-3.0-only OR LicenseRef-Element-Commercial
 {{- $root := .root }}
 {{- with required "element-io.ess-library.labels.common missing context" .context }}
 {{- $userLabels := dict }}
-{{- $userLabels = merge $userLabels $root.Values.labels }}
-{{- $userLabels = merge $userLabels . }}
+{{- $userLabels = mustMergeOverwrite $userLabels ($root.Values.labels | deepCopy) }}
+{{- $userLabels = mustMergeOverwrite $userLabels (. | deepCopy) }}
 {{- /* These labels are owned by the chart, don't allow overriding */}}
 {{- $userLabels = unset $userLabels "helm.sh/chart.sh" }}
 {{- $userLabels = unset $userLabels "app.kubernetes.io/managed-by" }}
