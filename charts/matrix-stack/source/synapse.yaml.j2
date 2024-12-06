@@ -92,7 +92,7 @@ logging:
 
 haproxy:
   replicas: 2
-{{- sub_schema_values.image(registry='docker.io', repository='library/haproxy', tag='3.0-alpine') | indent(2) }}
+{{- sub_schema_values.image(registry='docker.io', repository='library/haproxy', tag='3.1-alpine') | indent(2) }}
 {{- sub_schema_values.labels() | indent(2) }}
 {{- sub_schema_values.workloadAnnotations() | indent(2) }}
 {{- sub_schema_values.containersSecurityContext() | indent(2) }}
