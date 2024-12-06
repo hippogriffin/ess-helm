@@ -123,6 +123,14 @@ responsibleForMedia
 {{- with .signingKey.secret -}}
 {{ $configSecrets = append $configSecrets (tpl . $root) }}
 {{- end -}}
+{{- with .additional -}}
+{{- range $key := (. | keys | uniq | sortAlpha) -}}
+{{- $prop := index $root.Values.synapse.additional $key }}
+{{- if $prop.configSecret }}
+{{ $configSecrets = append $configSecrets (tpl $prop.configSecret $root) }}
+{{- end }}
+{{- end }}
+{{- end }}
 {{ $configSecrets | uniq | toJson }}
 {{- end }}
 {{- end }}

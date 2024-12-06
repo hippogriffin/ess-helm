@@ -19,6 +19,9 @@ synapse:
       config: |
         retention_policy:
           enabled: true
+    2-userProvided:
+      configSecret: my-user-config
+      configSecretKey: shared.yaml
   registrationSharedSecret:
     value: CHANGEME-ooWo6jeidahhei3Hae0eer9U
   macaroon:

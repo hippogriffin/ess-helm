@@ -5,6 +5,15 @@
 serverName: ess.localhost
 
 synapse:
+  additional:
+    00-userconfig.yaml:
+      config: |
+        push:
+          jitter_dalay: 10
+    01-other-user-config.yaml:
+      configSecret: "{{ $.Release.Name }}-synapse-secrets"
+      configSecretKey: "01-other-user-config.yaml"
+
   registrationSharedSecret:
     secret: "{{ $.Release.Name }}-ess-secrets"
     secretKey: registrationSharedSecret
