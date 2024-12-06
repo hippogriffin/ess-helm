@@ -120,3 +120,6 @@ jobs:
             checkov -d "$subchart" --framework helm --var-file "$checkov_values" --quiet
           done
         done
+
+    - name: Run our manifest tests
+      run: poetry run pytest tests/manifests
