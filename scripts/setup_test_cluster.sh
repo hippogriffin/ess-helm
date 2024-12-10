@@ -11,7 +11,8 @@ kind_context_name="kind-$kind_cluster_name"
 # Space separated list of namespaces to use
 ess_namespaces=${ESS_NAMESPACES:-ess}
 
-ca_folder="$(git rev-parse --show-toplevel)/.ca"
+root_folder="$(git rev-parse --show-toplevel)"
+ca_folder="$root_folder/.ca"
 mkdir -p "$ca_folder"
 
 if docker ps -a | grep "${kind_cluster_name}-registry"; then
@@ -22,48 +23,25 @@ if kind get clusters 2>/dev/null | grep "$kind_cluster_name"; then
   echo "Cluster '$kind_cluster_name' is already provisioned by Kind"
 else
   echo "Creating new Kind cluster '$kind_cluster_name'"
-  cat << EOF | kind create cluster --name "$kind_cluster_name" --config -
-apiVersion: kind.x-k8s.io/v1alpha4
-kind: Cluster
-nodes:
-  - role: control-plane
-    kubeadmConfigPatches:
-      - |-
-        kind: InitConfiguration
-        nodeRegistration:
-          kubeletExtraArgs:
-            node-labels: "ingress-ready=true"
-    extraPortMappings:
-      - containerPort: 80
-        hostPort: 80
-        protocol: TCP
-      - containerPort: 443
-        hostPort: 443
-        protocol: TCP
-containerdConfigPatches:
-  - |-
-    [plugins."io.containerd.grpc.v1.cri".registry.mirrors."localhost:5000"]
-      endpoint = ["http://${kind_cluster_name}-registry:5000"]
-EOF
+  kind create cluster --name "$kind_cluster_name" --config "$root_folder/tests/integration/fixtures/files/clusters/kind.yml"
 fi
+
+kubectl -n kube-system patch deployment/coredns --patch-file "$root_folder/tests/integration/fixtures/files/patches/tolerations.yml"
+kubectl -n local-path-storage patch deployment/local-path-provisioner --patch-file "$root_folder/tests/integration/fixtures/files/patches/tolerations.yml"
 
 network=$(docker inspect $kind_cluster_name-control-plane | jq '.[0].NetworkSettings.Networks | keys | .[0]' -r)
 docker run \
-    -d --restart=always -p "127.0.0.1:5000:5000" --network "$network" --name "${kind_cluster_name}-registry" \
+    -d --restart=always -p "127.0.0.1:5000:5000" --network "$network" --network-alias "registry" --name "${kind_cluster_name}-registry" \
     registry:2
 
 helm --kube-context $kind_context_name upgrade -i ingress-nginx --repo https://kubernetes.github.io/ingress-nginx ingress-nginx \
   --namespace ingress-nginx \
   --create-namespace \
-  --set controller.ingressClassResource.default=true \
-  --set controller.config.hsts=false \
-  --set controller.hostPort.enabled=true \
-  --set controller.allowSnippetAnnotations=true \
-  --set controller.service.enabled=false
+  -f "$root_folder/tests/integration/fixtures/files/charts/ingress-nginx.yml"
 
 helm --kube-context $kind_context_name upgrade -i metrics-server --repo https://kubernetes-sigs.github.io/metrics-server metrics-server \
   --namespace kube-system \
-  --set args[0]=--kubelet-insecure-tls
+  -f "$root_folder/tests/integration/fixtures/files/charts/metrics-server.yml"
 
 helm --kube-context $kind_context_name upgrade -i prometheus-operator-crds --repo https://prometheus-community.github.io/helm-charts prometheus-operator-crds \
   --namespace prometheus-operator \
@@ -72,7 +50,7 @@ helm --kube-context $kind_context_name upgrade -i prometheus-operator-crds --rep
 helm --kube-context $kind_context_name upgrade -i cert-manager --repo https://charts.jetstack.io cert-manager \
   --namespace cert-manager \
   --create-namespace \
-  --set crds.enabled=true
+  -f "$root_folder/tests/integration/fixtures/files/charts/cert-manager.yml"
 
 # Create a new CA certificate
 if [[ ! -f "$ca_folder"/ca.crt || ! -f "$ca_folder"/ca.pem ]]; then
@@ -158,9 +136,6 @@ EOF
   # https://github.com/bitnami/charts/blob/main/bitnami/common/templates/_resources.tpl#L15
   helm --kube-context $kind_context_name upgrade -i postgres oci://registry-1.docker.io/bitnamicharts/postgresql \
     --namespace "$namespace" \
-    --set fullnameOverride=ess-postgres \
-    --set primary.resourcesPreset="${POSTGRES_RESOURCES_PRESET:-micro}" \
-    --set auth.database=synapse \
-    --set auth.username=synapse_user \
-    --set primary.initdb.args='--locale=C --encoding=UTF8'
+    -f "$root_folder/tests/integration/fixtures/files/charts/postgres.yml" \
+    --set primary.resourcesPreset="${POSTGRES_RESOURCES_PRESET:-micro}"
 done

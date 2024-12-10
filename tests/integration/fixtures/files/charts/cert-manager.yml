@@ -1,0 +1,33 @@
+# Copyright 2024 New Vector Ltd
+#
+# SPDX-License-Identifier: AGPL-3.0-only OR LicenseRef-Element-Commercial
+
+crds:
+  enabled: true
+
+tolerations:
+- key: context
+  operator: Equal
+  value: pytest
+  effect: NoSchedule
+
+webhook:
+  tolerations:
+  - key: context
+    operator: Equal
+    value: pytest
+    effect: NoSchedule
+
+cainjector:
+  tolerations:
+  - key: context
+    operator: Equal
+    value: pytest
+    effect: NoSchedule
+
+startupapicheck:
+  tolerations:
+  - key: context
+    operator: Equal
+    value: pytest
+    effect: NoSchedule

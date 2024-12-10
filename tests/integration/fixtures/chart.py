@@ -10,7 +10,7 @@ from .data import ESSData
 
 
 @pytest.fixture(scope="session")
-async def revision_deployed(cluster, helm_client: pyhelm3.Client, ingress, ess_namespace, generated_data: ESSData):
+async def revision_deployed(cluster, helm_client: pyhelm3.Client, ingress, generated_data: ESSData):
     counter = 0
     while True:
         try:

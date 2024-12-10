@@ -26,7 +26,7 @@ def unsafe_token(size):
     return "".join(secrets.choice(alphabet) for i in range(size))
 
 
-@dataclass
+@dataclass(frozen=True)
 class ESSData:
     synapse_postgres_password: str
     macaroon: str

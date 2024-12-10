@@ -22,7 +22,7 @@ from cryptography.x509.oid import NameOID
 from platformdirs import user_cache_dir
 
 
-@dataclass
+@dataclass(frozen=True)
 class CertKey:
     ca: CertKey
     cert: Certificate
@@ -31,7 +31,7 @@ class CertKey:
     def cert_bundle_as_pem(self):
         bundle = []
         bundle.append(self.cert.public_bytes(encoding=serialization.Encoding.PEM).decode("utf-8"))
-        if self.ca != self:
+        if self.ca is not None:
             bundle.append(self.ca.cert_bundle_as_pem())
         return "".join(bundle)
 
@@ -62,8 +62,6 @@ def get_ca(name, root_ca=None) -> CertKey:
             cert = x509.load_pem_x509_certificate(pem_in.read(), default_backend())
         if cert.not_valid_after_utc < pytz.UTC.localize(datetime.datetime.now()):
             certkey = CertKey(ca=root_ca, cert=cert, key=private_key)
-            if not certkey.ca:
-                certkey.ca = certkey
     if not certkey:
         certkey = generate_ca(name, root_ca)
         with open(key_path, "wb") as pem_out:
@@ -120,8 +118,6 @@ def generate_ca(name, root_ca=None) -> CertKey:
     else:
         certificate = builder.sign(private_key, hashes.SHA256(), default_backend())
         ca = CertKey(ca=None, cert=certificate, key=private_key)
-        # Its self-signed, so its CA is itself
-        ca.ca = ca
     return ca
 
 
