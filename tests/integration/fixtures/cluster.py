@@ -196,5 +196,14 @@ async def prometheus_operator_crds(helm_client):
 
 
 @pytest.fixture(autouse=True, scope="session")
-async def ess_namespace(kube_client, generated_data):
-    await kube_client.create(Namespace(metadata=ObjectMeta(name=generated_data.ess_namespace)))
+async def ess_namespace(kube_client, generated_data: ESSData):
+    namespace = await kube_client.create(
+        Namespace(
+            metadata=ObjectMeta(name=generated_data.ess_namespace, labels={"app.kubernetes.io/managed-by": "pytest"})
+        )
+    )
+
+    yield namespace
+
+    if os.environ.get("PYTEST_KEEP_CLUSTER", "") != "1":
+        await kube_client.delete(Namespace, name=generated_data.ess_namespace)
