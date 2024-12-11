@@ -4,7 +4,7 @@
 
 import pytest
 
-from . import components_to_test
+from . import components_to_test, components_with_ingresses
 
 
 @pytest.mark.parametrize("component", components_to_test)
@@ -15,10 +15,10 @@ async def test_has_ingress(component, templates):
         if template["kind"] == "Ingress":
             has_ingress = True
 
-    assert has_ingress
+    assert has_ingress == (component in components_with_ingresses)
 
 
-@pytest.mark.parametrize("component", components_to_test)
+@pytest.mark.parametrize("component", components_with_ingresses)
 @pytest.mark.asyncio_cooperative
 async def test_ingress_is_expected_host(component, values, templates):
     for template in templates:
@@ -31,7 +31,7 @@ async def test_ingress_is_expected_host(component, values, templates):
                 assert rule["host"] == values[component]["ingress"]["host"]
 
 
-@pytest.mark.parametrize("component", components_to_test)
+@pytest.mark.parametrize("component", components_with_ingresses)
 @pytest.mark.asyncio_cooperative
 async def test_ingress_paths_are_all_prefix(component, templates):
     for template in templates:
@@ -49,7 +49,7 @@ async def test_ingress_paths_are_all_prefix(component, templates):
                     assert path["pathType"] == "Prefix"
 
 
-@pytest.mark.parametrize("component", components_to_test)
+@pytest.mark.parametrize("component", components_with_ingresses)
 @pytest.mark.asyncio_cooperative
 async def test_no_ingress_annotations_by_default(component, templates):
     for template in templates:
@@ -57,7 +57,7 @@ async def test_no_ingress_annotations_by_default(component, templates):
             assert "annotations" not in template["metadata"]
 
 
-@pytest.mark.parametrize("component", components_to_test)
+@pytest.mark.parametrize("component", components_with_ingresses)
 @pytest.mark.asyncio_cooperative
 async def test_renders_component_ingress_annotations(component, values, make_templates):
     values[component]["ingress"]["annotations"] = {
@@ -71,7 +71,7 @@ async def test_renders_component_ingress_annotations(component, values, make_tem
             assert template["metadata"]["annotations"]["component"] == "set"
 
 
-@pytest.mark.parametrize("component", components_to_test)
+@pytest.mark.parametrize("component", components_with_ingresses)
 @pytest.mark.asyncio_cooperative
 async def test_renders_global_ingress_annotations(component, values, make_templates):
     values.setdefault("ingress", {})["annotations"] = {
@@ -85,7 +85,7 @@ async def test_renders_global_ingress_annotations(component, values, make_templa
             assert template["metadata"]["annotations"]["global"] == "set"
 
 
-@pytest.mark.parametrize("component", components_to_test)
+@pytest.mark.parametrize("component", components_with_ingresses)
 @pytest.mark.asyncio_cooperative
 async def test_merges_global_and_component_ingress_annotations(component, values, make_templates):
     values[component]["ingress"]["annotations"] = {
@@ -113,7 +113,7 @@ async def test_merges_global_and_component_ingress_annotations(component, values
             assert template["metadata"]["annotations"]["global"] is None
 
 
-@pytest.mark.parametrize("component", components_to_test)
+@pytest.mark.parametrize("component", components_with_ingresses)
 @pytest.mark.asyncio_cooperative
 async def test_no_ingress_tlsSecret_by_default(component, templates):
     for template in templates:
@@ -121,7 +121,7 @@ async def test_no_ingress_tlsSecret_by_default(component, templates):
             assert "tls" not in template["spec"]
 
 
-@pytest.mark.parametrize("component", components_to_test)
+@pytest.mark.parametrize("component", components_with_ingresses)
 @pytest.mark.asyncio_cooperative
 async def test_uses_component_ingress_tlsSecret(component, values, make_templates):
     values[component]["ingress"]["tlsSecret"] = "component"
@@ -135,7 +135,7 @@ async def test_uses_component_ingress_tlsSecret(component, values, make_template
             assert template["spec"]["tls"][0]["secretName"] == "component"
 
 
-@pytest.mark.parametrize("component", components_to_test)
+@pytest.mark.parametrize("component", components_with_ingresses)
 @pytest.mark.asyncio_cooperative
 async def test_uses_global_ingress_tlsSecret(component, values, make_templates):
     values.setdefault("ingress", {})["tlsSecret"] = "global"
@@ -149,7 +149,7 @@ async def test_uses_global_ingress_tlsSecret(component, values, make_templates):
             assert template["spec"]["tls"][0]["secretName"] == "global"
 
 
-@pytest.mark.parametrize("component", components_to_test)
+@pytest.mark.parametrize("component", components_with_ingresses)
 @pytest.mark.asyncio_cooperative
 async def test_component_ingress_tlsSecret_beats_global(component, values, make_templates):
     values[component]["ingress"]["tlsSecret"] = "component"
@@ -164,7 +164,7 @@ async def test_component_ingress_tlsSecret_beats_global(component, values, make_
             assert template["spec"]["tls"][0]["secretName"] == "component"
 
 
-@pytest.mark.parametrize("component", components_to_test)
+@pytest.mark.parametrize("component", components_with_ingresses)
 @pytest.mark.asyncio_cooperative
 async def test_no_ingressClassName_by_default(component, templates):
     for template in templates:
@@ -172,7 +172,7 @@ async def test_no_ingressClassName_by_default(component, templates):
             assert "ingressClassName" not in template["spec"]
 
 
-@pytest.mark.parametrize("component", components_to_test)
+@pytest.mark.parametrize("component", components_with_ingresses)
 @pytest.mark.asyncio_cooperative
 async def test_uses_component_ingressClassName(component, values, make_templates):
     values[component]["ingress"]["className"] = "component"
@@ -183,7 +183,7 @@ async def test_uses_component_ingressClassName(component, values, make_templates
             assert template["spec"]["ingressClassName"] == "component"
 
 
-@pytest.mark.parametrize("component", components_to_test)
+@pytest.mark.parametrize("component", components_with_ingresses)
 @pytest.mark.asyncio_cooperative
 async def test_uses_global_ingressClassName(component, values, make_templates):
     values.setdefault("ingress", {})["className"] = "global"
@@ -194,7 +194,7 @@ async def test_uses_global_ingressClassName(component, values, make_templates):
             assert template["spec"]["ingressClassName"] == "global"
 
 
-@pytest.mark.parametrize("component", components_to_test)
+@pytest.mark.parametrize("component", components_with_ingresses)
 @pytest.mark.asyncio_cooperative
 async def test_component_ingressClassName_beats_global(component, values, make_templates):
     values[component]["ingress"]["className"] = "component"
