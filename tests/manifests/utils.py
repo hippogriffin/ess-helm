@@ -41,3 +41,11 @@ def values(request) -> Dict[str, Any]:
 @pytest.fixture(scope="function")
 async def templates(helm_client: pyhelm3.Client, chart: pyhelm3.Chart, values: Dict[str, Any]):
     return list(await helm_client.template_resources(chart, "pytest", values))
+
+
+@pytest.fixture
+def make_templates(helm_client: pyhelm3.Client, chart: pyhelm3.Chart):
+    async def _make_templates(values):
+        return list(await helm_client.template_resources(chart, "pytest", values))
+
+    return _make_templates
