@@ -27,7 +27,9 @@ def kubernetes_docker_secret(name: str, namespace: str, docker_config_json: str)
     return secret
 
 
-def kubernetes_tls_secret(name: str, namespace: str, ca: CertKey, dns_names: [str], bundled=False) -> Awaitable[Secret]:
+def kubernetes_tls_secret(
+    name: str, namespace: str, ca: CertKey, dns_names: list[str], bundled=False
+) -> Awaitable[Secret]:
     certificate = generate_cert(ca, dns_names)
     secret = Secret(
         type="kubernetes.io/tls",
