@@ -6,7 +6,9 @@ import copy
 from typing import Any, Dict
 
 _raw_component_details = {
-    "elementWeb": {"hyphened_name": "element-web"},
+    "elementWeb": {
+        "hyphened_name": "element-web",
+    },
     "synapse": {},
 }
 
