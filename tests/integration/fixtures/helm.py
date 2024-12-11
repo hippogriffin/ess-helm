@@ -4,6 +4,7 @@
 
 import asyncio
 import os
+import secrets
 
 import pyhelm3
 import pytest
@@ -15,7 +16,7 @@ from lightkube.resources.core_v1 import Namespace, Secret
 from ..lib.helpers import kubernetes_tls_secret
 from ..lib.utils import value_file_has
 from ..services import PostgresServer
-from .data import ESSData
+from .data import ESSData, generate_signing_key, unsafe_token
 
 
 @pytest.fixture(scope="session")
@@ -37,7 +38,6 @@ async def helm_prerequisites(
         )
 
     if value_file_has("synapse.enabled", True):
-        resources.append(generated_data.ess_secret())
         resources.append(
             kubernetes_tls_secret(
                 f"{generated_data.release_name}-synapse-web-tls",
@@ -55,10 +55,13 @@ async def helm_prerequisites(
                     labels={"app.kubernetes.io/managed-by": "pytest"},
                 ),
                 stringData={
+                    "macaroon": secrets.token_urlsafe(36),
+                    "registrationSharedSecret": generated_data.synapse_registration_shared_secret,
+                    "signingKey": generate_signing_key(),
                     "01-other-user-config.yaml": """
 retention:
   enabled: false
-"""
+""",
                 },
             )
         )
@@ -69,7 +72,7 @@ retention:
                 namespace=ess_namespace.metadata.name,
                 database="synapse_db",
                 user="synapse_user",
-                password=generated_data.synapse_postgres_password,
+                password=unsafe_token(36),
             ).setup(helm_client, kube_client)
         )
 

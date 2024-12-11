@@ -22,7 +22,7 @@ async def synapse_users(request, generated_data: ESSData, ssl_context, ingress_r
                 user,
                 generated_data.secrets_random,
                 False,
-                generated_data.registration_shared_secret,
+                generated_data.synapse_registration_shared_secret,
                 ssl_context,
             )
         )
