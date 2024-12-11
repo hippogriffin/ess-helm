@@ -15,13 +15,13 @@ synapse:
       configSecretKey: "01-other-user-config.yaml"
 
   registrationSharedSecret:
-    secret: "{{ $.Release.Name }}-ess-secrets"
+    secret: "{{ $.Release.Name }}-synapse-secrets"
     secretKey: registrationSharedSecret
   macaroon:
-    secret: "{{ $.Release.Name }}-ess-secrets"
+    secret: "{{ $.Release.Name }}-synapse-secrets"
     secretKey: macaroon
   signingKey:
-    secret: "{{ $.Release.Name }}-ess-secrets"
+    secret: "{{ $.Release.Name }}-synapse-secrets"
     secretKey: signingKey
 
   postgres:

@@ -2,73 +2,24 @@
 #
 # SPDX-License-Identifier: AGPL-3.0-only OR LicenseRef-Element-Commercial
 
-import asyncio
 import hashlib
 from pathlib import Path
 
 import pytest
-from lightkube.models.meta_v1 import ObjectMeta
-from lightkube.resources.core_v1 import Secret
 
 from .fixtures import ESSData
-from .lib.helpers import install_matrix_stack, kubernetes_tls_secret
 from .lib.synapse import assert_downloaded_content, download_media, upload_media
 from .lib.utils import KubeCtl, aiohttp_post_json, aiottp_get_json, value_file_has
-from .services import PostgresServer
 
 
 @pytest.mark.skipif(value_file_has("synapse.enabled", False), reason="Synapse not deployed")
 @pytest.mark.asyncio_cooperative
-async def test_synapse(
-    cluster,
-    helm_client,
-    kube_client,
+async def test_synapse_can_access_client_api(
+    ingress_ready,
     ssl_context,
-    ca,
     generated_data: ESSData,
 ):
-    resources = [
-        kubernetes_tls_secret(
-            f"{generated_data.release_name}-synapse-web-tls",
-            generated_data.ess_namespace,
-            ca,
-            [f"synapse.{generated_data.server_name}"],
-            bundled=True,
-        ),
-        generated_data.ess_secret(),
-        Secret(
-            metadata=ObjectMeta(
-                name=f"{generated_data.release_name}-synapse-secrets",
-                namespace=generated_data.ess_namespace,
-                labels={"app.kubernetes.io/managed-by": "pytest"},
-            ),
-            stringData={
-                "01-other-user-config.yaml": """
-retention:
-  enabled: false
-"""
-            },
-        ),
-    ]
-
-    postgres_setup = PostgresServer(
-        name=f"{generated_data.release_name}-synapse",
-        namespace=generated_data.ess_namespace,
-        database="synapse_db",
-        user="synapse_user",
-        password=generated_data.synapse_postgres_password,
-    ).setup(helm_client, kube_client)
-
-    revision = await install_matrix_stack(helm_client, generated_data)
-
-    await asyncio.gather(revision, postgres_setup, *[kube_client.create(r) for r in resources])
-
-    await asyncio.to_thread(
-        cluster.wait,
-        name=f"ingress/{generated_data.release_name}-synapse",
-        namespace=generated_data.ess_namespace,
-        waitfor="jsonpath='{.status.loadBalancer.ingress[0].ip}'",
-    )
+    await ingress_ready("synapse")
 
     json_content = await aiottp_get_json(
         f"https://synapse.{generated_data.server_name}/_matrix/client/versions", ssl_context

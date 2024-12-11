@@ -3,30 +3,17 @@
 # SPDX-License-Identifier: AGPL-3.0-only OR LicenseRef-Element-Commercial
 
 import asyncio
-import logging
 
-import pyhelm3
 import pytest
 
 from ..lib.synapse import create_user
 from .data import ESSData
 
-# Until synapse release is ready, this is complaining that the helm status command fails
-logging.getLogger("pyhelm3").setLevel(logging.ERROR)
-
 
 @pytest.fixture(scope="session")
-async def synapse_ready(cluster, helm_client: pyhelm3.Client, revision_deployed, generated_data: ESSData):
-    await asyncio.to_thread(
-        cluster.wait,
-        name=f"ingress/{generated_data.release_name}-synapse",
-        namespace=generated_data.ess_namespace,
-        waitfor="jsonpath='{.status.loadBalancer.ingress[0].ip}'",
-    )
+async def synapse_users(request, generated_data: ESSData, ssl_context, ingress_ready):
+    await ingress_ready("synapse")
 
-
-@pytest.fixture(scope="session")
-async def synapse_users(request, generated_data: ESSData, ssl_context, synapse_ready):
     wait_for_users = []
     for user in request.param:
         wait_for_users.append(
@@ -35,7 +22,7 @@ async def synapse_users(request, generated_data: ESSData, ssl_context, synapse_r
                 user,
                 generated_data.secrets_random,
                 False,
-                generated_data.registration_shared_secret,
+                generated_data.synapse_registration_shared_secret,
                 ssl_context,
             )
         )
