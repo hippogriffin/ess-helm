@@ -97,9 +97,6 @@ async def matrix_stack(
     )
     await asyncio.gather(revision, *helm_prerequisites)
 
-
-@pytest.fixture(autouse=True, scope="session")
-async def revision_deployed(helm_client: pyhelm3.Client, ess_namespace: Namespace, generated_data: ESSData):
     counter = 0
     while True:
         try:
@@ -120,8 +117,8 @@ async def revision_deployed(helm_client: pyhelm3.Client, ess_namespace: Namespac
             raise Exception("Helm Release did not become DEPLOYED after 180s")
 
 
-@pytest.fixture(scope="function")
-def ingress_ready(cluster, revision_deployed, generated_data: ESSData):
+@pytest.fixture(scope="session")
+def ingress_ready(cluster, matrix_stack, generated_data: ESSData):
     async def _ingress_ready(ingress_suffix):
         await asyncio.to_thread(
             cluster.wait,
