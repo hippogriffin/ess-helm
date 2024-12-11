@@ -121,7 +121,7 @@ def generate_ca(name, root_ca=None) -> CertKey:
     return ca
 
 
-def generate_cert(ca, dns_names: [str]) -> CertKey:
+def generate_cert(ca, dns_names: list[str]) -> CertKey:
     one_day = datetime.timedelta(1, 0, 0)
 
     # Now we want to generate a cert from that root

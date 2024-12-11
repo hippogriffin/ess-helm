@@ -6,7 +6,6 @@ import asyncio
 import base64
 import json
 import os
-import random
 from dataclasses import dataclass
 from pathlib import Path
 from ssl import SSLContext
@@ -40,11 +39,7 @@ class KubeCtl:
         )
 
 
-def random_string(choice, size):
-    return "".join([random.choice(choice) for _ in range(0, size)])
-
-
-def docker_config_json(auths: [DockerAuth]) -> str:
+def docker_config_json(auths: list[DockerAuth]) -> str:
     docker_config_auths = {}
     for auth in auths:
         docker_config_auths[auth.registry] = {
