@@ -6,10 +6,10 @@
 # It is a mixin to be used with other values file to enable
 # usage of the test cluster
 
-elementWeb:
-  ingress:
-    tlsSecret: ess-selfsigned
+ingress:
+  tlsSecret: ess-selfsigned
 
+elementWeb:
   tolerations:
   - key: context
     operator: Equal
@@ -17,9 +17,6 @@ elementWeb:
     effect: NoSchedule
 
 synapse:
-  ingress:
-    tlsSecret: ess-selfsigned
-
   tolerations:
   - key: context
     operator: Equal
