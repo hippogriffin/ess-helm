@@ -5,6 +5,7 @@
 import asyncio
 import os
 from pathlib import Path
+from typing import Any, AsyncGenerator
 
 import pyhelm3
 import pytest
@@ -195,8 +196,8 @@ async def prometheus_operator_crds(helm_client):
         )
 
 
-@pytest.fixture(autouse=True, scope="session")
-async def ess_namespace(kube_client, generated_data: ESSData):
+@pytest.fixture(scope="session")
+async def ess_namespace(kube_client, generated_data: ESSData) -> AsyncGenerator[Namespace, Any]:
     namespace = await kube_client.create(
         Namespace(
             metadata=ObjectMeta(name=generated_data.ess_namespace, labels={"app.kubernetes.io/managed-by": "pytest"})

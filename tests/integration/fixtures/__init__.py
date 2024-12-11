@@ -3,9 +3,9 @@
 # SPDX-License-Identifier: AGPL-3.0-only OR LicenseRef-Element-Commercial
 
 from .ca import ca, ssl_context
-from .chart import revision_deployed
 from .cluster import cluster, ess_namespace, helm_client, ingress, kube_client, registry
 from .data import ESSData, generated_data
+from .helm import helm_prerequisites, matrix_stack, revision_deployed
 from .synapse import synapse_ready, synapse_users
 
 __all__ = [
@@ -22,4 +22,6 @@ __all__ = [
     "synapse_users",
     "ESSData",
     "revision_deployed",
+    "matrix_stack",
+    "helm_prerequisites",
 ]

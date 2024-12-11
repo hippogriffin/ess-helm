@@ -5,7 +5,6 @@
 import asyncio
 import logging
 
-import pyhelm3
 import pytest
 
 from ..lib.synapse import create_user
@@ -16,7 +15,7 @@ logging.getLogger("pyhelm3").setLevel(logging.ERROR)
 
 
 @pytest.fixture(scope="session")
-async def synapse_ready(cluster, helm_client: pyhelm3.Client, revision_deployed, generated_data: ESSData):
+async def synapse_ready(cluster, revision_deployed, generated_data: ESSData):
     await asyncio.to_thread(
         cluster.wait,
         name=f"ingress/{generated_data.release_name}-synapse",
