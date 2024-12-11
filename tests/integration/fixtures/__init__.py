@@ -5,8 +5,8 @@
 from .ca import ca, ssl_context
 from .cluster import cluster, ess_namespace, helm_client, ingress, kube_client, registry
 from .data import ESSData, generated_data
-from .helm import helm_prerequisites, matrix_stack, revision_deployed
-from .synapse import synapse_ready, synapse_users
+from .helm import helm_prerequisites, ingress_ready, matrix_stack, revision_deployed
+from .synapse import synapse_users
 
 __all__ = [
     "cluster",
@@ -18,7 +18,7 @@ __all__ = [
     "ca",
     "ssl_context",
     "generated_data",
-    "synapse_ready",
+    "ingress_ready",
     "synapse_users",
     "ESSData",
     "revision_deployed",

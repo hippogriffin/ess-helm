@@ -118,3 +118,16 @@ async def revision_deployed(helm_client: pyhelm3.Client, ess_namespace: Namespac
         await asyncio.sleep(1)
         if counter > 180:
             raise Exception("Helm Release did not become DEPLOYED after 180s")
+
+
+@pytest.fixture(scope="function")
+def ingress_ready(cluster, revision_deployed, generated_data: ESSData):
+    async def _ingress_ready(ingress_suffix):
+        await asyncio.to_thread(
+            cluster.wait,
+            name=f"ingress/{generated_data.release_name}-{ingress_suffix}",
+            namespace=generated_data.ess_namespace,
+            waitfor="jsonpath='{.status.loadBalancer.ingress[0].ip}'",
+        )
+
+    return _ingress_ready

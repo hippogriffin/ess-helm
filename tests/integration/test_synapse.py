@@ -15,10 +15,12 @@ from .lib.utils import KubeCtl, aiohttp_post_json, aiottp_get_json, value_file_h
 @pytest.mark.skipif(value_file_has("synapse.enabled", False), reason="Synapse not deployed")
 @pytest.mark.asyncio_cooperative
 async def test_synapse_can_access_client_api(
-    synapse_ready,
+    ingress_ready,
     ssl_context,
     generated_data: ESSData,
 ):
+    await ingress_ready("synapse")
+
     json_content = await aiottp_get_json(
         f"https://synapse.{generated_data.server_name}/_matrix/client/versions", ssl_context
     )
