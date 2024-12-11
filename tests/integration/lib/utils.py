@@ -6,7 +6,6 @@ import asyncio
 import base64
 import json
 import os
-import random
 from dataclasses import dataclass
 from pathlib import Path
 from ssl import SSLContext
@@ -38,10 +37,6 @@ class KubeCtl:
         return await asyncio.to_thread(
             self.cluster.kubectl, as_dict=False, args=["exec", "-t", pod, "-n", namespace, "--", *cmd]
         )
-
-
-def random_string(choice, size):
-    return "".join([random.choice(choice) for _ in range(0, size)])
 
 
 def docker_config_json(auths: list[DockerAuth]) -> str:

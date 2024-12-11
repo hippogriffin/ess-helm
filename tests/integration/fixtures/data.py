@@ -2,6 +2,7 @@
 #
 # SPDX-License-Identifier: AGPL-3.0-only OR LicenseRef-Element-Commercial
 
+import random
 import secrets
 import string
 from dataclasses import dataclass
@@ -10,7 +11,6 @@ import pytest
 import signedjson.key
 
 from ..artifacts import CertKey
-from ..lib.utils import random_string
 
 
 def generate_signing_key():
@@ -22,6 +22,10 @@ def generate_signing_key():
 def unsafe_token(size):
     alphabet = string.ascii_letters + string.digits + string.punctuation
     return "".join(secrets.choice(alphabet) for i in range(size))
+
+
+def random_string(choice, size):
+    return "".join([random.choice(choice) for _ in range(0, size)])
 
 
 @dataclass(frozen=True)
