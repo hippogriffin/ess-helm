@@ -9,16 +9,11 @@ from pathlib import Path
 from ssl import SSLContext
 
 import aiohttp
-from aiohttp_retry import ExponentialRetry, RetryClient
+from aiohttp_retry import JitterRetry, RetryClient
 
 from .utils import KubeCtl, aiohttp_post_json, aiottp_get_json
 
-retry_options = ExponentialRetry(
-    attempts=30,
-    statuses=[429],
-    retry_all_server_errors=False,
-    exceptions=[aiohttp.client_exceptions.ClientResponseError],
-)
+retry_options = JitterRetry(attempts=30, statuses=[429], retry_all_server_errors=False)
 
 
 async def get_nonce(synapse_fqdn: str, ssl_context) -> str:
