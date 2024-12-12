@@ -162,12 +162,13 @@ We have an init container to render & merge the config for several reasons:
         - "-cex"
         - >
           ls -lR /secrets;
+          while ! bash -c "cat < /dev/null > /dev/tcp/$POSTGRES_HOST/$POSTGRES_PORT" 2>/dev/null;
+          do sleep 1;echo "waiting for $POSTGRES_HOST:$POSTGRES_PORT";
+          done;
           [ -e "/usr/lib/`uname -m`-linux-gnu/libjemalloc.so.2" ] && export LD_PRELOAD="/usr/lib/`uname -m`-linux-gnu/libjemalloc.so.2";
           python3 -m {{ include "element-io.synapse.process.app" (dict "root" $ "context" $processType) }} -c /conf/homeserver.yaml
-{{- with .extraEnv }}
         env:
-          {{- toYaml . | nindent 10 }}
-{{- end }}
+          {{- include "element-io.synapse.env" (dict "root" $ "context" .) | nindent 10 }}
         ports:
 {{- if (include "element-io.synapse.process.hasHttp" (dict "root" $ "context" $processType)) }}
         - containerPort: 8008
@@ -190,7 +191,7 @@ We have an init container to render & merge the config for several reasons:
             path: /health
             port: synapse-health
           periodSeconds: 2
-          failureThreshold: 10
+          failureThreshold: 20
         livenessProbe:
           httpGet:
             path: /health
