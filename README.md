@@ -4,9 +4,9 @@ Copyright 2024 New Vector Ltd
 SPDX-License-Identifier: AGPL-3.0-only OR LicenseRef-Element-Commercial
 -->
 
-# Element Server Suite - Helm Charts
+# Element Server Suite - matrix-stack Helm Chart
 
-Helm Charts to deploy the Element Server Suite
+A Helm Chart to deploy the Element Server Suite
 
 ## Developing
 
@@ -24,23 +24,23 @@ Optional Tools:
   * [checkov](https://www.checkov.io/)
   * [reuse](https://reuse.software/)
 
-Changes to chart templates are directly made to `chart/<chart>/templates`.
+Changes to the chart templates are directly made to `charts/matrix-stack/templates`.
 
-`chart/<chart>/values.yaml` and `chart/<chart>/values.schema.json` are generated files
-and should not be directly edited. Changes to chart values and the values schema are
-made in `chart/<chart>/source`. This is then built by running
+`charts/matrix-stack/values.yaml` and `charts/matrix-stack/values.schema.json` are generated
+files and should not be directly edited. Changes to chart values and the values schema are
+made in `charts/matrix-stack/source`. This is then built by running
 `scripts/assemble_helm_charts_from_fragments.sh`.
 
 The rationale for this is so that shared values & schema snippets can be shared between
 components without copy-pasting. Shared schema snippets can be found at
-`chart/matrix-stack/sub_schemas/*.json`. Shared values snippets can be found in
-`chart/matrix-stack/sub_schemas/sub_schemas.values.yaml.j2`
+`charts/matrix-stack/source/common/*.json`. Shared values snippets can be found in
+`charts/matrix-stack/source/common/sub_schemas.values.yaml.j2`
 
 The output of `assemble_helm_charts_from_fragments.sh` must be committed to Git or CI fails.
-The rationale for this is so that the values files and schemas can be easily viewed in
+The rationale for this is so that the values file and schema can be easily viewed in
 the repo and diffs seen in PRs.
 
-Similarly the version number of the charts can be changed with
+Similarly the version number of the chart can be changed with
 `scripts/set_chart_version.sh <version>`. Any changes this makes must be committed to Git
 as well.
 
@@ -68,7 +68,7 @@ The test cluster can be taken down by running `./scripts/destroy_test_cluster.sh
 
 ### User Values
 
-Each chart has a Git ignored folder at `charts/<chart name>/user_values`. Any `.yaml` placed in
+The chart has a Git ignored folder at `charts/matrix-stack/user_values`. Any `.yaml` placed in
 this directory will not be committed to Git.
 
 ### Inspecting temlates
@@ -84,7 +84,7 @@ Values can be tweaked further with `--set property.path=value`.
 ## Linting
 
 Each of the linters will be run in CI in a way that either covers the relevant part (or all)
-of the repository or all charts. Instructions on how to run them locally can be found below.
+of the repository or the chart. Instructions on how to run them locally can be found below.
 
 ### chart-testing
 
@@ -92,8 +92,8 @@ Wrapper over `helm lint` with other Helm based linting checks.
 
 From the project root: `ct lint`
 
-This will iterate over all charts in `charts/` and test them with all values files matching
-`charts/<chart name>/ci/*-values.yaml`.
+This will test the chart with all values files matching
+`charts/matrix-stack/ci/*-values.yaml`.
 
 From a sub-chart directory: `ct lint --charts . --validate-maintainers=false`
 
@@ -101,7 +101,7 @@ From a sub-chart directory: `ct lint --charts . --validate-maintainers=false`
 
 Detects misconfigurations and lack of hardening in the manifests.
 
-From a sub-chart directory: `checkov -d . --framework helm --quiet --var-file ci/<checkov values file>`
+From `charts/matrix-stack`: `checkov -d . --framework helm --quiet --var-file ci/<checkov values file>`
 
 Other values files can be used but the values files named `checkov<something>values.yaml` will have
 any test suppression annotations required.
@@ -110,7 +110,7 @@ any test suppression annotations required.
 
 Validates the generated manifests against their schemas.
 
-From a sub-chart directory: `helm template -f ci/<values file> . | kubeconform -summary`
+From `charts/matrix-stack`: `helm template -f ci/<values file> . | kubeconform -summary`
 
 ### reuse
 
@@ -131,16 +131,20 @@ Verifies that the deployed workloads behave as expected and integrates well toge
 From the project root : `pytest test`
 
 #### Special env variables
-- `PYTEST_KEEP_CLUSTER=1` : Do not destroy the cluster at the end of the test run. You must delete it using `kind delete cluster --name pytest-ess` manually before running any other test run.
+- `PYTEST_KEEP_CLUSTER=1` : Do not destroy the cluster at the end of the test run.
+You must delete it using `kind delete cluster --name ess-helm` manually before running any other test run.
 
 #### Usage
-Use `kind export kubeconfig --name pytest-ess` to get access to the cluster.
+Use `kind export kubeconfig --name ess-helm` to get access to the cluster.
+
+The tests will use the cluster constructed by `scripts/setup_test_cluster.sh` if that is
+running. If the tests use an existing cluster, they won't destroy the cluster afterwards.
 
 ## Design
 
 ### Component Configuration
 
-The individual Helm charts focus on application construction, i.e.
+The chart focus on application construction, i.e.
 * Providing Kubernetes options
 * Exposing values to set required and very frequently set application settings
 * Exposing values to set arbitrary additional application configuration
