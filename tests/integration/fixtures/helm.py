@@ -30,7 +30,7 @@ async def helm_prerequisites(
         resources.append(
             kubernetes_tls_secret(
                 f"{generated_data.release_name}-element-web-tls",
-                ess_namespace.metadata.name,
+                generated_data.ess_namespace,
                 ca,
                 [f"element.{generated_data.server_name}"],
                 bundled=True,
@@ -41,7 +41,7 @@ async def helm_prerequisites(
         resources.append(
             kubernetes_tls_secret(
                 f"{generated_data.release_name}-synapse-web-tls",
-                ess_namespace.metadata.name,
+                generated_data.ess_namespace,
                 ca,
                 [f"synapse.{generated_data.server_name}"],
                 bundled=True,
@@ -51,7 +51,7 @@ async def helm_prerequisites(
             Secret(
                 metadata=ObjectMeta(
                     name=f"{generated_data.release_name}-synapse-secrets",
-                    namespace=ess_namespace.metadata.name,
+                    namespace=generated_data.ess_namespace,
                     labels={"app.kubernetes.io/managed-by": "pytest"},
                 ),
                 stringData={
@@ -69,7 +69,7 @@ retention:
         setups.append(
             PostgresServer(
                 name=f"{generated_data.release_name}-synapse",
-                namespace=ess_namespace.metadata.name,
+                namespace=generated_data.ess_namespace,
                 database="synapse_db",
                 user="synapse_user",
                 password=unsafe_token(36),
@@ -94,7 +94,7 @@ async def matrix_stack(
         generated_data.release_name,
         chart,
         values,
-        namespace=ess_namespace.metadata.name,
+        namespace=generated_data.ess_namespace,
         atomic=True,
         wait=True,
     )
@@ -105,7 +105,7 @@ async def matrix_stack(
         try:
             revision = await helm_client.get_current_revision(
                 generated_data.release_name,
-                namespace=ess_namespace.metadata.name,
+                namespace=generated_data.ess_namespace,
             )
             if revision.status == pyhelm3.ReleaseRevisionStatus.DEPLOYED:
                 break
