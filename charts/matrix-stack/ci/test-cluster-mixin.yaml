@@ -8,31 +8,3 @@
 
 ingress:
   tlsSecret: ess-selfsigned
-
-elementWeb:
-  tolerations:
-  - key: context
-    operator: Equal
-    value: pytest
-    effect: NoSchedule
-
-synapse:
-  tolerations:
-  - key: context
-    operator: Equal
-    value: pytest
-    effect: NoSchedule
-
-  haproxy:
-    tolerations:
-    - key: context
-      operator: Equal
-      value: pytest
-      effect: NoSchedule
-
-  redis:
-    tolerations:
-    - key: context
-      operator: Equal
-      value: pytest
-      effect: NoSchedule

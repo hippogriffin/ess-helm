@@ -26,9 +26,6 @@ else
   kind create cluster --name "$kind_cluster_name" --config "$root_folder/tests/integration/fixtures/files/clusters/kind.yml"
 fi
 
-kubectl -n kube-system patch deployment/coredns --patch-file "$root_folder/tests/integration/fixtures/files/patches/tolerations.yml"
-kubectl -n local-path-storage patch deployment/local-path-provisioner --patch-file "$root_folder/tests/integration/fixtures/files/patches/tolerations.yml"
-
 network=$(docker inspect $kind_cluster_name-control-plane | jq '.[0].NetworkSettings.Networks | keys | .[0]' -r)
 docker run \
     -d --restart=always -p "127.0.0.1:5000:5000" --network "$network" --network-alias "registry" --name "${kind_cluster_name}-registry" \

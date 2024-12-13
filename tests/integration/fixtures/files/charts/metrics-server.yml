@@ -4,9 +4,3 @@
 
 args:
 - --kubelet-insecure-tls
-
-tolerations:
-- key: context
-  operator: Equal
-  value: pytest
-  effect: NoSchedule

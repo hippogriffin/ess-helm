@@ -14,9 +14,3 @@ primary:
 
   initdb:
     args: --locale=C --encoding=UTF8
-
-  tolerations:
-  - key: context
-    operator: Equal
-    value: pytest
-    effect: NoSchedule
