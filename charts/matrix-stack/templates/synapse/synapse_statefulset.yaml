@@ -135,8 +135,8 @@ We have an init container to render & merge the config for several reasons:
           name: plain-config
           readOnly: true
 {{- range $secret := include "element-io.synapse.configSecrets" (dict "root" $ "context" .) | fromJsonArray }}
-        - mountPath: /secrets/{{ $secret }}
-          name: "secret-{{ $secret }}"
+        - mountPath: /secrets/{{ tpl $secret $ }}
+          name: "secret-{{ tpl $secret $ }}"
           readOnly: true
 {{- end }}
         - mountPath: /conf
@@ -215,13 +215,13 @@ We have an init container to render & merge the config for several reasons:
 {{- end }}
         volumeMounts:
 {{- range $secret := include "element-io.synapse.configSecrets" (dict "root" $ "context" .) | fromJsonArray }}
-        - mountPath: /secrets/{{ $secret }}
-          name: "secret-{{ $secret }}"
+        - mountPath: /secrets/{{ tpl $secret $ }}
+          name: "secret-{{ tpl $secret $ }}"
           readOnly: true
 {{- end }}
 {{- range $appservice := .appservices }}
-        - name: {{ $appservice.registrationFileConfigMap }}
-          mountPath: /as/{{ $appservice.registrationFileConfigMap }}/registration.yaml
+        - name: {{ tpl $appservice.registrationFileConfigMap $ }}
+          mountPath: /as/{{ tpl $appservice.registrationFileConfigMap $ }}/registration.yaml
           readOnly: true
           subPath: registration.yaml
 {{- end }}
