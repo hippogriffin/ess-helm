@@ -51,10 +51,7 @@ spec:
       nodeSelector:
         {{- toYaml . | nindent 8 }}
 {{- end }}
-{{- with .tolerations }}
-      tolerations:
-        {{- toYaml . | nindent 8 }}
-{{- end }}
+{{- include "element-io.ess-library.pods.tolerations" (dict "root" $ "context" .tolerations) | indent 6 }}
       containers:
       - name: redis
         args:

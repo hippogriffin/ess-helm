@@ -15,6 +15,18 @@ imagePullSecrets:
 {{- end }}
 {{- end }}
 
+{{- define "element-io.ess-library.pods.tolerations" -}}
+{{- $root := .root -}}
+{{- if not (hasKey . "context") -}}
+{{- fail "element-io.ess-library.pods.tolerations missing context" -}}
+{{- end }}
+{{- $tolerations := concat .context $root.Values.tolerations }}
+{{- with ($tolerations | uniq) }}
+tolerations:
+{{ toYaml . }}
+{{- end }}
+{{- end }}
+
 {{- define "element-io.ess-library.pods.topologySpreadConstraints" -}}
 {{- $root := .root -}}
 {{- with required "element-io.ess-libary.pods.topologySpreadConstraints missing context" .context -}}

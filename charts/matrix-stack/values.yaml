@@ -35,6 +35,23 @@ ingress:
 ## - name: ess-pull-secret
 imagePullSecrets: []
 
+## Workload tolerations allows Pods that are part of a (sub)component to 'tolerate' any taint that matches the triple <key,value,effect> using the matching operator <operator>.
+##
+## * effect indicates the taint effect to match. Empty means match all taint effects. When specified, allowed values are NoSchedule, PreferNoSchedule and NoExecute.
+## * key is the taint key that the toleration applies to. Empty means match all taint keys. If the key is empty, operator must be Exists; this combination means to match all values and all keys.
+## * operator represents a key's relationship to the value. Valid operators are Exists and Equal. Defaults to Equal. Exists is equivalent to wildcard for value, so that a pod can tolerate all taints of a particular category.
+## * value is the taint value the toleration matches to. If the operator is Exists, the value should be empty, otherwise just a regular string.
+##
+## * tolerationSeconds represents the period of time the toleration (which must be of effect NoExecute, otherwise this field is ignored) tolerates the taint. By default, it is not set, which means tolerate the taint forever (do not evict). Zero and negative values will be treated as 0 (evict immediately) by the system.
+## e.g.
+## tolerations:
+## - effect:
+##   key:
+##   operator:
+##   value:
+
+tolerations: []
+
 ## TopologySpreadConstraints describes how Pods for a component should be spread between nodes.
 ## https://kubernetes.io/docs/concepts/scheduling-eviction/topology-spread-constraints/ for in-depth details
 ## labelSelector can be omitted and the chart will populate a sensible value for each component.
@@ -203,8 +220,7 @@ elementWeb:
 
     ## Annotations to add to the service account
     annotations: {}
-  ## Workload tolerations
-  ## The pod this Toleration is attached to tolerates any taint that matches the triple <key,value,effect> using the matching operator <operator>.
+  ## Workload tolerations allows Pods that are part of this (sub)component to 'tolerate' any taint that matches the triple <key,value,effect> using the matching operator <operator>.
   ##
   ## * effect indicates the taint effect to match. Empty means match all taint effects. When specified, allowed values are NoSchedule, PreferNoSchedule and NoExecute.
   ## * key is the taint key that the toleration applies to. Empty means match all taint keys. If the key is empty, operator must be Exists; this combination means to match all values and all keys.
@@ -667,8 +683,7 @@ synapse:
   ## Requires the ServiceMonitor CRDs to be in the cluster
   serviceMonitors:
     enabled: true
-  ## Workload tolerations
-  ## The pod this Toleration is attached to tolerates any taint that matches the triple <key,value,effect> using the matching operator <operator>.
+  ## Workload tolerations allows Pods that are part of this (sub)component to 'tolerate' any taint that matches the triple <key,value,effect> using the matching operator <operator>.
   ##
   ## * effect indicates the taint effect to match. Empty means match all taint effects. When specified, allowed values are NoSchedule, PreferNoSchedule and NoExecute.
   ## * key is the taint key that the toleration applies to. Empty means match all taint keys. If the key is empty, operator must be Exists; this combination means to match all values and all keys.
@@ -829,8 +844,7 @@ synapse:
     ## Requires the ServiceMonitor CRDs to be in the cluster
     serviceMonitors:
       enabled: true
-    ## Workload tolerations
-    ## The pod this Toleration is attached to tolerates any taint that matches the triple <key,value,effect> using the matching operator <operator>.
+    ## Workload tolerations allows Pods that are part of this (sub)component to 'tolerate' any taint that matches the triple <key,value,effect> using the matching operator <operator>.
     ##
     ## * effect indicates the taint effect to match. Empty means match all taint effects. When specified, allowed values are NoSchedule, PreferNoSchedule and NoExecute.
     ## * key is the taint key that the toleration applies to. Empty means match all taint keys. If the key is empty, operator must be Exists; this combination means to match all values and all keys.
@@ -986,8 +1000,7 @@ synapse:
 
       ## Annotations to add to the service account
       annotations: {}
-    ## Workload tolerations
-    ## The pod this Toleration is attached to tolerates any taint that matches the triple <key,value,effect> using the matching operator <operator>.
+    ## Workload tolerations allows Pods that are part of this (sub)component to 'tolerate' any taint that matches the triple <key,value,effect> using the matching operator <operator>.
     ##
     ## * effect indicates the taint effect to match. Empty means match all taint effects. When specified, allowed values are NoSchedule, PreferNoSchedule and NoExecute.
     ## * key is the taint key that the toleration applies to. Empty means match all taint keys. If the key is empty, operator must be Exists; this combination means to match all values and all keys.
