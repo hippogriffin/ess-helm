@@ -206,9 +206,9 @@ async def test_component_ingressClassName_beats_global(component, values, make_t
             assert template["spec"]["ingressClassName"] == "component"
 
 
-@pytest.mark.parametrize("component", components_with_ingresses)
+@pytest.mark.parametrize("values_file", values_files_with_ingresses)
 @pytest.mark.asyncio_cooperative
-async def test_ingress_services(component, templates):
+async def test_ingress_services(templates):
     services_by_name = dict[str, dict]()
     for template in templates:
         if template["kind"] == "Service":
