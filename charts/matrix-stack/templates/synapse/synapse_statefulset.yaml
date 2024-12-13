@@ -268,5 +268,5 @@ We have an init container to render & merge the config for several reasons:
 ---
 {{- end }}
 {{- end }}
-{{- end -}}
+{{- end }}
 {{- end -}}
