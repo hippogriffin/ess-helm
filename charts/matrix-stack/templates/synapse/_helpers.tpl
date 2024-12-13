@@ -11,7 +11,7 @@ SPDX-License-Identifier: AGPL-3.0-only OR LicenseRef-Element-Commercial
 app.kubernetes.io/component: matrix-server
 app.kubernetes.io/name: synapse
 app.kubernetes.io/instance: {{ $root.Release.Name }}-synapse
-app.kubernetes.io/version: {{ .image.tag | default $root.Chart.AppVersion }}
+app.kubernetes.io/version: {{ .image.tag }}
 k8s.element.io/synapse-instance: {{ $root.Release.Name }}-synapse
 {{- end }}
 {{- end }}
@@ -23,7 +23,7 @@ k8s.element.io/synapse-instance: {{ $root.Release.Name }}-synapse
 app.kubernetes.io/component: matrix-server
 app.kubernetes.io/name: synapse-{{ .ProcessType }}
 app.kubernetes.io/instance: {{ $root.Release.Name }}-synapse-{{ .ProcessType }}
-app.kubernetes.io/version: {{ .image.tag | default $root.Chart.AppVersion }}
+app.kubernetes.io/version: {{ .image.tag }}
 k8s.element.io/synapse-instance: {{ $root.Release.Name }}-synapse
 {{- end }}
 {{- end }}

@@ -85,7 +85,7 @@ We have an init container to render & merge the config for several reasons:
         image: "{{ .registry }}/{{ .repository }}@{{ .digest }}"
         imagePullPolicy: {{ .pullPolicy | default "IfNotPresent" }}
 {{- else }}
-        image: "{{ .registry }}/{{ .repository }}:{{ .tag | default $.Chart.AppVersion }}"
+        image: "{{ .registry }}/{{ .repository }}:{{ required "synapse.image.tag is required if no digest" .tag }}"
         imagePullPolicy: {{ .pullPolicy | default "Always" }}
 {{- end }}
 {{- end }}

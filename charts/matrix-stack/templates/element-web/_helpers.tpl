@@ -11,7 +11,7 @@ SPDX-License-Identifier: AGPL-3.0-only OR LicenseRef-Element-Commercial
 app.kubernetes.io/component: matrix-client
 app.kubernetes.io/name: element-web
 app.kubernetes.io/instance: {{ $root.Release.Name }}-element-web
-app.kubernetes.io/version: {{ .image.tag | default $root.Chart.AppVersion }}
+app.kubernetes.io/version: {{ .image.tag }}
 {{- end }}
 {{- end }}
 
