@@ -51,24 +51,17 @@ async def test_services_have_endpoints(
     kube_client: AsyncClient,
     generated_data: ESSData,
 ):
-    endpoints_by_name = dict[str, Endpoints]()
-    async for endpoint in kube_client.list(Endpoints, namespace=generated_data.ess_namespace):
-        assert endpoint.metadata is not None, f"Encountered an endpoint without metadata : {endpoint}"
-        endpoints_by_name[endpoint.metadata.name] = endpoint
     async for service in kube_client.list(
         Service, namespace=generated_data.ess_namespace, labels={"app.kubernetes.io/part-of": op.in_(["matrix-stack"])}
     ):
         assert service.metadata is not None, f"Encountered a service without metadata : {service}"
-        endpoint = endpoints_by_name[service.metadata.name]
-        assert endpoint.metadata is not None, f"Encountered an endpoint without metadata : {endpoint}"
         await asyncio.to_thread(
             cluster.wait,
-            name=f"endpoints/{endpoint.metadata.name}",
+            name=f"endpoints/{service.metadata.name}",
             namespace=generated_data.ess_namespace,
             waitfor="jsonpath='{.subsets[].addresses}'",
         )
-        # We refresh the endpoint to get the latest state
-        endpoint = await kube_client.get(Endpoints, name=endpoint.metadata.name, namespace=generated_data.ess_namespace)
+        endpoint = await kube_client.get(Endpoints, name=service.metadata.name, namespace=generated_data.ess_namespace)
         assert endpoint.metadata is not None, f"Encountered an endpoint without metadata : {endpoint}"
         assert endpoint.subsets, f"Endpoint {endpoint.metadata.name} has no subsets"
 
