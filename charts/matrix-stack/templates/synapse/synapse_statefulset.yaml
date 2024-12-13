@@ -126,6 +126,12 @@ We have an init container to render & merge the config for several reasons:
             /config-templates/04-homeserver-overrides.yaml \
             /config-templates/05-{{ $processType }}.yaml \
             > /conf/homeserver.yaml;
+
+          while ! bash -c "cat < /dev/null > /dev/tcp/$POSTGRES_HOST/$POSTGRES_PORT" 2>/dev/null;
+          do sleep 1; echo "waiting for $POSTGRES_HOST:$POSTGRES_PORT";
+          done;
+        env:
+          {{- include "element-io.synapse.env" (dict "root" $ "context" .) | nindent 10 }}
 {{- with .resources }}
         resources:
           {{- toYaml . | nindent 10 }}
@@ -162,9 +168,6 @@ We have an init container to render & merge the config for several reasons:
         - "-cex"
         - >
           ls -lR /secrets;
-          while ! bash -c "cat < /dev/null > /dev/tcp/$POSTGRES_HOST/$POSTGRES_PORT" 2>/dev/null;
-          do sleep 1;echo "waiting for $POSTGRES_HOST:$POSTGRES_PORT";
-          done;
           [ -e "/usr/lib/`uname -m`-linux-gnu/libjemalloc.so.2" ] && export LD_PRELOAD="/usr/lib/`uname -m`-linux-gnu/libjemalloc.so.2";
           python3 -m {{ include "element-io.synapse.process.app" (dict "root" $ "context" $processType) }} -c /conf/homeserver.yaml
         env:
