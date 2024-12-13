@@ -9,18 +9,18 @@ from .helm import helm_prerequisites, ingress_ready, matrix_stack
 from .synapse import synapse_users
 
 __all__ = [
+    "ca",
     "cluster",
     "ess_namespace",
-    "ingress",
-    "registry",
-    "kube_client",
-    "helm_client",
-    "ca",
-    "ssl_context",
-    "generated_data",
-    "ingress_ready",
-    "synapse_users",
     "ESSData",
-    "matrix_stack",
+    "generated_data",
+    "helm_client",
     "helm_prerequisites",
+    "ingress",
+    "ingress_ready",
+    "kube_client",
+    "matrix_stack",
+    "registry",
+    "ssl_context",
+    "synapse_users",
 ]
