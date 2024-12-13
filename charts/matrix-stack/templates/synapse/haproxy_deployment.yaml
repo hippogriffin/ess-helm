@@ -77,7 +77,7 @@ spec:
         image: "{{ .registry }}/{{ .repository }}@{{ .digest }}"
         imagePullPolicy: {{ .pullPolicy | default "IfNotPresent" }}
 {{- else }}
-        image: "{{ .registry }}/{{ .repository }}:{{ .tag }}"
+        image: "{{ .registry }}/{{ .repository }}:{{ required "synapse.haproxy.image.tag is required if no digest" .tag }}"
         imagePullPolicy: {{ .pullPolicy | default "Always" }}
 {{- end }}
 {{- end }}
