@@ -182,10 +182,6 @@
           "minimum": 1,
           "type": "integer"
         },
-        "ess-library": {
-          "type": "object",
-          "additionalProperties": true
-        },
         "image": {
           "type": "object",
           "required": [
@@ -778,14 +774,6 @@
             }
           },
           "additionalProperties": false
-        },
-        "global": {
-          "type": "object",
-          "additionalProperties": true
-        },
-        "ess-library": {
-          "type": "object",
-          "additionalProperties": true
         },
         "ingress": {
           "type": "object",

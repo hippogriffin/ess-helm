@@ -14,9 +14,6 @@
       "minimum": 1,
       "type": "integer"
     },
-    "ess-library": {
-      "$ref": "file://common/essLibrary.json"
-    },
     "image": {
       "$ref": "file://common/image.json"
     },
