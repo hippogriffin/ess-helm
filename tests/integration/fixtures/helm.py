@@ -131,3 +131,22 @@ def ingress_ready(cluster, matrix_stack, generated_data: ESSData):
         )
 
     return _ingress_ready
+
+
+@pytest.fixture(scope="session")
+async def all_ingresses_ready(cluster, matrix_stack, kube_client: AsyncClient, generated_data: ESSData):
+    waits = []
+    async for ingress in kube_client.list(
+        Ingress, namespace=generated_data.ess_namespace, labels={"app.kubernetes.io/part-of": op.in_(["matrix-stack"])}
+    ):
+        assert ingress.metadata is not None, f"Encountered an ingress without metadata : {ingress}"
+        waits.append(
+            asyncio.to_thread(
+                cluster.wait,
+                name=f"ingress/{ingress.metadata.name}",
+                namespace=generated_data.ess_namespace,
+                waitfor="jsonpath='{.status.loadBalancer.ingress[0].ip}'",
+            )
+        )
+
+    return asyncio.gather(*waits)
