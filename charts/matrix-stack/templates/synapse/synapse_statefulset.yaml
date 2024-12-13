@@ -252,8 +252,8 @@ We have an init container to render & merge the config for several reasons:
 {{- range $appservice := .appservices }}
       - configMap:
           defaultMode: 420
-          name: "{{ $appservice.registrationFileConfigMap }}"
-        name: {{ $appservice.registrationFileConfigMap }}
+          name: "{{ tpl $appservice.registrationFileConfigMap $ }}"
+        name: {{ tpl $appservice.registrationFileConfigMap $ }}
 {{- end }}
 {{- if (include "element-io.synapse.process.responsibleForMedia" (dict "root" $ "context" (dict "processType" $processType "enabledWorkerTypes" (keys $enabledWorkers)))) }}
       - persistentVolumeClaim:
