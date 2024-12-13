@@ -95,7 +95,7 @@ async def matrix_stack(
         chart,
         values,
         namespace=generated_data.ess_namespace,
-        atomic=True,
+        atomic="CI" not in os.environ,
         wait=True,
     )
     await asyncio.gather(revision, *helm_prerequisites)
