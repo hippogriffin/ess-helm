@@ -13,8 +13,8 @@ from .fixtures.data import ESSData
 
 
 @pytest.mark.asyncio_cooperative
+@pytest.mark.usefixtures("matrix_stack")
 async def test_services_have_matching_labels(
-    matrix_stack,
     kube_client: AsyncClient,
     generated_data: ESSData,
 ):
@@ -45,9 +45,9 @@ async def test_services_have_matching_labels(
 
 
 @pytest.mark.asyncio_cooperative
+@pytest.mark.usefixtures("matrix_stack")
 async def test_services_have_endpoints(
     cluster,
-    matrix_stack,
     kube_client: AsyncClient,
     generated_data: ESSData,
 ):
