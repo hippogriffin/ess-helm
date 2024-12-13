@@ -204,3 +204,34 @@ async def test_component_ingressClassName_beats_global(component, values, make_t
         if template["kind"] == "Ingress":
             assert "ingressClassName" in template["spec"]
             assert template["spec"]["ingressClassName"] == "component"
+
+
+@pytest.mark.parametrize("component", components_with_ingresses)
+@pytest.mark.asyncio_cooperative
+async def test_ingress_services(component, templates):
+    services_by_name = dict[str, dict]()
+    for template in templates:
+        if template["kind"] == "Service":
+            services_by_name[template["metadata"]["name"]] = template
+
+    for ingress in templates:
+        if ingress["kind"] != "Ingress":
+            continue
+        for rule in ingress["spec"]["rules"]:
+            for path in rule["http"]["paths"]:
+                backend_service = path["backend"]["service"]
+                assert backend_service["name"] in services_by_name, (
+                    f"Backend service {backend_service['name']} not found in "
+                    f"known services: {list(services_by_name.keys())}"
+                )
+                found_service = services_by_name[backend_service["name"]]
+                if backend_service["port"].get("name"):
+                    port_names = [port["name"] for port in found_service["spec"]["ports"]]
+                    assert (
+                        backend_service["port"]["name"] in port_names
+                    ), f"Port name {backend_service["port"]["name"]} not found in service {backend_service["name"]}"
+                else:
+                    port_numbers = [port["port"] for port in found_service["spec"]["ports"]]
+                    assert (
+                        backend_service["port"]["number"] in port_numbers
+                    ), f"Port number {backend_service['port']['number']} not found in service {backend_service['name']}"

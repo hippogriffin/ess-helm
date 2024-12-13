@@ -1,13 +1,41 @@
-# Copyright 2024 New Vector Ltd
-#
-# SPDX-License-Identifier: AGPL-3.0-only OR LicenseRef-Element-Commercial
-
 import pytest
 from lightkube import AsyncClient
 from lightkube import operators as op
-from lightkube.resources.core_v1 import Endpoints, Service
+from lightkube.resources.core_v1 import Endpoints, Pod, Service
 
 from .fixtures.data import ESSData
+
+
+@pytest.mark.asyncio_cooperative
+async def test_services_have_matching_labels(
+    matrix_stack,
+    kube_client: AsyncClient,
+    generated_data: ESSData,
+):
+    ignored_labels = [
+        "app.kubernetes.io/managed-by",
+        "k8s.element.io/service-type",
+        "k8s.element.io/synapse-instance",
+        "replica",
+    ]
+
+    async for service in kube_client.list(
+        Service, namespace=generated_data.ess_namespace, labels={"app.kubernetes.io/part-of": op.in_(["matrix-stack"])}
+    ):
+        assert service.spec is not None, f"Encountered a service without spec : {service}"
+        label_selectors = {label: value for label, value in service.spec.selector.items()}
+
+        async for pod in kube_client.list(Pod, namespace=generated_data.ess_namespace, labels=label_selectors):
+            assert service.metadata is not None, f"Encountered a service without metadata : {service}"
+            assert pod.metadata is not None, f"Encountered a pod without metadata : {pod}"
+            for label, value in service.metadata.labels.items():
+                if label in ["k8s.element.io/owner-name", "k8s.element.io/owner-group-kind"]:
+                    assert label not in pod.metadata.labels
+                    continue
+                elif label in ignored_labels:
+                    continue
+                assert label in pod.metadata.labels
+                assert value.startswith(pod.metadata.labels[label])
 
 
 @pytest.mark.asyncio_cooperative
