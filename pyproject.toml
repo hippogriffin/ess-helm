@@ -38,9 +38,6 @@ build-backend = "poetry.core.masonry.api"
 [tool.pytest.ini_options]
 # we use asyncio-cooperative
 addopts = "-p no:asyncio --strict-markers"
-markers = [
-    "values_file(filename): use specific values file for this test",
-]
 
 [tool.ruff]
 line-length = 120

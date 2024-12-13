@@ -6,7 +6,7 @@ from pathlib import Path
 
 import pytest
 
-from . import component_details, components_to_test
+from . import component_details, values_files_to_test
 
 
 def test_all_components_covered():
@@ -22,8 +22,9 @@ def test_all_components_covered():
         assert contents.name in expected_folders
 
 
-@pytest.mark.parametrize("component", components_to_test)
-def test_component_has_minimal_values_file(component):
+@pytest.mark.parametrize("values_file", values_files_to_test)
+@pytest.mark.asyncio_cooperative
+def test_component_has_values_file(values_file):
     ci_folder = Path(__file__).parent.parent.parent / Path("charts/matrix-stack/ci")
-    values_file = ci_folder / Path(component_details[component]["minimal_values_file"])
+    values_file = ci_folder / values_file
     assert values_file.exists()
