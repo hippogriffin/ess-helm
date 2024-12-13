@@ -2,6 +2,8 @@
 #
 # SPDX-License-Identifier: AGPL-3.0-only OR LicenseRef-Element-Commercial
 
+import asyncio
+
 import pytest
 from lightkube import AsyncClient
 from lightkube import operators as op
@@ -44,6 +46,7 @@ async def test_services_have_matching_labels(
 
 @pytest.mark.asyncio_cooperative
 async def test_services_have_endpoints(
+    cluster,
     matrix_stack,
     kube_client: AsyncClient,
     generated_data: ESSData,
@@ -57,13 +60,23 @@ async def test_services_have_endpoints(
     ):
         assert service.metadata is not None, f"Encountered a service without metadata : {service}"
         endpoint = endpoints_by_name[service.metadata.name]
-        assert endpoint.subsets, f"Endpoint {service.metadata.name} has no subsets"
+        assert endpoint.metadata is not None, f"Encountered an endpoint without metadata : {endpoint}"
+        await asyncio.to_thread(
+            cluster.wait,
+            name=f"endpoints/{endpoint.metadata.name}",
+            namespace=generated_data.ess_namespace,
+            waitfor="jsonpath='{.subsets[].addresses}'",
+        )
+        # We refresh the endpoint to get the latest state
+        endpoint = await kube_client.get(Endpoints, name=endpoint.metadata.name, namespace=generated_data.ess_namespace)
+        assert endpoint.metadata is not None, f"Encountered an endpoint without metadata : {endpoint}"
+        assert endpoint.subsets, f"Endpoint {endpoint.metadata.name} has no subsets"
 
         ports = []
         for subset in endpoint.subsets:
-            assert subset.addresses, f"Endpoint {service.metadata.name} has no addresses"
-            assert not subset.notReadyAddresses, f"Endpoint {service.metadata.name} has notReadyAddresses"
-            assert subset.ports, f"Endpoint {service.metadata.name} has no ports"
+            assert subset.addresses, f"Endpoint {endpoint.metadata.name} has no addresses"
+            assert not subset.notReadyAddresses, f"Endpoint {endpoint.metadata.name} has notReadyAddresses"
+            assert subset.ports, f"Endpoint {endpoint.metadata.name} has no ports"
             ports += subset.ports
 
         port_names = [port.name for port in ports if port.name]
