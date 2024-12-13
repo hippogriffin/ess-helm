@@ -95,14 +95,13 @@ app.kubernetes.io/version: {{ .image.tag }}
 
 {{- define "element-io.synapse.env" }}
 {{- $root := .root -}}
-{{- with required "element-io.synapse.labels missing context" .context -}}
-{{- $initEnv := dict -}}
+{{- with required "element-io.synapse.env missing context" .context -}}
+{{- $resultEnv := dict -}}
 {{- range $envEntry := .extraEnv -}}
-{{- $_ := set $initEnv $envEntry.name $envEntry.value -}}
+{{- $_ := set $resultEnv $envEntry.name $envEntry.value -}}
 {{- end -}}
 {{- $overrideEnv := dict "POSTGRES_HOST" (tpl .postgres.host $root) "POSTGRES_PORT" .postgres.port  -}}
-
-{{- $resultEnv := merge $initEnv $overrideEnv -}}
+{{- $resultEnv := merge $resultEnv $overrideEnv -}}
 {{- range $key, $value := $resultEnv }}
 - name: {{ $key | quote }}
   value: {{ $value | quote }}
