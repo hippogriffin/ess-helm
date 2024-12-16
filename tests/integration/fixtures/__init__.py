@@ -3,7 +3,7 @@
 # SPDX-License-Identifier: AGPL-3.0-only OR LicenseRef-Element-Commercial
 
 from .ca import ca, ssl_context
-from .cluster import cluster, ess_namespace, helm_client, ingress, kube_client, registry
+from .cluster import cluster, ess_namespace, helm_client, ingress, kube_client, prometheus_operator_crds, registry
 from .data import ESSData, generated_data
 from .helm import helm_prerequisites, ingress_ready, matrix_stack
 from .synapse import synapse_users
@@ -20,6 +20,7 @@ __all__ = [
     "ingress_ready",
     "kube_client",
     "matrix_stack",
+    "prometheus_operator_crds",
     "registry",
     "ssl_context",
     "synapse_users",
