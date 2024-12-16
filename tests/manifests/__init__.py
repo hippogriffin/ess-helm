@@ -3,7 +3,6 @@
 # SPDX-License-Identifier: AGPL-3.0-only OR LicenseRef-Element-Commercial
 
 import copy
-from re import sub
 from typing import Any, Dict
 
 _raw_component_details = {
@@ -15,9 +14,9 @@ _raw_component_details = {
         "additional_values_files": [
             "synapse-worker-example-values.yaml",
         ],
-        "services_monitors_names": ["{release_name}-synapse"],
+        "service_monitors_override": ("pytest-synapse",),
         "sub_components": {
-            "haproxy": {"services_monitors_name_override": ["{release_name}-synapse-haproxy"]},
+            "haproxy": {},
             "redis": {
                 "has_service_monitor": False,
             },
@@ -62,7 +61,8 @@ values_files_with_service_monitors = set(
     [
         values_file
         for values_file, component in values_files_to_components.items()
-        if component_details[component]["has_service_monitor"] or len(
+        if component_details[component]["has_service_monitor"]
+        or len(
             [
                 sub_component_details.get("has_service_monitor")
                 for sub_component_details in component_details[component]["sub_components"].values()
