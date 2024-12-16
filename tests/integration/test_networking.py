@@ -3,6 +3,7 @@
 # SPDX-License-Identifier: AGPL-3.0-only OR LicenseRef-Element-Commercial
 
 import asyncio
+import os
 
 import pytest
 from lightkube import AsyncClient
@@ -83,6 +84,9 @@ async def test_services_have_endpoints(
                 assert port.port in port_numbers
 
 
+@pytest.mark.skipif(
+    os.environ.get("SKIP_SERVICE_MONITORS_CRDS", "false") == "true", reason="ServiceMonitors not deployed"
+)
 @pytest.mark.asyncio_cooperative
 @pytest.mark.usefixtures("matrix_stack")
 async def test_pods_monitored(
