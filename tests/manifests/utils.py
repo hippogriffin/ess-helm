@@ -2,8 +2,9 @@
 #
 # SPDX-License-Identifier: AGPL-3.0-only OR LicenseRef-Element-Commercial
 
+import json
 from pathlib import Path
-from typing import Any, Dict
+from typing import Any, Dict, Iterator
 
 import pyhelm3
 import pytest
@@ -33,21 +34,42 @@ def values(values_file) -> Dict[str, Any]:
 
 
 @pytest.fixture(scope="function")
-async def templates(helm_client: pyhelm3.Client, chart: pyhelm3.Chart, values: Dict[str, Any]):
-    return list(
-        [template for template in await helm_client.template_resources(chart, "pytest", values) if template is not None]
+async def templates(chart: pyhelm3.Chart, values: Dict[str, Any]):
+    return list([template for template in await helm_template(chart, "pytest", values) if template is not None])
+
+
+async def helm_template(chart: pyhelm3.Chart, release_name: str, values: Any | None) -> Iterator[Any]:
+    """Generate template with ServiceMonitor API Versions enabled
+
+    The native pyhelm3 template command does expose the --api-versions flag,
+    so we implement it here.
+
+    Args:
+        chart (pyhelm3.Chart): The chart
+        release_name (str): The release name
+        values (Any, optional): The values to use
+
+    Returns:
+        Iterator[Any]: Iterating on manifests.
+    """
+    command = [
+        "template",
+        release_name,
+        chart.ref,
+        "-a",
+        "monitoring.coreos.com/v1/ServiceMonitor",
+        # We send the values in on stdin
+        "--values",
+        "-",
+    ]
+    return yaml.load_all(
+        await pyhelm3.Command().run(command, json.dumps(values or {}).encode()), Loader=yaml.SafeLoader
     )
 
 
 @pytest.fixture
-def make_templates(helm_client: pyhelm3.Client, chart: pyhelm3.Chart):
+def make_templates(chart: pyhelm3.Chart):
     async def _make_templates(values):
-        return list(
-            [
-                template
-                for template in await helm_client.template_resources(chart, "pytest", values)
-                if template is not None
-            ]
-        )
+        return list([template for template in await helm_template(chart, "pytest", values) if template is not None])
 
     return _make_templates
