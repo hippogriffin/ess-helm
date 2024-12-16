@@ -24,11 +24,11 @@ jobs:
         username: ${{ github.actor }}
         password: ${{ secrets.GITHUB_TOKEN }}
     strategy:
+      fail-fast: false
       matrix:
         test-component:
         - element-web
         - synapse
-
     steps:
     - uses: actions/checkout@v3
       with:
@@ -47,4 +47,25 @@ jobs:
     - name: Test with pytest
       run: |
         . tests/integration/env/${{ matrix.test-component }}.rc
-        poetry run pytest tests/integration
+        PYTEST_KEEP_CLUSTER=1 poetry run pytest tests/integration
+
+    - name: Export logs
+      if: ${{ failure() }}
+      run: |
+        kind export logs --name ess-helm ./ess-helm-logs
+        kind export kubeconfig --name ess-helm
+        ns=$(kubectl --context kind-ess-helm get ns -l app.kubernetes.io/managed-by=pytest  -o jsonpath='{.items[].metadata.name}')
+        kubectl --context kind-ess-helm get deployments -o yaml -n $ns > ./ess-helm-logs/deployments.txt
+        kubectl --context kind-ess-helm get statefulsets -o yaml -n $ns > ./ess-helm-logs/statefulsets.txt
+        kubectl --context kind-ess-helm get pods -o yaml -n $ns > ./ess-helm-logs/pods.txt
+        kubectl --context kind-ess-helm get secrets -o yaml -n $ns > ./ess-helm-logs/secrets.txt
+        kubectl --context kind-ess-helm get configmaps -o yaml -n $ns > ./ess-helm-logs/configmaps.txt
+        kind delete cluster --name ess-helm
+
+    - name: Upload logs
+      if: ${{ failure() }}
+      uses: actions/upload-artifact@v4
+      with:
+        name: ess-helm-logs
+        path: ess-helm-logs
+        retention-days: 1
