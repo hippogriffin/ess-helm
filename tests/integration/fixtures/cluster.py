@@ -62,39 +62,7 @@ async def cluster():
     kind_config = Path("files/clusters/kind-ci.yml") if os.environ.get("CI") else Path("files/clusters/kind.yml")
     this_cluster.create(ClusterOptions(cluster_config=fixtures_folder / kind_config))
 
-    await asyncio.to_thread(
-        this_cluster.kubectl, ["taint", "nodes", "ess-helm-control-plane", "context=pytest:NoSchedule", "--overwrite"]
-    )
-
-    await asyncio.to_thread(
-        this_cluster.kubectl,
-        [
-            "patch",
-            "-n",
-            "kube-system",
-            "deployment/coredns",
-            "--patch-file",
-            (fixtures_folder / Path("files/patches/tolerations.yml")).as_posix(),
-        ],
-    )
-
-    await asyncio.to_thread(
-        this_cluster.kubectl,
-        [
-            "patch",
-            "-n",
-            "local-path-storage",
-            "deployment/local-path-provisioner",
-            "--patch-file",
-            (fixtures_folder / Path("files/patches/tolerations.yml")).as_posix(),
-        ],
-    )
-
     yield this_cluster
-
-    await asyncio.to_thread(
-        this_cluster.kubectl, ["taint", "nodes", "ess-helm-control-plane", "context=pytest:NoSchedule-"]
-    )
 
     this_cluster.delete()
 

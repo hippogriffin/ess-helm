@@ -11,12 +11,6 @@ elementWeb:
 
   replicas: 1
 
-  tolerations:
-    - key: context
-      operator: Equal
-      value: pytest
-      effect: NoSchedule
-
   additional:
     {
       "default_server_config": {

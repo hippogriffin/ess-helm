@@ -4,30 +4,3 @@
 
 crds:
   enabled: true
-
-tolerations:
-- key: context
-  operator: Equal
-  value: pytest
-  effect: NoSchedule
-
-webhook:
-  tolerations:
-  - key: context
-    operator: Equal
-    value: pytest
-    effect: NoSchedule
-
-cainjector:
-  tolerations:
-  - key: context
-    operator: Equal
-    value: pytest
-    effect: NoSchedule
-
-startupapicheck:
-  tolerations:
-  - key: context
-    operator: Equal
-    value: pytest
-    effect: NoSchedule

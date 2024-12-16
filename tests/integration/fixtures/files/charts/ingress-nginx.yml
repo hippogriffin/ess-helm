@@ -16,17 +16,3 @@ controller:
 
   service:
     enabled: false
-
-  tolerations:
-  - key: context
-    operator: Equal
-    value: pytest
-    effect: NoSchedule
-
-  admissionWebhooks:
-    patch:
-      tolerations:
-      - key: context
-        operator: Equal
-        value: pytest
-        effect: NoSchedule

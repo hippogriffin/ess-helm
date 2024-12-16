@@ -23,6 +23,7 @@ SPDX-License-Identifier: AGPL-3.0-only OR LicenseRef-Element-Commercial
 ## imagePullSecrets:
 ## - name: ess-pull-secret
 imagePullSecrets: []
+{{ tolerations(global=true) }}
 {{ topologySpreadConstraints(global=true) }}
 {%- endmacro %}
 
@@ -283,9 +284,8 @@ labels: {}
   enabled: true
 {%- endmacro %}
 
-{% macro tolerations(key='tolerations') %}
-## Workload tolerations
-## The pod this Toleration is attached to tolerates any taint that matches the triple <key,value,effect> using the matching operator <operator>.
+{% macro tolerations(global=false, key='tolerations') %}
+## Workload tolerations allows Pods that are part of {{ 'a' if global else 'this' }} (sub)component to 'tolerate' any taint that matches the triple <key,value,effect> using the matching operator <operator>.
 ##
 ## * effect indicates the taint effect to match. Empty means match all taint effects. When specified, allowed values are NoSchedule, PreferNoSchedule and NoExecute.
 ## * key is the taint key that the toleration applies to. Empty means match all taint keys. If the key is empty, operator must be Exists; this combination means to match all values and all keys.

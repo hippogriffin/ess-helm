@@ -66,6 +66,35 @@
       },
       "additionalProperties": false
     },
+    "tolerations": {
+      "type": "array",
+      "items": {
+        "properties": {
+          "effect": {
+            "type": "string",
+            "enum": [
+              "NoSchedule",
+              "PreferNoSchedule",
+              "NoExecute"
+            ]
+          },
+          "key": {
+            "type": "string"
+          },
+          "operator": {
+            "type": "string"
+          },
+          "tolerationSeconds": {
+            "type": "number"
+          },
+          "value": {
+            "type": "string"
+          }
+        },
+        "type": "object",
+        "additionalProperties": false
+      }
+    },
     "topologySpreadConstraints": {
       "type": "array",
       "items": {

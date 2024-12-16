@@ -65,10 +65,7 @@ spec:
       nodeSelector:
         {{- toYaml . | nindent 8 }}
 {{- end }}
-{{- with .tolerations }}
-      tolerations:
-        {{- toYaml . | nindent 8 }}
-{{- end }}
+{{- include "element-io.ess-library.pods.tolerations" (dict "root" $ "context" .tolerations) | indent 6 }}
 {{- include "element-io.ess-library.pods.topologySpreadConstraints" (dict "root" $ "context" (dict "instanceSuffix" "synapse-haproxy" "deployment" true "topologySpreadConstraints" .topologySpreadConstraints)) | indent 6 }}
       containers:
       - name: haproxy

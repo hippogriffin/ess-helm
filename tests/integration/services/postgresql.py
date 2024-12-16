@@ -57,16 +57,6 @@ class PostgresServer:
                     },
                 },
                 "primary": {
-                    "extraPodSpec": {
-                        "tolerations": [
-                            {
-                                "key": "context",
-                                "operator": "Equal",
-                                "value": "pytest",
-                                "effect": "NoSchedule",
-                            }
-                        ]
-                    },
                     "initdb": {"args": "--locale=C --encoding=UTF8"},
                 },
             },

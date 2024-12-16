@@ -36,32 +36,11 @@ synapse:
     host: synapse.{{ $.Values.serverName }}
     tlsSecret: "{{ $.Release.Name }}-synapse-web-tls"
 
-  tolerations:
-    - key: context
-      operator: Equal
-      value: pytest
-      effect: NoSchedule
-
   workers:
     sliding-sync:
       enabled: true
     media-repository:
       enabled: true
-
-  haproxy:
-    replicas: 1
-    tolerations:
-      - key: context
-        operator: Equal
-        value: pytest
-        effect: NoSchedule
-
-  redis:
-    tolerations:
-      - key: context
-        operator: Equal
-        value: pytest
-        effect: NoSchedule
 
 elementWeb:
   enabled: false

@@ -12,7 +12,11 @@ _raw_component_details = {
     "synapse": {
         "additional_values_files": [
             "synapse-worker-example-values.yaml",
-        ]
+        ],
+        "sub_components": [
+            "haproxy",
+            "redis",
+        ],
     },
 }
 
@@ -28,6 +32,7 @@ def _enrich_components_to_test() -> Dict[str, Any]:
         del _component_details[component]["additional_values_files"]
 
         _component_details[component].setdefault("has_ingress", True)
+        _component_details[component].setdefault("sub_components", [])
     return _component_details
 
 
