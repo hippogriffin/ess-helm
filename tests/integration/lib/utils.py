@@ -15,6 +15,8 @@ from urllib.parse import urlparse
 import aiohttp
 import yaml
 from aiohttp_retry import JitterRetry, RetryClient
+from lightkube.generic_resource import async_load_in_cluster_generic_resources, get_generic_resource
+from lightkube.resources.apiextensions_v1 import CustomResourceDefinition
 from pytest_kubernetes.providers import AClusterManager
 
 retry_options = JitterRetry(attempts=30, statuses=[429], retry_all_server_errors=False)
@@ -134,3 +136,14 @@ def value_file_has(property_path, expected=None):
         else:
             return False
     return data == expected if expected is not None else True
+
+
+async def read_service_monitor_kind(kube_client):
+    async for r in kube_client.list(CustomResourceDefinition):
+        if r.spec.group == "monitoring.coreos.com" and r.spec.names.kind == "ServiceMonitor":
+            generic_resource = get_generic_resource(f"{r.spec.group}/{r.spec.versions[0].name}", r.spec.names.kind)
+            if generic_resource is None:
+                await async_load_in_cluster_generic_resources(kube_client)
+                generic_resource = get_generic_resource(f"{r.spec.group}/{r.spec.versions[0].name}", r.spec.names.kind)
+            return generic_resource
+    raise Exception("Could not find ServiceMonitor CRD")
