@@ -91,7 +91,7 @@ async def test_uses_serviceaccount_named_as_values_if_specified(component, value
 @pytest.mark.parametrize("values_file", values_files_to_test)
 @pytest.mark.asyncio_cooperative
 async def test_does_not_create_serviceaccounts_if_configured_not_to(component, values, make_templates):
-    for sub_component in [""] + component_details[component]["sub_components"]:
+    for sub_component in [""] + list(component_details[component]["sub_components"].keys()):
         sub_component_values = copy.deepcopy(values)
         if sub_component == "":
             sub_component_values[component].setdefault("serviceAccount", {"create": False})
