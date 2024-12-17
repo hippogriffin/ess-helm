@@ -51,19 +51,7 @@ spec:
                   - "{{ $.Release.Name }}-element-web"
               topologyKey: kubernetes.io/hostname
 {{- end }}
-      automountServiceAccountToken: false
-      serviceAccountName: {{ include "element-io.element-web.serviceAccountName" (dict "root" $ "context" .) }}
-{{- include "element-io.ess-library.pods.pullSecrets" (dict "root" $ "context" .image) | indent 6 }}
-{{- with .podSecurityContext }}
-      securityContext:
-        {{- toYaml . | nindent 8 }}
-{{- end }}
-{{- with .nodeSelector }}
-      nodeSelector:
-        {{- toYaml . | nindent 8 }}
-{{- end }}
-{{- include "element-io.ess-library.pods.tolerations" (dict "root" $ "context" .tolerations) | indent 6 }}
-{{- include "element-io.ess-library.pods.topologySpreadConstraints" (dict "root" $ "context" (dict "instanceSuffix" "element-web" "deployment" true "topologySpreadConstraints" .topologySpreadConstraints)) | indent 6 }}
+{{- include "element-io.ess-library.pods.commonSpec" (dict "root" $ "context" (dict "componentValues" . "key" "element-web" "deployment" true)) | nindent 6 }}
       containers:
       - name: element-web
 {{- with .image -}}

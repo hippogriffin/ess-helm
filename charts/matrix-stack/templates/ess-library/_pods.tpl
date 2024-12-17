@@ -4,6 +4,29 @@ Copyright 2024 New Vector Ltd
 SPDX-License-Identifier: AGPL-3.0-only OR LicenseRef-Element-Commercial
 */ -}}
 
+{{- define "element-io.ess-library.pods.commonSpec" -}}
+{{- $root := .root -}}
+{{- with required "element-io.ess-library.pods.commonSpec missing context" .context -}}
+{{- $key := required "element-io.ess-library.pods.commonSpec missing context.key" .key -}}
+{{- $deployment := required "element-io.ess-library.pods.commonSpec missing context.deployment" .deployment -}}
+{{- with required "element-io.ess-library.pods.commonSpec missing context.componentValues" .componentValues -}}
+automountServiceAccountToken: false
+serviceAccountName: {{ include "element-io.ess-library.serviceAccountName" (dict "root" $root "context" (dict "serviceAccount" .serviceAccount "key" $key)) }}
+{{- include "element-io.ess-library.pods.pullSecrets" (dict "root" $root "context" .image) }}
+{{- with .podSecurityContext }}
+securityContext:
+  {{- toYaml . | nindent 2 }}
+{{- end }}
+{{- with .nodeSelector }}
+nodeSelector:
+  {{- toYaml . | nindent 2 }}
+{{- end }}
+{{- include "element-io.ess-library.pods.tolerations" (dict "root" $root "context" .tolerations) }}
+{{- include "element-io.ess-library.pods.topologySpreadConstraints" (dict "root" $root "context" (dict "instanceSuffix" $key "deployment" $deployment "topologySpreadConstraints" .topologySpreadConstraints)) }}
+{{- end }}
+{{- end }}
+{{- end }}
+
 {{- define "element-io.ess-library.pods.pullSecrets" -}}
 {{- $root := .root -}}
 {{- with required "element-io.ess-library.pods.pullSecrets missing context" .context -}}

@@ -28,9 +28,9 @@ k8s.element.io/synapse-instance: {{ $root.Release.Name }}-synapse
 {{- end }}
 {{- end }}
 
-{{- define "element-io.synapse.redis.labels" -}}
+{{- define "element-io.synapse-redis.labels" -}}
 {{- $root := .root -}}
-{{- with required "element-io.redis.labels missing context" .context -}}
+{{- with required "element-io.synapse-redis.labels missing context" .context -}}
 {{ include "element-io.ess-library.labels.common" (dict "root" $root "context" .labels) }}
 app.kubernetes.io/component: matrix-server-pubsub
 app.kubernetes.io/name: synapse-redis
@@ -39,35 +39,14 @@ app.kubernetes.io/version: {{ .image.tag }}
 {{- end }}
 {{- end }}
 
-{{- define "element-io.synapse.haproxy.labels" -}}
+{{- define "element-io.synapse-haproxy.labels" -}}
 {{- $root := .root -}}
-{{- with required "element-io.synapse.haproxy.labels missing context" .context -}}
+{{- with required "element-io.synapse-haproxy.labels missing context" .context -}}
 {{ include "element-io.ess-library.labels.common" (dict "root" $root "context" .labels) }}
 app.kubernetes.io/component: matrix-server-ingress
 app.kubernetes.io/name: synapse-haproxy
 app.kubernetes.io/instance: {{ $root.Release.Name }}-synapse-haproxy
 app.kubernetes.io/version: {{ .image.tag }}
-{{- end }}
-{{- end }}
-
-{{- define "element-io.synapse.serviceAccountName" -}}
-{{- $root := .root -}}
-{{- with required "element-io.synapse.serviceAccountName missing context" .context -}}
-{{ default (printf "%s-synapse" $root.Release.Name) .serviceAccount.name }}
-{{- end }}
-{{- end }}
-
-{{- define "element-io.synapse.redis.serviceAccountName" -}}
-{{- $root := .root -}}
-{{- with required "element-io.synapse.redis.serviceAccountName missing context" .context -}}
-{{ default (printf "%s-synapse-redis" $root.Release.Name) .serviceAccount.name }}
-{{- end }}
-{{- end }}
-
-{{- define "element-io.synapse.haproxy.serviceAccountName" -}}
-{{- $root := .root -}}
-{{- with required "element-io.synapse.haproxy.serviceAccountName missing context" .context -}}
-{{ default (printf "%s-synapse-haproxy" $root.Release.Name) .serviceAccount.name }}
 {{- end }}
 {{- end }}
 
