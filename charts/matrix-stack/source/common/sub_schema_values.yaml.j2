@@ -49,8 +49,8 @@ imagePullSecrets: []
   ## To set the Seccomp profile for a Container, include the seccompProfile field in the securityContext section of your Pod or Container manifest.
   ## The seccompProfile field is a SeccompProfile object consisting of type and localhostProfile. Valid options for type include RuntimeDefault, Unconfined, and Localhost.
   ## localhostProfile must only be set set if type Localhost. It indicates the path of the pre-configured profile on the node, relative to the kubelet's configured Seccomp profile location (configured with the --root-dir flag).
-  seccompProfile:
-    type: RuntimeDefault
+  # seccompProfile:
+  #  type: RuntimeDefault
 {%- endmacro %}
 
 {% macro credential(credential_description, key) %}
@@ -222,9 +222,9 @@ labels: {}
   ## The seccompProfile field is a SeccompProfile object consisting of type and localhostProfile.
   ## Valid options for type include RuntimeDefault, Unconfined, and Localhost. localhostProfile must only be set set if type Localhost.
   ## It indicates the path of the pre-configured profile on the node, relative to the kubelet's configured Seccomp profile location (configured with the --root-dir flag).
-  # seccompProfile:
+  seccompProfile:
     # localhostProfile:
-    # type:
+    type: RuntimeDefault
 
   ## A list of groups applied to the first process run in each container, in addition to the container's primary GID.
   ## If unspecified, no groups will be added to any container.
