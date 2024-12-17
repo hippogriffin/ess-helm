@@ -155,7 +155,7 @@ frontend http-in
 
   use_backend return_204 if { method OPTIONS }
 
-{{- range .ingress.additionalPaths -}}
+{{- range $root.Values.synapse.ingress.additionalPaths -}}
 {{- if eq .availability "internally_and_externally" }}
 
 {{- $additionalPathId := printf "%s_%s" .service.name (.service.port.name | default .service.port.number) }}
@@ -163,7 +163,7 @@ frontend http-in
   use_backend be_{{ $additionalPathId }} if is_svc_{{ $additionalPathId }}
 {{- end }}
 {{- end }}
-{{- if dig "initial-synchrotron" "enabled" false .workers }}
+{{- if dig "initial-synchrotron" "enabled" false $root.Values.synapse.workers }}
 
   # special synchrotron backend for initialsyncs
   acl is_sync path -m reg ^/_matrix/client/(r0|v3)/sync$
@@ -251,7 +251,7 @@ backend {{ $workerType }}
 {{- end }}
 
 
-{{- range .ingress.additionalPaths -}}
+{{- range $root.Values.synapse.ingress.additionalPaths -}}
 {{- if eq .availability "internally_and_externally" }}
 {{- $additionalPathId := printf "%s_%s" .service.name (.service.port.name | default .service.port.number) }}
 backend be_{{ $additionalPathId }}
