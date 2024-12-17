@@ -10,7 +10,7 @@ apiVersion: v1
 kind: ConfigMap
 metadata:
   labels:
-    {{- include "element-io.synapse.haproxy.labels" (dict "root" $ "context" .haproxy) | nindent 4 }}
+    {{- include "element-io.synapse-haproxy.labels" (dict "root" $ "context" .haproxy) | nindent 4 }}
   name: {{ $.Release.Name }}-synapse-haproxy
   namespace: {{ $.Release.Namespace }}
 data:
