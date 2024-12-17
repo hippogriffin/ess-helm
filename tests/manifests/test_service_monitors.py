@@ -85,6 +85,9 @@ async def test_service_monitored_as_appropriate(component, values: dict, make_te
                 "servicemonitor", "none"
             )
 
+    for shared_component in component_details[component].get("shared_components", []):
+        values.setdefault(shared_component, {}).setdefault("serviceMonitors", {}).setdefault("enabled", False)
+
     # We should now have no ServiceMonitors rendered
     workloads_to_cover = set()
     for template in await make_templates(values):

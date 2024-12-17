@@ -66,6 +66,13 @@ async def test_uses_serviceaccount_named_as_values_if_specified(component, value
         values[component].setdefault(sub_component, {}).setdefault("labels", {}).setdefault(
             "expected.name", f"{component}-{sub_component}-pytest"
         )
+    for shared_component in component_details[component].get("shared_components", []):
+        values.setdefault(shared_component, {}).setdefault("serviceAccount", {}).setdefault(
+            "name", f"{shared_component}-pytest"
+        )
+        values.setdefault(shared_component, {}).setdefault("labels", {}).setdefault(
+            "expected.name", f"{shared_component}-pytest"
+        )
 
     workloads_by_id = {}
     serviceaccount_names = []

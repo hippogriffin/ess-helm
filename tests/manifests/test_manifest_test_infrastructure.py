@@ -16,7 +16,7 @@ def test_all_components_covered():
     for contents in templates_folder.iterdir():
         if not contents.is_dir():
             continue
-        if contents.name == "ess-library":
+        if contents.name in ("haproxy", "ess-library"):
             continue
 
         assert contents.name in expected_folders

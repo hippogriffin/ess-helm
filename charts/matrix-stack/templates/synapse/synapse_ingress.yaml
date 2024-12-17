@@ -11,8 +11,8 @@ kind: Ingress
 metadata:
 {{- include "element-io.ess-library.ingress.annotations" (dict "root" $ "context" .ingress.annotations) | nindent 2 }}
   labels:
-    {{- include "element-io.synapse.labels" (dict "root" $ "context" .haproxy) | nindent 4 }}
-  name: {{ $.Release.Name }}-synapse
+    {{- include "element-io.synapse.labels" (dict "root" $ "context" .) | nindent 4 }}
+  name: {{ $.Release.Name }}-synapse-haproxy
   namespace: {{ $.Release.Namespace }}
 spec:
 {{- include "element-io.ess-library.ingress.tlsSecret" (dict "root" $ "context" (dict "hosts" (list (required "synapse.ingress.host is required" .ingress.host)) "tlsSecret" .ingress.tlsSecret)) | nindent 2 }}
@@ -35,7 +35,7 @@ spec:
         pathType: Prefix
         backend:
           service:
-            name: "{{ $.Release.Name }}-haproxy"
+            name: "{{ $.Release.Name }}-synapse-haproxy"
             port:
               name: haproxy-403
 {{- end }}
@@ -59,7 +59,7 @@ spec:
         pathType: Prefix
         backend:
           service:
-            name: "{{ $.Release.Name }}-haproxy"
+            name: "{{ $.Release.Name }}-synapse-haproxy"
             port:
               name: haproxy-http
 {{- end }}

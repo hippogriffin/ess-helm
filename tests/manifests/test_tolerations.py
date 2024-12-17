@@ -39,6 +39,8 @@ async def test_all_components_and_sub_components_render_tolerations(component, v
     values[component].setdefault("tolerations", []).append(specific_toleration)
     for sub_component in component_details[component]["sub_components"]:
         values[component].setdefault(sub_component, {}).setdefault("tolerations", []).append(specific_toleration)
+    for shared_component in component_details[component].get("shared_components", []):
+        values.setdefault(shared_component, {}).setdefault("tolerations", []).append(specific_toleration)
 
     for template in await make_templates(values):
         if template["kind"] in ["Deployment", "StatefulSet"]:
@@ -71,6 +73,8 @@ async def test_merges_global_and_specific_tolerations(component, values, make_te
     values[component].setdefault("tolerations", []).append(specific_toleration)
     for sub_component in component_details[component]["sub_components"]:
         values[component].setdefault(sub_component, {}).setdefault("tolerations", []).append(specific_toleration)
+    for shared_component in component_details[component].get("shared_components", []):
+        values.setdefault(shared_component, {}).setdefault("tolerations", []).append(specific_toleration)
 
     # Add twice for uniqueness check. There's no 'overwriting' as if it isn't the same toleration, it gets kept
     values.setdefault("tolerations", []).append(global_toleration)
