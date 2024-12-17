@@ -50,27 +50,6 @@ app.kubernetes.io/version: {{ .image.tag }}
 {{- end }}
 {{- end }}
 
-{{- define "element-io.synapse.serviceAccountName" -}}
-{{- $root := .root -}}
-{{- with required "element-io.synapse.serviceAccountName missing context" .context -}}
-{{ default (printf "%s-synapse" $root.Release.Name) .serviceAccount.name }}
-{{- end }}
-{{- end }}
-
-{{- define "element-io.synapse.redis.serviceAccountName" -}}
-{{- $root := .root -}}
-{{- with required "element-io.synapse.redis.serviceAccountName missing context" .context -}}
-{{ default (printf "%s-synapse-redis" $root.Release.Name) .serviceAccount.name }}
-{{- end }}
-{{- end }}
-
-{{- define "element-io.synapse.haproxy.serviceAccountName" -}}
-{{- $root := .root -}}
-{{- with required "element-io.synapse.haproxy.serviceAccountName missing context" .context -}}
-{{ default (printf "%s-synapse-haproxy" $root.Release.Name) .serviceAccount.name }}
-{{- end }}
-{{- end }}
-
 {{- define "element-io.synapse.enabledWorkers" -}}
 {{- $root := .root -}}
 {{ $enabledWorkers := dict }}

@@ -15,13 +15,6 @@ app.kubernetes.io/version: {{ .image.tag }}
 {{- end }}
 {{- end }}
 
-{{- define "element-io.element-web.serviceAccountName" -}}
-{{- $root := .root -}}
-{{- with required "element-io.element-web.serviceAccountName missing context" .context -}}
-{{ default (printf "%s-element-web" $root.Release.Name ) .serviceAccount.name }}
-{{- end }}
-{{- end }}
-
 {{- define "element-io.element-web.config" }}
 {{- $root := .root -}}
 {{- with required "element-io.element-web.config missing context" .context -}}
