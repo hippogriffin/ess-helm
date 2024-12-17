@@ -14,7 +14,6 @@ _raw_component_details = {
         "additional_values_files": [
             "synapse-worker-example-values.yaml",
         ],
-        "service_monitors_override": ("pytest-synapse",),
         "sub_components": {
             "haproxy": {},
             "redis": {
@@ -56,17 +55,3 @@ values_files_with_ingresses = [
     for values_file, component in values_files_to_components.items()
     if component_details[component]["has_ingress"]
 ]
-
-values_files_with_service_monitors = set(
-    [
-        values_file
-        for values_file, component in values_files_to_components.items()
-        if component_details[component]["has_service_monitor"]
-        or len(
-            [
-                sub_component_details.get("has_service_monitor")
-                for sub_component_details in component_details[component]["sub_components"].values()
-            ]
-        )
-    ]
-)
