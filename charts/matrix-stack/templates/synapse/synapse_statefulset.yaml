@@ -51,19 +51,7 @@ spec:
         {{- toYaml . | nindent 8 }}
 {{- end }}
     spec:
-      automountServiceAccountToken: false
-      serviceAccountName: {{ include "element-io.ess-library.serviceAccountName" (dict "root" $ "context" (dict "serviceAccount" .serviceAccount "key" "synapse")) }}
-{{- include "element-io.ess-library.pods.pullSecrets" (dict "root" $ "context" .image) | nindent 6 }}
-{{- with .podSecurityContext }}
-      securityContext:
-        {{- toYaml . | nindent 8 }}
-{{- end }}
-{{- with .nodeSelector }}
-      nodeSelector:
-        {{- toYaml . | nindent 8 }}
-{{- end }}
-{{- include "element-io.ess-library.pods.tolerations" (dict "root" $ "context" .tolerations) | indent 6 }}
-{{- include "element-io.ess-library.pods.topologySpreadConstraints" (dict "root" $ "context" (dict "instanceSuffix" (printf "synapse-%s" $processType) "deployment" false "topologySpreadConstraints" .topologySpreadConstraints)) | indent 6 }}
+{{- include "element-io.ess-library.pods.commonSpec" (dict "root" $ "context" (dict "componentValues" . "key" "synapse" "deployment" false)) | nindent 6 }}
 {{- with .hostAliases }}
       hostAliases:
         {{- tpl (toYaml . | nindent 8) $ }}
