@@ -66,6 +66,6 @@ jobs:
       if: ${{ failure() }}
       uses: actions/upload-artifact@v4
       with:
-        name: ess-helm-logs
+        name: ess-helm-logs-${{ matrix.test-component }}
         path: ess-helm-logs
         retention-days: 1

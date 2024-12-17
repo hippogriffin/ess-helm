@@ -3,6 +3,7 @@
 # SPDX-License-Identifier: AGPL-3.0-only OR LicenseRef-Element-Commercial
 
 import asyncio
+import os
 
 import pytest
 from lightkube import AsyncClient
@@ -10,6 +11,7 @@ from lightkube import operators as op
 from lightkube.resources.core_v1 import Endpoints, Pod, Service
 
 from .fixtures.data import ESSData
+from .lib.utils import read_service_monitor_kind
 
 
 @pytest.mark.asyncio_cooperative
@@ -80,3 +82,67 @@ async def test_services_have_endpoints(
                 assert port.name in port_names
             else:
                 assert port.port in port_numbers
+
+
+@pytest.mark.skipif(
+    os.environ.get("SKIP_SERVICE_MONITORS_CRDS", "false") == "true", reason="ServiceMonitors not deployed"
+)
+@pytest.mark.asyncio_cooperative
+@pytest.mark.usefixtures("matrix_stack")
+async def test_pods_monitored(
+    kube_client: AsyncClient,
+    generated_data: ESSData,
+):
+    all_monitorable_pods = set()
+    async for pod in kube_client.list(
+        Pod, namespace=generated_data.ess_namespace, labels={"app.kubernetes.io/part-of": op.in_(["matrix-stack"])}
+    ):
+        if pod.metadata and pod.metadata.annotations and "has-no-service-monitor" in pod.metadata.annotations:
+            continue
+        elif pod.metadata:
+            all_monitorable_pods.add(pod.metadata.name)
+        else:
+            raise RuntimeError(f"Pod {pod} has no metadata")
+
+    monitored_pods = set()
+    async for service_monitor in kube_client.list(
+        await read_service_monitor_kind(kube_client),
+        namespace=generated_data.ess_namespace,
+        labels={"app.kubernetes.io/part-of": op.in_(["matrix-stack"])},
+    ):
+        service_monitor_is_useful = False
+        async for service in kube_client.list(
+            Service, namespace=generated_data.ess_namespace, labels=service_monitor["spec"]["selector"]["matchLabels"]
+        ):
+            if not service.spec:
+                raise RuntimeError(f"Service {service} has no spec")
+
+            for endpoint in service_monitor["spec"]["endpoints"]:
+                service_port_names = [port.name for port in service.spec.ports if port.name]
+                if endpoint["port"] in service_port_names:
+                    break
+            # This Service does not have the named port. Potentially there's another Service that covers it
+            else:
+                continue
+
+            async for covered_pod in kube_client.list(
+                Pod, namespace=generated_data.ess_namespace, labels=service.spec.selector
+            ):
+                if not covered_pod.metadata:
+                    raise RuntimeError(f"Pod {covered_pod} has no metadata")
+
+                # Something monitored by multiple ServiceMonitors smells like a bug
+                assert covered_pod.metadata.name not in monitored_pods, (
+                    f"Pod {covered_pod.metadata.name} " "is monitored multiple times"
+                )
+
+                monitored_pods.add(covered_pod.metadata.name)
+                service_monitor_is_useful = True
+
+        assert service_monitor_is_useful, (
+            f"ServiceMonitor {service_monitor['metadata']['name']} " "does not cover any pod"
+        )
+
+    assert all_monitorable_pods == monitored_pods, (
+        f"Some pods are not monitored : " f"{', '.join(list(set(all_monitorable_pods) ^ set(monitored_pods)))}"
+    )

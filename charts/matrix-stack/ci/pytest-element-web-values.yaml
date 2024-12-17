@@ -11,6 +11,9 @@ elementWeb:
 
   replicas: 1
 
+  annotations:
+    has-no-service-monitor: "true"
+
   additional:
     {
       "default_server_config": {
