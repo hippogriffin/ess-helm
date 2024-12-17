@@ -2,130 +2,106 @@
 #
 # SPDX-License-Identifier: AGPL-3.0-only OR LicenseRef-Element-Commercial
 
-import copy
-from typing import Any, Iterator, Set
+from typing import Any, Dict, Iterator
 
 import pytest
 
-from . import component_details, values_files_with_service_monitors
+from . import component_details, values_files_to_test
 
 
-def selector_match(labels, selector):
+def selector_match(labels: Dict[str, str], selector: Dict[str, str]) -> bool:
     return all(labels[key] == value for key, value in selector.items())
 
 
-def find_service_matching_selector(templates, selector):
-    result = None
+def find_services_matching_selector(templates: Iterator[Any], selector: Dict[str, str]) -> list[Any]:
+    services = []
     for template in templates:
         if template["kind"] == "Service" and selector_match(template["metadata"]["labels"], selector):
-            if result:
-                raise Exception(
-                    "Found more than one service matching selector : "
-                    f"{template['metadata']['name']} "
-                    "and "
-                    f"{result['metadata']['name']}"
-                )
-            result = template
-    return result
+            services.append(template)
+    return services
 
 
-def find_workload_matching_selector(templates, selector):
-    result = None
+def find_workload_ids_matching_selector(templates: Iterator[Any], selector: Dict[str, str]) -> list[str]:
+    workload_ids = []
     for template in templates:
         if template["kind"] in ("Deployment", "StatefulSet") and selector_match(
             template["spec"]["template"]["metadata"]["labels"], selector
         ):
-            if result:
-                raise Exception(
-                    "Found more than one workload matching selector : "
-                    f"{template['metadata']['name']} "
-                    "and "
-                    f"{result['metadata']['name']}"
-                )
-            result = template
+            workload_ids.append(f"{template["kind"]}/{template["metadata"]["name"]}")
 
-    return result
+    return workload_ids
 
 
-def service_monitor_to_workload_name(service_monitor, templates):
-    service = find_service_matching_selector(templates, service_monitor["spec"]["selector"]["matchLabels"])
-    assert service is not None
-    workload = find_workload_matching_selector(templates, service["metadata"]["labels"])
-    assert workload is not None
-    return workload["metadata"]["name"]
+def workload_ids_for_service_monitor(service_monitor, templates) -> set[str]:
+    services = find_services_matching_selector(templates, service_monitor["spec"]["selector"]["matchLabels"])
+    assert len(services) > 0, f"No Services behind ServiceMonitor {service_monitor["metadata"]["name"]}"
+
+    workload_ids = []
+    for service in services:
+        workload_ids.extend(find_workload_ids_matching_selector(templates, service["spec"]["selector"]))
+
+    assert len(workload_ids) > 0, f"No workloads behind ServiceMonitor {service_monitor["metadata"]["name"]}"
+    assert len(workload_ids) == len(
+        set(workload_ids)
+    ), f"ServiceMonitor {service_monitor["metadata"]["name"]} covers same workloads multiple times"
+    return set(workload_ids)
 
 
-def get_service_monitors(component: str, sub_component: str, templates: Iterator[Any]):
-    """We read all rendered templated and associate found service monitors to current component/subcomponent
-
-    We expect service monitors to be associated to the workload of the component/subcomponent they monitor
-
-    Args:
-        component (_type_): _description_
-        sub_component (_type_): _description_
-        templates (_type_): _description_
-
-    Returns:
-        _type_: _description_
-    """
-    if sub_component and component_details[component]["sub_components"][sub_component].get("service_monitors_override"):
-        return set(component_details[component]["sub_components"][sub_component]["service_monitors_override"])
-    elif not sub_component and component_details[component].get("service_monitors_override"):
-        return set(component_details[component]["service_monitors_override"])
-    return set(
-        service_monitor_to_workload_name(template, templates)
-        for template in templates
-        if template["kind"] == "ServiceMonitor"
-    )
-
-
-def verify_all_expected_services_monitors_presence(
-    templates: Iterator[Any], expected_service_monitors: Set[str], excluded_service_monitors: Set[str]
-):
-    """We read all rendered template and verify that all expected service monitors are present
-    and that excluded service monitors are not
-
-    Args:
-        templates (Iterator[Any]): Rendered template for current values with 1 excluded component service monitors
-        expected_service_monitors (Set[str]): Service monitors expected to be present
-        excluded_service_monitors (Set[str]): Service monitors expected to be excluded
-    """
-    found_service_monitors = set()
-
+def workload_ids_monitored(templates: Iterator[Any]) -> set[str]:
+    workload_ids_monitored = set()
     for template in templates:
         if template["kind"] == "ServiceMonitor":
-            found_service_monitors.add(template["metadata"]["name"])
+            these_monitored_workload_ids = workload_ids_for_service_monitor(template, templates)
+            assert (
+                workload_ids_monitored.intersection(these_monitored_workload_ids) == set()
+            ), "Multiple ServiceMonitors cover the same workload"
+            workload_ids_monitored.update(these_monitored_workload_ids)
 
-    assert set(*expected_service_monitors.values()) == found_service_monitors
-    assert len(set.intersection(excluded_service_monitors, found_service_monitors)) == 0
+    return workload_ids_monitored
 
 
-async def initialize_service_monitors(component: str, values: Any, make_templates):
-    """This method renders templates by enabling service monitors for each component & sub component one by one.
-    Each component is associated with a set of service monitor names.
-    This method asserts that no two service monitors share the same name
+@pytest.mark.parametrize("values_file", values_files_to_test)
+@pytest.mark.asyncio_cooperative
+async def test_service_monitored_as_appropriate(component, values: dict, make_templates):
+    # If the component and all its sub-components don't have ServiceMonitors we should assert that
+    if not component_details[component]["has_service_monitor"] and not any(
+        [sub_component["has_service_monitor"] for sub_component in component_details[component]["sub_components"]]
+    ):
+        for template in await make_templates(values):
+            assert template["kind"] != "ServiceMonitor", f"{component} unexpectedly has a ServiceMonitor: {template=}"
 
-    Args:
-        component (str): The component name
-        values (Any): The values to use for these components
-        make_templates (_type_): The function to use to render the templates
+        return
 
-    Returns:
-        dict: A dictionary containing the service monitors found for each component
-    """
-    # We disable rendering of all service monitors
+    # We disable rendering of all service monitors as they're default enabled
     values[component].setdefault("serviceMonitors", {}).setdefault("enabled", False)
     for sub_component in component_details[component]["sub_components"]:
         # Subcomponents that don't have service monitors don't need to be tested
-        if not component_details[component]["sub_components"][sub_component]["has_service_monitor"]:
-            continue
-        values[component].setdefault(sub_component, {}).setdefault("serviceMonitors", {}).setdefault("enabled", False)
+        if component_details[component]["sub_components"][sub_component]["has_service_monitor"]:
+            values[component].setdefault(sub_component, {}).setdefault("serviceMonitors", {}).setdefault(
+                "enabled", False
+            )
+        else:
+            values[component].setdefault(sub_component, {}).setdefault("labels", {}).setdefault(
+                "servicemonitor", "none"
+            )
 
-    components_services_monitors = {}
+    # We should now have no ServiceMonitors rendered
+    workloads_to_cover = set()
+    for template in await make_templates(values):
+        assert (
+            template["kind"] != "ServiceMonitor"
+        ), f"{component} unexpectedly has a ServiceMonitor when all are turned off"
+        if (
+            template["kind"] in ["Deployment", "StatefulSet"]
+            and template["metadata"]["labels"].get("servicemonitor", "some") != "none"
+        ):
+            workloads_to_cover.add(f"{template["kind"]}/{template["metadata"]["name"]}")
+
+    seen_covered_workloads = set[str]()
 
     # We then render each component one by one, and extract its service monitor
     values[component]["serviceMonitors"]["enabled"] = True
-    components_services_monitors[component] = get_service_monitors(component, None, await make_templates(values))
+    seen_covered_workloads.update(workload_ids_monitored(await make_templates(values)))
     values[component]["serviceMonitors"]["enabled"] = False
 
     for sub_component in component_details[component]["sub_components"]:
@@ -134,66 +110,12 @@ async def initialize_service_monitors(component: str, values: Any, make_template
             continue
 
         values[component][sub_component]["serviceMonitors"]["enabled"] = True
-        components_services_monitors[f"{component}-{sub_component}"] = get_service_monitors(
-            component, sub_component, await make_templates(values)
-        )
+
+        # Individual components and subcomponents should not share any ServiceMonitors
+        sub_component_workload_ids = workload_ids_monitored(await make_templates(values))
+        assert seen_covered_workloads.intersection(sub_component_workload_ids) == set()
+        seen_covered_workloads.update(sub_component_workload_ids)
+
         values[component][sub_component]["serviceMonitors"]["enabled"] = False
 
-    # Individual components and subcomponents should not share any ServiceMonitors
-    assert set.intersection(*components_services_monitors.values()) == set()
-    return components_services_monitors
-
-
-@pytest.mark.parametrize("values_file", values_files_with_service_monitors)
-@pytest.mark.asyncio_cooperative
-async def test_all_components_and_sub_components_has_service_monitor(component, values: dict, make_templates):
-    """This test generates all service monitors of each component & sub component one by one.
-    Each component is associated with a set of service monitor names.
-
-    Then, we render disable each component independently, and look for all service monitors rendered
-    We expect all service monitors rendered to have the same name as the component or subcomponent workload
-
-    Args:
-        component (_type_): _description_
-        values (dict): _description_
-        make_templates (_type_): _description_
-    """
-    origin_values = copy.deepcopy(values)
-
-    # First, we render all components and subcomponents service monitors one by one
-    # We are going to detect the workloads they monitor
-    # This workload name is the name we expect to find
-    all_components_services_monitors = await initialize_service_monitors(
-        component, copy.deepcopy(values), make_templates
-    )
-
-    # We start testing by disabling top-level component service monitors
-    values[component].setdefault("serviceMonitors", {}).setdefault("enabled", False)
-
-    # We test that all service monitors are present, except for the top-level component
-    components_services_monitors = all_components_services_monitors.copy()
-    excluded_service_monitors = components_services_monitors.pop(component)
-    verify_all_expected_services_monitors_presence(
-        await make_templates(values), components_services_monitors, excluded_service_monitors
-    )
-
-    # Second, we disable subcomponent service monitors independently
-    # And make sure top-level component service monitors are rendered,
-    # as well as independent subcomponent service monitors
-    # We make sure that excluded service monitors are not rendered
-    for turned_off_sub_component in component_details[component]["sub_components"]:
-        # Subcomponents that don't have service monitors don't need to be tested
-        if not component_details[component]["sub_components"][turned_off_sub_component]["has_service_monitor"]:
-            continue
-
-        values = copy.deepcopy(origin_values)
-        values[component].setdefault(turned_off_sub_component, {}).setdefault("serviceMonitors", {}).setdefault(
-            "enabled", False
-        )
-
-        components_services_monitors = all_components_services_monitors.copy()
-        excluded_service_monitors = components_services_monitors.pop(f"{component}-{turned_off_sub_component}")
-
-        verify_all_expected_services_monitors_presence(
-            await make_templates(values), components_services_monitors, excluded_service_monitors
-        )
+    assert seen_covered_workloads.symmetric_difference(workloads_to_cover) == set()
