@@ -57,15 +57,16 @@ async def test_uses_serviceaccount_named_as_per_pod_controller_by_default(templa
 @pytest.mark.parametrize("values_file", values_files_to_test)
 @pytest.mark.asyncio_cooperative
 async def test_uses_serviceaccount_named_as_values_if_specified(component, values, make_templates):
-    values[component].setdefault("serviceAccount", {}).setdefault("name", f"{component}-pytest")
-    values[component].setdefault("labels", {}).setdefault("expected.name", f"{component}-pytest")
-    for sub_component in component_details[component]["sub_components"]:
-        values[component].setdefault(sub_component, {}).setdefault("serviceAccount", {}).setdefault(
-            "name", f"{component}-{sub_component}-pytest"
-        )
-        values[component].setdefault(sub_component, {}).setdefault("labels", {}).setdefault(
-            "expected.name", f"{component}-{sub_component}-pytest"
-        )
+    if component_details[component]["has_workloads"]:
+        values[component].setdefault("serviceAccount", {}).setdefault("name", f"{component}-pytest")
+        values[component].setdefault("labels", {}).setdefault("expected.name", f"{component}-pytest")
+        for sub_component in component_details[component]["sub_components"]:
+            values[component].setdefault(sub_component, {}).setdefault("serviceAccount", {}).setdefault(
+                "name", f"{component}-{sub_component}-pytest"
+            )
+            values[component].setdefault(sub_component, {}).setdefault("labels", {}).setdefault(
+                "expected.name", f"{component}-{sub_component}-pytest"
+            )
 
     for shared_component in component_details[component].get("shared_components", []):
         values.setdefault(shared_component, {}).setdefault("serviceAccount", {}).setdefault(
@@ -99,16 +100,17 @@ async def test_uses_serviceaccount_named_as_values_if_specified(component, value
 @pytest.mark.parametrize("values_file", values_files_to_test)
 @pytest.mark.asyncio_cooperative
 async def test_does_not_create_serviceaccounts_if_configured_not_to(component, values, make_templates):
-    for sub_component in [""] + list(component_details[component]["sub_components"].keys()):
-        sub_component_values = copy.deepcopy(values)
-        if sub_component == "":
-            sub_component_values[component].setdefault("serviceAccount", {"create": False})
-            sub_component_values[component].setdefault("labels", {"serviceAccount": "none"})
-        else:
-            sub_component_values[component].setdefault(sub_component, {}).setdefault(
-                "serviceAccount", {"create": False}
-            )
-            sub_component_values[component][sub_component].setdefault("labels", {"serviceAccount": "none"})
+    if component_details[component]["has_workloads"]:
+        for sub_component in [""] + list(component_details[component]["sub_components"].keys()):
+            sub_component_values = copy.deepcopy(values)
+            if sub_component == "":
+                sub_component_values[component].setdefault("serviceAccount", {"create": False})
+                sub_component_values[component].setdefault("labels", {"serviceAccount": "none"})
+            else:
+                sub_component_values[component].setdefault(sub_component, {}).setdefault(
+                    "serviceAccount", {"create": False}
+                )
+                sub_component_values[component][sub_component].setdefault("labels", {"serviceAccount": "none"})
 
     workloads_by_id = {}
     serviceaccount_names = set()

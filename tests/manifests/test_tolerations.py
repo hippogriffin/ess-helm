@@ -36,9 +36,10 @@ async def test_no_tolerations_by_default(templates):
 @pytest.mark.parametrize("values_file", values_files_to_test)
 @pytest.mark.asyncio_cooperative
 async def test_all_components_and_sub_components_render_tolerations(component, values, make_templates):
-    values[component].setdefault("tolerations", []).append(specific_toleration)
-    for sub_component in component_details[component]["sub_components"]:
-        values[component].setdefault(sub_component, {}).setdefault("tolerations", []).append(specific_toleration)
+    if component_details[component]["has_workloads"]:
+        values[component].setdefault("tolerations", []).append(specific_toleration)
+        for sub_component in component_details[component]["sub_components"]:
+            values[component].setdefault(sub_component, {}).setdefault("tolerations", []).append(specific_toleration)
     for shared_component in component_details[component].get("shared_components", []):
         values.setdefault(shared_component, {}).setdefault("tolerations", []).append(specific_toleration)
 
@@ -70,9 +71,10 @@ async def test_global_tolerations_render(values, make_templates):
 @pytest.mark.parametrize("values_file", values_files_to_test)
 @pytest.mark.asyncio_cooperative
 async def test_merges_global_and_specific_tolerations(component, values, make_templates):
-    values[component].setdefault("tolerations", []).append(specific_toleration)
-    for sub_component in component_details[component]["sub_components"]:
-        values[component].setdefault(sub_component, {}).setdefault("tolerations", []).append(specific_toleration)
+    if component_details[component]["has_workloads"]:
+        values[component].setdefault("tolerations", []).append(specific_toleration)
+        for sub_component in component_details[component]["sub_components"]:
+            values[component].setdefault(sub_component, {}).setdefault("tolerations", []).append(specific_toleration)
 
     for shared_component in component_details[component].get("shared_components", []):
         values.setdefault(shared_component, {}).setdefault("tolerations", []).append(specific_toleration)

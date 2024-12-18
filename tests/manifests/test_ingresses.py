@@ -28,7 +28,14 @@ async def test_ingress_is_expected_host(component, values, templates):
 
             for rule in template["spec"]["rules"]:
                 assert "host" in rule
-                assert rule["host"] == values[component]["ingress"]["host"]
+                if component == "wellKnownDelegation":
+                    if not values[component].setdefault("ingress", {}).get("host"):
+                        expected_host = values["serverName"]
+                    else:
+                        expected_host = values[component].setdefault("ingress", {})["host"]
+                else:
+                    expected_host = values[component]["ingress"]["host"]
+                assert rule["host"] == expected_host
 
 
 @pytest.mark.parametrize("values_file", values_files_with_ingresses)

@@ -38,11 +38,12 @@ async def test_sets_nonRoot_uids_gids_in_pod_securityContext_by_default(template
 @pytest.mark.parametrize("values_file", values_files_to_test)
 @pytest.mark.asyncio_cooperative
 async def test_can_nuke_pod_securityContext_ids(component, values, make_templates):
-    values[component].setdefault("podSecurityContext", {"runAsUser": None, "runAsGroup": None, "fsGroup": None})
-    for sub_component in component_details[component]["sub_components"]:
-        values[component].setdefault(sub_component, {}).setdefault(
-            "podSecurityContext", {"runAsUser": None, "runAsGroup": None, "fsGroup": None}
-        )
+    if component_details[component]["has_workloads"]:
+        values[component].setdefault("podSecurityContext", {"runAsUser": None, "runAsGroup": None, "fsGroup": None})
+        for sub_component in component_details[component]["sub_components"]:
+            values[component].setdefault(sub_component, {}).setdefault(
+                "podSecurityContext", {"runAsUser": None, "runAsGroup": None, "fsGroup": None}
+            )
     for shared_component in component_details[component].get("shared_components", []):
         values.setdefault(shared_component, {}).setdefault(
             "podSecurityContext", {"runAsUser": None, "runAsGroup": None, "fsGroup": None}
@@ -87,9 +88,10 @@ async def test_sets_seccompProfile_in_pod_securityContext_by_default(templates):
 @pytest.mark.parametrize("values_file", values_files_to_test)
 @pytest.mark.asyncio_cooperative
 async def test_can_nuke_pod_securityContext_seccompProfile(component, values, make_templates):
-    values[component].setdefault("podSecurityContext", {"seccompProfile": None})
-    for sub_component in component_details[component]["sub_components"]:
-        values[component].setdefault(sub_component, {}).setdefault("podSecurityContext", {"seccompProfile": None})
+    if component_details[component]["has_workloads"]:
+        values[component].setdefault("podSecurityContext", {"seccompProfile": None})
+        for sub_component in component_details[component]["sub_components"]:
+            values[component].setdefault(sub_component, {}).setdefault("podSecurityContext", {"seccompProfile": None})
     for shared_component in component_details[component].get("shared_components", []):
         values.setdefault(shared_component, {}).setdefault("podSecurityContext", {"seccompProfile": None})
 
