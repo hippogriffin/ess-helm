@@ -11,7 +11,7 @@ SPDX-License-Identifier: AGPL-3.0-only OR LicenseRef-Element-Commercial
 app.kubernetes.io/component: matrix-delegation
 app.kubernetes.io/name: well-known-delegation
 app.kubernetes.io/instance: {{ $root.Release.Name }}-well-known-delegation
-app.kubernetes.io/version: {{ .image.tag }}
+app.kubernetes.io/version: {{ $root.Release.Version }}
 {{- end }}
 {{- end }}
 

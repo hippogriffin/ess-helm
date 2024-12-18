@@ -10,7 +10,7 @@ apiVersion: v1
 kind: ConfigMap
 metadata:
   labels:
-    {{- include "element-io.well-known-delegation.labels" (dict "root" $ "context" $.Values.haproxy) | nindent 4 }}
+    {{- include "element-io.well-known-delegation.labels" (dict "root" $ "context" .) | nindent 4 }}
   name: {{ $.Release.Name }}-well-known-haproxy
   namespace: {{ $.Release.Namespace }}
 data:
