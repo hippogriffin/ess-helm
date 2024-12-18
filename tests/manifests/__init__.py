@@ -15,11 +15,11 @@ _raw_component_details = {
             "synapse-worker-example-values.yaml",
         ],
         "sub_components": {
-            "haproxy": {},
             "redis": {
                 "has_service_monitor": False,
             },
         },
+        "shared_components": ["haproxy"],
     },
 }
 

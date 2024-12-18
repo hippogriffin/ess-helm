@@ -4,17 +4,16 @@ Copyright 2024 New Vector Ltd
 SPDX-License-Identifier: AGPL-3.0-only OR LicenseRef-Element-Commercial
 */ -}}
 
-{{- with .Values.synapse -}}
-{{- if .enabled -}}
+{{- if $.Values.synapse.enabled -}}
+{{- with .Values.haproxy -}}
 {{- if $.Capabilities.APIVersions.Has "monitoring.coreos.com/v1/ServiceMonitor" }}
-{{- with .haproxy -}}
 {{- if .serviceMonitors.enabled }}
 apiVersion: monitoring.coreos.com/v1
 kind: ServiceMonitor
 metadata:
   labels:
-    {{- include "element-io.synapse-haproxy.labels" (dict "root" $ "context" .) | nindent 4 }}
-  name: {{ $.Release.Name }}-synapse-haproxy
+    {{- include "element-io.haproxy.labels" (dict "root" $ "context" .) | nindent 4 }}
+  name: {{ $.Release.Name }}-haproxy
   namespace: {{ $.Release.Namespace }}
 spec:
   endpoints:
@@ -23,10 +22,9 @@ spec:
   selector:
     matchLabels:
       app.kubernetes.io/part-of: matrix-stack
-      app.kubernetes.io/component: matrix-server-ingress
-      app.kubernetes.io/instance: {{ $.Release.Name }}-synapse-haproxy
+      app.kubernetes.io/component: matrix-stack-ingress
+      app.kubernetes.io/instance: {{ $.Release.Name }}-haproxy
 {{- end }}
 {{- end }}
-{{- end -}}
 {{- end -}}
 {{- end -}}

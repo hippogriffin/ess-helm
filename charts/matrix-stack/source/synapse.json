@@ -201,48 +201,6 @@
         }
       }
     },
-    "haproxy": {
-      "type": "object",
-      "properties": {
-        "replicas": {
-          "minimum": 1,
-          "type": "integer"
-        },
-        "image": {
-          "$ref": "file://common/image.json"
-        },
-        "labels": {
-          "$ref": "file://common/labels.json"
-        },
-        "annotations": {
-          "$ref": "file://common/workloadAnnotations.json"
-        },
-        "containersSecurityContext": {
-          "$ref": "file://common/containersSecurityContext.json"
-        },
-        "nodeSelector": {
-          "$ref": "file://common/nodeSelector.json"
-        },
-        "podSecurityContext": {
-          "$ref": "file://common/podSecurityContext.json"
-        },
-        "resources": {
-          "$ref": "file://common/resources.json"
-        },
-        "serviceAccount": {
-          "$ref": "file://common/serviceAccount.json"
-        },
-        "serviceMonitors": {
-          "$ref": "file://common/serviceMonitors.json"
-        },
-        "tolerations": {
-          "$ref": "file://common/tolerations.json"
-        },
-        "topologySpreadConstraints": {
-          "$ref": "file://common/topologySpreadConstraints.json"
-        }
-      }
-    },
     "redis": {
       "type": "object",
       "properties": {

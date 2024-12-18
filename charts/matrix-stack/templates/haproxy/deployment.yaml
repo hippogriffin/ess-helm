@@ -5,9 +5,8 @@ SPDX-License-Identifier: AGPL-3.0-only OR LicenseRef-Element-Commercial
 */ -}}
 
 
-{{- with .Values.synapse -}}
-{{- if .enabled -}}
-{{- with .haproxy -}}
+{{- if $.Values.synapse.enabled -}}
+{{- with .Values.haproxy -}}
 apiVersion: apps/v1
 kind: Deployment
 metadata:
@@ -16,15 +15,15 @@ metadata:
     {{- toYaml . | nindent 4 }}
 {{- end }}
   labels:
-    {{- include "element-io.synapse-haproxy.labels" (dict "root" $ "context" .) | nindent 4 }}
-    k8s.element.io/confighash: "{{ include (print $.Template.BasePath "/synapse/haproxy_configmap.yaml") $ | sha1sum }}"
-  name: {{ $.Release.Name }}-synapse-haproxy
+    {{- include "element-io.haproxy.labels" (dict "root" $ "context" .) | nindent 4 }}
+    k8s.element.io/confighash: "{{ include (print $.Template.BasePath "/haproxy/configmap.yaml") $ | sha1sum }}"
+  name: {{ $.Release.Name }}-haproxy
   namespace: {{ $.Release.Namespace }}
 spec:
   replicas: {{ .replicas }}
   selector:
     matchLabels:
-      app.kubernetes.io/instance: {{ $.Release.Name }}-synapse-haproxy
+      app.kubernetes.io/instance: {{ $.Release.Name }}-haproxy
   strategy:
     type: RollingUpdate
     rollingUpdate:
@@ -33,8 +32,8 @@ spec:
   template:
     metadata:
       labels:
-        {{- include "element-io.synapse-haproxy.labels" (dict "root" $ "context" .) | nindent 8 }}
-        k8s.element.io/confighash: "{{ include (print $.Template.BasePath "/synapse/haproxy_configmap.yaml") $ | sha1sum }}"
+        {{- include "element-io.haproxy.labels" (dict "root" $ "context" .) | nindent 8 }}
+        k8s.element.io/confighash: "{{ include (print $.Template.BasePath "/haproxy/configmap.yaml") $ | sha1sum }}"
 {{- with .annotations }}
       annotations:
         {{- toYaml . | nindent 8 }}
@@ -51,10 +50,10 @@ spec:
                 - key: app.kubernetes.io/instance
                   operator: In
                   values:
-                  - "{{ $.Release.Name }}-synapse-haproxy"
+                  - "{{ $.Release.Name }}-haproxy"
               topologyKey: kubernetes.io/hostname
 {{- end }}
-{{- include "element-io.ess-library.pods.commonSpec" (dict "root" $ "context" (dict "componentValues" . "key" "synapse-haproxy" "deployment" true)) | nindent 6 }}
+{{- include "element-io.ess-library.pods.commonSpec" (dict "root" $ "context" (dict "componentValues" . "key" "haproxy" "deployment" true)) | nindent 6 }}
       containers:
       - name: haproxy
 {{- with .image -}}
@@ -102,9 +101,8 @@ spec:
           readOnly: true
       volumes:
       - configMap:
-          name: "{{ $.Release.Name }}-synapse-haproxy"
+          name: "{{ $.Release.Name }}-haproxy"
           defaultMode: 420
         name: haproxy-config
-{{- end -}}
 {{- end -}}
 {{- end }}

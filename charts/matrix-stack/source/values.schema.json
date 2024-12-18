@@ -35,6 +35,9 @@
     "elementWeb": {
       "$ref": "file://element-web.json"
     },
+    "haproxy": {
+      "$ref": "file://haproxy.json"
+    },
     "synapse": {
       "$ref": "file://synapse.json"
     }

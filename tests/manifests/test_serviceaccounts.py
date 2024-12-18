@@ -67,6 +67,14 @@ async def test_uses_serviceaccount_named_as_values_if_specified(component, value
             "expected.name", f"{component}-{sub_component}-pytest"
         )
 
+    for shared_component in component_details[component].get("shared_components", []):
+        values.setdefault(shared_component, {}).setdefault("serviceAccount", {}).setdefault(
+            "name", f"{shared_component}-pytest"
+        )
+        values.setdefault(shared_component, {}).setdefault("labels", {}).setdefault(
+            "expected.name", f"{shared_component}-pytest"
+        )
+
     workloads_by_id = {}
     serviceaccount_names = []
     for template in await make_templates(values):
@@ -102,27 +110,25 @@ async def test_does_not_create_serviceaccounts_if_configured_not_to(component, v
             )
             sub_component_values[component][sub_component].setdefault("labels", {"serviceAccount": "none"})
 
-        workloads_by_id = {}
-        serviceaccount_names = set()
-        covered_serviceaccount_names = set()
-        for template in await make_templates(sub_component_values):
-            if template["kind"] in ["Deployment", "StatefulSet"]:
-                id_suffix = f" (for {sub_component})" if sub_component != "" else ""
-                workloads_by_id[f"{template["kind"]}/{template["metadata"]["name"]}{id_suffix}"] = template
-            elif template["kind"] == "ServiceAccount":
-                serviceaccount_names.add(template["metadata"]["name"])
+    workloads_by_id = {}
+    serviceaccount_names = set()
+    covered_serviceaccount_names = set()
+    for template in await make_templates(sub_component_values):
+        if template["kind"] in ["Deployment", "StatefulSet"]:
+            id_suffix = f" (for {sub_component})" if sub_component != "" else ""
+            workloads_by_id[f"{template["kind"]}/{template["metadata"]["name"]}{id_suffix}"] = template
+        elif template["kind"] == "ServiceAccount":
+            serviceaccount_names.add(template["metadata"]["name"])
 
-        for id, template in workloads_by_id.items():
-            assert (
-                "serviceAccountName" in template["spec"]["template"]["spec"]
-            ), f"{id} does not set an explicit ServiceAccount"
-
-            serviceaccount_name = template["spec"]["template"]["spec"]["serviceAccountName"]
-            if template["metadata"]["labels"].get("serviceAccount", "some") == "none":
-                assert serviceaccount_name not in serviceaccount_names
-            else:
-                covered_serviceaccount_names.add(serviceaccount_name)
-
+    for id, template in workloads_by_id.items():
         assert (
-            serviceaccount_names == covered_serviceaccount_names
-        ), f"{id} created ServiceAccounts that it shouldn't have"
+            "serviceAccountName" in template["spec"]["template"]["spec"]
+        ), f"{id} does not set an explicit ServiceAccount"
+
+        serviceaccount_name = template["spec"]["template"]["spec"]["serviceAccountName"]
+        if template["metadata"]["labels"].get("serviceAccount", "some") == "none":
+            assert serviceaccount_name not in serviceaccount_names
+        else:
+            covered_serviceaccount_names.add(serviceaccount_name)
+
+    assert serviceaccount_names == covered_serviceaccount_names, f"{id} created ServiceAccounts that it shouldn't have"

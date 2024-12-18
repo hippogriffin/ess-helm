@@ -14,6 +14,10 @@ elementWeb:
   {% macro elementWebValues() %}{% include 'element-web.yaml.j2'%}{% endmacro %}
   {{- elementWebValues() | trim | indent(2) }}
 
+haproxy:
+  {% macro haproxyValues() %}{% include 'haproxy.yaml.j2'%}{% endmacro %}
+  {{- haproxyValues() | trim | indent(2) }}
+
 synapse:
   {% macro synapseValues() %}{% include 'synapse.yaml.j2'%}{% endmacro %}
   {{- synapseValues() | trim | indent(2) }}
