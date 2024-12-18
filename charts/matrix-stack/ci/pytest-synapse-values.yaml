@@ -47,3 +47,6 @@ synapse:
 
 elementWeb:
   enabled: false
+
+wellKnownDelegation:
+  enabled: false
