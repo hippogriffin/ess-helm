@@ -23,6 +23,8 @@ app.kubernetes.io/component: matrix-stack-ingress
 app.kubernetes.io/name: well-known-ingress
 app.kubernetes.io/instance: {{ $root.Release.Name }}-well-known-ingress
 app.kubernetes.io/version: {{ .image.tag }}
+k8s.element.io/target-name: haproxy
+k8s.element.io/target-instance: {{ $root.Release.Name }}-haproxy
 {{- end }}
 {{- end }}
 
