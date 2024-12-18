@@ -19,7 +19,7 @@ async def test_synapse_can_access_client_api(
     ssl_context,
     generated_data: ESSData,
 ):
-    await ingress_ready("synapse-haproxy")
+    await ingress_ready("synapse")
 
     json_content = await aiottp_get_json(
         f"https://synapse.{generated_data.server_name}/_matrix/client/versions", ssl_context

@@ -16,13 +16,13 @@ k8s.element.io/synapse-instance: {{ $root.Release.Name }}-synapse
 {{- end }}
 {{- end }}
 
-{{- define "element-io.synapse-haproxy.labels" -}}
+{{- define "element-io.synapse-ingress.labels" -}}
 {{- $root := .root -}}
-{{- with required "element-io.synapse-haproxy.labels missing context" .context -}}
+{{- with required "element-io.synapse-ingress.labels missing context" .context -}}
 {{ include "element-io.ess-library.labels.common" (dict "root" $root "context" .labels) }}
 app.kubernetes.io/component: matrix-stack-ingress
-app.kubernetes.io/name: synapse-haproxy
-app.kubernetes.io/instance: {{ $root.Release.Name }}-synapse-haproxy
+app.kubernetes.io/name: synapse
+app.kubernetes.io/instance: {{ $root.Release.Name }}-synapse
 k8s.element.io/target-name: haproxy
 k8s.element.io/target-instance: {{ $root.Release.Name }}-haproxy
 app.kubernetes.io/version: {{ .image.tag }}

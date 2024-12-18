@@ -12,7 +12,7 @@ from .data import ESSData
 
 @pytest.fixture(scope="session")
 async def synapse_users(request, generated_data: ESSData, ssl_context, ingress_ready):
-    await ingress_ready("synapse-haproxy")
+    await ingress_ready("synapse")
 
     wait_for_users = []
     for user in request.param:
