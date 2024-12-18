@@ -157,8 +157,8 @@ async def prometheus_operator_crds(helm_client):
             "prometheus-operator-crds",
             chart,
             {},
-            namespace="default",
-            create_namespace=False,
+            namespace="prometheus-operator",
+            create_namespace=True,
             atomic=True,
             wait=True,
         )
