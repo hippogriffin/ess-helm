@@ -5,7 +5,7 @@ SPDX-License-Identifier: AGPL-3.0-only OR LicenseRef-Element-Commercial
 */ -}}
 
 
-{{- if $.Values.synapse.enabled -}}
+{{- if or $.Values.synapse.enabled $.Values.wellKnownDelegation.enabled -}}
 {{- with .Values.haproxy -}}
 apiVersion: apps/v1
 kind: Deployment
@@ -102,10 +102,32 @@ spec:
         - name: haproxy-config
           mountPath: "/usr/local/etc/haproxy"
           readOnly: true
+{{- if $.Values.synapse.enabled }}
+        - name: synapse-haproxy
+          mountPath: "/synapse"
+          readOnly: true
+{{- end }}
+{{- if $.Values.wellKnownDelegation.enabled }}
+        - name: well-known-haproxy
+          mountPath: "/well-known"
+          readOnly: true
+{{- end }}
       volumes:
       - configMap:
           name: "{{ $.Release.Name }}-haproxy"
           defaultMode: 420
         name: haproxy-config
-{{- end -}}
+{{- if $.Values.synapse.enabled }}
+      - configMap:
+          name: "{{ $.Release.Name }}-synapse-haproxy"
+          defaultMode: 420
+        name: synapse-haproxy
+{{- end }}
+{{- if $.Values.wellKnownDelegation.enabled }}
+      - configMap:
+          name: "{{ $.Release.Name }}-well-known-haproxy"
+          defaultMode: 420
+        name: well-known-haproxy
+{{- end }}
+{{- end }}
 {{- end }}
