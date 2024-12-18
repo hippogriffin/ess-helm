@@ -19,11 +19,15 @@ app.kubernetes.io/version: {{ .image.tag }}
 {{- $root := .root -}}
 {{- with required "element-io.well-known-delegation.client missing context" .context -}}
 {{- $config := dict -}}
-{{- $mHomeserver := dict "base_url" (required "WellKnownDelegation requires serverName set" $root.Values.serverName) }}
+{{- if $root.Values.synapse.enabled -}}
+{{- with required "WellKnownDelegation requires synapse.ingress.host set" $root.Values.synapse.ingress.host -}}
+{{- $mHomeserver := dict "base_url" (printf "https://%s" .) -}}
 {{- $_ := set $config "m.homeserver" $mHomeserver -}}
+{{- end -}}
+{{- end -}}
 {{- $additional := .additional.client | fromJson -}}
 {{- tpl (toPrettyJson (merge $config $additional)) $root -}}
-{{- end }}
+{{- end -}}
 {{- end }}
 
 {{- define "element-io.well-known-delegation.server" }}
@@ -32,7 +36,7 @@ app.kubernetes.io/version: {{ .image.tag }}
 {{- $config := dict -}}
 {{- if $root.Values.synapse.enabled -}}
 {{- with required "WellKnownDelegation requires synapse.ingress.host set" $root.Values.synapse.ingress.host -}}
-{{- $_ := set $config "m.server" . -}}
+{{- $_ := set $config "m.server" (printf "%s:443" .) -}}
 {{- end -}}
 {{- end -}}
 {{- $additional := .additional.server | fromJson -}}
@@ -44,7 +48,7 @@ app.kubernetes.io/version: {{ .image.tag }}
 {{- $root := .root -}}
 {{- with required "element-io.well-known-delegation.element missing context" .context -}}
 {{- $config := dict -}}
-{{- $additional := .additional.client | fromJson -}}
+{{- $additional := .additional.element | fromJson -}}
 {{- tpl (toPrettyJson (merge $config $additional)) $root -}}
 {{- end -}}
 {{- end }}
