@@ -64,16 +64,21 @@ def workload_ids_monitored(templates: Iterator[Any]) -> set[str]:
 @pytest.mark.asyncio_cooperative
 async def test_service_monitored_as_appropriate(component, values: dict, make_templates):
     # If the component and all its sub-components don't have ServiceMonitors we should assert that
-    if not component_details[component]["has_service_monitor"] and not any(
-        [sub_component["has_service_monitor"] for sub_component in component_details[component]["sub_components"]]
+    if (
+        not component_details[component]["has_service_monitor"]
+        and not any(
+            [sub_component["has_service_monitor"] for sub_component in component_details[component]["sub_components"]]
+        )
+        and not component_details[component].get("shared_components")
     ):
         for template in await make_templates(values):
             assert template["kind"] != "ServiceMonitor", f"{component} unexpectedly has a ServiceMonitor: {template=}"
 
         return
 
-    # We disable rendering of all service monitors as they're default enabled
-    values[component].setdefault("serviceMonitors", {}).setdefault("enabled", False)
+    if component_details[component]["has_service_monitor"]:
+        # We disable rendering of all service monitors as they're default enabled
+        values[component].setdefault("serviceMonitors", {}).setdefault("enabled", False)
     for sub_component in component_details[component]["sub_components"]:
         # Subcomponents that don't have service monitors don't need to be tested
         if component_details[component]["sub_components"][sub_component]["has_service_monitor"]:
@@ -84,7 +89,6 @@ async def test_service_monitored_as_appropriate(component, values: dict, make_te
             values[component].setdefault(sub_component, {}).setdefault("labels", {}).setdefault(
                 "servicemonitor", "none"
             )
-
     for shared_component in component_details[component].get("shared_components", []):
         values.setdefault(shared_component, {}).setdefault("serviceMonitors", {}).setdefault("enabled", False)
 
@@ -102,10 +106,11 @@ async def test_service_monitored_as_appropriate(component, values: dict, make_te
 
     seen_covered_workloads = set[str]()
 
-    # We then render each component one by one, and extract its service monitor
-    values[component]["serviceMonitors"]["enabled"] = True
-    seen_covered_workloads.update(workload_ids_monitored(await make_templates(values)))
-    values[component]["serviceMonitors"]["enabled"] = False
+    if component_details[component]["has_service_monitor"]:
+        # We then render each component one by one, and extract its service monitor
+        values[component]["serviceMonitors"]["enabled"] = True
+        seen_covered_workloads.update(workload_ids_monitored(await make_templates(values)))
+        values[component]["serviceMonitors"]["enabled"] = False
 
     for sub_component in component_details[component]["sub_components"]:
         # Subcomponents that don't have service monitors don't need to be tested
@@ -120,5 +125,13 @@ async def test_service_monitored_as_appropriate(component, values: dict, make_te
         seen_covered_workloads.update(sub_component_workload_ids)
 
         values[component][sub_component]["serviceMonitors"]["enabled"] = False
+
+    for shared_component in component_details[component]["shared_components"]:
+        values.setdefault(shared_component, {})["serviceMonitors"]["enabled"] = True
+        # Shared components should not share any ServiceMonitors
+        shared_component_workload_ids = workload_ids_monitored(await make_templates(values))
+        assert seen_covered_workloads.intersection(shared_component_workload_ids) == set()
+        seen_covered_workloads.update(shared_component_workload_ids)
+        values[shared_component]["serviceMonitors"]["enabled"] = False
 
     assert seen_covered_workloads.symmetric_difference(workloads_to_cover) == set()

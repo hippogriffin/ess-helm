@@ -60,7 +60,7 @@ async def test_no_ingress_annotations_by_default(templates):
 @pytest.mark.parametrize("values_file", values_files_with_ingresses)
 @pytest.mark.asyncio_cooperative
 async def test_renders_component_ingress_annotations(component, values, make_templates):
-    values[component]["ingress"]["annotations"] = {
+    values[component].setdefault("ingress", {})["annotations"] = {
         "component": "set",
     }
 
@@ -88,7 +88,7 @@ async def test_renders_global_ingress_annotations(values, make_templates):
 @pytest.mark.parametrize("values_file", values_files_with_ingresses)
 @pytest.mark.asyncio_cooperative
 async def test_merges_global_and_component_ingress_annotations(component, values, make_templates):
-    values[component]["ingress"]["annotations"] = {
+    values[component].setdefault("ingress", {})["annotations"] = {
         "component": "set",
         "merged": "from_component",
         "global": None,
@@ -124,7 +124,7 @@ async def test_no_ingress_tlsSecret_by_default(templates):
 @pytest.mark.parametrize("values_file", values_files_with_ingresses)
 @pytest.mark.asyncio_cooperative
 async def test_uses_component_ingress_tlsSecret(component, values, make_templates):
-    values[component]["ingress"]["tlsSecret"] = "component"
+    values[component].setdefault("ingress", {})["tlsSecret"] = "component"
 
     for template in await make_templates(values):
         if template["kind"] == "Ingress":
@@ -152,7 +152,7 @@ async def test_uses_global_ingress_tlsSecret(values, make_templates):
 @pytest.mark.parametrize("values_file", values_files_with_ingresses)
 @pytest.mark.asyncio_cooperative
 async def test_component_ingress_tlsSecret_beats_global(component, values, make_templates):
-    values[component]["ingress"]["tlsSecret"] = "component"
+    values[component].setdefault("ingress", {})["tlsSecret"] = "component"
     values.setdefault("ingress", {})["tlsSecret"] = "global"
 
     for template in await make_templates(values):
@@ -175,7 +175,7 @@ async def test_no_ingressClassName_by_default(templates):
 @pytest.mark.parametrize("values_file", values_files_with_ingresses)
 @pytest.mark.asyncio_cooperative
 async def test_uses_component_ingressClassName(component, values, make_templates):
-    values[component]["ingress"]["className"] = "component"
+    values[component].setdefault("ingress", {})["className"] = "component"
 
     for template in await make_templates(values):
         if template["kind"] == "Ingress":
@@ -197,7 +197,7 @@ async def test_uses_global_ingressClassName(values, make_templates):
 @pytest.mark.parametrize("values_file", values_files_with_ingresses)
 @pytest.mark.asyncio_cooperative
 async def test_component_ingressClassName_beats_global(component, values, make_templates):
-    values[component]["ingress"]["className"] = "component"
+    values[component].setdefault("ingress", {})["className"] = "component"
     values.setdefault("ingress", {})["className"] = "global"
 
     for template in await make_templates(values):
