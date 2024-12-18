@@ -4,7 +4,7 @@ Copyright 2024 New Vector Ltd
 SPDX-License-Identifier: AGPL-3.0-only OR LicenseRef-Element-Commercial
 */ -}}
 
-{{- if $.Values.synapse.enabled -}}
+{{- if or $.Values.synapse.enabled $.Values.wellKnownDelegation.enabled -}}
 {{- with .Values.haproxy -}}
 {{- if $.Capabilities.APIVersions.Has "monitoring.coreos.com/v1/ServiceMonitor" }}
 {{- if .serviceMonitors.enabled }}

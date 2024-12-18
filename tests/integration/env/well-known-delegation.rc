@@ -2,11 +2,4 @@
 #
 # SPDX-License-Identifier: AGPL-3.0-only OR LicenseRef-Element-Commercial
 
-elementWeb:
-  enabled: false
-
-synapse:
-  enabled: false
-
-wellKnownDelegation:
-  enabled: false
+export TEST_VALUES_FILE=charts/matrix-stack/ci/pytest-well-known-values.yaml

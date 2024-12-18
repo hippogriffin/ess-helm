@@ -1,0 +1,24 @@
+{{- /*
+Copyright 2023-2024 New Vector Ltd
+
+SPDX-License-Identifier: AGPL-3.0-only OR LicenseRef-Element-Commercial
+*/ -}}
+
+{{- with $.Values.wellKnownDelegation -}}
+{{- if .enabled -}}
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  labels:
+    {{- include "element-io.well-known-delegation.labels" (dict "root" $ "context" .) | nindent 4 }}
+  name: {{ $.Release.Name }}-well-known-haproxy
+  namespace: {{ $.Release.Namespace }}
+data:
+  client: |-
+    {{ include "element-io.well-known-delegation.client" (dict "root" $ "context" .) | nindent 4 }}
+  server: |-
+    {{ include "element-io.well-known-delegation.server" (dict "root" $ "context" .) | nindent 4 }}
+  element.json: |-
+    {{ include "element-io.well-known-delegation.element" (dict "root" $ "context" .) | nindent 4 }}
+{{- end -}}
+{{- end -}}

@@ -1,0 +1,39 @@
+{{- /*
+Copyright 2024 New Vector Ltd
+
+SPDX-License-Identifier: AGPL-3.0-only OR LicenseRef-Element-Commercial
+*/ -}}
+
+{{- with $.Values.wellKnownDelegation -}}
+{{- if .enabled -}}
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+{{- include "element-io.ess-library.ingress.annotations" (dict "root" $ "context" .ingress.annotations) | nindent 2 }}
+  labels:
+    {{- include "element-io.well-known-delegation-ingress.labels" (dict "root" $ "context" $.Values.haproxy) | nindent 4 }}
+  name: {{ $.Release.Name }}-well-known
+  namespace: {{ $.Release.Namespace }}
+spec:
+{{- include "element-io.ess-library.ingress.tlsSecret" (dict "root" $ "context" (dict "hosts" (list (.ingress.host | default $.Values.serverName)) "tlsSecret" .ingress.tlsSecret)) | nindent 2 }}
+{{- include "element-io.ess-library.ingress.className" (dict "root" $ "context" .ingress.className) | nindent 2 }}
+  rules:
+  - host: "{{ $.Values.wellKnownDelegation.ingress.host | default $.Values.serverName }}"
+    http:
+      paths:
+      - path: /.well-known/matrix
+        pathType: Prefix
+        backend:
+          service:
+            name: "{{ $.Release.Name }}-well-known"
+            port:
+              number: 80
+      - path: /.well-known/element
+        pathType: Prefix
+        backend:
+          service:
+            name: "{{ $.Release.Name }}-well-known"
+            port:
+              number: 80
+{{- end -}}
+{{- end -}}

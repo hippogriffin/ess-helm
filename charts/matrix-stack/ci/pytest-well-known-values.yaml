@@ -2,11 +2,14 @@
 #
 # SPDX-License-Identifier: AGPL-3.0-only OR LicenseRef-Element-Commercial
 
-elementWeb:
-  enabled: false
+serverName: ess.localhost
 
 synapse:
   enabled: false
 
-wellKnownDelegation:
+elementWeb:
   enabled: false
+
+wellKnownDelegation:
+  ingress:
+    tlsSecret: "{{ $.Release.Name }}-well-known-web-tls"

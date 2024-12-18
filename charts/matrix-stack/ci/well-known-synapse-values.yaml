@@ -8,6 +8,7 @@ elementWeb:
   enabled: false
 
 synapse:
+  enabled: true
   ingress:
     host: synapse.ess.localhost
 
@@ -27,4 +28,4 @@ synapse:
       secretKey: password
 
 wellKnownDelegation:
-  enabled: false
+  enabled: true

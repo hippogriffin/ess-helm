@@ -21,6 +21,12 @@ _raw_component_details = {
         },
         "shared_components": ["haproxy"],
     },
+    "wellKnownDelegation": {
+        "hyphened_name": "well-known",
+        "has_service_monitor": False,
+        "has_workloads": False,
+        "shared_components": ["haproxy"],
+    },
 }
 
 
@@ -36,6 +42,7 @@ def _enrich_components_to_test() -> Dict[str, Any]:
 
         _component_details[component].setdefault("has_ingress", True)
         _component_details[component].setdefault("has_service_monitor", True)
+        _component_details[component].setdefault("has_workloads", True)
         _component_details[component].setdefault("sub_components", {})
         for sub_component in _component_details[component]["sub_components"]:
             _component_details[component]["sub_components"][sub_component].setdefault("has_service_monitor", True)

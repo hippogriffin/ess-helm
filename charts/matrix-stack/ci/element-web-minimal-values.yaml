@@ -8,3 +8,6 @@ elementWeb:
 
 synapse:
   enabled: false
+
+wellKnownDelegation:
+  enabled: false

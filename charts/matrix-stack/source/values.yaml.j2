@@ -21,3 +21,7 @@ haproxy:
 synapse:
   {% macro synapseValues() %}{% include 'synapse.yaml.j2'%}{% endmacro %}
   {{- synapseValues() | trim | indent(2) }}
+
+wellKnownDelegation:
+  {% macro wellKnownDelegationValues() %}{% include 'wellKnownDelegation.yaml.j2'%}{% endmacro %}
+  {{- wellKnownDelegationValues() | trim | indent(2) }}

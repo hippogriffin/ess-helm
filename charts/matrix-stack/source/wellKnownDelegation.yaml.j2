@@ -1,0 +1,18 @@
+{#
+Copyright 2024 New Vector Ltd
+
+SPDX-License-Identifier: AGPL-3.0-only OR LicenseRef-Element-Commercial
+#}
+
+{% import 'sub_schema_values.yaml.j2' as sub_schema_values -%}
+enabled: true
+
+{{ sub_schema_values.labels() }}
+{{ sub_schema_values.ingress() }}
+
+## Additional configuration to provide to all WellKnown static file
+## Configuration should be provided as JSON strings
+additional:
+  client: "{}"
+  server: "{}"
+  element: "{}"

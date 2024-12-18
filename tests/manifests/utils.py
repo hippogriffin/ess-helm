@@ -10,7 +10,7 @@ import pyhelm3
 import pytest
 import yaml
 
-from . import values_files_to_components
+from . import component_details, values_files_to_components
 
 
 @pytest.fixture(scope="session")
@@ -73,3 +73,12 @@ def make_templates(chart: pyhelm3.Chart):
         return list([template for template in await helm_template(chart, "pytest", values) if template is not None])
 
     return _make_templates
+
+
+def iterate_component_workload_parts(component, values, setter):
+    if component_details[component]["has_workloads"]:
+        setter(values[component], values)
+        for sub_component in component_details[component]["sub_components"]:
+            setter(values[component].setdefault(sub_component, {}), values)
+    for shared_component in component_details[component].get("shared_components", []):
+        setter(values.setdefault(shared_component, {}), values)

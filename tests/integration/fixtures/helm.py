@@ -76,6 +76,17 @@ retention:
             ).setup(helm_client, kube_client)
         )
 
+    if value_file_has("wellKnownDelegation.enabled", True):
+        resources.append(
+            kubernetes_tls_secret(
+                f"{generated_data.release_name}-well-known-web-tls",
+                generated_data.ess_namespace,
+                ca,
+                [generated_data.server_name],
+                bundled=True,
+            )
+        )
+
     return [*setups, *[kube_client.create(resource) for resource in resources]]
 
 

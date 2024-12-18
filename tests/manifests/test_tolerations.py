@@ -4,7 +4,8 @@
 
 import pytest
 
-from . import component_details, values_files_to_test
+from . import values_files_to_test
+from .utils import iterate_component_workload_parts
 
 specific_toleration = {
     "key": "component",
@@ -36,11 +37,9 @@ async def test_no_tolerations_by_default(templates):
 @pytest.mark.parametrize("values_file", values_files_to_test)
 @pytest.mark.asyncio_cooperative
 async def test_all_components_and_sub_components_render_tolerations(component, values, make_templates):
-    values[component].setdefault("tolerations", []).append(specific_toleration)
-    for sub_component in component_details[component]["sub_components"]:
-        values[component].setdefault(sub_component, {}).setdefault("tolerations", []).append(specific_toleration)
-    for shared_component in component_details[component].get("shared_components", []):
-        values.setdefault(shared_component, {}).setdefault("tolerations", []).append(specific_toleration)
+    iterate_component_workload_parts(
+        component, values, lambda workload, values: workload.setdefault("tolerations", []).append(specific_toleration)
+    )
 
     for template in await make_templates(values):
         if template["kind"] in ["Deployment", "StatefulSet"]:
@@ -70,12 +69,10 @@ async def test_global_tolerations_render(values, make_templates):
 @pytest.mark.parametrize("values_file", values_files_to_test)
 @pytest.mark.asyncio_cooperative
 async def test_merges_global_and_specific_tolerations(component, values, make_templates):
-    values[component].setdefault("tolerations", []).append(specific_toleration)
-    for sub_component in component_details[component]["sub_components"]:
-        values[component].setdefault(sub_component, {}).setdefault("tolerations", []).append(specific_toleration)
+    iterate_component_workload_parts(
+        component, values, lambda workload, values: workload.setdefault("tolerations", []).append(specific_toleration)
+    )
 
-    for shared_component in component_details[component].get("shared_components", []):
-        values.setdefault(shared_component, {}).setdefault("tolerations", []).append(specific_toleration)
     # Add twice for uniqueness check. There's no 'overwriting' as if it isn't the same toleration, it gets kept
     values.setdefault("tolerations", []).append(global_toleration)
     values.get("tolerations").append(global_toleration)
