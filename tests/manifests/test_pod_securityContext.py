@@ -44,8 +44,9 @@ async def test_can_nuke_pod_securityContext_ids(component, values, make_template
             "podSecurityContext", {"runAsUser": None, "runAsGroup": None, "fsGroup": None}
         )
     for shared_component in component_details[component].get("shared_components", []):
-        values.setdefault(shared_component, {}).setdefault("podSecurityContext", {"runAsUser": None,
-                                                                   "runAsGroup": None, "fsGroup": None})
+        values.setdefault(shared_component, {}).setdefault(
+            "podSecurityContext", {"runAsUser": None, "runAsGroup": None, "fsGroup": None}
+        )
 
     for template in await make_templates(values):
         if template["kind"] in ["Deployment", "StatefulSet"]:

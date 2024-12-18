@@ -19,7 +19,7 @@ _raw_component_details = {
                 "has_service_monitor": False,
             },
         },
-        "shared_components": ["haproxy"]
+        "shared_components": ["haproxy"],
     },
 }
 
