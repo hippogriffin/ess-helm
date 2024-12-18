@@ -112,3 +112,12 @@ frontend http-blackhole
 {{ end }}
 
 {{- end -}}
+
+# a backend which responds to everything with a 204
+backend return_204
+  http-request return status 204 hdr "Access-Control-Allow-Origin" "*" hdr "Access-Control-Allow-Methods" "GET, POST, PUT, DELETE, OPTIONS" hdr "Access-Control-Allow-Headers" "Origin, X-Requested-With, Content-Type, Accept, Authorization"
+
+# a fake backend which fonxes every request with a 500. Useful for
+# handling overloads etc.
+backend return_500
+  http-request deny deny_status 500

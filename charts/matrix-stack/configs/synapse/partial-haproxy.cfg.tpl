@@ -64,7 +64,7 @@ frontend synapse-http-in
 
 {{- $additionalPathId := printf "%s_%s" .service.name (.service.port.name | default .service.port.number) }}
   acl is_svc_{{ $additionalPathId }} path_beg {{ .path }}
-  use_backend be_{{ $additionalPathId }} if is_svc_{{ $additionalPathId }}
+  use_backend synapse-be_{{ $additionalPathId }} if is_svc_{{ $additionalPathId }}
 {{- end }}
 {{- end }}
 {{- if dig "initial-synchrotron" "enabled" false .workers }}
@@ -72,13 +72,13 @@ frontend synapse-http-in
   # special synchrotron backend for initialsyncs
   acl is_sync path -m reg ^/_matrix/client/(r0|v3)/sync$
   acl is_sync path -m reg ^/_matrix/client/(api/v1|r0|v3)/events$
-  use_backend initial-synchrotron if is_sync { urlp("full_state") -m str true }
-  use_backend initial-synchrotron if is_sync !{ urlp("since") -m found } !{ urlp("from") -m found }
+  use_backend synapse-initial-synchrotron if is_sync { urlp("full_state") -m str true }
+  use_backend synapse-initial-synchrotron if is_sync !{ urlp("since") -m found } !{ urlp("from") -m found }
 {{- end }}
 
-  use_backend %[var(req.backend)]
+  use_backend synapse-%[var(req.backend)]
 
-backend main
+backend synapse-main
   default-server maxconn 250
   # Use DNS SRV service discovery on the headless service
   server-template main 1 _synapse-http._tcp.{{ $root.Release.Name }}-synapse-main.{{ $root.Release.Namespace }}.svc.cluster.local resolvers kubedns init-addr none
@@ -86,7 +86,7 @@ backend main
 {{- range $workerType, $workerDetails := (include "element-io.synapse.enabledWorkers" (dict "root" $root)) | fromJson }}
 {{- if include "element-io.synapse.process.hasHttp" (dict "root" $root "context" $workerType) }}
 
-backend {{ $workerType }}
+backend synapse-{{ $workerType }}
 {{- if eq $workerType "event-creator" }}
   # We want to balance based on the room, so try and pull it out of the path
   http-request set-header X-Matrix-Room %[path]
@@ -157,7 +157,7 @@ backend {{ $workerType }}
 {{- range .ingress.additionalPaths -}}
 {{- if eq .availability "internally_and_externally" }}
 {{- $additionalPathId := printf "%s_%s" .service.name (.service.port.name | default .service.port.number) }}
-backend be_{{ $additionalPathId }}
+backend synapse-be_{{ $additionalPathId }}
 {{- if .service.port.name }}
   server-template {{ $additionalPathId }} 10 _{{ .service.port.name }}._tcp.{{ .service.name }}.{{ $root.Release.Namespace }}.svc.cluster.local resolvers kubedns init-addr none
 {{- else }}
@@ -166,12 +166,4 @@ backend be_{{ $additionalPathId }}
 {{- end }}
 {{- end }}
 
-# a backend which responds to everything with a 204
-backend return_204
-  http-request return status 204 hdr "Access-Control-Allow-Origin" "*" hdr "Access-Control-Allow-Methods" "GET, POST, PUT, DELETE, OPTIONS" hdr "Access-Control-Allow-Headers" "Origin, X-Requested-With, Content-Type, Accept, Authorization"
-
-# a fake backend which fonxes every request with a 500. Useful for
-# handling overloads etc.
-backend return_500
-  http-request deny deny_status 500
 {{- end -}}
