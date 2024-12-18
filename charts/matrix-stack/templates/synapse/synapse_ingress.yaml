@@ -61,7 +61,7 @@ spec:
           service:
             name: "{{ $.Release.Name }}-synapse"
             port:
-              name: haproxy-http
+              name: haproxy-synapse
 {{- end }}
 {{- end }}
 {{- end -}}

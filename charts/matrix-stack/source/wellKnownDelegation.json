@@ -1,0 +1,30 @@
+{
+  "$id": "file://wellKnownDelegation",
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "type": "object",
+  "properties": {
+    "enabled": {
+      "type": "boolean"
+    },
+    "ingress": {
+      "$ref": "file://common/ingress.json"
+    },
+    "labels": {
+      "$ref": "file://common/labels.json"
+    },
+    "additional": {
+      "type": "object",
+      "properties": {
+        "client": {
+          "type": "string"
+        },
+        "server": {
+          "type": "string"
+        },
+        "element": {
+          "type": "string"
+        }
+      }
+    }
+  }
+}

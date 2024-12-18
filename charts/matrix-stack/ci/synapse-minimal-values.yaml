@@ -25,3 +25,6 @@ synapse:
     password:
       secret: ess-postgres
       secretKey: password
+
+wellKnownDelegation:
+  enabled: false

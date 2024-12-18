@@ -40,6 +40,9 @@
     },
     "synapse": {
       "$ref": "file://synapse.json"
+    },
+    "wellKnownDelegation": {
+      "$ref": "file://wellKnownDelegation.json"
     }
   }
 }

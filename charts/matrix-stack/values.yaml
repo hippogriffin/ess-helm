@@ -1016,3 +1016,34 @@ synapse:
     ##   value:
 
     tolerations: []
+
+wellKnownDelegation:
+  enabled: true
+
+
+  ## Labels to add to all manifest for this component
+  labels: {}
+
+  ## How this ingress should be constructed
+  ingress:
+    ## What hostname should be used for this Ingress
+    # host:
+
+    ## Annotations to be added to this Ingress
+    annotations: {}
+
+    ## What Ingress Class Name that should be used for this Ingress
+    # className:
+
+    ## The name of the Secret containing the TLS certificate and the key that should be used for this Ingress
+    # tlsSecret:
+
+    ## How the Service behind this Ingress is constructed
+    service: {}
+
+  ## Additional configuration to provide to all WellKnown static file
+  ## Configuration should be provided as JSON strings
+  additional:
+    client: "{}"
+    server: "{}"
+    element: "{}"

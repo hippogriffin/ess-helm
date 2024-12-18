@@ -70,8 +70,11 @@ spec:
           {{- toYaml . | nindent 10 }}
 {{- end }}
         ports:
+        - containerPort: 8007
+          name: haproxy-wkd
+          protocol: TCP
         - containerPort: 8008
-          name: haproxy-http
+          name: haproxy-synapse
           protocol: TCP
         - containerPort: 8009
           name: haproxy-403

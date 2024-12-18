@@ -102,7 +102,7 @@ frontend http-blackhole
 
   http-request deny content-type application/json string '{"errcode": "M_FORBIDDEN", "error": "Blocked"}'
 
-frontend http-in
+frontend synapse-http-in
   bind *:8008
 
   capture request header Host len 32
@@ -250,6 +250,24 @@ backend {{ $workerType }}
 {{- end }}
 {{- end }}
 
+frontend well-known-in
+  bind *:8007
+  acl well-known path_beg /.well-known/matrix/server
+  use_backend well-known if well-known-server
+  acl well-known path_beg /.well-known/matrix/client
+  use_backend well-known if well-known-client
+  acl well-known path_beg /.well-known/matrix/element
+  use_backend well-known if well-known-element
+
+backend well-known-server
+  mode http
+  http-request return status 200 content-type "text/json" file "/well-known/server"
+backend well-known-client
+  mode http
+  http-request return status 200 content-type "text/json" file "/well-known/client"
+backend well-known-element
+  mode http
+  http-request return status 200 content-type "text/json" file "/well-known/element"
 
 {{- range $root.Values.synapse.ingress.additionalPaths -}}
 {{- if eq .availability "internally_and_externally" }}
