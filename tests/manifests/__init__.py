@@ -21,6 +21,12 @@ _raw_component_details = {
         },
         "shared_components": ["haproxy"],
     },
+    "wellKnownDelegation": {
+        "hyphened_name": "well-known",
+        "has_service_monitor": False,
+        "has_workloads": False,
+        "shared_components": ["haproxy"],
+    }
 }
 
 
