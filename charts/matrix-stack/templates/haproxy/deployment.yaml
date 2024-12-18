@@ -70,28 +70,32 @@ spec:
           {{- toYaml . | nindent 10 }}
 {{- end }}
         ports:
-        - containerPort: 8007
-          name: haproxy-wkd
-          protocol: TCP
+{{- if $.Values.synapse.enabled }}
         - containerPort: 8008
           name: haproxy-synapse
           protocol: TCP
         - containerPort: 8009
           name: haproxy-403
           protocol: TCP
+{{- end }}
+{{- if $.Values.wellKnownDelegation.enabled }}
+        - containerPort: 8010
+          name: haproxy-wkd
+          protocol: TCP
+{{- end }}
         - containerPort: 8405
           name: haproxy-metrics
           protocol: TCP
         livenessProbe:
           httpGet:
             path: /haproxy_test
-            port: 8008
+            port: 8405
           initialDelaySeconds: 10
           timeoutSeconds: 5
         readinessProbe:
           httpGet:
             path: /haproxy_test
-            port: 8008
+            port: 8405
           initialDelaySeconds: 20
           timeoutSeconds: 5
 {{- with .resources }}

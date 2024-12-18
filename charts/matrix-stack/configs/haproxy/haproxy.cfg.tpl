@@ -91,6 +91,7 @@ resolvers kubedns
 frontend prometheus
   bind *:8405
   http-request use-service prometheus-exporter if { path /metrics }
+  monitor-uri /haproxy_test
   no log
 
 frontend http-blackhole
@@ -102,12 +103,12 @@ frontend http-blackhole
 
   http-request deny content-type application/json string '{"errcode": "M_FORBIDDEN", "error": "Blocked"}'
 
-{{- if $root.Values.synapse.enabled -}}
-{{- tpl ($root.Files.Get "configs/synapse/partial-haproxy.cfg.tpl") (dict "root" $root "context" $root.Values.synapse) | nindent 4 }}
-{{- end -}}
+{{ if $root.Values.synapse.enabled }}
+{{ tpl ($root.Files.Get "configs/synapse/partial-haproxy.cfg.tpl") (dict "root" $root "context" $root.Values.synapse) }}
+{{ end }}
 
-{{- if $root.Values.wellKnownDelegation.enabled -}}
-{{- tpl ($root.Files.Get "configs/well-known/partial-haproxy.cfg.tpl") (dict "root" $root "context" $root.Values.wellKnownDelegation) | nindent 4 }}
-{{- end -}}
+{{ if $root.Values.wellKnownDelegation.enabled }}
+{{ tpl ($root.Files.Get "configs/well-known/partial-haproxy.cfg.tpl") (dict "root" $root "context" $root.Values.wellKnownDelegation) }}
+{{ end }}
 
 {{- end -}}

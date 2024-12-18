@@ -38,7 +38,6 @@ frontend synapse-http-in
   http-request set-header X-Forwarded-Proto https if !{ hdr(X-Forwarded-Proto) -m found }
   http-response add-header Strict-Transport-Security max-age=31536000 if { hdr(X-Forward-Proto) -i "https" }
 
-  monitor-uri /haproxy_test
   # If we get here then we want to proxy everything to synapse or a worker.
 
   # try to extract a useful access token from either the auth header or a

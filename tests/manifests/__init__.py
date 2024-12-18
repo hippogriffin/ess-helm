@@ -26,7 +26,7 @@ _raw_component_details = {
         "has_service_monitor": False,
         "has_workloads": False,
         "shared_components": ["haproxy"],
-    }
+    },
 }
 
 

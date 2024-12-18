@@ -9,3 +9,7 @@ synapse:
 
 elementWeb:
   enabled: false
+
+wellKnownDelegation:
+  ingress:
+    tlsSecret: "{{ $.Release.Name }}-well-known-web-tls"
