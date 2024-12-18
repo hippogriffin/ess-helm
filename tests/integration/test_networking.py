@@ -36,14 +36,19 @@ async def test_services_have_matching_labels(
         async for pod in kube_client.list(Pod, namespace=generated_data.ess_namespace, labels=label_selectors):
             assert service.metadata is not None, f"Encountered a service without metadata : {service}"
             assert pod.metadata is not None, f"Encountered a pod without metadata : {pod}"
+            has_target_label = any(label.startswith("k8s.element.io/target-") for label in service.metadata.labels)
             for label, value in service.metadata.labels.items():
                 if label in ["k8s.element.io/owner-name", "k8s.element.io/owner-group-kind"]:
                     assert label not in pod.metadata.labels
                     continue
-                elif label in ignored_labels:
+                elif label in ignored_labels or (
+                    has_target_label and label in ["app.kubernetes.io/name", "app.kubernetes.io/instance"]
+                ):
                     continue
-                assert label in pod.metadata.labels
-                assert value.startswith(pod.metadata.labels[label])
+                assert label.replace("k8s.element.io/target-", "app.kubernetes.io/") in pod.metadata.labels
+                assert value.startswith(
+                    pod.metadata.labels[label.replace("k8s.element.io/target-", "app.kubernetes.io/")]
+                )
 
 
 @pytest.mark.asyncio_cooperative
