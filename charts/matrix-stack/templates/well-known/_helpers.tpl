@@ -15,6 +15,18 @@ app.kubernetes.io/version: {{ .image.tag }}
 {{- end }}
 {{- end }}
 
+{{- define "element-io.well-known-delegation-ingress.labels" -}}
+{{- $root := .root -}}
+{{- with required "element-io.well-known-delegation-ingress.labels missing context" .context -}}
+{{ include "element-io.ess-library.labels.common" (dict "root" $root "context" .labels) }}
+app.kubernetes.io/component: matrix-stack-ingress
+app.kubernetes.io/name: well-known-ingress
+app.kubernetes.io/instance: {{ $root.Release.Name }}-well-known-ingress
+app.kubernetes.io/version: {{ .image.tag }}
+{{- end }}
+{{- end }}
+
+
 {{- define "element-io.well-known-delegation.client" }}
 {{- $root := .root -}}
 {{- with required "element-io.well-known-delegation.client missing context" .context -}}
