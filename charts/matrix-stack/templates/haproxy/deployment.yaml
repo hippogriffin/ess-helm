@@ -68,6 +68,10 @@ spec:
 {{- include "element-io.ess-library.pods.commonSpec" (dict "root" $ "context" (dict "componentValues" . "key" "haproxy" "deployment" true)) | nindent 6 }}
       containers:
       - name: haproxy
+        args:
+        - "-f"
+        - "/usr/local/etc/haproxy/haproxy.cfg"
+        - "-dW"
 {{- with .image -}}
 {{- if .digest }}
         image: "{{ .registry }}/{{ .repository }}@{{ .digest }}"
