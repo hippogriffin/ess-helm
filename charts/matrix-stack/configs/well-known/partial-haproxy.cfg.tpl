@@ -13,7 +13,7 @@ frontend well-known-in
   use_backend well-known-server if well-known-server
   acl well-known-client path_beg /.well-known/matrix/client
   use_backend well-known-client if well-known-client
-  acl well-known-element path_beg /.well-known/matrix/element.json
+  acl well-known-element path_beg /.well-known/element/element.json
   use_backend well-known-element if well-known-element
 
 backend well-known-server
