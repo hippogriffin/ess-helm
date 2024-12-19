@@ -103,3 +103,33 @@ elementWeb:
 
 Other settings for Element Web can be seen under the `elementWeb` section of
 `helm show values` for this chart.
+
+## Well Known Delegation
+
+A minimal set of values to bring up Well Known Delegation would be
+```yaml
+servername: ess.localhost
+```
+
+If Synapse is enabled, its ingress host will be configured in Well Known Delegation config file as well.
+
+Additional Well Known Delegation configuration can be provided as arbitrary sub-properties with
+```yaml
+wellKnownDelegation:
+  additional:
+    server: |
+      {"some": "config"}
+    client: |
+      {"some": "config"}
+    element: |
+      {"some": "config"}
+```
+
+Well Known Delegation is enabled for deployment by default can be disabled with the following values
+```yaml
+wellKnownDelegation:
+  enabled: false
+```
+
+Other settings for Well Known Delegation can be seen under the `wellKnownDelegation` section of
+`helm show values` for this chart.
