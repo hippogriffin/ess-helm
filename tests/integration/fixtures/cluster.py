@@ -173,10 +173,27 @@ async def prometheus_operator_crds(helm_client):
 
 
 @pytest.fixture(scope="session")
-async def ess_namespace(kube_client, generated_data: ESSData) -> AsyncGenerator[Namespace, Any]:
+async def ess_namespace(
+    cluster: PotentiallyExistingKindCluster, kube_client: pyhelm3.Client, generated_data: ESSData
+) -> AsyncGenerator[Namespace, Any]:
+    (major_version, minor_version) = cluster.version()
     namespace = await kube_client.create(
         Namespace(
-            metadata=ObjectMeta(name=generated_data.ess_namespace, labels={"app.kubernetes.io/managed-by": "pytest"})
+            metadata=ObjectMeta(
+                name=generated_data.ess_namespace,
+                labels={
+                    "app.kubernetes.io/managed-by": "pytest",
+                    # We do turn on enforce here to cause test failures.
+                    # If we actually need restricted functionality then the tests can drop this
+                    # and parse the audit logs
+                    "pod-security.kubernetes.io/enforce": "restricted",
+                    "pod-security.kubernetes.io/enforce-version": f"v{major_version}.{minor_version}",
+                    "pod-security.kubernetes.io/audit": "restricted",
+                    "pod-security.kubernetes.io/audit-version": f"v{major_version}.{minor_version}",
+                    "pod-security.kubernetes.io/warn": "restricted",
+                    "pod-security.kubernetes.io/warn-version": f"v{major_version}.{minor_version}",
+                },
+            )
         )
     )
 

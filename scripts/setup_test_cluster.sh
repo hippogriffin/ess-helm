@@ -108,7 +108,19 @@ fi
 
 for namespace in $ess_namespaces; do
   echo "Constructing ESS dependencies in $namespace"
-  kubectl --context $kind_context_name create namespace "$namespace" 2>/dev/null || true
+  server_version=$(kubectl version | grep Server | sed 's/.*v/v/' | awk -F. '{print $1"."$2}')
+  # We don't turn on enforce here as people may be experimenting but we do turn on warn so people see the warnings when helm install/upgrade
+  cat <<EOF | kubectl --context $kind_context_name apply -f -
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: ${namespace}
+  labels:
+    pod-security.kubernetes.io/audit: restricted
+    pod-security.kubernetes.io/audit-version: ${server_version}
+    pod-security.kubernetes.io/warn: restricted
+    pod-security.kubernetes.io/warn-version: ${server_version}
+EOF
   cat <<EOF | kubectl --context $kind_context_name --namespace "$namespace" apply -f -
 apiVersion: cert-manager.io/v1
 kind: Certificate
