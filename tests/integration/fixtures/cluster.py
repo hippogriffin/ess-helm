@@ -46,7 +46,17 @@ class PotentiallyExistingKindCluster(KindManager):
                 ]
             )
         else:
-            super()._on_create(cluster_options, **kwargs)
+            # The cluster requires extraMounts. These are relative paths from the cluster config file
+            # as they'll be different for everyone + CI.
+            # We save off the current working directory incase it is important, change to the folder
+            # with the cluster config file and then change back afterwards
+            cwd = os.getcwd()
+            try:
+                fixtures_folder = Path(__file__).parent.resolve()
+                os.chdir(fixtures_folder / Path("files/clusters"))
+                super()._on_create(cluster_options, **kwargs)
+            finally:
+                os.chdir(cwd)
 
     def _on_delete(self):
         # We always keep around an existing cluster, it can always be deleted with scripts/destroy-test-cluster.sh
@@ -56,11 +66,9 @@ class PotentiallyExistingKindCluster(KindManager):
 
 @pytest.fixture(autouse=True, scope="session")
 async def cluster():
-    fixtures_folder = Path(__file__).parent.resolve()
     # This name must match what `setup_test_cluster.sh` would create
     this_cluster = PotentiallyExistingKindCluster("ess-helm")
-    kind_config = Path("files/clusters/kind-ci.yml") if os.environ.get("CI") else Path("files/clusters/kind.yml")
-    this_cluster.create(ClusterOptions(cluster_config=fixtures_folder / kind_config))
+    this_cluster.create(ClusterOptions(cluster_config="kind-ci.yml" if os.environ.get("CI") else "kind.yml"))
 
     yield this_cluster
 
@@ -165,10 +173,27 @@ async def prometheus_operator_crds(helm_client):
 
 
 @pytest.fixture(scope="session")
-async def ess_namespace(kube_client, generated_data: ESSData) -> AsyncGenerator[Namespace, Any]:
+async def ess_namespace(
+    cluster: PotentiallyExistingKindCluster, kube_client: pyhelm3.Client, generated_data: ESSData
+) -> AsyncGenerator[Namespace, Any]:
+    (major_version, minor_version) = cluster.version()
     namespace = await kube_client.create(
         Namespace(
-            metadata=ObjectMeta(name=generated_data.ess_namespace, labels={"app.kubernetes.io/managed-by": "pytest"})
+            metadata=ObjectMeta(
+                name=generated_data.ess_namespace,
+                labels={
+                    "app.kubernetes.io/managed-by": "pytest",
+                    # We do turn on enforce here to cause test failures.
+                    # If we actually need restricted functionality then the tests can drop this
+                    # and parse the audit logs
+                    "pod-security.kubernetes.io/enforce": "restricted",
+                    "pod-security.kubernetes.io/enforce-version": f"v{major_version}.{minor_version}",
+                    "pod-security.kubernetes.io/audit": "restricted",
+                    "pod-security.kubernetes.io/audit-version": f"v{major_version}.{minor_version}",
+                    "pod-security.kubernetes.io/warn": "restricted",
+                    "pod-security.kubernetes.io/warn-version": f"v{major_version}.{minor_version}",
+                },
+            )
         )
     )
 

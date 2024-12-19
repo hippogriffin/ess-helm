@@ -8,6 +8,8 @@ controller:
 
   config:
     hsts: false
+    # we need this for all our path prefixs with dots, like `.well-known  `
+    strict-validate-path-type: false
 
   hostPort:
     enabled: true
