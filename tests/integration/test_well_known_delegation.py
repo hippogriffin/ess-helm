@@ -15,7 +15,7 @@ async def test_well_known_files_can_be_accessed(
     ssl_context,
     generated_data: ESSData,
 ):
-    await ingress_ready("well-known-haproxy")
+    await ingress_ready("well-known")
 
     json_content = await aiottp_get_json(f"https://{generated_data.server_name}/.well-known/matrix/client", ssl_context)
     if value_file_has("synapse.enabled", True):
