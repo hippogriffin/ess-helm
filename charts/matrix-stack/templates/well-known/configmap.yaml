@@ -15,10 +15,10 @@ metadata:
   namespace: {{ $.Release.Namespace }}
 data:
   client: |-
-    {{ include "element-io.well-known-delegation.client" (dict "root" $ "context" .) | nindent 4 }}
+    {{ (tpl (include "element-io.well-known-delegation.client" (dict "root" $ "context" .)) $) | nindent 4 }}
   server: |-
-    {{ include "element-io.well-known-delegation.server" (dict "root" $ "context" .) | nindent 4 }}
+    {{ (tpl (include "element-io.well-known-delegation.server" (dict "root" $ "context" .)) $) | nindent 4 }}
   element.json: |-
-    {{ include "element-io.well-known-delegation.element" (dict "root" $ "context" .) | nindent 4 }}
+    {{ (tpl (include "element-io.well-known-delegation.element" (dict "root" $ "context" .)) $) | nindent 4 }}
 {{- end -}}
 {{- end -}}
