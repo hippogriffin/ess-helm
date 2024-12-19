@@ -46,7 +46,17 @@ class PotentiallyExistingKindCluster(KindManager):
                 ]
             )
         else:
-            super()._on_create(cluster_options, **kwargs)
+            # The cluster requires extraMounts. These are relative paths from the cluster config file
+            # as they'll be different for everyone + CI.
+            # We save off the current working directory incase it is important, change to the folder
+            # with the cluster config file and then change back afterwards
+            cwd = os.getcwd()
+            try:
+                fixtures_folder = Path(__file__).parent.resolve()
+                os.chdir(fixtures_folder / Path("files/clusters"))
+                super()._on_create(cluster_options, **kwargs)
+            finally:
+                os.chdir(cwd)
 
     def _on_delete(self):
         # We always keep around an existing cluster, it can always be deleted with scripts/destroy-test-cluster.sh
@@ -56,11 +66,9 @@ class PotentiallyExistingKindCluster(KindManager):
 
 @pytest.fixture(autouse=True, scope="session")
 async def cluster():
-    fixtures_folder = Path(__file__).parent.resolve()
     # This name must match what `setup_test_cluster.sh` would create
     this_cluster = PotentiallyExistingKindCluster("ess-helm")
-    kind_config = Path("files/clusters/kind-ci.yml") if os.environ.get("CI") else Path("files/clusters/kind.yml")
-    this_cluster.create(ClusterOptions(cluster_config=fixtures_folder / kind_config))
+    this_cluster.create(ClusterOptions(cluster_config="kind-ci.yml" if os.environ.get("CI") else "kind.yml"))
 
     yield this_cluster
 

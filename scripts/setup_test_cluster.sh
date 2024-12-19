@@ -23,7 +23,7 @@ if kind get clusters 2>/dev/null | grep "$kind_cluster_name"; then
   echo "Cluster '$kind_cluster_name' is already provisioned by Kind"
 else
   echo "Creating new Kind cluster '$kind_cluster_name'"
-  kind create cluster --name "$kind_cluster_name" --config "$root_folder/tests/integration/fixtures/files/clusters/kind.yml"
+  (cd "$root_folder/tests/integration/fixtures/files/clusters"; kind create cluster --name "$kind_cluster_name" --config "kind.yml")
 fi
 
 network=$(docker inspect $kind_cluster_name-control-plane | jq '.[0].NetworkSettings.Networks | keys | .[0]' -r)
