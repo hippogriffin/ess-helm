@@ -10,6 +10,9 @@ SPDX-License-Identifier: AGPL-3.0-only OR LicenseRef-Element-Commercial
 frontend synapse-http-in
   bind *:8008
 
+  # same as http log, with %Th (handshake time)
+  log-format "%ci:%cp [%tr] %ft %b/%s %Th/%TR/%Tw/%Tc/%Tr/%Ta %ST %B %CC %CS %tsc %ac/%fc/%bc/%sc/%rc %sq/%bq %hr %hs %{+Q}r"
+
   capture request header Host len 32
   capture request header Referer len 200
   capture request header User-Agent len 200
