@@ -7,6 +7,11 @@ import json
 import pytest
 
 
+def return_response_object_from_errorfile(errorfile_contents):
+    (headers, json_body) = errorfile_contents.split("\n\n")
+    return json.loads(json_body)
+
+
 @pytest.mark.parametrize("values_file", ["well-known-minimal-values.yaml"])
 @pytest.mark.asyncio_cooperative
 async def test_only_additional_if_all_disabled_in_well_known(values, make_templates):
@@ -18,12 +23,15 @@ async def test_only_additional_if_all_disabled_in_well_known(values, make_templa
     values["wellKnownDelegation"].setdefault("additional", {})["element"] = json.dumps(element_config)
     for template in await make_templates(values):
         if template["kind"] == "ConfigMap" and template["metadata"]["name"] == "pytest-well-known-haproxy":
-            client_from_json = json.loads(template["data"]["client"])
+            client_from_json = return_response_object_from_errorfile(template["data"]["client"])
             assert client_from_json == client_config
-            server_from_json = json.loads(template["data"]["server"])
+
+            server_from_json = return_response_object_from_errorfile(template["data"]["server"])
             assert server_from_json == server_config
-            element_from_json = json.loads(template["data"]["element.json"])
+
+            element_from_json = return_response_object_from_errorfile(template["data"]["element.json"])
             assert element_from_json == element_config
+
             break
     else:
         raise AssertionError("Unable to find WellKnownDelegationConfigMap")
@@ -43,12 +51,15 @@ async def test_synapse_injected_in_server_and_client_well_known(values, make_tem
     synapse_base_url = {"m.homeserver": {"base_url": "https://synapse.ess.localhost"}}
     for template in await make_templates(values):
         if template["kind"] == "ConfigMap" and template["metadata"]["name"] == "pytest-well-known-haproxy":
-            client_from_json = json.loads(template["data"]["client"])
+            client_from_json = return_response_object_from_errorfile(template["data"]["client"])
             assert client_from_json == client_config | synapse_base_url
-            server_from_json = json.loads(template["data"]["server"])
+
+            server_from_json = return_response_object_from_errorfile(template["data"]["server"])
             assert server_from_json == server_config | synapse_federation
-            element_from_json = json.loads(template["data"]["element.json"])
+
+            element_from_json = return_response_object_from_errorfile(template["data"]["element.json"])
             assert element_from_json == element_config
+
             break
     else:
         raise AssertionError("Unable to find WellKnownDelegationConfigMap")

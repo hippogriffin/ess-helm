@@ -17,6 +17,12 @@ metadata:
   labels:
     {{- include "element-io.haproxy.labels" (dict "root" $ "context" .) | nindent 4 }}
     k8s.element.io/confighash: "{{ include (print $.Template.BasePath "/haproxy/configmap.yaml") $ | sha1sum }}"
+{{- if $.Values.synapse.enabled }}
+    k8s.element.io/synapsehash: "{{ include (print $.Template.BasePath "/synapse/synapse_haproxy_configmap.yaml") $ | sha1sum }}"
+{{- end }}
+{{- if $.Values.wellKnownDelegation.enabled }}
+    k8s.element.io/wellknowndelegationhash: "{{ include (print $.Template.BasePath "/well-known/configmap.yaml") $ | sha1sum }}"
+{{- end }}
   name: {{ $.Release.Name }}-haproxy
   namespace: {{ $.Release.Namespace }}
 spec:
@@ -34,6 +40,12 @@ spec:
       labels:
         {{- include "element-io.haproxy.labels" (dict "root" $ "context" .) | nindent 8 }}
         k8s.element.io/confighash: "{{ include (print $.Template.BasePath "/haproxy/configmap.yaml") $ | sha1sum }}"
+{{- if $.Values.synapse.enabled }}
+        k8s.element.io/synapsehash: "{{ include (print $.Template.BasePath "/synapse/synapse_haproxy_configmap.yaml") $ | sha1sum }}"
+{{- end }}
+{{- if $.Values.wellKnownDelegation.enabled }}
+        k8s.element.io/wellknowndelegationhash: "{{ include (print $.Template.BasePath "/well-known/configmap.yaml") $ | sha1sum }}"
+{{- end }}
 {{- with .annotations }}
       annotations:
         {{- toYaml . | nindent 8 }}
