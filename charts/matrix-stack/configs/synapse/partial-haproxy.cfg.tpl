@@ -10,6 +10,9 @@ SPDX-License-Identifier: AGPL-3.0-only OR LicenseRef-Element-Commercial
 frontend synapse-http-in
   bind *:8008
 
+  # same as http log, with %Th (handshake time)
+  log-format "%ci:%cp [%tr] %ft %b/%s %Th/%TR/%Tw/%Tc/%Tr/%Ta %ST %B %CC %CS %tsc %ac/%fc/%bc/%sc/%rc %sq/%bq %hr %hs %{+Q}r"
+
   capture request header Host len 32
   capture request header Referer len 200
   capture request header User-Agent len 200
@@ -36,7 +39,8 @@ frontend synapse-http-in
   # So we can't guarantee the header is present
   # https is a more sensible default than http for the missing header as we force public_baseurl to https
   http-request set-header X-Forwarded-Proto https if !{ hdr(X-Forwarded-Proto) -m found }
-  http-response add-header Strict-Transport-Security max-age=31536000 if { hdr(X-Forward-Proto) -i "https" }
+  http-request set-var(txn.x_forwarded_proto) hdr(x-forwarded-proto)
+  http-response add-header Strict-Transport-Security max-age=31536000 if { var(txn.x_forwarded_proto) -m str -i "https" }
 
   # If we get here then we want to proxy everything to synapse or a worker.
 

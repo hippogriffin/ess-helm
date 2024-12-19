@@ -15,43 +15,10 @@ metadata:
   namespace: {{ $.Release.Namespace }}
 data:
   client: |
-    HTTP/1.0 200 Success
-    Content-Type: application/json
-    Access-Control-Allow-Headers: X-Requested-With, Content-Type, Authorization
-    Access-Control-Allow-Methods: GET, POST, PUT, DELETE, OPTIONS
-    Access-Control-Allow-Origin: *
-    Content-Security-Policy: frame-ancestors 'self'
-    X-Content-Type-Options: nosniff
-    X-Frame-Options: SAMEORIGIN
-    X-Robots-Tag: noindex, nofollow, noarchive, noimageindex
-    X-XSS-Protection: 1; mode=block
-
     {{ (tpl (include "element-io.well-known-delegation.client" (dict "root" $ "context" .)) $) | nindent 4 }}
   server: |
-    HTTP/1.0 200 Success
-    Content-Type: application/json
-    Access-Control-Allow-Headers: X-Requested-With, Content-Type, Authorization
-    Access-Control-Allow-Methods: GET, POST, PUT, DELETE, OPTIONS
-    Access-Control-Allow-Origin: *
-    Content-Security-Policy: frame-ancestors 'self'
-    X-Content-Type-Options: nosniff
-    X-Frame-Options: SAMEORIGIN
-    X-Robots-Tag: noindex, nofollow, noarchive, noimageindex
-    X-XSS-Protection: 1; mode=block
-
     {{ (tpl (include "element-io.well-known-delegation.server" (dict "root" $ "context" .)) $) | nindent 4 }}
   element.json: |
-    HTTP/1.0 200 Success
-    Content-Type: application/json
-    Access-Control-Allow-Headers: X-Requested-With, Content-Type, Authorization
-    Access-Control-Allow-Methods: GET, POST, PUT, DELETE, OPTIONS
-    Access-Control-Allow-Origin: *
-    Content-Security-Policy: frame-ancestors 'self'
-    X-Content-Type-Options: nosniff
-    X-Frame-Options: SAMEORIGIN
-    X-Robots-Tag: noindex, nofollow, noarchive, noimageindex
-    X-XSS-Protection: 1; mode=block
-
     {{ (tpl (include "element-io.well-known-delegation.element" (dict "root" $ "context" .)) $) | nindent 4 }}
 {{- end -}}
 {{- end -}}
