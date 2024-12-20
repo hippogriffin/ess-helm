@@ -53,15 +53,18 @@ jobs:
 
     - name: Export logs
       if: ${{ failure() }}
+      shell: bash
       run: |
         kind export logs --name ess-helm ./ess-helm-logs
         kind export kubeconfig --name ess-helm
         ns=$(kubectl --context kind-ess-helm get ns -l app.kubernetes.io/managed-by=pytest  -o jsonpath='{.items[].metadata.name}')
-        kubectl --context kind-ess-helm get deployments -o yaml -n $ns > ./ess-helm-logs/deployments.txt
-        kubectl --context kind-ess-helm get statefulsets -o yaml -n $ns > ./ess-helm-logs/statefulsets.txt
-        kubectl --context kind-ess-helm get pods -o yaml -n $ns > ./ess-helm-logs/pods.txt
-        kubectl --context kind-ess-helm get secrets -o yaml -n $ns > ./ess-helm-logs/secrets.txt
-        kubectl --context kind-ess-helm get configmaps -o yaml -n $ns > ./ess-helm-logs/configmaps.txt
+        resources=("pods" "deployments" "statefulsets" "services" "configmaps" "secrets" "ingresses" "persistentvolumes" "persistentvolumeclaims")
+        for i in "${resources[@]}"; do
+          kubectl --context kind-ess-helm get $i -n $ns > ./ess-helm-logs/$i.txt
+          echo "----" >> ./ess-helm-logs/$i.txt
+          kubectl --context kind-ess-helm get $i -o yaml -n $ns >> ./ess-helm-logs/$i.txt
+        done
+        kubectl --context kind-ess-helm get events --sort-by=.metadata.creationTimestamp -n $ns > ./ess-helm-logs/events.txt
         kind delete cluster --name ess-helm
 
     - name: Upload logs
