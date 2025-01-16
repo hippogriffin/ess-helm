@@ -49,16 +49,16 @@ Additional Synapse configuration can be provided inline in the values as a strin
 ```yaml
 synapse:
   additional:
-    config: |
-      admin_contact: "mailto:admin@example.com"
+    ## Either reference config to inject by:
+    1-custom-config:
+      config: |
+        admin_contact: "mailto:admin@example.com"
+    ## Either reference an existing `Secret` by:
+    2-custom-config:
+      configSecret: custom-synapse-config
+      configSecretKey: shared.yaml
 ```
-or referencing an existing `Secret` by:
-```yaml
-synapse:
-  additional:
-    configSecret: custom-synapse-config
-    configSecretKey: shared.yaml
-```
+
 Full details on available configuration options can be found at
 https://element-hq.github.io/synapse/latest/usage/configuration/config_documentation.html
 
