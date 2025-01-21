@@ -154,6 +154,14 @@ The chart focus on application construction, i.e.
 
 We are not going to expose every single application configuration option.
 
+## Changelog
+
+The chart changelog is built using towncrier. Every PR requires a newsfragment created using : `towncrier create`. The fragment number should match the PR number.
+
+Each newsfragment accepts on type of artifct hub kind changes : `added`, `changed`, `removed`, `fixed`, `security`.
+
+The changelog is built on release time using `towncrier build` in the chart directory. The changelog is also injected into the `Chart.yaml` under the annotation `artifacthub.io/changes`.
+
 ## Releasing
 
 To create a release, just construct a tag with the desired version number.
