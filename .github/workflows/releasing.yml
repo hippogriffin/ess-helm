@@ -43,6 +43,20 @@ jobs:
         username: ${{ github.actor }}
         password: ${{ github.token }}
 
+    - name: Set helm changes annotations
+      run: |
+        python scripts/towncrier_to_helm_annotation.py charts/matrix-stack
+
+    - name: Generate changelog
+      run: |
+        version=$(yq '.version' charts/matrix-stack/Chart.yaml)
+        # Add changes to CHANGELOG.md, keep files to generate CHANGELOG.latest.md
+        towncrier build --version $version --keep
+        # in empty file
+        sed -i "s/CHANGELOG.md/CHANGELOG.latest.md/" pyproject.toml
+        towncrier build --version $version --yes
+        sed -i "s/CHANGELOG.latest.md/CHANGELOG.md/" pyproject.toml
+
     - name: Helm package
       run: |
         cd charts/matrix-stack
