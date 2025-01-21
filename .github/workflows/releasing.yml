@@ -33,9 +33,18 @@ jobs:
         path: ./.venv
         key: venv-${{ hashFiles('poetry.lock') }}
 
-    - name: Install dependencies
+    - name: Install venv
       run: |
+        # helm/chart-testing-action sets up its own venv that we have no control over
+        # We don't want to use it for this
+        unset VIRTUAL_ENV
+        # Or future actions
+        poetry_venv=$(poetry env info -p)
+        sed -i "s|^VIRTUAL_ENV=.*|VIRTUAL_ENV=$poetry_venv|" "${GITHUB_ENV}"
+
+        poetry env info
         poetry install
+        echo "$(poetry env info -p)/bin" >> "${GITHUB_PATH}"
 
     - name: Set version
       run: |
