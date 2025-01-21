@@ -36,7 +36,7 @@ jobs:
           sed -i "s|^VIRTUAL_ENV=.*|VIRTUAL_ENV=$poetry_venv|" "${GITHUB_ENV}"
 
           poetry env info
-          poetry install
+          poetry install -n
           echo "$(poetry env info -p)/bin" >> "${GITHUB_PATH}"
 
       - name: Run towncrier

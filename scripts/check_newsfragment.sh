@@ -28,7 +28,7 @@ echo
 matched=0
 for f in $(git diff --name-only origin/main... -- newsfragments); do
     # check that any modified newsfiles on this branch have the appropriate punctuation.
-    lastchar=$(tr -d '\n' < $f | tail -c 1)
+    lastchar=$(tr -d '\n' < "$f" | tail -c 1)
     if [ "$lastchar" != '.' ] && [ "$lastchar" != '!' ]; then
         echo -e "\e[31mERROR: newsfragment $f does not end with a '.' or '!'\e[39m" >&2
         echo -e "$CONTRIBUTING_GUIDE_TEXT" >&2
