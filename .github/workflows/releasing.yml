@@ -27,6 +27,25 @@ jobs:
     - name: Checkout
       uses: actions/checkout@v4
 
+    - name: Define a cache for the virtual environment based on the dependencies lock file
+      uses: actions/cache@v3
+      with:
+        path: ./.venv
+        key: venv-${{ hashFiles('poetry.lock') }}
+
+    - name: Install venv
+      run: |
+        # helm/chart-testing-action sets up its own venv that we have no control over
+        # We don't want to use it for this
+        unset VIRTUAL_ENV
+        # Or future actions
+        poetry_venv=$(poetry env info -p)
+        sed -i "s|^VIRTUAL_ENV=.*|VIRTUAL_ENV=$poetry_venv|" "${GITHUB_ENV}"
+
+        poetry env info
+        poetry install -n
+        echo "$(poetry env info -p)/bin" >> "${GITHUB_PATH}"
+
     - name: Set version
       run: |
         if [ "$GITHUB_REF_TYPE" = "tag" ]; then
@@ -43,6 +62,20 @@ jobs:
         username: ${{ github.actor }}
         password: ${{ github.token }}
 
+    - name: Set helm changes annotations
+      run: |
+        python scripts/towncrier_to_helm_annotation.py charts/matrix-stack
+
+    - name: Generate changelog
+      run: |
+        version=$(yq '.version' charts/matrix-stack/Chart.yaml)
+        # Add changes to CHANGELOG.md, keep files to generate CHANGELOG.latest.md
+        towncrier build --version $version --keep
+        # in empty file
+        sed -i "s/CHANGELOG.md/CHANGELOG.latest.md/" pyproject.toml
+        towncrier build --version $version --yes
+        sed -i "s/CHANGELOG.latest.md/CHANGELOG.md/" pyproject.toml
+
     - name: Helm package
       run: |
         cd charts/matrix-stack
@@ -53,7 +86,10 @@ jobs:
     - uses: actions/upload-artifact@v4
       with:
         name: helm-package
-        path: charts/matrix-stack/*.tgz*
+        path: |
+          charts/matrix-stack/*.tgz*
+          CHANGELOG.md
+          CHANGELOG.latest.md
         retention-days: 1
 
   release:
@@ -94,7 +130,7 @@ jobs:
       uses: softprops/action-gh-release@v2
       with:
         draft: true
-        generate_release_notes: true
+        body_path: CHANGELOG.latest.md
         files: charts/matrix-stack/matrix-stack*.tgz*
         fail_on_unmatched_files: true
         # This could simply be omitted if we didn't want to test without a tag

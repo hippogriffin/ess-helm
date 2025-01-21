@@ -10,7 +10,6 @@ package-mode = false
 
 [tool.poetry.dependencies]
 python = ">=3.12,<4.0"
-aiohttp-retry = "^2.9.1"
 
 [tool.poetry.group.dev.dependencies]
 pyhelm3 = "^0.4.0"
@@ -28,8 +27,11 @@ jinja2 = "^3.1.4"
 checkov = "^3.2.296"
 reuse = "^5.0.2"
 signedjson = "^1.1.4"
+aiohttp-retry = "^2.9.1"
+ruamel-yaml = "^0.18.10"
 pytest-kubernetes = {git = "https://github.com/Blueshoe/pytest-kubernetes.git", rev = "feature/17_custom-configs"}
 pytest-asyncio-cooperative = {git = "https://github.com/kylegentle/pytest-asyncio-cooperative.git", rev = "fix/missing-kwargs"}
+towncrier = "^24.8.0"
 
 [build-system]
 requires = ["poetry-core"]
@@ -57,3 +59,29 @@ select = [
     # isort
     "I",
 ]
+
+[tool.towncrier]
+package = ""
+name = "Matrix Stack Chart"
+filename = "CHANGELOG.md"
+
+# See artifacthub changes kinds https://artifacthub.io/docs/topics/annotations/helm/
+# "When using the list of objects option the valid supported kinds are added, changed, deprecated, removed, fixed and security."
+
+[tool.towncrier.fragment.added]
+name = "Added"
+
+[tool.towncrier.fragment.changed]
+name = "Changed"
+
+[tool.towncrier.fragment.deprecated]
+name = "Deprecated"
+
+[tool.towncrier.fragment.removed]
+name = "Removed"
+
+[tool.towncrier.fragment.fixed]
+name = "Fixed"
+
+[tool.towncrier.fragment.security]
+name = "Security"
