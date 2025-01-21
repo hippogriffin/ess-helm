@@ -1,0 +1,39 @@
+# Copyright 2025 New Vector Ltd
+#
+# SPDX-License-Identifier: AGPL-3.0-only OR LicenseRef-Element-Commercial
+
+name: Changelog
+on: [pull_request]
+
+jobs:
+  check-newsfile:
+    if: ${{ (github.base_ref == 'main'  || contains(github.base_ref, 'release-')) && github.actor != 'dependabot[bot]' && github.actor != 'github-actions[bot]' }}
+    runs-on: cpu-s
+    container:
+      image: ghcr.io/${{ github.repository }}/ci-runner
+      credentials:
+        username: ${{ github.actor }}
+        password: ${{ secrets.GITHUB_TOKEN }}
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+          ref: ${{github.event.pull_request.head.sha}}
+
+      - name: Define a cache for the virtual environment based on the dependencies lock file
+        uses: actions/cache@v3
+        with:
+          path: ./.venv
+          key: venv-${{ hashFiles('poetry.lock') }}
+
+      - name: Install venv
+        run: |
+          poetry env info
+          poetry install
+          echo "$(poetry env info -p)/bin" >> "${GITHUB_PATH}"
+
+      - name: Run towncrier
+        run: |
+          # Fix/workaround for "detected dubious ownership in repository"
+          git config --global --add safe.directory "${GITHUB_WORKSPACE}" 
+          scripts/check_newsfragment.sh ${{ github.event.number }}
