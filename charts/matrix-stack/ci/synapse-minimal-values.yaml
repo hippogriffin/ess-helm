@@ -23,8 +23,7 @@ synapse:
     user: synapse_user
     database: synapse
     password:
-      secret: ess-postgres
-      secretKey: password
+      value: CHANGEME-ooWo6jeidahhei3Hae0eer9U
 
 wellKnownDelegation:
   enabled: false

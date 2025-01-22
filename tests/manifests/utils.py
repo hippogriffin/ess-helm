@@ -82,3 +82,11 @@ def iterate_component_workload_parts(component, values, setter):
             setter(values[component].setdefault(sub_component, {}), values)
     for shared_component in component_details[component].get("shared_components", []):
         setter(values.setdefault(shared_component, {}), values)
+
+
+def get_or_empty(d, key):
+    res = d.get(key, {})
+    if res is not None:
+        return res
+    else:
+        return {}
