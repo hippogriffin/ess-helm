@@ -27,23 +27,23 @@ def find_workload_ids_matching_selector(templates: Iterator[Any], selector: Dict
         if template["kind"] in ("Deployment", "StatefulSet") and selector_match(
             template["spec"]["template"]["metadata"]["labels"], selector
         ):
-            workload_ids.append(f"{template["kind"]}/{template["metadata"]["name"]}")
+            workload_ids.append(f"{template['kind']}/{template['metadata']['name']}")
 
     return workload_ids
 
 
 def workload_ids_for_service_monitor(service_monitor, templates) -> set[str]:
     services = find_services_matching_selector(templates, service_monitor["spec"]["selector"]["matchLabels"])
-    assert len(services) > 0, f"No Services behind ServiceMonitor {service_monitor["metadata"]["name"]}"
+    assert len(services) > 0, f"No Services behind ServiceMonitor {service_monitor['metadata']['name']}"
 
     workload_ids = []
     for service in services:
         workload_ids.extend(find_workload_ids_matching_selector(templates, service["spec"]["selector"]))
 
-    assert len(workload_ids) > 0, f"No workloads behind ServiceMonitor {service_monitor["metadata"]["name"]}"
+    assert len(workload_ids) > 0, f"No workloads behind ServiceMonitor {service_monitor['metadata']['name']}"
     assert len(workload_ids) == len(
         set(workload_ids)
-    ), f"ServiceMonitor {service_monitor["metadata"]["name"]} covers same workloads multiple times"
+    ), f"ServiceMonitor {service_monitor['metadata']['name']} covers same workloads multiple times"
     return set(workload_ids)
 
 
@@ -102,7 +102,7 @@ async def test_service_monitored_as_appropriate(component, values: dict, make_te
             template["kind"] in ["Deployment", "StatefulSet"]
             and template["metadata"]["labels"].get("servicemonitor", "some") != "none"
         ):
-            workloads_to_cover.add(f"{template["kind"]}/{template["metadata"]["name"]}")
+            workloads_to_cover.add(f"{template['kind']}/{template['metadata']['name']}")
 
     seen_covered_workloads = set[str]()
 

@@ -121,7 +121,8 @@ async def test_secrets_consistency(templates):
                     f"container {container['name']}",
                     mounted_secret_keys,
                     mount_path,
-                    "\n".join(e["value"] for e in container.get("env", [])) + "\n".join(container.get("command", [])),
+                    "\n".join(e.get("value", "") for e in container.get("env", []))
+                    + "\n".join(container.get("command", [])),
                 ):
                     mount_path_found = True
 

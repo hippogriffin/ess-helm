@@ -15,7 +15,7 @@ from .utils import iterate_component_workload_parts
 async def test_dont_automount_serviceaccount_tokens(templates):
     for template in templates:
         if template["kind"] in ["Deployment", "StatefulSet"]:
-            id = f"{template["kind"]}/{template["metadata"]["name"]}"
+            id = f"{template['kind']}/{template['metadata']['name']}"
 
             assert not template["spec"]["template"]["spec"][
                 "automountServiceAccountToken"
@@ -30,7 +30,7 @@ async def test_uses_serviceaccount_named_as_per_pod_controller_by_default(templa
     covered_serviceaccount_names = set()
     for template in templates:
         if template["kind"] in ["Deployment", "StatefulSet"]:
-            workloads_by_id[f"{template["kind"]}/{template["metadata"]["name"]}"] = template
+            workloads_by_id[f"{template['kind']}/{template['metadata']['name']}"] = template
         elif template["kind"] == "ServiceAccount":
             serviceaccount_names.add(template["metadata"]["name"])
 
@@ -68,7 +68,7 @@ async def test_uses_serviceaccount_named_as_values_if_specified(component, value
     serviceaccount_names = []
     for template in await make_templates(values):
         if template["kind"] in ["Deployment", "StatefulSet"]:
-            workloads_by_id[f"{template["kind"]}/{template["metadata"]["name"]}"] = template
+            workloads_by_id[f"{template['kind']}/{template['metadata']['name']}"] = template
         elif template["kind"] == "ServiceAccount":
             serviceaccount_names.append(template["metadata"]["name"])
 
@@ -106,7 +106,7 @@ async def test_does_not_create_serviceaccounts_if_configured_not_to(component, v
             for template in await make_templates(sub_component_values):
                 if template["kind"] in ["Deployment", "StatefulSet"]:
                     id_suffix = f" (for {sub_component})" if sub_component != "" else ""
-                    workloads_by_id[f"{template["kind"]}/{template["metadata"]["name"]}{id_suffix}"] = template
+                    workloads_by_id[f"{template['kind']}/{template['metadata']['name']}{id_suffix}"] = template
                 elif template["kind"] == "ServiceAccount":
                     serviceaccount_names.add(template["metadata"]["name"])
 
