@@ -1,6 +1,6 @@
-# Copyright 2024 New Vector Ltd
+# Copyright 2025 New Vector Ltd
 #
-# SPDX-License-Identifier: LicenseRef-Element-Commercial
+# SPDX-License-Identifier: AGPL-3.0-only OR LicenseRef-Element-Commercial
 
 import re
 

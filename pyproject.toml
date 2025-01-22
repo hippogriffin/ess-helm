@@ -32,6 +32,7 @@ ruamel-yaml = "^0.18.10"
 pytest-kubernetes = {git = "https://github.com/Blueshoe/pytest-kubernetes.git", rev = "feature/17_custom-configs"}
 pytest-asyncio-cooperative = {git = "https://github.com/kylegentle/pytest-asyncio-cooperative.git", rev = "fix/missing-kwargs"}
 towncrier = "^24.8.0"
+spdx-tools = "^0.8.3"
 
 [build-system]
 requires = ["poetry-core"]
