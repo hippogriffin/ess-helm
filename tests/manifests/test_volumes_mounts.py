@@ -1,0 +1,29 @@
+# Copyright 2025 New Vector Ltd
+#
+# SPDX-License-Identifier: LicenseRef-Element-Commercial
+
+import pytest
+
+from . import values_files_to_test
+
+
+@pytest.mark.parametrize("values_file", values_files_to_test)
+@pytest.mark.asyncio_cooperative
+async def test_volumes_mounts_exists(templates):
+    configmaps_names = [t["metadata"]["name"] for t in templates if t["kind"] == "ConfigMap"]
+    secrets_names = [t["metadata"]["name"] for t in templates if t["kind"] == "Secret"]
+    for template in templates:
+        if template["kind"] in ["Deployment", "StatefulSet"]:
+            volumes_names = []
+            for volume in template["spec"]["template"]["spec"].get("volumes", []):
+                volumes_names.append(volume["name"])
+                if "secret" in volume:
+                    assert volume["secret"]["secretName"] in secrets_names
+                if "configMap" in volume:
+                    assert volume["configMap"]["name"] in configmaps_names
+            for container in template["spec"]["template"]["spec"].get("containers", []) + template["spec"].get(
+                "initContainers",
+                [],
+            ):
+                for volume_mount in container.get("volumeMounts", []):
+                    assert volume_mount["name"] in volumes_names
