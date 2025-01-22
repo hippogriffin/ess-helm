@@ -19,7 +19,7 @@ def find_news_fragments(root_dir):
             new_fragments.append(
                 {
                     "description": path.read_text().strip(),
-                    "kind": path.name.split(".")[-2],
+                    "kind": path.name.split(".")[1],
                 }
             )
     kind_order = ["added", "changed", "removed", "fixed", "security"]
