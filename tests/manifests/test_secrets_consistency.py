@@ -51,6 +51,16 @@ def get_volume_from_mount(template, volume_mount):
     )
 
 
+def match_in_content(container_name, mounted_secret_keys, mount_path, match_in):
+    found_mount = False
+    for match in re.findall(rf"{mount_path}/([^\s\n);]+)", match_in):
+        assert (
+            f"{mount_path}/{match}" in mounted_secret_keys
+        ), f"{mount_path}/{match} used in {container_name} but it is not found from any mounted secret"
+        found_mount = True
+    return found_mount
+
+
 @pytest.mark.parametrize("values_file", values_files_to_test)
 @pytest.mark.asyncio_cooperative
 async def test_secrets_consistency(templates):
@@ -82,13 +92,17 @@ async def test_secrets_consistency(templates):
                     if "subPath" in volume_mount:
                         # When using subPath, the key is mounted as the mountPath itself
                         mounted_secret_keys.append(f"{volume_mount['mountPath']}")
+                        # The regex tries to find secrets in configfiles, commands & env
+                        # based on their parent mount point so we drop the filename from
+                        # the mount path
+                        secrets_mount_paths.append("/".join(volume_mount["mountPath"].split("/")[:-1]))
                     else:
                         # When secret data is empty, `data:` is None, so use `get_or_empty`
                         for key in get_or_empty(secret, "data"):
                             # Without subPath, the key will be present as child of the mount path
                             mounted_path = f"{volume_mount['mountPath']}/{key}"
                             mounted_secret_keys.append(mounted_path)
-                    secrets_mount_paths.append(volume_mount["mountPath"])
+                        secrets_mount_paths.append(volume_mount["mountPath"])
                 elif "configMap" in current_volume:
                     # Parse config map content
                     mounted_config_maps.append(get_configmap(templates, current_volume["configMap"]["name"]))
@@ -103,26 +117,28 @@ async def test_secrets_consistency(templates):
                 mount_path_found = False
                 # Parse container commands to find paths which would match a mounted secret
                 # Make sure that paths which match are actually present in mounted secrets
-                for matches in re.findall(rf"{mount_path}/([^\s\n);]+)", "\n".join(container.get("command", []))):
-                    assert f"{mount_path}/{matches}" in mounted_secret_keys, (
-                        f"{mount_path}/{matches} used in container {container['name']} "
-                        + "but it is not found from any mounted secret"
-                    )
+                if match_in_content(
+                    f"container {container['name']}",
+                    mounted_secret_keys,
+                    mount_path,
+                    "\n".join(e["value"] for e in container.get("env", [])) + "\n".join(container.get("command", [])),
+                ):
                     mount_path_found = True
+
                 # Parse container configmaps to find paths which would match a mounted secret
                 # Make sure that paths which match are actually present in mounted secrets
                 for cm in mounted_config_maps:
                     for data, content in cm["data"].items():
-                        for matches in re.findall(rf"{mount_path}/([^\s\n);]+)", content):
-                            assert f"{mount_path}/{matches}" in mounted_secret_keys, (
-                                f"{mount_path}/{matches} used in "
-                                f"config {cm['metadata']['name']}/{data} "
-                                f"mounted in container {container['name']} "
-                                + "but it is not found from any mounted secret"
-                            )
+                        if match_in_content(
+                            f"configmap {cm['metadata']['name']}/{data} mounted in {container['name']}",
+                            mounted_secret_keys,
+                            mount_path,
+                            content,
+                        ):
                             mount_path_found = True
                 if not mount_path_found and not uses_rendered_config:
                     raise AssertionError(
                         f"{volume_mount['mountPath']} used in container {container['name']} "
-                        "but no config or command is using it"
+                        f"but no config {','.join([cm['metadata']['name'] for cm in mounted_config_maps])} "
+                        f"or env variable, or command is using it"
                     )
