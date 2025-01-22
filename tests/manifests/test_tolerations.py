@@ -27,7 +27,7 @@ global_toleration = {
 async def test_no_tolerations_by_default(templates):
     for template in templates:
         if template["kind"] in ["Deployment", "StatefulSet"]:
-            id = f"{template["kind"]}/{template["metadata"]["name"]}"
+            id = f"{template['kind']}/{template['metadata']['name']}"
 
             assert (
                 "tolerations" not in template["spec"]["template"]["spec"]
@@ -43,7 +43,7 @@ async def test_all_components_and_sub_components_render_tolerations(component, v
 
     for template in await make_templates(values):
         if template["kind"] in ["Deployment", "StatefulSet"]:
-            id = f"{template["kind"]}/{template["metadata"]["name"]}"
+            id = f"{template['kind']}/{template['metadata']['name']}"
 
             pod_spec = template["spec"]["template"]["spec"]
             assert "tolerations" in pod_spec, f"No tolerations for {id}"
@@ -58,7 +58,7 @@ async def test_global_tolerations_render(values, make_templates):
 
     for template in await make_templates(values):
         if template["kind"] in ["Deployment", "StatefulSet"]:
-            id = f"{template["kind"]}/{template["metadata"]["name"]}"
+            id = f"{template['kind']}/{template['metadata']['name']}"
 
             pod_spec = template["spec"]["template"]["spec"]
             assert "tolerations" in pod_spec, f"No tolerations for {id}"
@@ -79,7 +79,7 @@ async def test_merges_global_and_specific_tolerations(component, values, make_te
 
     for template in await make_templates(values):
         if template["kind"] in ["Deployment", "StatefulSet"]:
-            id = f"{template["kind"]}/{template["metadata"]["name"]}"
+            id = f"{template['kind']}/{template['metadata']['name']}"
 
             pod_spec = template["spec"]["template"]["spec"]
             assert "tolerations" in pod_spec, f"No tolerations for {id}"
