@@ -16,7 +16,7 @@ The components deployed in the chart can share some configuration. You'll find b
 
 ### Labels
 
-The components deployed in the chart can share labels using the `labels` base section. Any value can be configured here to apply them globally, and will be merged into the per components labels.
+The components deployed in the chart can share labels using the `labels` base section. Any value can be configured here to apply them globally, and will be merged into the per components labels. You can unset a common label on a per-component basis by setting it to `null`.
 
 ```yaml
 labels:
@@ -26,7 +26,7 @@ labels:
 ### Ingress Configuration
 
 Ingresses of the individual components in the chart can share the same configuration using the `ingress` base section.
-Any `annotations`, `className`, `tlsSecret` can be configured here to apply them globally, but can be overridden on a per component basis.
+Any `annotations`, `className`, `tlsSecret` can be configured here to apply them globally, but can be overridden on a per component basis. You can unset a common ingress annotation on a per-component basis by it to `null`.
 
 ```yaml
 ingress:
@@ -37,24 +37,13 @@ ingress:
   tlsSecret:  my-tls-secret
 ```
 
-### Security context configuration
-
-Workloads of the individual components in the chart can share the same configuration using the `podSecurityContext` base section. Any value can be configured here to apply them globally, but can be overridden on a per component basis.
-
-```yaml
-containersSecurityContext:
-  allowPrivilegeEscalation: false
-  capabilities:
-    drop:
-    - ALL
-  readOnlyRootFilesystem: true
-  seccompProfile:
-    type: RuntimeDefault
-```
-
 ### Tolerations and Topology Spread Constraints configuration
 
-Workloads of the individual components in the chart can share the same configuration using the `tolerations` and `topologySpreadConstraints` base section. Any value can be configured here to apply them globally, but can be overridden on a per component basis.
+Workloads of the individual components in the chart can share the same configuration using the `tolerations` and `topologySpreadConstraints` base section.
+ - **Tolerations** can be configured here to apply them globally, and are appended to the per component tolerations.
+ - **Topology Spread Constraints** can be configured here to apply them globally, and can be overridden on a per component basis. Please note that setting `topologySpreadConstraints`
+   - Automatically sets `labelSelector.matchLabels` based on `app.kubernetes.io/instance` if one isn't specified.
+   - Automatically sets `matchLabelKeys` based on `pod-template-hash` for `Deployments` if one isn't specified
 
 ```yaml
 tolerations:
