@@ -15,7 +15,7 @@ def find_news_fragments(root_dir):
     new_fragments = []
 
     for path in Path(root_dir).glob("*"):
-        if path.is_file():
+        if path.is_file() and path.name != ".gitkeep":
             kind = path.name.split(".")[1]
             if kind != "internal":
                 new_fragments.append(
