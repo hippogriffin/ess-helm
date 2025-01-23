@@ -12,11 +12,11 @@ This Helm chart deploys a coherent Matrix Stack. It currently includes the follo
 
 ## Common
 
-The components deployed in the chart can share some configuration. You'll find below the relevant sections of values.yaml.
+The components deployed in the chart can share some configuration. You'll find below the relevant base sections of values.yaml that you can configure at the top of the chart.
 
 ### Labels
 
-The components deployed in the chart can share labels using the `labels` base section. Any value can be configured here to apply them globally, and will be merged into the per components labels. You can unset a common label on a per-component basis by setting it to `null`.
+The components deployed in the chart can share labels using the `labels` base section. Configure any value here to set global labels, which will then be applied to each component's labels. You can override them on a per component basis. You can unset a common label on a per-component basis by setting it to `null`.
 
 ```yaml
 labels:
@@ -26,7 +26,7 @@ labels:
 ### Ingress Configuration
 
 Ingresses of the individual components in the chart can share the same configuration using the `ingress` base section.
-Any `annotations`, `className`, `tlsSecret` can be configured here to apply them globally, but can be overridden on a per component basis. You can unset a common ingress annotation on a per-component basis by it to `null`.
+Configure any `annotations`, `className`, `tlsSecret` here to set them globally, which will then apply them to each component ingresses. You can override them on a per component basis. You can unset a common ingress annotation on a per-component basis by setting it to `null`.
 
 ```yaml
 ingress:
@@ -40,8 +40,8 @@ ingress:
 ### Tolerations and Topology Spread Constraints configuration
 
 Workloads of the individual components in the chart can share the same configuration using the `tolerations` and `topologySpreadConstraints` base section.
- - **Tolerations** can be configured here to apply them globally, and are appended to the per component tolerations.
- - **Topology Spread Constraints** can be configured here to apply them globally, and can be overridden on a per component basis. Please note that setting `topologySpreadConstraints`
+ - Configure **Tolerations** here to apply them globally. They are appended to the per component tolerations.
+ - Configure **Topology Spread Constraints** here to apply them globally.You can override them on a per component basis. Please note that setting `topologySpreadConstraints`
    - Automatically sets `labelSelector.matchLabels` based on `app.kubernetes.io/instance` if one isn't specified.
    - Automatically sets `matchLabelKeys` based on `pod-template-hash` for `Deployments` if one isn't specified
 
