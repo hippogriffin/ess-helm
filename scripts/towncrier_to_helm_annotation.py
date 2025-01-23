@@ -16,12 +16,14 @@ def find_news_fragments(root_dir):
 
     for path in Path(root_dir).glob("*"):
         if path.is_file():
-            new_fragments.append(
-                {
-                    "description": path.read_text().strip(),
-                    "kind": path.name.split(".")[1],
-                }
-            )
+            kind = path.name.split(".")[1]
+            if kind != "internal":
+                new_fragments.append(
+                    {
+                        "description": path.read_text().strip(),
+                        "kind": kind,
+                    }
+                )
     kind_order = ["added", "changed", "removed", "fixed", "security"]
     # We order the list by kind and description alphabetically
     new_fragments.sort(key=lambda x: str(kind_order.index(x["kind"])) + x["description"])
