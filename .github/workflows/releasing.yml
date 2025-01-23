@@ -114,7 +114,7 @@ jobs:
       uses: actions/download-artifact@v4
       with:
         name: helm-package
-        path: charts/matrix-stack/
+        path: ./
 
     - name: Calculate versions
       id: versions
