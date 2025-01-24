@@ -1,4 +1,12 @@
-# Matrix Stack Chart 0.4.1 (2025-01-23)
+<!--
+Copyright 2025 New Vector Ltd
+
+SPDX-License-Identifier: AGPL-3.0-only OR LicenseRef-Element-Commercial
+-->
+
+<!-- towncrier release notes start -->
+
+# Element Comunity Helm Chart 0.4.1 (2025-01-23)
 
 ### Added
 

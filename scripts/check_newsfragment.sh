@@ -26,7 +26,7 @@ echo "--------------------------"
 echo
 
 matched=0
-for f in $(git diff --name-only origin/main... -- newsfragments); do
+for f in $(git diff --diff-filter=d --name-only origin/main... -- ':(exclude)newsfragments/.gitkeep'  newsfragments); do
     # check that any modified newsfiles on this branch have the appropriate punctuation.
     lastchar=$(tr -d '\n' < "$f" | tail -c 1)
     if [ "$lastchar" != '.' ] && [ "$lastchar" != '!' ]; then

@@ -126,6 +126,12 @@ jobs:
         echo "this-version=$this_version" >> $GITHUB_OUTPUT
         echo "next-version=$next_version" >> $GITHUB_OUTPUT
 
+    - name: Remove latest changelog
+      run: |
+        rm charts/CHANGELOG.latest.md
+        rm charts/newsfragments/*.md
+        touch charts/newsfragments/.gitkeep
+
     - name: Release
       uses: softprops/action-gh-release@v2
       with:
