@@ -327,3 +327,18 @@ labels: {}
 ## Defines the annotations to add to the workload
 # {{ key }}: {}
 {%- endmacro %}
+
+{% macro additionalConfig(key='additional') %}
+## This can be provided in-line in the Helm Chart and/or via an existing Secret
+## e.g.
+## additional:
+##   0-guestConfig:
+##     config: |
+##       allow_guest_access: true
+##   1-customConfig:
+##     configSecret: custom-synapse-config
+##     configSecretKey: shared.yaml
+##
+## Most settings are configurable but some settings are owned by the chart and can't overwritten
+{{ key }}: {}
+{% endmacro %}

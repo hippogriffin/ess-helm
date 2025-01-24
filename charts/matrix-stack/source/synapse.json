@@ -27,39 +27,7 @@
       "$ref": "file://common/credential.json"
     },
     "additional": {
-      "type": "object",
-      "additionalProperties": {
-        "type": "object",
-        "anyOf": [
-          {
-            "required": []
-          },
-          {
-            "required": [
-              "config"
-            ]
-          },
-          {
-            "required": [
-              "configSecret",
-              "configSecretKey"
-            ]
-          }
-        ],
-        "properties": {
-          "properties": {
-            "config": {
-              "type": "string"
-            },
-            "configSecret": {
-              "type": "string"
-            },
-            "configSecretKey": {
-              "type": "string"
-            }
-          }
-        }
-      }
+      "$ref": "file://common/additional.json"
     },
     "appservices": {
       "type": "array",

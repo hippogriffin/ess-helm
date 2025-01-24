@@ -1,0 +1,216 @@
+{{- /*
+Copyright 2025 New Vector Ltd
+
+SPDX-License-Identifier: AGPL-3.0-only OR LicenseRef-Element-Commercial
+*/ -}}
+
+{{- with .Values.matrixAuthenticationService -}}
+{{- if .enabled -}}
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+{{- with .annotations }}
+  annotations:
+    {{- toYaml . | nindent 4 }}
+{{- end }}
+  labels:
+    {{- include "element-io.matrix-authentication-service.labels" (dict "root" $ "context" .) | nindent 4 }}
+  name: {{ $.Release.Name }}-matrix-authentication-service
+  namespace: {{ $.Release.Namespace }}
+spec:
+  replicas: {{ .replicas }}
+  selector:
+    matchLabels:
+      app.kubernetes.io/instance: "{{ $.Release.Name }}-matrix-authentication-service"
+  strategy:
+    type: RollingUpdate
+    rollingUpdate:
+      maxUnavailable: 1
+      maxSurge: 2
+  template:
+    metadata:
+      labels:
+      labels:
+        {{- include "element-io.matrix-authentication-service.labels" (dict "root" $ "context" .) | nindent 8 }}
+        k8s.element.io/confighash: "{{ include (print $.Template.BasePath "/matrix-authentication-service/mas_secret.yaml") $ | sha1sum }}"
+{{- with .annotations }}
+      annotations:
+        {{- toYaml . | nindent 8 }}
+{{- end }}
+    spec:
+{{- if gt (.replicas | int) 1 }}
+      affinity:
+        podAntiAffinity:
+          requiredDuringSchedulingIgnoredDuringExecution:
+          - labelSelector:
+              matchExpressions:
+              - key: app.kubernetes.io/instance
+                operator: In
+                values:
+                - "{{ $.Release.Name }}-matrix-authentication-service"
+            topologyKey: kubernetes.io/hostname
+{{- end }}
+      automountServiceAccountToken: false
+{{- include "element-io.ess-library.pods.commonSpec" (dict "root" $ "context" (dict "componentValues" . "key" "matrix-authentication-service" "deployment" true)) | nindent 6 }}
+      initContainers:
+      - name: render-config
+{{- with $.Values.matrixTools.image -}}
+{{- if .digest }}
+        image: "{{ .registry }}/{{ .repository }}@{{ .digest }}"
+        imagePullPolicy: {{ .pullPolicy | default "IfNotPresent" }}
+{{- else }}
+        image: "{{ .registry }}/{{ .repository }}:{{ required "synapse.image.tag is required if no digest" .tag }}"
+        imagePullPolicy: {{ .pullPolicy | default "Always" }}
+{{- end }}
+{{- end }}
+{{- with .containersSecurityContext }}
+        securityContext:
+          {{- toYaml . | nindent 10 }}
+{{- end }}
+        command:
+        - "/matrix-tools"
+        - render-config
+        - -output
+        - /conf/config.yaml
+          {{- range $key := (.additional | keys | uniq | sortAlpha) -}}
+          {{- $prop := index $.Values.matrixAuthenticationService.additional $key }}
+          {{- if $prop.config }}
+        - /secrets/{{ $.Release.Name }}-matrix-authentication-service/user-{{ $key }}
+          {{- end }}
+          {{- if $prop.configSecret }}
+        - /secrets/{{ tpl $prop.configSecret $ }}/{{ $prop.configSecretKey }}
+          {{- end }}
+          {{- end }}
+        - /config-templates/config.yaml
+        env:
+{{- with required "privateKeys is required for Matrix Authentication Service" .privateKeys }}
+{{- with required "rsa is required for Matrix Authentication Service" .rsa }}
+        - name: RSA_PRIVATE_KEY
+          value: {{ printf "{{ readfile \"/secrets/%s/%s\" | quote }}" (tpl (.secret | default (printf "%s-matrix-authentication-service" $.Release.Name)) $) (.secretKey  | default "RSA_PRIVATE_KEY") }}
+{{- end }}
+{{- with .ecdsaPrime256v1 }}
+        - name: ECDSA_PRIME256V1_PUBLIC_KEY
+          value: {{ printf "{{ readfile \"/secrets/%s/%s\" | quote }}" (tpl (.secret | default (printf "%s-matrix-authentication-service" $.Release.Name)) $) (.secretKey | default "ECDSA_PRIME256V1_PRIVATE_KEY") }}
+{{- end }}
+{{- with .ecdsaSecp256k1 }}
+        - name: ECDSA_SECP256K1_PRIVATE_KEY
+          value: {{ printf "{{ readfile \"/secrets/%s/%s\" | quote }}" (tpl (.secret | default (printf "%s-matrix-authentication-service" $.Release.Name)) $) (.secretKey  | default "ECDSA_SECP256K1_PRIVATE_KEY") }}
+{{- end }}
+{{- with .ecdsaSecp384r1 }}
+        - name: ECDSA_SECP384R1_PRIVATE_KEY
+          value: {{ printf "{{ readfile \"/secrets/%s/%s\" | quote }}" (tpl (.secret | default (printf "%s-matrix-authentication-service" $.Release.Name)) $) (.secretKey  | default "ECDSA_SECP384R1_PRIVATE_KEY") }}
+{{- end }}
+{{- end }}
+        - name: POSTGRES_PASSWORD
+          value: {{ printf "{{ readfile \"/secrets/%s/%s\" | quote }}" (tpl (.postgres.password.secret | default (printf "%s-matrix-authentication-service" $.Release.Name)) $) (.postgres.password.secretKey  | default "POSTGRES_PASSWORD") }}
+        - name: ENCRYPTION_SECRET
+          value: {{ printf "{{ readfile \"/secrets/%s/%s\" | quote }}" (tpl (.encryptionSecret.secret | default (printf "%s-matrix-authentication-service" $.Release.Name)) $) (.encryptionSecret.secretKey  | default "ENCRYPTION_SECRET") }}
+{{- with .resources }}
+        resources:
+          {{- toYaml . | nindent 10 }}
+{{- end }}
+        volumeMounts:
+        - mountPath: /config-templates
+          name: plain-config
+          readOnly: true
+{{- range $secret := include "element-io.matrix-authentication-service.configSecrets" (dict "root" $ "context" .) | fromJsonArray }}
+        - mountPath: /secrets/{{ tpl $secret $ }}
+          name: "secret-{{ tpl $secret $ }}"
+          readOnly: true
+{{- end }}
+        - mountPath: /conf
+          name: rendered-config
+          readOnly: false
+{{- /* This init container job is kept despite https://github.com/matrix-org/matrix-authentication-service/pull/2432 so as to have --prune */ -}}
+      - name: config
+        args: ["config", "sync", "--prune"]
+{{- with .image -}}
+{{- if .digest }}
+        image: "{{ .registry }}/{{ .repository }}@{{ .digest }}"
+        imagePullPolicy: {{ .pullPolicy | default "IfNotPresent" }}
+{{- else }}
+        image: "{{ .registry }}/{{ .repository }}:{{ required "matrixAuthenticationService.image.tag is required if no digest" .tag }}"
+        imagePullPolicy: {{ .pullPolicy | default "Always" }}
+{{- end }}
+{{- end }}
+{{- with .containersSecurityContext }}
+        securityContext:
+          {{- toYaml . | nindent 10 }}
+{{- end }}
+        env:
+        {{- include "element-io.matrix-authentication-service.env" (dict "root" $ "context" .) | nindent 10 }}
+{{- with .resources }}
+        resources:
+          {{- toYaml . | nindent 10 }}
+{{- end }}
+        volumeMounts:
+        - mountPath: "/config.yaml"
+          name: rendered-config
+          subPath: config.yaml
+          readOnly: true
+      containers:
+      - name: matrix-authentication-service
+        args: ["server"]
+{{- with .image -}}
+{{- if .digest }}
+        image: "{{ .registry }}/{{ .repository }}@{{ .digest }}"
+        imagePullPolicy: {{ .pullPolicy | default "IfNotPresent" }}
+{{- else }}
+        image: "{{ .registry }}/{{ .repository }}:{{ required "matrixAuthenticationService.image.tag is required if no digest" .tag }}"
+        imagePullPolicy: {{ .pullPolicy | default "Always" }}
+{{- end }}
+{{- end }}
+{{- with .containersSecurityContext }}
+        securityContext:
+          {{- toYaml . | nindent 10 }}
+{{- end }}
+        env:
+        {{- include "element-io.matrix-authentication-service.env" (dict "root" $ "context" .) | nindent 10 }}
+        ports:
+        - containerPort: 8080
+          protocol: TCP
+          name: http
+        - containerPort: 8081
+          protocol: TCP
+          name: internal
+{{- with .resources }}
+        resources:
+          {{- toYaml . | nindent 10 }}
+{{- end }}
+        startupProbe:
+          httpGet:
+            path: /health
+            port: internal
+            scheme: HTTP
+          initialDelaySeconds: 5
+        livenessProbe:
+          failureThreshold: 3
+          httpGet:
+            path: /health
+            port: internal
+            scheme: HTTP
+        readinessProbe:
+          failureThreshold: 3
+          httpGet:
+            path: /health
+            port: internal
+            scheme: HTTP
+        volumeMounts:
+        - mountPath: "/config.yaml"
+          name: rendered-config
+          subPath: config.yaml
+          readOnly: true
+      volumes:
+      - emptyDir:
+          medium: Memory
+        name: "rendered-config"
+      - name: config
+        secret:
+          secretName: {{ $.Release.Name }}-matrix-authentication-service-config
+{{- range $secret := include "element-io.matrix-authentication-service.configSecrets" (dict "root" $ "context" .) | fromJsonArray }}
+      - secret:
+          secretName: {{ tpl $secret $ }}
+        name: secret-{{ tpl $secret $ }}
+{{- end }}
+{{- end -}}
+{{- end -}}

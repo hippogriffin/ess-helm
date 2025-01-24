@@ -18,20 +18,8 @@ media:
 
 ## Additional configuration to provide to all Synapse processes.
 ## Each key under additional is an additioanal config to merge into synapse homeserver.yaml
-## This can be provided in-line in the Helm Chart and/or via an existing Secret
-## e.g.
-## additional:
-##   0-guestConfig:
-##     config: |
-##       allow_guest_access: true
-##   1-customConfig:
-##     configSecret: custom-synapse-config
-##     configSecretKey: shared.yaml
-##
-## Settings will be merged depending on their keys alphabetical order, latest taking precedence.
 ## Full details on available configuration options can be found at https://element-hq.github.io/synapse/latest/usage/configuration/config_documentation.html
-## Most settings are configurable but some settings are owned by the chart and can't overwritten
-additional: {}
+{{- sub_schema_values.additionalConfig() }}
 
 ## Details of Application Service registration files to give to Synapse
 ## e.g.

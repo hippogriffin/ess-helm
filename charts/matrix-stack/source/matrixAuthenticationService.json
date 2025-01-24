@@ -1,0 +1,81 @@
+{
+  "$id": "file://matrixAuthenticationService",
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "type": "object",
+  "properties": {
+    "enabled": {
+      "type": "boolean",
+      "description": "Enable the Matrix Authentication Service (MAS) service."
+    },
+    "additional": {
+      "$ref": "file://common/additional.json"
+    },
+    "encryptionSecret": {
+      "$ref": "file://common/credential.json"
+    },
+    "postgres": {
+      "$ref": "file://common/postgres-libpq.json"
+    },
+    "privateKeys": {
+      "default": {},
+      "type": "object",
+      "description": "The private keys used for signing. Only RSA private key is required.",
+      "properties": {
+        "ecdsaPrime256v1": {
+          "$ref": "file://common/credential.json"
+        },
+        "ecdsaSecp256k1": {
+          "$ref": "file://common/credential.json"
+        },
+        "ecdsaSecp384r1": {
+          "$ref": "file://common/credential.json"
+        },
+        "rsa": {
+          "$ref": "file://common/credential.json"
+        }
+      }
+    },
+    "ingress": {
+      "$ref": "file://synapse/ingress_with_additional_paths.json"
+    },
+    "image": {
+      "$ref": "file://common/image.json"
+    },
+    "labels": {
+      "$ref": "file://common/labels.json"
+    },
+    "annotations": {
+      "$ref": "file://common/workloadAnnotations.json"
+    },
+    "containersSecurityContext": {
+      "$ref": "file://common/containersSecurityContext.json"
+    },
+    "extraEnv": {
+      "$ref": "file://common/extraEnv.json"
+    },
+    "hostAliases": {
+      "$ref": "file://common/hostAliases.json"
+    },
+    "nodeSelector": {
+      "$ref": "file://common/nodeSelector.json"
+    },
+    "podSecurityContext": {
+      "$ref": "file://common/podSecurityContext.json"
+    },
+    "resources": {
+      "$ref": "file://common/resources.json"
+    },
+    "serviceAccount": {
+      "$ref": "file://common/serviceAccount.json"
+    },
+    "serviceMonitors": {
+      "$ref": "file://common/serviceMonitors.json"
+    },
+    "tolerations": {
+      "$ref": "file://common/tolerations.json"
+    },
+    "topologySpreadConstraints": {
+      "$ref": "file://common/topologySpreadConstraints.json"
+    }
+  }
+}

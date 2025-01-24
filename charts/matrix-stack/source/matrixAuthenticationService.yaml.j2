@@ -1,0 +1,35 @@
+{#
+Copyright 2024 New Vector Ltd
+
+SPDX-License-Identifier: AGPL-3.0-only OR LicenseRef-Element-Commercial
+#}
+
+{% import "common/sub_schema_values.yaml.j2" as sub_schema_values %}
+{{- sub_schema_values.image(registry='docker.io', repository='element-hq/matrix-authentication-service', tag='0.12.0') }}
+
+{{ sub_schema_values.postgresLibPQ() }}
+
+{{ sub_schema_values.credential("Encryption secret", "encryptionSecret") }}
+
+## Additional configuration to provide to Matrix Authentication Service.
+## Each key under additional is an additioanal config to merge into Matrix Authentication Service config.yaml
+## Full details on available configuration options can be found at https://element-hq.github.io/matrix-authentication-service/reference/configuration.html
+{{- sub_schema_values.additionalConfig() }}
+privateKeys:
+{{ sub_schema_values.credential("ECDSA Prime256v1 Private Key", "ecdsaPrime256v1") | indent(2) }}
+{{ sub_schema_values.credential("ECDSA Secp256k1 Private Key", "ecdsaSecp256k1") | indent(2) }}
+{{ sub_schema_values.credential("ECDSA Secp384r1 Private Key", "ecdsaSecp384r1") | indent(2) }}
+{{ sub_schema_values.credential("RSA Private Key", "rsa") | indent(2) }}
+
+{{ sub_schema_values.ingress() }}
+
+{{ sub_schema_values.labels() }}
+{{ sub_schema_values.serviceAccount() }}
+{{ sub_schema_values.nodeSelector() }}
+{{ sub_schema_values.tolerations(global=false, key='tolerations') }}
+{{ sub_schema_values.topologySpreadConstraints(global=true, key= 'topologySpreadConstraints') }}
+{{ sub_schema_values.podSecurityContext(user_id=1000, group_id=1000) }}
+{{ sub_schema_values.containersSecurityContext(key='containersSecurityContext') }}
+{{ sub_schema_values.workloadAnnotations() }}
+{{ sub_schema_values.serviceMonitors(key= 'serviceMonitors') }}
+{{ sub_schema_values.extraEnv() }}

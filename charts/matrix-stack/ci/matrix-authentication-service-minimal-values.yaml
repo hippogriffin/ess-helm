@@ -1,0 +1,69 @@
+# Copyright 2024 New Vector Ltd
+#
+# SPDX-License-Identifier: AGPL-3.0-only OR LicenseRef-Element-Commercial
+
+## Values file containing minimal values for components that are enabled by default only
+
+elementWeb:
+  enabled: false
+
+serverName: ess-enterprise.localhost
+
+matrixAuthenticationService:
+  enabled: true
+
+  ingress:
+    host: mas.ess-enterprise.localhost
+
+  postgres:
+    host: postgres
+    user: mas
+    database: mas
+    password:
+      value: CHANGEME-teel5aghaenohhohghiavee5Koh8ahwo
+
+  additional:
+    0000-email:
+      config: |
+        email:
+          host: email.dev.local
+          port: 587
+          username: smtpuser
+          tlsMode: STARTTLS
+          from: "MAS <noreply@auth.dev.local>"
+          password: CHANGEME-5ahohhohgihavee5Ko
+
+  encryptionSecret:
+    value: CHANGEME-ahohhohgiavee5Koh8ahwo
+
+  privateKeys:
+    ecdsaPrime256v1:
+      value: |
+        -----BEGIN EC PRIVATE KEY-----
+        MHcCAQEEIYjZ789034nLz+oXJyVWqgUdDmRlKxvTfHsBhFtGpOaAoGCCqGSM49
+        AwEHoUQDQgAE6521bYjZ789034nLz+oXJyVWqgUdDmRlKxvTfHsBhFtGpOaAoGCCqGSM49
+        AwEAAKBcZW5jb2duZXQwgggYMIINL6Ado018734nLz+oXJyVWqgUdDmRlKxvTfHsBhFtGpOaAoGCCqGSM49AwEH
+        ------END EC PRIVATE KEY-----
+    ecdsaSecp256k1:
+      value: |
+        -----BEGIN EC PRIVATE KEY-----
+        MHcCAQEEZFQZ789034nLz+oXJyVWqgUdDmRlKxvTfHsBhFtGpOaAoGCCqGSM49AwEHoUQDQgAE6521bYjZ789034nLz+oXJyVWqgUdDmRlKxvTfHsBhFtGpOaAoGCCqGSM49
+        ------END EC PRIVATE KEY-----
+    ecdsaSecp384r1:
+      value: |
+       -----BEGIN EC PRIVATE KEY-----
+        MHcCAQEEZFQZ789034nLz+oXJyVWqgUdDmRlKxvTfHsBhFtGpOaAoGCCqGSM49AwEHoUQDQgAE6521bYjZ789034nLz+oXJyVWqgUdDmRlKxvTfHsBhFtGpOaAoGCCqGSM49
+        ------END EC PRIVATE KEY-----
+    rsa:
+      value: |
+        -----BEGIN RSA PRIVATE KEY-----
+        MIIEowIBAAKCAQEA6521bYjZ789034nLz+oXJyVWqgUdDmRlKxvTfHsBhFtGpOaAoGCCqGSM49AwEHoUQDQgAE6521bYjZ789034nLz+oXJyVWqgUdDmRlKxvTfHsBhFtGpOaAoGCCqGSM49
+        ------END RSA PRIVATE KEY-----
+
+synapse:
+  enabled: false
+  ingress:
+    host: synapse.ess.localhost
+
+wellKnownDelegation:
+  enabled: false

@@ -49,6 +49,9 @@
     "haproxy": {
       "$ref": "file://haproxy.json"
     },
+    "matrixAuthenticationService": {
+      "$ref": "file://matrixAuthenticationService.json"
+    },
     "synapse": {
       "$ref": "file://synapse.json"
     },
