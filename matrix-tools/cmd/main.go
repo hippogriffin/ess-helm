@@ -7,54 +7,15 @@ package main
 import (
 	"fmt"
 	"os"
-	"strings"
 
+	"github.com/element-hq/ess-helm/matrix-tools/internal/pkg/args"
 	"github.com/element-hq/ess-helm/matrix-tools/internal/pkg/renderer"
 	"github.com/element-hq/ess-helm/matrix-tools/internal/pkg/tcpwait"
 	"gopkg.in/yaml.v3"
 )
 
-type Options struct {
-	Files   []string
-	Output  string
-	Address string
-}
-
-func ParseArgs(args []string) (*Options, error) {
-	var options Options
-	var files []string
-
-	if len(args) < 2 || args[1] != "--render-config" {
-		fmt.Println("Usage: go run main.go --render-config <file1> [<file2>, <...>] --output <file> [--tcpwait <server> <port>]")
-		os.Exit(1)
-	}
-
-	for i := 1; i < len(args); i++ {
-		if args[i] == "--tcpwait" && i+2 < len(args) {
-			options.Address = args[i+1]
-			i++
-		} else if args[i] == "--output" && i+1 < len(args) {
-			options.Output = args[i+1]
-			i++
-		} else if args[i] == "--render-config" && i+1 < len(args) {
-			for j := i; j < len(args); j++ {
-				if strings.HasPrefix(args[j], "--") {
-					i = j + 1
-					break
-				}
-				options.Files = append(files, args[j])
-			}
-		} else if strings.HasPrefix(args[i], "--") {
-			fmt.Printf("%s: unknown flag\n", args[i])
-			return &Options{}, fmt.Errorf("unknown flag")
-
-		}
-	}
-	return &options, nil
-}
-
 func main() {
-	options, err := ParseArgs(os.Args)
+	options, err := args.ParseArgs(os.Args)
 	if err != nil {
 		fmt.Println(err)
 		return

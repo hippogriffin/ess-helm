@@ -103,8 +103,7 @@ We have an init container to render & merge the config for several reasons:
         - --output
         - /conf/homeserver.yaml
         - --tcpwait
-        - {{ (tpl .postgres.host $) }}
-        - {{ .postgres.port | quote }}
+        - "{{ (tpl .postgres.host $) }}:{{ .postgres.port }}"
         env:
           - name: SYNAPSE_MACAROON
             value: secret:///secrets/{{ tpl (.macaroon.secret | default (printf "%s-synapse" $.Release.Name)) $ }}/{{ .macaroon.secretKey | default "MACAROON" }}

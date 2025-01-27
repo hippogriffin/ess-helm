@@ -1,4 +1,8 @@
-package main
+// Copyright 2025 New Vector Ltd
+//
+// SPDX-License-Identifier: AGPL-3.0-only OR LicenseRef-Element-Commercial
+
+package args
 
 import (
 	"reflect"
@@ -44,7 +48,7 @@ func TestParseArgs(t *testing.T) {
 		},
 		{
 			name: "Correct usage",
-			args: []string{"cmd", "--render-config", "file1", "file2", "--output", "outputFile", "--tcpwait", "server", "port"},
+			args: []string{"cmd", "--render-config", "file1", "file2", "--output", "outputFile", "--tcpwait", "server:port"},
 			expected: &Options{
 				Files:   []string{"file1", "file2"},
 				Output:  "outputFile",
