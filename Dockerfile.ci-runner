@@ -10,6 +10,7 @@ ARG KUBECONFORM_VERSION=0.6.7
 ENV KUBECTL_VERSION=v1.31.0
 ARG POETRY_VERSION=1.8.4
 ARG YQ_VERSION=4.44.3
+ARG GO_VERSION=1.23.5
 
 ARG PIPX_BIN_DIR=/usr/local/bin
 
@@ -40,6 +41,15 @@ RUN <<EOT bash
   shellcheck --version
   docker --version
 
+  # Install Go
+  curl -L https://go.dev/dl/go${GO_VERSION}.linux-amd64.tar.gz | tar -C /usr/local -xzv
+  export PATH=/usr/local/go/bin:$PATH
+  go version
+
+  # Install golangci-lint
+  curl -sSfL https://raw.githubusercontent.com/golangci/golangci-lint/master/install.sh | sh -s -- -b $(go env GOPATH)/bin v1.63.4
+  golangci-lint --version
+
   # Helm
   mkdir helm && pushd helm
   curl -L https://get.helm.sh/helm-v${HELM_VERSION}-linux-amd64.tar.gz | tar -xzv
@@ -67,7 +77,6 @@ RUN <<EOT bash
   curl -L -o /usr/local/bin/kubectl https://dl.k8s.io/release/${KUBECTL_VERSION}/bin/linux/amd64/kubectl
   chmod +x /usr/local/bin/kubectl
   kubectl version --client
-
   # yq
   curl -L -o /usr/local/bin/yq https://github.com/mikefarah/yq/releases/download/v${YQ_VERSION}/yq_linux_amd64 && chmod +x /usr/local/bin/yq
   yq --version
