@@ -5,11 +5,11 @@
 package main
 
 import (
-	"encoding/json"
 	"fmt"
 	"os"
 
 	"github.com/element-hq/ess-helm/matrix-tools/internal/pkg/renderer"
+	"gopkg.in/yaml.v3"
 )
 
 func main() {
@@ -25,6 +25,6 @@ func main() {
 		os.Exit(1)
 	}
 
-	output, _ := json.MarshalIndent(result, "", "  ")
+	output, _ := yaml.Marshal(result)
 	fmt.Println(string(output))
 }
