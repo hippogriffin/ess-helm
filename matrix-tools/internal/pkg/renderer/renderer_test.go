@@ -11,6 +11,7 @@ import (
 )
 
 func TestRenderConfig(t *testing.T) {
+	hostname, _ := os.Hostname()
 	testCases := []struct {
 		name     string
 		files    []string
@@ -22,10 +23,14 @@ func TestRenderConfig(t *testing.T) {
 			name:  "Single File",
 			files: []string{"testdata/single_file.yml"},
 			env: map[string]string{
-				"TEST_ENV": "value",
+				"TEST_ENV":      "value",
+				"SECRET_KEY":    "secret://testdata/secret_key",
+				"THIS_HOSTNAME": "hostname://",
 			},
 			expected: map[string]interface{}{
-				"key": "value",
+				"key":       "value",
+				"secretKey": "secret_value",
+				"hostname":  hostname,
 			},
 			err: false,
 		},

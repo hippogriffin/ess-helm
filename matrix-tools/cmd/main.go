@@ -22,13 +22,12 @@ func main() {
 
 	var files []string
 	var output string
-	var server, port string
+	var address string
 
 	for i := 1; i < len(os.Args); i++ {
 		if os.Args[i] == "--tcpwait" && i+2 < len(os.Args) {
-			server = os.Args[i+1]
-			port = os.Args[i+2]
-			i += 2
+			address = os.Args[i+1]
+			i++
 		} else if os.Args[i] == "--output" && i+1 < len(os.Args) {
 			output = os.Args[i+1]
 			i++
@@ -53,8 +52,8 @@ func main() {
 		os.Exit(1)
 	}
 
-	if server != "" && port != "" {
-		tcpwait.WaitForTCP(server, port)
+	if address != "" {
+		tcpwait.WaitForTCP(address)
 	}
 
 	outputYAML, _ := yaml.Marshal(result)

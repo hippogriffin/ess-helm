@@ -12,6 +12,14 @@
     "labels": {
       "$ref": "file://common/labels.json"
     },
+    "matrixTools": {
+      "type": "object",
+      "properties": {
+        "image": {
+          "$ref": "file://common/image.json"
+        }
+      }
+    },
     "imagePullSecrets": {
       "type": "array",
       "items": {
