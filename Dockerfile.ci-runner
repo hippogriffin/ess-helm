@@ -94,6 +94,7 @@ USER runner
 RUN <<EOT bash
   ls -l /usr/local/bin
   pipx ensurepath
+  echo 'export PATH=$PATH:/usr/local/go/bin' >> $HOME/.bashrc
   source ~/.bashrc
   poetry --version
 EOT

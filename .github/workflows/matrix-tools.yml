@@ -20,10 +20,29 @@ permissions:
   packages: write
 
 jobs:
+  tests:
+    runs-on: cpu-s
+    container:
+      image: ghcr.io/${{ github.repository }}/ci-runner
+      credentials:
+        username: ${{ github.actor }}
+        password: ${{ secrets.GITHUB_TOKEN }}
+    steps:
+    - uses: actions/checkout@v3
+      with:
+        ref: ${{ github.event.pull_request.head.sha }}
+
+    - name: Lint with golangci-lint
+      run: cd matrix-tools && golangci-lint run ./...
+
+    - name: Run tests
+      run: cd matrix-tools && go test -v ./...
+
   # Build our application docker images in parallel.
   docker-build-and-push:
     name: Build matrix-tools container image
-
+    needs:
+    - tests
     runs-on: dind-m
     steps:
       - name: Inspect Builder
