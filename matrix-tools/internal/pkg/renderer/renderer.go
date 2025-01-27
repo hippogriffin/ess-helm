@@ -11,6 +11,7 @@ import (
 	"os"
 	"path/filepath"
 	"regexp"
+	"strings"
 
 	"gopkg.in/yaml.v3"
 )
@@ -66,7 +67,17 @@ func RenderConfig(sourceFiles []string) (map[string]interface{}, error) {
 			if val, ok := os.LookupEnv(envVar); !ok {
 				return nil, errors.New(envVar + " is not present in the environment")
 			} else {
-				replacementValue, err := json.Marshal(val)
+				var replacementValue []byte
+				if strings.HasPrefix(val, "secret://") {
+					filePath := strings.TrimPrefix(val, "secret://")
+					fileBytes, err := os.ReadFile(filePath)
+					if err != nil {
+						return nil, errors.New("failed to read file: " + filePath)
+					}
+					replacementValue, err = json.Marshal(string(fileBytes))
+				} else {
+					replacementValue, err = json.Marshal(val)
+				}
 				if err != nil {
 					return nil, err
 				}
