@@ -25,7 +25,6 @@ func ParseArgs(args []string) (*Options, error) {
 	}
 
 	for i := 1; i < len(args); i++ {
-		fmt.Printf(" %v ", args[i])
 		if args[i] == "--tcpwait" && i+1 < len(args) {
 			options.Address = args[i+1]
 			i++
@@ -33,12 +32,9 @@ func ParseArgs(args []string) (*Options, error) {
 			options.Output = args[i+1]
 			i++
 		} else if args[i] == "--render-config" && i+1 < len(args) {
-			fmt.Printf(" parsing render-config")
 			for j := i + 1; j < len(args); j++ {
-				fmt.Printf(" %v ", args[j])
 				options.Files = append(options.Files, args[j])
 				if j+1 < len(args) && strings.HasPrefix(args[j+1], "--") {
-					fmt.Printf(" finished parsing ")
 					i = j
 					break
 				}
