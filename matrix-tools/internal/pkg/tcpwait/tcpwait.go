@@ -13,10 +13,11 @@ func WaitForTCP(address string) {
 	for {
 		fmt.Println("Waiting for TCP connection on " + address)
 		conn, err := net.DialTimeout("tcp", address, 5*time.Second)
-		defer conn.Close()
-		if err == nil {
+		if err != nil {
+			time.Sleep(time.Second)
+		} else {
+			defer conn.Close()
 			break
 		}
-		time.Sleep(time.Second)
 	}
 }
