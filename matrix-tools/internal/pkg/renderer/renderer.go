@@ -81,14 +81,14 @@ func RenderConfig(sourceFiles []string) (map[string]interface{}, error) {
 						return nil, errors.New("failed to read file: " + filePath)
 					}
 					replacementValue, err = json.Marshal(string(fileBytes))
+					if err != nil {
+						return nil, err
+					}
 				} else {
 					replacementValue, err = json.Marshal(val)
 				}
 				if err != nil {
 					return nil, err
-				}
-				if err != nil {
-					return nil, errors.New("failed to marshal environment variable: " + envVar)
 				}
 				fileContent = bytes.ReplaceAll(fileContent, []byte("${"+envVar+"}"), replacementValue)
 			}
