@@ -32,6 +32,9 @@ jobs:
       with:
         ref: ${{ github.event.pull_request.head.sha }}
 
+    - name: Prepare go path
+      run: echo "/usr/local/go/bin" >> "${GITHUB_PATH}"
+
     - name: Lint with golangci-lint
       run: ls -l /usr/local && echo $PATH && cd matrix-tools && golangci-lint run ./...
 
