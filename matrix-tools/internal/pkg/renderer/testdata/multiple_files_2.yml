@@ -1,0 +1,3 @@
+key2: value2
+keyWithEnv2:
+  content_with_env2: ${TEST_ENV_2}
