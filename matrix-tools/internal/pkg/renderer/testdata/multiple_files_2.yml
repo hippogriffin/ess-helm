@@ -1,3 +1,7 @@
+# Copyright 2025 New Vector Ltd
+#
+# SPDX-License-Identifier: AGPL-3.0-only OR LicenseRef-Element-Commercial
+
 key2: value2
 keyWithEnv2:
   content_with_env2: ${TEST_ENV_2}
