@@ -14,53 +14,65 @@ import (
 	"gopkg.in/yaml.v3"
 )
 
-func main() {
-	if len(os.Args) < 2 || os.Args[1] != "--render-config" {
+type Options struct {
+	Files   []string
+	Output  string
+	Address string
+}
+
+func ParseArgs(args []string) (*Options, error) {
+	var options Options
+	var files []string
+
+	if len(args) < 2 || args[1] != "--render-config" {
 		fmt.Println("Usage: go run main.go --render-config <file1> [<file2>, <...>] --output <file> [--tcpwait <server> <port>]")
 		os.Exit(1)
 	}
 
-	var files []string
-	var output string
-	var address string
-
-	for i := 1; i < len(os.Args); i++ {
-		if os.Args[i] == "--tcpwait" && i+2 < len(os.Args) {
-			address = os.Args[i+1]
+	for i := 1; i < len(args); i++ {
+		if args[i] == "--tcpwait" && i+2 < len(args) {
+			options.Address = args[i+1]
 			i++
-		} else if os.Args[i] == "--output" && i+1 < len(os.Args) {
-			output = os.Args[i+1]
+		} else if args[i] == "--output" && i+1 < len(args) {
+			options.Output = args[i+1]
 			i++
-		} else if os.Args[i] == "--render-config" && i+1 < len(os.Args) {
-			for j := i; j < len(os.Args); j++ {
-				if strings.HasPrefix(os.Args[j], "--") {
+		} else if args[i] == "--render-config" && i+1 < len(args) {
+			for j := i; j < len(args); j++ {
+				if strings.HasPrefix(args[j], "--") {
 					i = j + 1
 					break
 				}
-				files = append(files, os.Args[j])
+				options.Files = append(files, args[j])
 			}
-		} else if strings.HasPrefix(os.Args[i], "--") {
-			fmt.Printf("%s: unknown flag\n", os.Args[i])
-			os.Exit(1)
+		} else if strings.HasPrefix(args[i], "--") {
+			fmt.Printf("%s: unknown flag\n", args[i])
+			return &Options{}, fmt.Errorf("unknown flag")
+
 		}
 	}
+	return &options, nil
+}
 
-	sourceFiles := os.Args[2:]
-	result, err := renderer.RenderConfig(sourceFiles)
+func main() {
+	options, err := ParseArgs(os.Args)
+	if err != nil {
+		fmt.Println(err)
+		return
+	}
+	result, err := renderer.RenderConfig(options.Files)
 	if err != nil {
 		fmt.Println("Error:", err)
 		os.Exit(1)
 	}
 
-	if address != "" {
-		tcpwait.WaitForTCP(address)
+	if options.Address != "" {
+		tcpwait.WaitForTCP(options.Address)
 	}
 
 	outputYAML, _ := yaml.Marshal(result)
-	err = os.WriteFile(output, outputYAML, 0644)
+	err = os.WriteFile(options.Output, outputYAML, 0644)
 	if err != nil {
 		fmt.Println("Error writing to file:", err)
 		os.Exit(1)
 	}
-	fmt.Println(string(output))
 }
