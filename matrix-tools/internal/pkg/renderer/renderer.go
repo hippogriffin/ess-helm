@@ -68,7 +68,13 @@ func RenderConfig(sourceFiles []string) (map[string]interface{}, error) {
 				return nil, errors.New(envVar + " is not present in the environment")
 			} else {
 				var replacementValue []byte
-				if strings.HasPrefix(val, "secret://") {
+				if strings.HasPrefix(val, "hostname://") {
+					machineHostname, err := os.Hostname()
+					if err != nil {
+						return nil, err
+					}
+					replacementValue = []byte(strings.ReplaceAll(machineHostname, strings.TrimPrefix(val, "hostname://"), ""))
+				} else if strings.HasPrefix(val, "secret://") {
 					filePath := strings.TrimPrefix(val, "secret://")
 					fileBytes, err := os.ReadFile(filePath)
 					if err != nil {
