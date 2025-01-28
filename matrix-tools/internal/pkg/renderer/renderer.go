@@ -27,7 +27,7 @@ func deepMergeMaps(source, destination map[string]any) error {
 			if srcMap, ok := value.(map[string]any); ok {
 				if destMap, ok := destValue.(map[string]any); ok {
 					if err := deepMergeMaps(srcMap, destMap); err != nil {
-						return err
+						return fmt.Errorf("failed to deep merge maps for key '%s': %w", key, err)
 					}
 				} else {
 					destination[key] = value
@@ -102,12 +102,12 @@ func RenderConfig(sourceConfigs []io.Reader) (map[string]any, error) {
 			var replacementValue []byte
 			tmpl, err := template.New("matrix-tools").Funcs(funcMap).Parse(val)
 			if err != nil {
-				return nil, err
+				return nil, fmt.Errorf("failed to parse template for env var %s: %w", envVar, err)
 			}
 			var buffer bytes.Buffer
 			err = tmpl.Execute(&buffer, output)
 			if err != nil {
-				return nil, err
+				return nil, fmt.Errorf("failed to render template for env var %s: %w", envVar, err)
 			}
 			replacementValue = buffer.Bytes()
 			fileContent = bytes.ReplaceAll(fileContent, []byte("${"+envVar+"}"), replacementValue)
@@ -119,7 +119,7 @@ func RenderConfig(sourceConfigs []io.Reader) (map[string]any, error) {
 		}
 
 		if err := deepMergeMaps(data, output); err != nil {
-			return nil, err
+			return nil, fmt.Errorf("failed to deep merge files %w", err)
 		}
 	}
 
