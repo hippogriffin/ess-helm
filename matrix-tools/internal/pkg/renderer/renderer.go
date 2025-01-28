@@ -8,8 +8,9 @@ import (
 	"bytes"
 	"encoding/json"
 	"errors"
+	"fmt"
+	"io"
 	"os"
-	"path/filepath"
 	"regexp"
 	"strings"
 
@@ -41,25 +42,29 @@ func deepMergeMaps(source, destination map[string]any) error {
 	return nil
 }
 
-func RenderConfig(sourceFiles []string) (map[string]any, error) {
+func ReadFiles(configFiles []string) ([]io.Reader, error) {
+	files := make([]io.Reader, 0)
+	for _, configFile := range configFiles {
+		fileReader, err := os.Open(configFile)
+		if err != nil {
+			return files, fmt.Errorf("failed to open file: %w", err)
+		}
+		defer fileReader.Close()
+		files = append(files, fileReader)
+	}
+	return files, nil
+}
+
+// RenderConfig takes a list of io.Reader objects representing yaml configuration files
+// and returns a single map[string]any containing the deeply merged data as yaml format
+// The files are merged in the order they are provided.
+func RenderConfig(sourceConfigs []io.Reader) (map[string]any, error) {
 	output := make(map[string]any)
 
-	for _, sourceFilename := range sourceFiles {
-		if !filepath.IsAbs(sourceFilename) {
-			absName, err := filepath.Abs(sourceFilename)
-			if err != nil {
-				return nil, err
-			}
-			sourceFilename = absName
-		}
-
-		if fileInfo, err := os.Stat(sourceFilename); err == nil && fileInfo.IsDir() {
-			continue
-		}
-
-		fileContent, err := os.ReadFile(sourceFilename)
+	for _, configReader := range sourceConfigs {
+		fileContent, err := io.ReadAll(configReader)
 		if err != nil {
-			return nil, errors.New("failed to read file: " + sourceFilename)
+			return nil, errors.New("failed to read from reader: " + err.Error())
 		}
 
 		envVarNames := extractEnvVarNames(string(fileContent))
@@ -79,7 +84,7 @@ func RenderConfig(sourceFiles []string) (map[string]any, error) {
 				filePath := strings.TrimPrefix(val, "secret://")
 				fileBytes, err := os.ReadFile(filePath)
 				if err != nil {
-					return nil, errors.New("failed to read file: " + filePath)
+					return nil, fmt.Errorf("failed to read file: %s", filePath)
 				}
 				replacementValue, err = json.Marshal(string(fileBytes))
 				if err != nil {
@@ -96,7 +101,7 @@ func RenderConfig(sourceFiles []string) (map[string]any, error) {
 
 		var data map[string]any
 		if err := yaml.Unmarshal(fileContent, &data); err != nil {
-			return nil, errors.New("Post-processed YAML of " + sourceFilename + " is invalid: " + string(fileContent) + " with error: " + err.Error())
+			return nil, fmt.Errorf("Post-processed YAML is invalid: %s with error: %v", string(fileContent), err)
 		}
 
 		if err := deepMergeMaps(data, output); err != nil {

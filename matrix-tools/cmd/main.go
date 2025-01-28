@@ -20,15 +20,6 @@ func main() {
 	options, err := args.ParseArgs(os.Args)
 	if err != nil {
 		fmt.Println(err)
-		return
-	}
-	result, err := renderer.RenderConfig(options.Files)
-	if err != nil {
-		if err == flag.ErrHelp {
-			flag.CommandLine.Usage()
-		} else {
-			fmt.Println("Error:", err)
-		}
 		os.Exit(1)
 	}
 
@@ -37,6 +28,21 @@ func main() {
 	}
 
 	if options.Output != "" && len(options.Files) > 0 {
+		fileReaders, err := renderer.ReadFiles(options.Files)
+		if err != nil {
+			fmt.Println(err)
+			os.Exit(1)
+		}
+		result, err := renderer.RenderConfig(fileReaders)
+		if err != nil {
+			if err == flag.ErrHelp {
+				flag.CommandLine.Usage()
+			} else {
+				fmt.Println("Error:", err)
+			}
+			os.Exit(1)
+		}
+
 		outputYAML, _ := yaml.Marshal(result)
 		fmt.Printf("Rendering config to file: %v", options.Output)
 		err = os.WriteFile(options.Output, outputYAML, 0644)

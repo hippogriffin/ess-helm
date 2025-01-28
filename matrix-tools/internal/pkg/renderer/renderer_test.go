@@ -5,6 +5,8 @@
 package renderer
 
 import (
+	"bytes"
+	"io"
 	"os"
 	"reflect"
 	"testing"
@@ -16,14 +18,18 @@ func TestRenderConfig(t *testing.T) {
 
 	testCases := []struct {
 		name     string
-		files    []string
+		readers  []io.Reader
 		env      map[string]string
 		expected map[string]any
 		err      bool
 	}{
 		{
-			name:  "Single File",
-			files: []string{"testdata/single_file.yml"},
+			name: "Single File",
+			readers: []io.Reader{
+				bytes.NewBuffer([]byte(`key: ${TEST_ENV}
+secretKey: ${SECRET_KEY}
+hostname: ${THIS_HOSTNAME}`)),
+			},
 			env: map[string]string{
 				"TEST_ENV":      "value",
 				"SECRET_KEY":    "secret://testdata/secret_key",
@@ -37,8 +43,15 @@ func TestRenderConfig(t *testing.T) {
 			err: false,
 		},
 		{
-			name:  "Multiple Files",
-			files: []string{"testdata/multiple_files_1.yml", "testdata/multiple_files_2.yml"},
+			name: "Multiple Files",
+			readers: []io.Reader{
+				bytes.NewBuffer([]byte(`key_1: value1
+keyWithEnv1:
+  env1: ${TEST_ENV_1}`)),
+				bytes.NewBuffer([]byte(`key2: value2
+keyWithEnv2:
+  content_with_env2: ${TEST_ENV_2}`)),
+			},
 			env: map[string]string{
 				"TEST_ENV_1": "env_value_1",
 				"TEST_ENV_2": "env_value_2",
@@ -56,8 +69,23 @@ func TestRenderConfig(t *testing.T) {
 			err: false,
 		},
 		{
-			name:  "Overrides in order",
-			files: []string{"testdata/000_override.yml", "testdata/001_override.yml"},
+			name: "Overrides in order",
+			readers: []io.Reader{
+				bytes.NewBuffer([]byte(`overriddenKey: value_000
+overriddenArray:
+  - item_000_a
+  - item_000_b
+overriddenObject:
+  childKey: value_000
+only000Key: only_000`)),
+				bytes.NewBuffer([]byte(`overriddenKey: value_001
+overriddenArray:
+  - item_001_a
+  - item_001_b
+overriddenObject:
+  childKey: value_001
+only001Key: only_001`)),
+			},
 			expected: map[string]any{
 				"overriddenKey": "value_001",
 				"overriddenArray": []any{
@@ -73,14 +101,10 @@ func TestRenderConfig(t *testing.T) {
 			err: false,
 		},
 		{
-			name:     "File Does Not Exist",
-			files:    []string{"testdata/nonexistent_file.yml"},
-			expected: nil,
-			err:      true,
-		},
-		{
-			name:     "Environment Variable Missing",
-			files:    []string{"testdata/env_var_missing.yml"},
+			name: "Environment Variable Missing",
+			readers: []io.Reader{
+				bytes.NewBuffer([]byte(`key: ${TEST_ENV}`)),
+			},
 			expected: nil,
 			err:      true,
 		},
@@ -94,7 +118,7 @@ func TestRenderConfig(t *testing.T) {
 				}
 			}
 
-			result, err := RenderConfig(tc.files)
+			result, err := RenderConfig(tc.readers)
 			if (err != nil) != tc.err {
 				t.Errorf("expected error: %v, got: %v", tc.err, err)
 			}
