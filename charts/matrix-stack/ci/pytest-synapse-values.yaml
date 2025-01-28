@@ -4,10 +4,6 @@
 
 serverName: ess.localhost
 
-matrixTools:
-  image:
-    pullPolicy: Never
-
 synapse:
   additional:
     00-userconfig.yaml:
