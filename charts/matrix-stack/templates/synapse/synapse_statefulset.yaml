@@ -101,19 +101,15 @@ We have an init container to render & merge the config for several reasons:
                  The default values are handling the case where the credential is provided plain in the Helm chart and we add it to our Secret with a well-known key.
 
                  These could be done as env vars with valueFrom.secretKeyRef, but that triggers CKV_K8S_35.
-                 The prefixes `secret://` and `hostname://` are mechanisms handled in the matrix-tools binary:
-                 - `secret://` is used to read the secret from the filesystem and inject in the rendered config file
-                 - `hostname://` is used to drop the pattern indicated from the hostname and inject resulting value in the config file
-                 - Anything else is handled as a simple string replacement
-                  */}}
+                 Environment variables values found in the config file as ${VARNAME} are parsed through go template engine before being replaced in the target file.
+          */}}
           - name: SYNAPSE_MACAROON
-            value: secret:///secrets/{{ tpl (.macaroon.secret | default (printf "%s-synapse" $.Release.Name)) $ }}/{{ .macaroon.secretKey | default "MACAROON" }}
+            value: {{ printf "{{ readfile \"/secrets/%s/%s\" }}" (tpl (.macaroon.secret | default (printf "%s-synapse" $.Release.Name)) $) (.macaroon.secretKey | default "MACAROON") }}
           - name: SYNAPSE_POSTGRES_PASSWORD
-            value: secret://secrets/{{ tpl (.postgres.password.secret | default (printf "%s-synapse" $.Release.Name)) $ }}/{{ .postgres.password.secretKey | default "POSTGRES_PASSWORD" }}
-          - name: SYNAPSE_REGISTRATION_SHARED_SECRET
-            value: secret:///secrets/{{ tpl (.registrationSharedSecret.secret | default (printf "%s-synapse" $.Release.Name)) $ }}/{{ .registrationSharedSecret.secretKey | default "REGISTRATION_SHARED_SECRET" }}
+            value: {{ printf "{{ readfile \"/secrets/%s/%s\" }}" (tpl (.postgres.password.secret | default (printf "%s-synapse" $.Release.Name)) $) (.postgres.password.secretKey | default "POSTGRES_PASSWORD") }}
+            value: {{ printf "{{ readfile \"/secrets/%s/%s\" }}" (tpl (.registrationSharedSecret.secret | default (printf "%s-synapse" $.Release.Name)) $) (.registrationSharedSecret.secretKey | default "REGISTRATION_SHARED_SECRET") }}
           - name: APPLICATION_NAME
-            value: hostname://-synapse-
+            value: {{ printf "{{ hostname | replace \"-synapse-\" }}" }}
           {{- include "element-io.synapse.env" (dict "root" $ "context" .) | nindent 10 }}
 {{- with .resources }}
         resources:

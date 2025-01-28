@@ -6,13 +6,13 @@ package renderer
 
 import (
 	"bytes"
-	"encoding/json"
 	"errors"
 	"fmt"
 	"io"
 	"os"
 	"regexp"
 	"strings"
+	"text/template"
 
 	"gopkg.in/yaml.v3"
 )
@@ -55,9 +55,28 @@ func ReadFiles(configFiles []string) ([]io.Reader, error) {
 	return files, nil
 }
 
+func readfile(path string) (string, error) {
+	content, err := os.ReadFile(path)
+	if err != nil {
+		return "", fmt.Errorf("failed to read file: %w", err)
+	}
+	return string(content), nil
+}
+
+func replace(old, new, src string) string {
+	return strings.Replace(src, old, new, -1)
+}
+
 // RenderConfig takes a list of io.Reader objects representing yaml configuration files
 // and returns a single map[string]any containing the deeply merged data as yaml format
 // The files are merged in the order they are provided.
+// Each file can contain variables to replace with the format ${VARNAME}
+// Variables to replace are fetched from the environment variables. Their value
+// is parsed through go template engine.
+// 3 functions are available in the template :
+// - readfile(path) : reads a file and returns its content
+// - hostname() : returns the current host name
+// - replace(old,new,string) : replaces old with new in string
 func RenderConfig(sourceConfigs []io.Reader) (map[string]any, error) {
 	output := make(map[string]any)
 
@@ -65,6 +84,11 @@ func RenderConfig(sourceConfigs []io.Reader) (map[string]any, error) {
 		fileContent, err := io.ReadAll(configReader)
 		if err != nil {
 			return nil, errors.New("failed to read from reader: " + err.Error())
+		}
+		funcMap := template.FuncMap{
+			"readfile": readfile,
+			"hostname": os.Hostname,
+			"replace":  replace,
 		}
 
 		envVarNames := extractEnvVarNames(string(fileContent))
@@ -74,28 +98,16 @@ func RenderConfig(sourceConfigs []io.Reader) (map[string]any, error) {
 				return nil, errors.New(envVar + " is not present in the environment")
 			}
 			var replacementValue []byte
-			if strings.HasPrefix(val, "hostname://") {
-				machineHostname, err := os.Hostname()
-				if err != nil {
-					return nil, err
-				}
-				replacementValue = []byte(strings.ReplaceAll(machineHostname, strings.TrimPrefix(val, "hostname://"), ""))
-			} else if strings.HasPrefix(val, "secret://") {
-				filePath := strings.TrimPrefix(val, "secret://")
-				fileBytes, err := os.ReadFile(filePath)
-				if err != nil {
-					return nil, fmt.Errorf("failed to read file: %s", filePath)
-				}
-				replacementValue, err = json.Marshal(string(fileBytes))
-				if err != nil {
-					return nil, err
-				}
-			} else {
-				replacementValue, err = json.Marshal(val)
-			}
+			tmpl, err := template.New("matrix-tools").Funcs(funcMap).Parse(val)
 			if err != nil {
 				return nil, err
 			}
+			var buffer bytes.Buffer
+			err = tmpl.Execute(&buffer, output)
+			if err != nil {
+				return nil, err
+			}
+			replacementValue = buffer.Bytes()
 			fileContent = bytes.ReplaceAll(fileContent, []byte("${"+envVar+"}"), replacementValue)
 		}
 

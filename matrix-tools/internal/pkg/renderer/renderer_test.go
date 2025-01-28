@@ -6,6 +6,7 @@ package renderer
 
 import (
 	"bytes"
+	"fmt"
 	"io"
 	"os"
 	"reflect"
@@ -32,8 +33,8 @@ hostname: ${THIS_HOSTNAME}`)),
 			},
 			env: map[string]string{
 				"TEST_ENV":      "value",
-				"SECRET_KEY":    "secret://testdata/secret_key",
-				"THIS_HOSTNAME": "hostname://" + droppedFromHostname,
+				"SECRET_KEY":    "{{ readfile \"testdata/secret_key\" }}",
+				"THIS_HOSTNAME": fmt.Sprintf("{{ hostname | replace \"%s\" \"\" }}", droppedFromHostname),
 			},
 			expected: map[string]any{
 				"key":       "value",
