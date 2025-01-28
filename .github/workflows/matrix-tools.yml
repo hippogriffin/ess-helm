@@ -1,0 +1,104 @@
+# Copyright 2024 New Vector Ltd
+#
+# SPDX-License-Identifier: AGPL-3.0-only OR LicenseRef-Element-Commercial
+
+name: Build Docker Images
+
+on:
+  pull_request:
+  workflow_dispatch:
+  push:
+    branches:
+    - main
+    tags:
+    - 'matrix-tools-*'
+
+env:
+  DOCKER_REGISTRY: ghcr.io/element-hq
+  BAKE_TARGET: matrix-tools
+
+permissions:
+  contents: read
+  packages: write
+
+jobs:
+  tests:
+    runs-on: cpu-s
+    container:
+      image: ghcr.io/${{ github.repository }}/ci-runner
+      credentials:
+        username: ${{ github.actor }}
+        password: ${{ secrets.GITHUB_TOKEN }}
+    steps:
+    - uses: actions/checkout@v3
+      with:
+        ref: ${{ github.event.pull_request.head.sha }}
+
+    - name: Prepare go path
+      run: echo "/usr/local/go/bin" >> "${GITHUB_PATH}"
+
+    - name: Lint with golangci-lint
+      run: ls -l /usr/local && echo $PATH && cd matrix-tools && golangci-lint run ./...
+
+    - name: Run tests
+      run: cd matrix-tools && go test -v ./...
+
+  # Build our application docker images in parallel.
+  docker-build-and-push:
+    name: Build matrix-tools container image
+    needs:
+    - tests
+    runs-on: dind-m
+    steps:
+      - name: Inspect Builder
+        run: docker buildx inspect
+
+      - name: Checkout Repository
+        uses: actions/checkout@v4
+
+      - name: Login to GHCR
+        uses: docker/login-action@v3
+        with:
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Get Release Tag
+        if: github.ref_type == 'tag' # Only for GitHub releases
+        run: |
+          echo "Converting $GITHUB_REF to tags"
+          echo "VERSION=${GITHUB_REF#refs\/tags\/matrix-tools-}" >> $GITHUB_ENV
+
+      - name: Docker meta
+        id: meta
+        uses: docker/metadata-action@master
+        with:
+          images: |
+            ${{ env.DOCKER_REGISTRY }}/${{ env.BAKE_TARGET }}
+          flavor: |
+            latest=false
+          tags: |
+            type=raw,value=${{ env.VERSION }},enable=${{ github.ref_type == 'tag' }}
+            type=sha,prefix=sha-,format=short
+
+      - name: Build and Push Image
+        id: build_image
+        uses: docker/bake-action@v4.1.0
+        with:
+          # Only for tags
+          push: "${{ github.ref_type == 'tag' }}"
+          files: |
+            docker-bake.hcl
+            ${{ steps.meta.outputs.bake-file }}
+          targets: |
+            ${{ env.BAKE_TARGET }}
+          # Override the docker bake target with Bakefile options specific to
+          # releasing the docker images.
+          #
+          # All options: https://docs.docker.com/reference/cli/docker/buildx/bake/#set
+          # Option descriptions: https://docs.docker.com/build/bake/reference/
+          #
+          # note: "base" is the target called "base".
+          set: |
+            base.output=type=image,push=true
+            ${{ env.BAKE_TARGET }}.args.RELEASE_MODE=true

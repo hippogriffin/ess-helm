@@ -65,12 +65,12 @@ We have an init container to render & merge the config for several reasons:
 */}}
       initContainers:
       - name: render-config
-{{- with .image -}}
+{{- with $.Values.matrixTools.image -}}
 {{- if .digest }}
         image: "{{ .registry }}/{{ .repository }}@{{ .digest }}"
         imagePullPolicy: {{ .pullPolicy | default "IfNotPresent" }}
 {{- else }}
-        image: "{{ .registry }}/{{ .repository }}:{{ required "synapse.image.tag is required if no digest" .tag }}"
+        image: "{{ .registry }}/{{ .repository }}:{{ required "matrixTools.image.tag is required if no digest" .tag }}"
         imagePullPolicy: {{ .pullPolicy | default "Always" }}
 {{- end }}
 {{- end }}
@@ -79,43 +79,42 @@ We have an init container to render & merge the config for several reasons:
           {{- toYaml . | nindent 10 }}
 {{- end }}
         command:
-        - "bash"
-        - "-ce"
-        - >
+        - "/matrix-tools"
+        - render-config
+        - -output
+        - /conf/homeserver.yaml
+        - /config-templates/01-homeserver-underrides.yaml
+          {{- range $key := (.additional | keys | uniq | sortAlpha) -}}
+          {{- $prop := index $.Values.synapse.additional $key }}
+          {{- if $prop.config }}
+        - /secrets/{{ $.Release.Name }}-synapse/user-{{ $key }}
+          {{- end }}
+          {{- if $prop.configSecret }}
+        - /secrets/{{ tpl $prop.configSecret $ }}/{{ $prop.configSecretKey }}
+          {{- end }}
+          {{- end }}
+        - /config-templates/04-homeserver-overrides.yaml
+        - /config-templates/05-{{ $processType }}.yaml
+        env:
           {{- /* The filesystem structure is `/secrets`/<< secret name>>/<< secret key >>.
                  The non-defaulted values are handling the case where the credential is provided by an existing Secret
                  The default values are handling the case where the credential is provided plain in the Helm chart and we add it to our Secret with a well-known key.
 
                  These could be done as env vars with valueFrom.secretKeyRef, but that triggers CKV_K8S_35.
-                 If we wanted to allow for replacement of values in the user-provided config with external Secrets we could extend this init-container
-                 to allow extraEnv with valueFrom.secretKeyRef. */}}
-          export SYNAPSE_MACAROON=$(cat /secrets/{{ tpl (.macaroon.secret | default (printf "%s-synapse" $.Release.Name)) $ }}/{{ .macaroon.secretKey | default "MACAROON" }});
-          export SYNAPSE_POSTGRES_PASSWORD=$(cat /secrets/{{ tpl (.postgres.password.secret | default (printf "%s-synapse" $.Release.Name)) $ }}/{{ .postgres.password.secretKey | default "POSTGRES_PASSWORD" }});
-          export SYNAPSE_REGISTRATION_SHARED_SECRET=$(cat /secrets/{{ tpl (.registrationSharedSecret.secret | default (printf "%s-synapse" $.Release.Name)) $ }}/{{ .registrationSharedSecret.secretKey | default "REGISTRATION_SHARED_SECRET" }});
-
-          set -x;
-          export APPLICATION_NAME=$(hostname -s | sed 's/.*-synapse-//g');
-          cp /config-templates/log_config.yaml /conf/log_config.yaml;
-
-          python3 /config-templates/render_config_with_secrets.py \
-            /config-templates/01-homeserver-underrides.yaml \
-          {{- range $key := (.additional | keys | uniq | sortAlpha) -}}
-          {{- $prop := index $.Values.synapse.additional $key }}
-          {{- if $prop.config }}
-            /secrets/{{ $.Release.Name }}-synapse/user-{{ $key }} \
-          {{- end }}
-          {{- if $prop.configSecret }}
-            /secrets/{{ tpl $prop.configSecret $ }}/{{ $prop.configSecretKey }} \
-          {{- end }}
-          {{- end }}
-            /config-templates/04-homeserver-overrides.yaml \
-            /config-templates/05-{{ $processType }}.yaml \
-            > /conf/homeserver.yaml;
-
-          while ! bash -c "cat < /dev/null > /dev/tcp/$POSTGRES_HOST/$POSTGRES_PORT" 2>/dev/null;
-          do sleep 1; echo "waiting for $POSTGRES_HOST:$POSTGRES_PORT";
-          done;
-        env:
+                 Environment variables values found in the config file as ${VARNAME} are parsed through go template engine before being replaced in the target file.
+          */}}
+          - name: SYNAPSE_MACAROON
+            value: >-
+              {{ printf "{{ readfile \"/secrets/%s/%s\" }}" (tpl (.macaroon.secret | default (printf "%s-synapse" $.Release.Name)) $) (.macaroon.secretKey | default "MACAROON") }}
+          - name: SYNAPSE_POSTGRES_PASSWORD
+            value: >-
+              {{ printf "{{ readfile \"/secrets/%s/%s\" }}" (tpl (.postgres.password.secret | default (printf "%s-synapse" $.Release.Name)) $) (.postgres.password.secretKey | default "POSTGRES_PASSWORD") }}
+          - name: SYNAPSE_REGISTRATION_SHARED_SECRET
+            value: >-
+              {{ printf "{{ readfile \"/secrets/%s/%s\" }}" (tpl (.registrationSharedSecret.secret | default (printf "%s-synapse" $.Release.Name)) $) (.registrationSharedSecret.secretKey | default "REGISTRATION_SHARED_SECRET") }}
+          - name: APPLICATION_NAME
+            value: >-
+              {{ printf "{{ hostname | replace \"-synapse-\" \"\" }}" }}
           {{- include "element-io.synapse.env" (dict "root" $ "context" .) | nindent 10 }}
 {{- with .resources }}
         resources:
@@ -133,6 +132,29 @@ We have an init container to render & merge the config for several reasons:
         - mountPath: /conf
           name: rendered-config
           readOnly: false
+      - name: db-wait
+{{- with $.Values.matrixTools.image -}}
+{{- if .digest }}
+        image: "{{ .registry }}/{{ .repository }}@{{ .digest }}"
+        imagePullPolicy: {{ .pullPolicy | default "IfNotPresent" }}
+{{- else }}
+        image: "{{ .registry }}/{{ .repository }}:{{ required "matrixTools.image.tag is required if no digest" .tag }}"
+        imagePullPolicy: {{ .pullPolicy | default "Always" }}
+{{- end }}
+{{- end }}
+{{- with .containersSecurityContext }}
+        securityContext:
+          {{- toYaml . | nindent 10 }}
+{{- end }}
+        command:
+        - "/matrix-tools"
+        - tcpwait
+        - -address
+        - "{{ (tpl .postgres.host $) }}:{{ .postgres.port }}"
+{{- with .resources }}
+        resources:
+          {{- toYaml . | nindent 10 }}
+{{- end }}
       containers:
       - name: synapse
 {{- with .image -}}
@@ -212,6 +234,10 @@ We have an init container to render & merge the config for several reasons:
           readOnly: true
           subPath: registration.yaml
 {{- end }}
+        - mountPath: /conf/log_config.yaml
+          name: plain-config
+          subPath: log_config.yaml
+          readOnly: false
         - mountPath: /conf
           name: rendered-config
           readOnly: false

@@ -53,7 +53,7 @@ def get_volume_from_mount(template, volume_mount):
 
 def match_in_content(container_name, mounted_secret_keys, mount_path, match_in):
     found_mount = False
-    for match in re.findall(rf"{mount_path}/([^\s\n);]+)", match_in):
+    for match in re.findall(rf"{mount_path}/([^\s\n\");]+)", match_in):
         assert (
             f"{mount_path}/{match}" in mounted_secret_keys
         ), f"{mount_path}/{match} used in {container_name} but it is not found from any mounted secret"
