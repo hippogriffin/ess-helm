@@ -28,7 +28,15 @@ func main() {
 	}
 
 	if options.Output != "" && len(options.Files) > 0 {
-		fileReaders, err := renderer.ReadFiles(options.Files)
+		fileReaders, closeFiles, err := renderer.ReadFiles(options.Files)
+		defer func() {
+			for _, closeFn := range closeFiles {
+				err := closeFn()
+				if err != nil {
+					fmt.Println("Error closing file : ", err)
+				}
+			}
+		}()
 		if err != nil {
 			fmt.Println(err)
 			os.Exit(1)

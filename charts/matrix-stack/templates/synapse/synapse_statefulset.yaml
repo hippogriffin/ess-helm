@@ -104,12 +104,17 @@ We have an init container to render & merge the config for several reasons:
                  Environment variables values found in the config file as ${VARNAME} are parsed through go template engine before being replaced in the target file.
           */}}
           - name: SYNAPSE_MACAROON
-            value: {{ printf "{{ readfile \"/secrets/%s/%s\" }}" (tpl (.macaroon.secret | default (printf "%s-synapse" $.Release.Name)) $) (.macaroon.secretKey | default "MACAROON") }}
+            value: >-
+              {{ printf "{{ readfile \"/secrets/%s/%s\" }}" (tpl (.macaroon.secret | default (printf "%s-synapse" $.Release.Name)) $) (.macaroon.secretKey | default "MACAROON") }}
           - name: SYNAPSE_POSTGRES_PASSWORD
-            value: {{ printf "{{ readfile \"/secrets/%s/%s\" }}" (tpl (.postgres.password.secret | default (printf "%s-synapse" $.Release.Name)) $) (.postgres.password.secretKey | default "POSTGRES_PASSWORD") }}
-            value: {{ printf "{{ readfile \"/secrets/%s/%s\" }}" (tpl (.registrationSharedSecret.secret | default (printf "%s-synapse" $.Release.Name)) $) (.registrationSharedSecret.secretKey | default "REGISTRATION_SHARED_SECRET") }}
+            value: >-
+              {{ printf "{{ readfile \"/secrets/%s/%s\" }}" (tpl (.postgres.password.secret | default (printf "%s-synapse" $.Release.Name)) $) (.postgres.password.secretKey | default "POSTGRES_PASSWORD") }}
+          - name: SYNAPSE_REGISTRATION_SHARED_SECRET
+            value: >-
+              {{ printf "{{ readfile \"/secrets/%s/%s\" }}" (tpl (.registrationSharedSecret.secret | default (printf "%s-synapse" $.Release.Name)) $) (.registrationSharedSecret.secretKey | default "REGISTRATION_SHARED_SECRET") }}
           - name: APPLICATION_NAME
-            value: {{ printf "{{ hostname | replace \"-synapse-\" }}" }}
+            value: >-
+              {{ printf "{{ hostname | replace \"-synapse-\" }}" }}
           {{- include "element-io.synapse.env" (dict "root" $ "context" .) | nindent 10 }}
 {{- with .resources }}
         resources:
