@@ -10,8 +10,13 @@ SPDX-License-Identifier: AGPL-3.0-only OR LicenseRef-Element-Commercial
 frontend well-known-in
   bind *:8010
 
+  # same as http log, with %Th (handshake time)
+  log-format "%ci:%cp [%tr] %ft %b/%s %Th/%TR/%Tw/%Tc/%Tr/%Ta %ST %B %CC %CS %tsc %ac/%fc/%bc/%sc/%rc %sq/%bq %hr %hs %{+Q}r"
+
+
   acl well-known path /.well-known/matrix/server
   acl well-known path /.well-known/matrix/client
+  acl well-known path /.well-known/matrix/support
   acl well-known path /.well-known/element/element.json
 
   use_backend well-known-static if well-known
@@ -31,6 +36,7 @@ backend well-known-static
 
   http-request return status 200 content-type "application/json" file "/well-known/server" if { path /.well-known/matrix/server }
   http-request return status 200 content-type "application/json" file "/well-known/client" if { path /.well-known/matrix/client }
+  http-request return status 200 content-type "application/json" file "/well-known/support" if { path /.well-known/matrix/support }
   http-request return status 200 content-type "application/json" file "/well-known/element.json" if { path /.well-known/element/element.json }
 
 {{- end -}}
