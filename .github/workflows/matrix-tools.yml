@@ -14,7 +14,7 @@ on:
     - 'matrix-tools-*'
 
 env:
-  DOCKER_REGISTRY: ghcr.io/element-hq
+  DOCKER_REGISTRY: ${{ github.repository }}
   BAKE_TARGET: matrix-tools
 
 permissions:
