@@ -114,7 +114,7 @@ We have an init container to render & merge the config for several reasons:
               {{ printf "{{ readfile \"/secrets/%s/%s\" }}" (tpl (.registrationSharedSecret.secret | default (printf "%s-synapse" $.Release.Name)) $) (.registrationSharedSecret.secretKey | default "REGISTRATION_SHARED_SECRET") }}
           - name: APPLICATION_NAME
             value: >-
-              {{ printf "{{ hostname | replace \"-synapse-\" }}" }}
+              {{ printf "{{ hostname | replace \"-synapse-\" \"\" }}" }}
           {{- include "element-io.synapse.env" (dict "root" $ "context" .) | nindent 10 }}
 {{- with .resources }}
         resources:
