@@ -13,9 +13,11 @@ async def test_only_additional_if_all_disabled_in_well_known(values, make_templa
     client_config = {"testclientkey": {"testsubket": "testvalue"}}
     server_config = {"testserverkey": {"testsubket": "testvalue"}}
     element_config = {"testelementkey": {"testsubket": "testvalue"}}
+    support_config = {"testsupportkey": {"testsubket": "testvalue"}}
     values["wellKnownDelegation"].setdefault("additional", {})["client"] = json.dumps(client_config)
     values["wellKnownDelegation"].setdefault("additional", {})["server"] = json.dumps(server_config)
     values["wellKnownDelegation"].setdefault("additional", {})["element"] = json.dumps(element_config)
+    values["wellKnownDelegation"].setdefault("additional", {})["support"] = json.dumps(support_config)
     for template in await make_templates(values):
         if template["kind"] == "ConfigMap" and template["metadata"]["name"] == "pytest-well-known-haproxy":
             client_from_json = json.loads(template["data"]["client"])
@@ -26,6 +28,9 @@ async def test_only_additional_if_all_disabled_in_well_known(values, make_templa
 
             element_from_json = json.loads(template["data"]["element.json"])
             assert element_from_json == element_config
+
+            support_config_from_json = json.loads(template["data"]["support"])
+            assert support_config == support_config_from_json
 
             break
     else:
@@ -38,9 +43,11 @@ async def test_synapse_injected_in_server_and_client_well_known(values, make_tem
     client_config = {"testclientkey": {"testsubket": "testvalue"}}
     server_config = {"testserverkey": {"testsubket": "testvalue"}}
     element_config = {"testelementkey": {"testsubket": "testvalue"}}
+    support_config = {"testsupportkey": {"testsubket": "testvalue"}}
     values["wellKnownDelegation"].setdefault("additional", {})["client"] = json.dumps(client_config)
     values["wellKnownDelegation"].setdefault("additional", {})["server"] = json.dumps(server_config)
     values["wellKnownDelegation"].setdefault("additional", {})["element"] = json.dumps(element_config)
+    values["wellKnownDelegation"].setdefault("additional", {})["support"] = json.dumps(support_config)
 
     synapse_federation = {"m.server": "synapse.ess.localhost:443"}
     synapse_base_url = {"m.homeserver": {"base_url": "https://synapse.ess.localhost"}}
@@ -54,6 +61,9 @@ async def test_synapse_injected_in_server_and_client_well_known(values, make_tem
 
             element_from_json = json.loads(template["data"]["element.json"])
             assert element_from_json == element_config
+
+            support_from_json = json.loads(template["data"]["support"])
+            assert support_from_json == support_config
 
             break
     else:

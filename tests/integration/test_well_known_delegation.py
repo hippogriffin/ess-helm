@@ -30,6 +30,11 @@ async def test_well_known_files_can_be_accessed(
         assert json_content == {}
 
     json_content = await aiottp_get_json(
+        f"https://{generated_data.server_name}/.well-known/matrix/support", ssl_context
+    )
+    assert json_content == {}
+
+    json_content = await aiottp_get_json(
         f"https://{generated_data.server_name}/.well-known/element/element.json", ssl_context
     )
     assert json_content == {}

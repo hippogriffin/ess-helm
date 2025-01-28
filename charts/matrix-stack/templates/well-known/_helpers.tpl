@@ -66,3 +66,12 @@ k8s.element.io/target-instance: {{ $root.Release.Name }}-haproxy
 {{- tpl (toPrettyJson (merge $config $additional)) $root -}}
 {{- end -}}
 {{- end }}
+
+{{- define "element-io.well-known-delegation.support" }}
+{{- $root := .root -}}
+{{- with required "element-io.well-known-delegation.support missing context" .context -}}
+{{- $config := dict -}}
+{{- $additional := .additional.support | fromJson -}}
+{{- tpl (toPrettyJson (merge $config $additional)) $root -}}
+{{- end -}}
+{{- end }}
