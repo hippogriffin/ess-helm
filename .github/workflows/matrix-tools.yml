@@ -100,5 +100,4 @@ jobs:
           #
           # note: "base" is the target called "base".
           set: |
-            base.output=type=image,push=true
-            ${{ env.BAKE_TARGET }}.args.RELEASE_MODE=true
+            base.output=type=image

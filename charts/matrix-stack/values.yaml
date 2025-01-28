@@ -16,7 +16,7 @@ matrixTools:
     registry: ghcr.io
 
     ## The path in the registry where the container image is located
-    repository: element-hq/ess-helm/matrix-tools
+    repository: element-hq/matrix-tools
 
     ## The tag of the container image to use.
     ## Defaults to the Chart's appVersion if not set
