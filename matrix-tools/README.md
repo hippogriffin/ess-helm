@@ -62,6 +62,7 @@ Similarly to `envsubstr`, it supports the use of environment variables in config
  - `hostname` returns the hostname of the machine.
  - `readfile` reads a file and returns its content as string.
  - `replace` replaces occurrences of a substring with another substring in the input string.
+ - `quote` quotes the input string with double quotes.
 
 ### TCP Wait
 

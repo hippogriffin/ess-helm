@@ -11,6 +11,7 @@ import (
 	"io"
 	"os"
 	"regexp"
+	"strconv"
 	"strings"
 	"text/template"
 
@@ -68,6 +69,10 @@ func replace(old, new, src string) string {
 	return strings.Replace(src, old, new, -1)
 }
 
+func quote(src string) string {
+	return strconv.Quote(src)
+}
+
 // RenderConfig takes a list of io.Reader objects representing yaml configuration files
 // and returns a single map[string]any containing the deeply merged data as yaml format
 // The files are merged in the order they are provided.
@@ -91,6 +96,7 @@ func RenderConfig(sourceConfigs []io.Reader) (map[string]any, error) {
 			"readfile": readfile,
 			"hostname": os.Hostname,
 			"replace":  replace,
+			"quote":    quote,
 		}
 
 		envVarNames := extractEnvVarNames(string(fileContent))
