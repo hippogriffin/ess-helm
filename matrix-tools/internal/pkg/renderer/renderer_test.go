@@ -28,18 +28,21 @@ func TestRenderConfig(t *testing.T) {
 			name: "Single File",
 			readers: []io.Reader{
 				bytes.NewBuffer([]byte(`key: ${TEST_ENV}
+quotedValue: ${SPECIAL_CHARS}
 secretKey: ${SECRET_KEY}
 hostname: ${THIS_HOSTNAME}`)),
 			},
 			env: map[string]string{
 				"TEST_ENV":      "value",
+				"SPECIAL_CHARS": "{{ \"!ayamltype\" | quote }}",
 				"SECRET_KEY":    "{{ readfile \"testdata/secret_key\" }}",
 				"THIS_HOSTNAME": fmt.Sprintf("{{ hostname | replace \"%s\" \"\" }}", droppedFromHostname),
 			},
 			expected: map[string]any{
-				"key":       "value",
-				"secretKey": "secret_value",
-				"hostname":  hostname[0:2] + hostname[4:],
+				"key":         "value",
+				"secretKey":   "secret_value",
+				"quotedValue": "!ayamltype",
+				"hostname":    hostname[0:2] + hostname[4:],
 			},
 			err: false,
 		},
