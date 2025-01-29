@@ -164,6 +164,8 @@ The changelog is built on release time using `towncrier build` in the chart dire
 
 ## Releasing
 
+### Helm chart
+
 To create a release, just construct a tag with the desired version number.
 CI will run a workflow that constructs OCI and tarball artifacts with this version
 number. It will then create a draft release. The draft release will have release
@@ -176,3 +178,11 @@ published.
 
 The tarball artifact will be attached to the release. The OCI artifact will be
 available at `oci://ghrc.io/element-hq/ess-helm:<tag>`
+
+### Matrix tools
+
+To release a new `matrix-tools` image, just construct a tag named `matrix-tools-<version>`
+with version being a semver.
+CI will run a workflow that constructs OCI and pushes the image to ghcr.io
+
+The image will be available at `oci://ghcr.io/element-hq/ess-helm/matrix-tools:<tag>`
