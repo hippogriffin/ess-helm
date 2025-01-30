@@ -6,7 +6,7 @@ SPDX-License-Identifier: AGPL-3.0-only OR LicenseRef-Element-Commercial
 
 <!-- towncrier release notes start -->
 
-# Element Community Helm Chart 0.5.0 (2025-01-30)
+# ESS Community Helm Chart 0.5.0 (2025-01-30)
 
 ### Added
 
@@ -21,7 +21,7 @@ SPDX-License-Identifier: AGPL-3.0-only OR LicenseRef-Element-Commercial
 - Make sure matrix-tools is part of ess-helm namespace. (#135)
 
 
-# Element Comunity Helm Chart 0.4.1 (2025-01-23)
+# ESS Community Helm Chart 0.4.1 (2025-01-23)
 
 ### Added
 

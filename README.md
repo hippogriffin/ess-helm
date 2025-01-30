@@ -4,9 +4,9 @@ Copyright 2024 New Vector Ltd
 SPDX-License-Identifier: AGPL-3.0-only OR LicenseRef-Element-Commercial
 -->
 
-# Element Server Suite - matrix-stack Helm Chart
+# Element Server Suite Community Helm Chart
 
-A Helm Chart to deploy the Element Server Suite
+A Helm Chart to deploy the Element Server Suite (ESS).
 
 ## Developing
 
