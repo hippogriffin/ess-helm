@@ -132,12 +132,6 @@ jobs:
         echo "this-version=$this_version" >> $GITHUB_OUTPUT
         echo "next-version=$next_version" >> $GITHUB_OUTPUT
 
-    - name: Remove latest changelog
-      run: |
-        rm CHANGELOG.latest.md
-        rm newsfragments/*.md
-        touch newsfragments/.gitkeep
-
     - name: Release
       uses: softprops/action-gh-release@v2
       with:
@@ -147,6 +141,12 @@ jobs:
         fail_on_unmatched_files: true
         # This could simply be omitted if we didn't want to test without a tag
         tag_name: "${{ steps.versions.outputs.this-version }}"
+
+    - name: Remove latest changelog
+      run: |
+        rm CHANGELOG.latest.md
+        rm newsfragments/*.md
+        touch newsfragments/.gitkeep
 
     - name: Create PR for next patch version
       uses: peter-evans/create-pull-request@v7
