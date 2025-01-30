@@ -63,7 +63,7 @@ select = [
 
 [tool.towncrier]
 package = ""
-name = "Element Community Helm Chart"
+name = "ESS Community Helm Chart"
 filename = "CHANGELOG.md"
 
 # See artifacthub changes kinds https://artifacthub.io/docs/topics/annotations/helm/
