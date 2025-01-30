@@ -12,9 +12,24 @@ import (
 
 	"github.com/element-hq/ess-helm/matrix-tools/internal/pkg/args"
 	"github.com/element-hq/ess-helm/matrix-tools/internal/pkg/renderer"
+	"github.com/element-hq/ess-helm/matrix-tools/internal/pkg/secret"
 	"github.com/element-hq/ess-helm/matrix-tools/internal/pkg/tcpwait"
 	"gopkg.in/yaml.v3"
+	"k8s.io/client-go/kubernetes"
+	"k8s.io/client-go/rest"
 )
+
+func getKubernetesClient() (kubernetes.Interface, error) {
+	config, err := rest.InClusterConfig()
+	if err != nil {
+		return nil, err
+	}
+	clientset, err := kubernetes.NewForConfig(config)
+	if err != nil {
+		return nil, err
+	}
+	return clientset, nil
+}
 
 func main() {
 	options, err := args.ParseArgs(os.Args)
@@ -60,4 +75,24 @@ func main() {
 		}
 	}
 
+	if len(options.GeneratedSecrets) > 0 {
+		clientset, err := getKubernetesClient()
+		if err != nil {
+			fmt.Println("Error getting Kubernetes client: ", err)
+			os.Exit(1)
+		}
+		namespace := os.Getenv("NAMESPACE")
+		if namespace == "" {
+			fmt.Println("Error, $NAMESPACE is not defined")
+			os.Exit(1)
+		}
+
+		for _, generatedSecret := range options.GeneratedSecrets {
+			err := secret.GenerateSecret(clientset, namespace, generatedSecret.Name, generatedSecret.Key, generatedSecret.Type, false)
+			if err != nil {
+				fmt.Printf("Error generating secret %s \n %v", generatedSecret.ArgValue, err)
+				os.Exit(1)
+			}
+		}
+	}
 }
