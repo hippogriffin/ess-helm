@@ -1,0 +1,53 @@
+{{- /*
+Copyright 2024 New Vector Ltd
+
+SPDX-License-Identifier: AGPL-3.0-only OR LicenseRef-Element-Commercial
+*/ -}}
+
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: {{ $.Release.Name }}-init-secrets
+  namespace: {{ $.Release.Namespace }}
+  labels:
+    {{- include "element-io.init-secrets.labels" (dict "root" $ "context" .) | nindent 4 }}
+spec:
+  backoffLimit: 6
+  completionMode: NonIndexed
+  completions: 1
+  manualSelector: false
+  parallelism: 1
+  podReplacementPolicy: TerminatingOrFailed
+  template:
+    servicesAccountName: {{ $.Release.Name }}-init-secrets
+{{- with .annotations }}
+      annotations:
+        {{- toYaml . | nindent 8 }}
+{{- end }}
+    spec:
+{{- include "element-io.ess-library.pods.commonSpec" (dict "root" $ "context" (dict "componentValues" . "key" "initSecrets" "deployment" false)) | nindent 6 }}
+{{- with .hostAliases }}
+      hostAliases:
+        {{- tpl (toYaml . | nindent 8) $ }}
+{{- end }}
+      containers:
+      - name: init-secrets
+{{- with $.Values.matrixTools.image -}}
+{{- if .digest }}
+        image: "{{ .registry }}/{{ .repository }}@{{ .digest }}"
+        imagePullPolicy: {{ .pullPolicy | default "IfNotPresent" }}
+{{- else }}
+        image: "{{ .registry }}/{{ .repository }}:{{ required "matrixTools.image.tag is required if no digest" .tag }}"
+        imagePullPolicy: {{ .pullPolicy | default "Always" }}
+{{- end }}
+{{- end }}
+{{- with .containersSecurityContext }}
+        securityContext:
+          {{- toYaml . | nindent 10 }}
+{{- end }}
+        command:
+        - "/matrix-tools"
+        - "generate-secrets"
+{{- range $generatedSecret := include "element-io.init-secrets.generatedSecrets" (dict "root" $ "context" .) | fromJsonArray }}
+        - {{ $generatedSecret }}
+{{- end }}
