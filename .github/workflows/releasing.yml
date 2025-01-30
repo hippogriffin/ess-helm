@@ -134,9 +134,9 @@ jobs:
 
     - name: Remove latest changelog
       run: |
-        rm charts/CHANGELOG.latest.md
-        rm charts/newsfragments/*.md
-        touch charts/newsfragments/.gitkeep
+        rm CHANGELOG.latest.md
+        rm newsfragments/*.md
+        touch newsfragments/.gitkeep
 
     - name: Release
       uses: softprops/action-gh-release@v2
