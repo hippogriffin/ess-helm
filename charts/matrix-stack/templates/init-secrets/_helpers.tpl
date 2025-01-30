@@ -14,3 +14,16 @@ app.kubernetes.io/instance: {{ $root.Release.Name }}-init-secrets
 app.kubernetes.io/version: {{ $root.Values.matrixTools.image.tag }}
 {{- end }}
 {{- end }}
+
+{{- define "element-io.init-secrets.generated-secrets" -}}
+{{- $root := .root -}}
+{{- with required "element-io.init-secrets.generated-secrets missing context" .context -}}
+{{- with $root.Values.synapse }}
+{{- if .enabled -}}
+{{- if not .macaroon }}
+- {{ (printf "%s-synapse" $root.Release.Name) }}:MACAROON:rand32
+{{- end }}
+{{- end }}
+{{- end }}
+{{- end }}
+{{- end }}

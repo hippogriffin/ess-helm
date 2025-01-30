@@ -4,6 +4,8 @@ Copyright 2024 New Vector Ltd
 SPDX-License-Identifier: AGPL-3.0-only OR LicenseRef-Element-Commercial
 */ -}}
 
+{{- with .Values.initSecrets -}}
+{{- if .enabled -}}
 apiVersion: batch/v1
 kind: Job
 metadata:
@@ -19,13 +21,23 @@ spec:
   parallelism: 1
   podReplacementPolicy: TerminatingOrFailed
   template:
-    servicesAccountName: {{ $.Release.Name }}-init-secrets
 {{- with .annotations }}
       annotations:
         {{- toYaml . | nindent 8 }}
 {{- end }}
     spec:
-{{- include "element-io.ess-library.pods.commonSpec" (dict "root" $ "context" (dict "componentValues" . "key" "initSecrets" "deployment" false)) | nindent 6 }}
+      automountServiceAccountToken: false
+      serviceAccountName: {{ include "element-io.ess-library.serviceAccountName" (dict "root" $ "context" (dict "serviceAccount" .serviceAccount "key" "init-secrets")) }}
+{{- include "element-io.ess-library.pods.pullSecrets" (dict "root" $ "context" $.Values.matrixTools.image) }}
+{{- with .podSecurityContext }}
+      securityContext:
+        {{- toYaml . | nindent 8 }}
+{{- end }}
+{{- with .nodeSelector }}
+      nodeSelector:
+        {{- toYaml . | nindent 8 }}
+{{- end }}
+      {{ include "element-io.ess-library.pods.tolerations" (dict "root" $ "context" .tolerations) | nindent 6 }}
 {{- with .hostAliases }}
       hostAliases:
         {{- tpl (toYaml . | nindent 8) $ }}
@@ -48,6 +60,8 @@ spec:
         command:
         - "/matrix-tools"
         - "generate-secrets"
-{{- range $generatedSecret := include "element-io.init-secrets.generatedSecrets" (dict "root" $ "context" .) | fromJsonArray }}
+{{- range $generatedSecret := include "element-io.init-secrets.generated-secrets" (dict "root" $ "context" .) | fromJsonArray }}
         - {{ $generatedSecret }}
 {{- end }}
+{{- end -}}
+{{- end -}}

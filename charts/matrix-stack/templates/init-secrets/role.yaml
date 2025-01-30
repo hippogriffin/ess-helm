@@ -3,6 +3,8 @@ Copyright 2024 New Vector Ltd
 
 SPDX-License-Identifier: AGPL-3.0-only OR LicenseRef-Element-Commercial
 */ -}}
+{{- with .Values.initSecrets -}}
+{{- if .enabled -}}
 apiVersion: rbac.authorization.k8s.io/v1
 kind: Role
 metadata:
@@ -14,3 +16,5 @@ rules:
 - apiGroups: [""]
   resources: ["secrets"]
   verbs: ["create", "get", "update"]
+{{- end -}}
+{{- end -}}

@@ -4,6 +4,8 @@ Copyright 2024 New Vector Ltd
 SPDX-License-Identifier: AGPL-3.0-only OR LicenseRef-Element-Commercial
 */ -}}
 
+{{- with .Values.initSecrets -}}
+{{- if .enabled -}}
 apiVersion: rbac.authorization.k8s.io/v1
 kind: RoleBinding
 metadata:
@@ -17,5 +19,7 @@ roleRef:
   name: {{ $.Release.Name }}-init-secrets
 subjects:
 - kind: ServiceAccount
-  name: {{ $.Release.Name }}-init-secrets
+  name: {{ include "element-io.ess-library.serviceAccountName" (dict "root" $ "context" (dict "serviceAccount" .serviceAccount "key" "init-secrets")) }}
   namespace: {{ $.Release.Namespace }}
+{{- end -}}
+{{- end -}}
