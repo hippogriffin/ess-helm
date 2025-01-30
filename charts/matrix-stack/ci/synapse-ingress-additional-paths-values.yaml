@@ -4,6 +4,9 @@
 
 serverName: ess.localhost
 
+initSecrets:
+  enabled: false
+
 elementWeb:
   enabled: false
 
