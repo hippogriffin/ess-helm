@@ -6,6 +6,21 @@ SPDX-License-Identifier: AGPL-3.0-only OR LicenseRef-Element-Commercial
 
 <!-- towncrier release notes start -->
 
+# Element Community Helm Chart 0.5.0 (2025-01-30)
+
+### Added
+
+- Add a matrix-tools image to handle dynamic config build and other chart features. (#131)
+- Add support for .well-known/matrix/support in Well Known Delegation. (#133)
+- Add the possibility to quote substituted env variable from synapse config. (#137)
+
+### Internal
+
+- Remove towncrier newsfragments after release. (#130)
+- Correct SHA used in dev builds to match the commit sha. (#134)
+- Make sure matrix-tools is part of ess-helm namespace. (#135)
+
+
 # Element Comunity Helm Chart 0.4.1 (2025-01-23)
 
 ### Added
