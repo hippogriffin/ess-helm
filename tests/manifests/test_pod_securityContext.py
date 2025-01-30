@@ -12,7 +12,7 @@ from .utils import iterate_component_workload_parts
 @pytest.mark.asyncio_cooperative
 async def test_sets_nonRoot_uids_gids_in_pod_securityContext_by_default(templates):
     for template in templates:
-        if template["kind"] in ["Deployment", "StatefulSet"]:
+        if template["kind"] in ["Deployment", "StatefulSet", "Job"]:
             id = f"{template['kind']}/{template['metadata']['name']}"
 
             assert (
@@ -48,7 +48,7 @@ async def test_can_nuke_pod_securityContext_ids(component, values, make_template
     )
 
     for template in await make_templates(values):
-        if template["kind"] in ["Deployment", "StatefulSet"]:
+        if template["kind"] in ["Deployment", "StatefulSet", "Job"]:
             id = f"{template['kind']}/{template['metadata']['name']}"
 
             assert (
@@ -65,7 +65,7 @@ async def test_can_nuke_pod_securityContext_ids(component, values, make_template
 @pytest.mark.asyncio_cooperative
 async def test_sets_seccompProfile_in_pod_securityContext_by_default(templates):
     for template in templates:
-        if template["kind"] in ["Deployment", "StatefulSet"]:
+        if template["kind"] in ["Deployment", "StatefulSet", "Job"]:
             id = f"{template['kind']}/{template['metadata']['name']}"
 
             assert (
@@ -91,7 +91,7 @@ async def test_can_nuke_pod_securityContext_seccompProfile(component, values, ma
     )
 
     for template in await make_templates(values):
-        if template["kind"] in ["Deployment", "StatefulSet"]:
+        if template["kind"] in ["Deployment", "StatefulSet", "Job"]:
             id = f"{template['kind']}/{template['metadata']['name']}"
 
             assert (

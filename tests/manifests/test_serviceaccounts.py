@@ -14,7 +14,7 @@ from .utils import iterate_component_workload_parts
 @pytest.mark.asyncio_cooperative
 async def test_dont_automount_serviceaccount_tokens(templates):
     for template in templates:
-        if template["kind"] in ["Deployment", "StatefulSet"]:
+        if template["kind"] in ["Deployment", "StatefulSet", "Job"]:
             id = f"{template['kind']}/{template['metadata']['name']}"
 
             assert not template["spec"]["template"]["spec"][
@@ -29,7 +29,7 @@ async def test_uses_serviceaccount_named_as_per_pod_controller_by_default(templa
     serviceaccount_names = set()
     covered_serviceaccount_names = set()
     for template in templates:
-        if template["kind"] in ["Deployment", "StatefulSet"]:
+        if template["kind"] in ["Deployment", "StatefulSet", "Job"]:
             workloads_by_id[f"{template['kind']}/{template['metadata']['name']}"] = template
         elif template["kind"] == "ServiceAccount":
             serviceaccount_names.add(template["metadata"]["name"])
@@ -67,7 +67,7 @@ async def test_uses_serviceaccount_named_as_values_if_specified(component, value
     workloads_by_id = {}
     serviceaccount_names = []
     for template in await make_templates(values):
-        if template["kind"] in ["Deployment", "StatefulSet"]:
+        if template["kind"] in ["Deployment", "StatefulSet", "Job"]:
             workloads_by_id[f"{template['kind']}/{template['metadata']['name']}"] = template
         elif template["kind"] == "ServiceAccount":
             serviceaccount_names.append(template["metadata"]["name"])
@@ -104,7 +104,7 @@ async def test_does_not_create_serviceaccounts_if_configured_not_to(component, v
             serviceaccount_names = set()
             covered_serviceaccount_names = set()
             for template in await make_templates(sub_component_values):
-                if template["kind"] in ["Deployment", "StatefulSet"]:
+                if template["kind"] in ["Deployment", "StatefulSet", "Job"]:
                     id_suffix = f" (for {sub_component})" if sub_component != "" else ""
                     workloads_by_id[f"{template['kind']}/{template['metadata']['name']}{id_suffix}"] = template
                 elif template["kind"] == "ServiceAccount":

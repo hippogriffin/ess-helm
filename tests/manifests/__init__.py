@@ -6,6 +6,11 @@ import copy
 from typing import Any, Dict
 
 _raw_component_details = {
+    "initSecrets": {
+        "hyphened_name": "init-secrets",
+        "has_service_monitor": False,
+        "has_ingress": False,
+    },
     "elementWeb": {
         "hyphened_name": "element-web",
         "has_service_monitor": False,

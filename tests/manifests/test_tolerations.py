@@ -26,7 +26,7 @@ global_toleration = {
 @pytest.mark.asyncio_cooperative
 async def test_no_tolerations_by_default(templates):
     for template in templates:
-        if template["kind"] in ["Deployment", "StatefulSet"]:
+        if template["kind"] in ["Deployment", "StatefulSet", "Job"]:
             id = f"{template['kind']}/{template['metadata']['name']}"
 
             assert (
@@ -42,7 +42,7 @@ async def test_all_components_and_sub_components_render_tolerations(component, v
     )
 
     for template in await make_templates(values):
-        if template["kind"] in ["Deployment", "StatefulSet"]:
+        if template["kind"] in ["Deployment", "StatefulSet", "Job"]:
             id = f"{template['kind']}/{template['metadata']['name']}"
 
             pod_spec = template["spec"]["template"]["spec"]
@@ -57,7 +57,7 @@ async def test_global_tolerations_render(values, make_templates):
     values.setdefault("tolerations", []).append(global_toleration)
 
     for template in await make_templates(values):
-        if template["kind"] in ["Deployment", "StatefulSet"]:
+        if template["kind"] in ["Deployment", "StatefulSet", "Job"]:
             id = f"{template['kind']}/{template['metadata']['name']}"
 
             pod_spec = template["spec"]["template"]["spec"]
@@ -78,7 +78,7 @@ async def test_merges_global_and_specific_tolerations(component, values, make_te
     values.get("tolerations").append(global_toleration)
 
     for template in await make_templates(values):
-        if template["kind"] in ["Deployment", "StatefulSet"]:
+        if template["kind"] in ["Deployment", "StatefulSet", "Job"]:
             id = f"{template['kind']}/{template['metadata']['name']}"
 
             pod_spec = template["spec"]["template"]["spec"]

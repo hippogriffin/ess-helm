@@ -70,7 +70,7 @@ async def test_secrets_consistency(templates):
     This test checks if each secret is correctly associated with its respective volume and container,
     ensuring that no inconsistencies or missing configurations exist.
     """
-    workloads = [t for t in templates if t["kind"] in ("Deployment", "StatefulSet")]
+    workloads = [t for t in templates if t["kind"] in ("Deployment", "StatefulSet", "Job")]
     for template in workloads:
         # Gather all containers and initContainers from the template spec
         containers = template["spec"]["template"]["spec"].get("containers", []) + template["spec"]["template"][

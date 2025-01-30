@@ -24,7 +24,7 @@ def find_services_matching_selector(templates: Iterator[Any], selector: Dict[str
 def find_workload_ids_matching_selector(templates: Iterator[Any], selector: Dict[str, str]) -> list[str]:
     workload_ids = []
     for template in templates:
-        if template["kind"] in ("Deployment", "StatefulSet") and selector_match(
+        if template["kind"] in ("Deployment", "StatefulSet", "Job") and selector_match(
             template["spec"]["template"]["metadata"]["labels"], selector
         ):
             workload_ids.append(f"{template['kind']}/{template['metadata']['name']}")
@@ -99,7 +99,7 @@ async def test_service_monitored_as_appropriate(component, values: dict, make_te
             template["kind"] != "ServiceMonitor"
         ), f"{component} unexpectedly has a ServiceMonitor when all are turned off"
         if (
-            template["kind"] in ["Deployment", "StatefulSet"]
+            template["kind"] in ["Deployment", "StatefulSet", "Job"]
             and template["metadata"]["labels"].get("servicemonitor", "some") != "none"
         ):
             workloads_to_cover.add(f"{template['kind']}/{template['metadata']['name']}")
