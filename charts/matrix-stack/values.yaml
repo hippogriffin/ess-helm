@@ -99,6 +99,9 @@ topologySpreadConstraints: []
 ## Components
 initSecrets:
   enabled: true
+
+  rbac:
+    create: true
   ## Labels to add to all manifest for this component
   labels: {}
   ## Defines the annotations to add to the workload

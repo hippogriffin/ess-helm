@@ -26,7 +26,7 @@ spec:
         {{- toYaml . | nindent 8 }}
 {{- end }}
     spec:
-      automountServiceAccountToken: false
+      restartPolicy: OnFailure
       serviceAccountName: {{ include "element-io.ess-library.serviceAccountName" (dict "root" $ "context" (dict "serviceAccount" .serviceAccount "key" "init-secrets")) }}
 {{- include "element-io.ess-library.pods.pullSecrets" (dict "root" $ "context" $.Values.matrixTools.image) }}
 {{- with .podSecurityContext }}

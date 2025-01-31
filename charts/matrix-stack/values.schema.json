@@ -250,6 +250,15 @@
         "enabled": {
           "type": "boolean"
         },
+        "rbac": {
+          "type": "object",
+          "properties": {
+            "create": {
+              "type": "boolean"
+            }
+          },
+          "additionalProperties": false
+        },
         "labels": {
           "type": "object",
           "additionalProperties": {
