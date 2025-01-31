@@ -37,7 +37,7 @@ SPDX-License-Identifier: AGPL-3.0-only OR LicenseRef-Element-Commercial
 {{- $defaultSecretKey := required "element-io.ess-library.init-secret-path context missing defaultSecretKey" .defaultSecretKey -}}
 {{- if not $secretProperty -}}
   {{- if $root.Values.initSecrets.enabled -}}
-  {{- printf "%s/%s" (printf "%s-init-secrets" $root.Release.Name) $initSecretKey -}}
+  {{- printf "%s/%s" (printf "%s-generated" $root.Release.Name) $initSecretKey -}}
   {{- end -}}
 {{- else -}}
   {{- include "element-io.ess-library.provided-secret-path" (dict "root" $root "context" (dict "secretProperty" $secretProperty "defaultSecretName" $defaultSecretName "defaultSecretKey" $defaultSecretKey)) -}}

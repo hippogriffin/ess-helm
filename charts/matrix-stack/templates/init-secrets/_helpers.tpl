@@ -20,7 +20,7 @@ app.kubernetes.io/version: {{ $root.Values.matrixTools.image.tag }}
 {{- with $root.Values.synapse }}
 {{- if .enabled -}}
 {{- if not .macaroon }}
-- {{ (printf "%s-init-secrets" $root.Release.Name) }}:SYNAPSE_MACAROON:rand32
+- {{ (printf "%s-generated" $root.Release.Name) }}:SYNAPSE_MACAROON:rand32
 {{- end }}
 {{- end }}
 {{- end }}
