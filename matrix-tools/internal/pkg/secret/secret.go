@@ -69,7 +69,7 @@ func GenerateSecret(client kubernetes.Interface, secretLabels map[string]string,
 	if err != nil {
 		return fmt.Errorf("failed to update secret: %w", err)
 	}
-
+	fmt.Printf("Successfully updated secret: %s:%s\n", name, key)
 	return nil
 }
 

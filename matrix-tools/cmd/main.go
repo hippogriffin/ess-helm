@@ -14,6 +14,7 @@ import (
 	"github.com/element-hq/ess-helm/matrix-tools/internal/pkg/renderer"
 	"github.com/element-hq/ess-helm/matrix-tools/internal/pkg/secret"
 	"github.com/element-hq/ess-helm/matrix-tools/internal/pkg/tcpwait"
+	"github.com/pkg/errors"
 	"gopkg.in/yaml.v3"
 	"k8s.io/client-go/kubernetes"
 	"k8s.io/client-go/rest"
@@ -90,7 +91,8 @@ func main() {
 		for _, generatedSecret := range options.GeneratedSecrets {
 			err := secret.GenerateSecret(clientset, options.SecretLabels, namespace, generatedSecret.Name, generatedSecret.Key, generatedSecret.Type)
 			if err != nil {
-				fmt.Printf("Error generating secret %s \n %v", generatedSecret.ArgValue, err)
+				wrappedErr := errors.Wrapf(err, "error generating secret: %s", generatedSecret.ArgValue)
+				fmt.Println("Error:", wrappedErr)
 				os.Exit(1)
 			}
 		}
