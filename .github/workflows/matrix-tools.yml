@@ -23,7 +23,7 @@ permissions:
 
 jobs:
   tests:
-    runs-on: cpu-s
+    runs-on: cpu-m
     container:
       image: ghcr.io/${{ github.repository }}/ci-runner
       credentials:
