@@ -126,7 +126,7 @@ We have an init container to render & merge the config for several reasons:
                     include "element-io.ess-library.provided-secret-path" (
                       dict "root" $
                       "context" (dict
-                        "secretProperty" .postgres
+                        "secretProperty" .postgres.password
                         "defaultSecretName" (printf "%s-synapse" $.Release.Name)
                         "defaultSecretKey" "POSTGRES_PASSWORD"
                       )

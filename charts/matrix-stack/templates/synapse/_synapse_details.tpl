@@ -111,6 +111,9 @@ responsibleForMedia
 {{- $root := .root -}}
 {{- with required "element-io.synapse.configSecrets missing context" .context -}}
 {{ $configSecrets := list (printf "%s-synapse" $root.Release.Name) }}
+{{- if $root.Values.initSecrets.enabled }}
+{{ $configSecrets = append $configSecrets (printf "%s-init-secrets" $root.Release.Name) }}
+{{- end }}
 {{- with .macaroon.secret -}}
 {{ $configSecrets = append $configSecrets (tpl . $root) }}
 {{- end -}}

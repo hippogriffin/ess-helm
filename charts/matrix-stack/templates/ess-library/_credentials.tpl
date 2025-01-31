@@ -31,10 +31,10 @@ SPDX-License-Identifier: AGPL-3.0-only OR LicenseRef-Element-Commercial
 {{- define "element-io.ess-library.init-secret-path" -}}
 {{- $root := .root -}}
 {{- with required "element-io.ess-library.init-secret-path" .context -}}
-{{- $secretProperty := .secretProperty -}}
-{{- $initSecretKey := .initSecreteKey -}}
-{{- $defaultSecretName := .defaultSecretName -}}
-{{- $defaultSecretKey := .defaultSecretKey -}}
+{{- $secretProperty := required "element-io.ess-library.init-secret-path context missing secretProperty" .secretProperty -}}
+{{- $initSecretKey := required "element-io.ess-library.init-secret-path context missing initSecretKey" .initSecretKey -}}
+{{- $defaultSecretName := required "element-io.ess-library.init-secret-path context missing defaultSecretName" .defaultSecretName -}}
+{{- $defaultSecretKey := required "element-io.ess-library.init-secret-path context missing defaultSecretKey" .defaultSecretKey -}}
 {{- if not $secretProperty -}}
   {{- if $root.Values.initSecrets.enabled -}}
   {{- printf "%s/%s" (printf "%s-init-secrets" $root.Release.Name) $initSecretKey -}}
@@ -49,12 +49,12 @@ SPDX-License-Identifier: AGPL-3.0-only OR LicenseRef-Element-Commercial
 {{- define "element-io.ess-library.provided-secret-path" -}}
 {{- $root := .root -}}
 {{- with required "element-io.ess-library.provided-secret-path missing context" .context -}}
-{{- $secretProperty := .secretProperty -}}
-{{- $defaultSecretName := .defaultSecretName -}}
-{{- $defaultSecretKey := .defaultSecretKey -}}
+{{- $secretProperty := required "element-io.ess-library.provided-secret-path context missing secretProperty" .secretProperty -}}
+{{- $defaultSecretName := required "element-io.ess-library.provided-secret-path context missing defaultSecretName" .defaultSecretName -}}
+{{- $defaultSecretKey := required "element-io.ess-library.provided-secret-path context missing defaultSecretKey" .defaultSecretKey -}}
 {{- if $secretProperty.value -}}
 {{- printf "%s/%s" $defaultSecretName $defaultSecretKey -}}
-{{- else if and $secretProperty.secret $secretProperty.secretKey -}}
+{{- else -}}
 {{- printf "%s/%s" (tpl $secretProperty.secret $root) (tpl $secretProperty.secretKey $root) -}}
 {{- end -}}
 {{- end -}}

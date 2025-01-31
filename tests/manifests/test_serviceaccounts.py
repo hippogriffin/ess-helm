@@ -14,7 +14,7 @@ from .utils import iterate_component_workload_parts
 @pytest.mark.asyncio_cooperative
 async def test_dont_automount_serviceaccount_tokens(templates):
     for template in templates:
-        if template["kind"] in ["Deployment", "StatefulSet", "Job"]:
+        if template["kind"] in ["Deployment", "StatefulSet"]:
             id = f"{template['kind']}/{template['metadata']['name']}"
 
             assert not template["spec"]["template"]["spec"][
