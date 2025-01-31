@@ -12,9 +12,20 @@ metadata:
   namespace: {{ $.Release.Namespace }}
   labels:
     {{- include "element-io.init-secrets.labels" (dict "root" $ "context" .) | nindent 4 }}
+  annotations:
+    "helm.sh/hook": pre-install,pre-upgrade
 rules:
+{{/*
+  https://kubernetes.io/docs/reference/access-authn-authz/rbac/#referring-to-resources
+  You cannot restrict create or deletecollection requests by resourceName.
+  For create, this limitation is because the object name is not known at authorization time.
+*/}}
 - apiGroups: [""]
-  resources: ["secrets/{{ $.Release.Name }}-generated"]
-  verbs: ["create", "get", "update"]
+  resources: ["secrets"]
+  verbs: ["create"]
+- apiGroups: [""]
+  resources: ["secrets"]
+  resourceNames: [ "{{ $.Release.Name }}-generated" ]
+  verbs: ["get", "update"]
 {{- end -}}
 {{- end -}}

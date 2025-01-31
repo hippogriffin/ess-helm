@@ -13,6 +13,8 @@ metadata:
   namespace: {{ $.Release.Namespace }}
   labels:
     {{- include "element-io.init-secrets.labels" (dict "root" $ "context" .) | nindent 4 }}
+  annotations:
+    "helm.sh/hook": pre-install,pre-upgrade
 roleRef:
   apiGroup: rbac.authorization.k8s.io
   kind: Role
