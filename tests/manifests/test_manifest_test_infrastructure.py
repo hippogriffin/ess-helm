@@ -6,7 +6,7 @@ from pathlib import Path
 
 import pytest
 
-from . import component_details, values_files_to_test
+from . import component_details, shared_components_details, values_files_to_test
 
 
 def test_all_components_covered():
@@ -16,7 +16,9 @@ def test_all_components_covered():
     for contents in templates_folder.iterdir():
         if not contents.is_dir():
             continue
-        if contents.name in ("haproxy", "ess-library"):
+        if contents.name in ("ess-library",) + tuple(
+            k if not v["hyphened_name"] else v["hyphened_name"] for k, v in shared_components_details.items()
+        ):
             continue
 
         assert contents.name in expected_folders

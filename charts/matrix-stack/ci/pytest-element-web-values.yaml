@@ -4,6 +4,11 @@
 
 serverName: ess.localhost
 
+matrixTools:
+  image:
+    pullPolicy: Never
+    digest: ""
+
 elementWeb:
   ingress:
     host: element.{{ $.Values.serverName }}
