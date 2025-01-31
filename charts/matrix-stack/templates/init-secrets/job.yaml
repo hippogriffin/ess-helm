@@ -21,8 +21,10 @@ spec:
   parallelism: 1
   podReplacementPolicy: TerminatingOrFailed
   template:
+    annotations:
+      "helm.sh/hook": pre-install,pre-upgrade
+      "helm.sh/hook-delete-policy": before-hook-creation
 {{- with .annotations }}
-      annotations:
         {{- toYaml . | nindent 8 }}
 {{- end }}
     spec:
