@@ -25,3 +25,4 @@ app.kubernetes.io/version: {{ $root.Values.matrixTools.image.tag }}
 {{- end }}
 {{- end }}
 {{- end }}
+
