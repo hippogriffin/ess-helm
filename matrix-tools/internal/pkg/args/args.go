@@ -80,9 +80,6 @@ func ParseArgs(args []string) (*Options, error) {
 		if err != nil {
 			return nil, err
 		}
-		if *secrets == "" {
-			return nil, fmt.Errorf("no secrets specified")
-		}
 		for _, generatedSecretArg := range strings.Split(*secrets, ",") {
 			parsedValue := strings.Split(generatedSecretArg, ":")
 			if len(parsedValue) != 3 {
@@ -95,15 +92,15 @@ func ParseArgs(args []string) (*Options, error) {
 
 			generatedSecret := GeneratedSecret{ArgValue: generatedSecretArg, Name: parsedValue[0], Key: parsedValue[1], Type: parsedSecretType}
 			options.GeneratedSecrets = append(options.GeneratedSecrets, generatedSecret)
-			options.SecretLabels = make(map[string]string)
-			if *secretsLabels != "" {
-				for _, label := range strings.Split(*secretsLabels, ",") {
-					parsedLabelValue := strings.Split(label, "=")
-					options.SecretLabels[parsedLabelValue[0]] = parsedLabelValue[1]
-				}
-			}
-			options.SecretLabels["app.kubernetes.io/managed-by"] = "matrix-tools-init-secrets"
 		}
+		options.SecretLabels = make(map[string]string)
+		if *secretsLabels != "" {
+			for _, label := range strings.Split(*secretsLabels, ",") {
+				parsedLabelValue := strings.Split(label, "=")
+				options.SecretLabels[parsedLabelValue[0]] = parsedLabelValue[1]
+			}
+		}
+		options.SecretLabels["app.kubernetes.io/managed-by"] = "matrix-tools-init-secrets"
 	default:
 		return nil, flag.ErrHelp
 	}
