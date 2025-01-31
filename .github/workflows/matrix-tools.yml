@@ -23,7 +23,7 @@ permissions:
 
 jobs:
   tests:
-    runs-on: cpu-s
+    runs-on: memory-m
     container:
       image: ghcr.io/${{ github.repository }}/ci-runner
       credentials:
@@ -38,7 +38,9 @@ jobs:
       run: echo "/usr/local/go/bin" >> "${GITHUB_PATH}"
 
     - name: Lint with golangci-lint
-      run: ls -l /usr/local && echo $PATH && cd matrix-tools && golangci-lint run ./...
+      run: |
+        cd matrix-tools
+        golangci-lint run ./... -v --show-stats --no-config --modules-download-mode readonly --timeout 5m
 
     - name: Run tests
       run: cd matrix-tools && go test -v ./...
