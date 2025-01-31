@@ -88,7 +88,7 @@ func main() {
 		}
 
 		for _, generatedSecret := range options.GeneratedSecrets {
-			err := secret.GenerateSecret(clientset, namespace, generatedSecret.Name, generatedSecret.Key, generatedSecret.Type, false)
+			err := secret.GenerateSecret(clientset, options.SecretLabels, namespace, generatedSecret.Name, generatedSecret.Key, generatedSecret.Type)
 			if err != nil {
 				fmt.Printf("Error generating secret %s \n %v", generatedSecret.ArgValue, err)
 				os.Exit(1)

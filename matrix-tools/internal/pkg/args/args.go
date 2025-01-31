@@ -38,6 +38,7 @@ type Options struct {
 	Output           string
 	Address          string
 	GeneratedSecrets []GeneratedSecret
+	SecretLabels     map[string]string
 }
 
 func ParseArgs(args []string) (*Options, error) {
@@ -50,6 +51,8 @@ func ParseArgs(args []string) (*Options, error) {
 	tcpWait := tcpWaitSet.String("address", "", "Address to listen on for TCP connections")
 
 	generateSecretsSet := flag.NewFlagSet("generate-secrets", flag.ExitOnError)
+	secrets := generateSecretsSet.String("secrets", "", "Comma-separated list of secrets to generate, in the format of `name:key:type`, where `type` is one of: rand32")
+	secretsLabels := generateSecretsSet.String("labels", "", "Comma-separated list of labels for generated secrets, in the format of `key=value`")
 
 	switch args[1] {
 	case "render-config":
@@ -77,7 +80,10 @@ func ParseArgs(args []string) (*Options, error) {
 		if err != nil {
 			return nil, err
 		}
-		for _, generatedSecretArg := range generateSecretsSet.Args() {
+		if *secrets == "" {
+			return nil, fmt.Errorf("no secrets specified")
+		}
+		for _, generatedSecretArg := range strings.Split(*secrets, ",") {
 			parsedValue := strings.Split(generatedSecretArg, ":")
 			if len(parsedValue) != 3 {
 				return nil, fmt.Errorf("invalid generated secret format, expect <name:key:type>: %s", generatedSecretArg)
@@ -89,6 +95,14 @@ func ParseArgs(args []string) (*Options, error) {
 
 			generatedSecret := GeneratedSecret{ArgValue: generatedSecretArg, Name: parsedValue[0], Key: parsedValue[1], Type: parsedSecretType}
 			options.GeneratedSecrets = append(options.GeneratedSecrets, generatedSecret)
+			options.SecretLabels = make(map[string]string)
+			if *secretsLabels != "" {
+				for _, label := range strings.Split(*secretsLabels, ",") {
+					parsedLabelValue := strings.Split(label, "=")
+					options.SecretLabels[parsedLabelValue[0]] = parsedLabelValue[1]
+				}
+			}
+			options.SecretLabels["app.kubernetes.io/managed-by"] = "matrix-tools-init-secrets"
 		}
 	default:
 		return nil, flag.ErrHelp

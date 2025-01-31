@@ -18,44 +18,54 @@ import (
 
 func TestGenerateSecret(t *testing.T) {
 	testCases := []struct {
-		name       string
-		namespace  string
-		secretName string
-		secretKey  string
-		secretData map[string][]byte
-		override   bool
+		name          string
+		namespace     string
+		initLabels    map[string]string
+		secretLabels  map[string]string
+		secretName    string
+		secretKey     string
+		secretData    map[string][]byte
+		expectedError bool
 	}{
 		{
-			name:       "Create a new secret",
-			namespace:  "create-secret",
-			secretName: "test-secret",
-			secretKey:  "key",
-			secretData: nil,
-			override:   false,
+			name:          "Create a new secret",
+			namespace:     "create-secret",
+			secretName:    "test-secret",
+			initLabels:    map[string]string{"app.kubernetes.io/managed-by": "matrix-tools-init-secrets", "app.kubernetes.io/name": "create-secret"},
+			secretLabels:  map[string]string{"app.kubernetes.io/name": "test-secret"},
+			secretKey:     "key",
+			secretData:    nil,
+			expectedError: false,
 		},
 		{
-			name:       "Secret exists with data",
-			namespace:  "secret-exists",
-			secretName: "test-secret",
-			secretKey:  "key2",
-			secretData: map[string][]byte{"key1": []byte("dmFsdWUx")},
-			override:   false,
+			name:          "Secret exists with data",
+			namespace:     "secret-exists",
+			initLabels:    map[string]string{"app.kubernetes.io/managed-by": "matrix-tools-init-secrets", "app.kubernetes.io/name": "create-secret"},
+			secretLabels:  map[string]string{"element.io/name": "secret-exists"},
+			secretName:    "test-secret",
+			secretKey:     "key2",
+			secretData:    map[string][]byte{"key1": []byte("dmFsdWUx")},
+			expectedError: false,
 		},
 		{
-			name:       "Secret exists and we override key",
-			namespace:  "override-key",
-			secretName: "test-secret",
-			secretKey:  "key2",
-			secretData: map[string][]byte{"key2": []byte("dmFsdWUx")},
-			override:   true,
+			name:          "Secret exists and we don't override key",
+			namespace:     "override-key",
+			initLabels:    map[string]string{"app.kubernetes.io/managed-by": "matrix-tools-init-secrets", "app.kubernetes.io/name": "create-secret"},
+			secretLabels:  map[string]string{"test-name": "override-key"},
+			secretName:    "test-secret",
+			secretKey:     "key2",
+			secretData:    map[string][]byte{"key2": []byte("dmFsdWUx")},
+			expectedError: false,
 		},
 		{
-			name:       "Secret exists and we don't override key",
-			namespace:  "override-key",
-			secretName: "test-secret",
-			secretKey:  "key2",
-			secretData: map[string][]byte{"key2": []byte("dmFsdWUx")},
-			override:   false,
+			name:          "Secret exists but is not managed by matrix-tools-init-secrets",
+			namespace:     "override-key",
+			initLabels:    map[string]string{"app.kubernetes.io/managed-by": "helm", "app.kubernetes.io/name": "create-secret"},
+			secretLabels:  map[string]string{"test-name": "override-key"},
+			secretName:    "test-secret",
+			secretKey:     "key2",
+			secretData:    map[string][]byte{"key2": []byte("dmFsdWUx")},
+			expectedError: true,
 		},
 	}
 
@@ -71,13 +81,21 @@ func TestGenerateSecret(t *testing.T) {
 			secretsClient := client.CoreV1().Secrets(tc.namespace)
 			// Create a secret with data
 			if tc.secretData != nil {
-				_, err := secretsClient.Create(context.Background(), &corev1.Secret{ObjectMeta: metav1.ObjectMeta{Name: tc.secretName, Namespace: tc.namespace}, Data: tc.secretData}, metav1.CreateOptions{})
+				_, err := secretsClient.Create(context.Background(), &corev1.Secret{
+					ObjectMeta: metav1.ObjectMeta{
+						Name:      tc.secretName,
+						Namespace: tc.namespace,
+						Labels:    tc.initLabels,
+					}, Data: tc.secretData}, metav1.CreateOptions{},
+				)
 				if err != nil {
 					t.Fatalf("Failed to create secret: %v", err)
 				}
 			}
-			err = GenerateSecret(client, tc.namespace, tc.secretName, tc.secretKey, args.Rand32, tc.override)
-			if err != nil {
+			err = GenerateSecret(client, tc.secretLabels, tc.namespace, tc.secretName, tc.secretKey, args.Rand32)
+			if err == nil && tc.expectedError {
+				t.Fatalf("GenerateSecret() error is nil, expected an error")
+			} else if err != nil && !tc.expectedError {
 				t.Fatalf("GenerateSecret() error = %v, want nil", err)
 			}
 			// Check if the secret was created successfully
@@ -89,16 +107,9 @@ func TestGenerateSecret(t *testing.T) {
 			if value, ok := secret.Data[tc.secretKey]; ok {
 				if valueExistsBeforeGen {
 					existingSecretValueBytes := []byte(existingSecretValue)
-					if tc.override {
-						if reflect.DeepEqual(value, existingSecretValueBytes) {
-							t.Fatalf("The secret has not been updated with the new value: %s", string(value))
-						}
-					} else {
-						if !reflect.DeepEqual(value, existingSecretValueBytes) {
-							t.Fatalf("The secret has been updated with the new value but it should not overwrite: %s", string(value))
-						}
+					if !reflect.DeepEqual(value, existingSecretValueBytes) {
+						t.Fatalf("The secret has been updated with the new value but it should not overwrite: %s", string(value))
 					}
-
 				} else if decodedValue, err := base64.StdEncoding.DecodeString(string(value)); err != nil {
 					t.Fatalf("Unexpected error while decoding secret data: %v", err)
 				} else {
@@ -109,6 +120,18 @@ func TestGenerateSecret(t *testing.T) {
 			} else {
 				t.Errorf("Expected key to be set in the secret")
 			}
+
+			labels := secret.ObjectMeta.Labels
+			if tc.secretData == nil {
+				if !reflect.DeepEqual(labels, tc.secretLabels) {
+					t.Fatalf("The secret has been created without the labels: %v", labels)
+				}
+			} else if tc.initLabels["app.kubernetes.io/managed-by"] == "matrix-tools-init-secrets" {
+				if !reflect.DeepEqual(labels, tc.secretLabels) {
+					t.Fatalf("The secret has not been updated with the new labels: %v", labels)
+				}
+			}
+
 		})
 	}
 }

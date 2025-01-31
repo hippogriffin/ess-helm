@@ -64,18 +64,19 @@ func TestParseArgs(t *testing.T) {
 		},
 		{
 			name: "Correct usage of generate-secrets",
-			args: []string{"cmd", "generate-secrets", "secret1:value1:rand32"},
+			args: []string{"cmd", "generate-secrets", "-secrets", "secret1:value1:rand32", "-labels", "mykey=myval"},
 			expected: &Options{
 				GeneratedSecrets: []GeneratedSecret{
 					{Name: "secret1", Key: "value1", Type: Rand32},
 				},
+				SecretLabels: map[string]string{"mykey": "myval"},
 			},
 			err: false,
 		},
 
 		{
 			name: "Multiple generated secrets",
-			args: []string{"cmd", "generate-secrets", "secret1:value1:rand32", "secret2:value2:rand32"},
+			args: []string{"cmd", "generate-secrets", "-secrets", "secret1:value1:rand32,secret2:value2:rand32"},
 			expected: &Options{
 				GeneratedSecrets: []GeneratedSecret{
 					{Name: "secret1", Key: "value1", Type: Rand32},
@@ -87,14 +88,14 @@ func TestParseArgs(t *testing.T) {
 
 		{
 			name:     "Invalid secret type",
-			args:     []string{"cmd", "generate-secrets", "secret1:value1:unknown"},
+			args:     []string{"cmd", "generate-secrets", "-secrets", "secret1:value1:unknown"},
 			expected: &Options{},
 			err:      true,
 		},
 
 		{
 			name:     "Wrong syntax of generated secret",
-			args:     []string{"cmd", "generate-secrets", "value1:rand32"},
+			args:     []string{"cmd", "generate-secrets", "-secrets", "value1:rand32"},
 			expected: &Options{},
 			err:      true,
 		},
