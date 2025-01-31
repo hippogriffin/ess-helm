@@ -4,7 +4,6 @@
 
 import asyncio
 import os
-import secrets
 
 import pyhelm3
 import pytest
