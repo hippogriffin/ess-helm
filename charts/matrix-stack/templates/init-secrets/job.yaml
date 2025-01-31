@@ -5,7 +5,7 @@ SPDX-License-Identifier: AGPL-3.0-only OR LicenseRef-Element-Commercial
 */ -}}
 
 {{- with .Values.initSecrets -}}
-{{- if .enabled -}}
+{{- if and .enabled (include "element-io.init-secrets.generated-secrets" (dict "root" $ "context" .)) -}}
 apiVersion: batch/v1
 kind: Job
 metadata:
@@ -60,8 +60,9 @@ spec:
         command:
         - "/matrix-tools"
         - "generate-secrets"
-{{- range $generatedSecret := include "element-io.init-secrets.generated-secrets" (dict "root" $ "context" .) | fromJsonArray }}
-        - {{ $generatedSecret }}
-{{- end }}
+        - "-secrets"
+        - {{ include "element-io.init-secrets.generated-secrets" (dict "root" $ "context" .) | fromYamlArray | join "," | quote }}
+        - "-labels"
+        - {{ include "element-io.init-secrets.labels" (dict "root" $ "context" .) | trim  | replace ": " "="| replace "\n" "," | quote }}
 {{- end -}}
 {{- end -}}

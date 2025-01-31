@@ -105,13 +105,49 @@ We have an init container to render & merge the config for several reasons:
           */}}
           - name: SYNAPSE_MACAROON
             value: >-
-              {{ printf "{{ readfile \"/secrets/%s/%s\" | quote }}" (tpl (.macaroon.secret | default (printf "%s-synapse" $.Release.Name)) $) (.macaroon.secretKey | default "MACAROON") }}
+              {{
+                printf "{{ readfile \"/secrets/%s\" | quote }}" (
+                    include "element-io.ess-library.init-secret-path" (
+                      dict "root" $
+                      "context" (dict
+                        "secretProperty" .macaroon
+                        "initSecretKey" "SYNAPSE_MACAROON"
+                        "defaultSecretName" (printf "%s-synapse" $.Release.Name)
+                        "defaultSecretKey" "MACAROON"
+                      )
+                    )
+                  )
+              }}
           - name: SYNAPSE_POSTGRES_PASSWORD
             value: >-
-              {{ printf "{{ readfile \"/secrets/%s/%s\" | quote }}" (tpl (.postgres.password.secret | default (printf "%s-synapse" $.Release.Name)) $) (.postgres.password.secretKey | default "POSTGRES_PASSWORD") }}
+              {{
+                printf "{{ readfile \"/secrets/%s\" | quote }}"
+                  (
+                    include "element-io.ess-library.provided-secret-path" (
+                      dict "root" $
+                      "context" (dict
+                        "secretProperty" .postgres
+                        "defaultSecretName" (printf "%s-synapse" $.Release.Name)
+                        "defaultSecretKey" "POSTGRES_PASSWORD"
+                      )
+                    )
+                  )
+              }}
           - name: SYNAPSE_REGISTRATION_SHARED_SECRET
             value: >-
-              {{ printf "{{ readfile \"/secrets/%s/%s\" | quote }}" (tpl (.registrationSharedSecret.secret | default (printf "%s-synapse" $.Release.Name)) $) (.registrationSharedSecret.secretKey | default "REGISTRATION_SHARED_SECRET") }}
+              {{
+                printf "{{ readfile \"/secrets/%s\" | quote }}"
+                  (
+                    include "element-io.ess-library.provided-secret-path" (
+                      dict "root" $
+                      "context" (dict
+                        "secretProperty" .registrationSharedSecret
+                        "defaultSecretName" (printf "%s-synapse" $.Release.Name)
+                        "defaultSecretKey" "REGISTRATION_SHARED_SECRET"
+                      )
+                    )
+                  )
+              }}
           - name: APPLICATION_NAME
             value: >-
               {{ printf "{{ hostname | replace \"-synapse-\" \"\" }}" }}
