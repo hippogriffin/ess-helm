@@ -14,7 +14,7 @@ metadata:
     {{- include "element-io.init-secrets.labels" (dict "root" $ "context" .) | nindent 4 }}
 rules:
 - apiGroups: [""]
-  resources: ["secrets"]
+  resources: ["secrets/{{ $.Release.Name }}-generated"]
   verbs: ["create", "get", "update"]
 {{- end -}}
 {{- end -}}

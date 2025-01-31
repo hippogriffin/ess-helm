@@ -5,12 +5,18 @@ SPDX-License-Identifier: AGPL-3.0-only OR LicenseRef-Element-Commercial
 */ -}}
 
 {{- with .Values.initSecrets -}}
-{{- if and .enabled -}}
+{{- if .enabled -}}
 apiVersion: batch/v1
 kind: Job
 metadata:
   name: {{ $.Release.Name }}-init-secrets
   namespace: {{ $.Release.Namespace }}
+  annotations:
+    "helm.sh/hook": pre-install,pre-upgrade
+    "helm.sh/hook-delete-policy": before-hook-creation
+{{- with .annotations }}
+    {{- toYaml . | nindent 4 }}
+{{- end }}
   labels:
     {{- include "element-io.init-secrets.labels" (dict "root" $ "context" .) | nindent 4 }}
 spec:
@@ -21,9 +27,8 @@ spec:
   parallelism: 1
   podReplacementPolicy: TerminatingOrFailed
   template:
-    annotations:
-      "helm.sh/hook": pre-install,pre-upgrade
-      "helm.sh/hook-delete-policy": before-hook-creation
+    metadata:
+      annotations:
 {{- with .annotations }}
         {{- toYaml . | nindent 8 }}
 {{- end }}
@@ -54,6 +59,10 @@ spec:
 {{- end }}
 {{- with .containersSecurityContext }}
         securityContext:
+          {{- toYaml . | nindent 10 }}
+{{- end }}
+{{- with .resources }}
+        resources:
           {{- toYaml . | nindent 10 }}
 {{- end }}
         env:
