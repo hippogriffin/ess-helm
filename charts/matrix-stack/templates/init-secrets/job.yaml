@@ -5,7 +5,7 @@ SPDX-License-Identifier: AGPL-3.0-only OR LicenseRef-Element-Commercial
 */ -}}
 
 {{- with .Values.initSecrets -}}
-{{- if and .enabled (include "element-io.init-secrets.generated-secrets" (dict "root" $ "context" .)) -}}
+{{- if and .enabled -}}
 apiVersion: batch/v1
 kind: Job
 metadata:
@@ -27,6 +27,7 @@ spec:
 {{- end }}
     spec:
       restartPolicy: OnFailure
+      automountServiceAccountToken: true
       serviceAccountName: {{ include "element-io.ess-library.serviceAccountName" (dict "root" $ "context" (dict "serviceAccount" .serviceAccount "key" "init-secrets")) }}
 {{- include "element-io.ess-library.pods.pullSecrets" (dict "root" $ "context" $.Values.matrixTools.image) }}
 {{- with .podSecurityContext }}
@@ -57,6 +58,9 @@ spec:
         securityContext:
           {{- toYaml . | nindent 10 }}
 {{- end }}
+        env:
+        - name: NAMESPACE
+          value: {{ $.Release.Namespace }}
         command:
         - "/matrix-tools"
         - "generate-secrets"
