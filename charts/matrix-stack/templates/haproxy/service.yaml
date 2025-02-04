@@ -14,7 +14,7 @@ metadata:
   name: {{ $.Release.Name }}-haproxy
   namespace: {{ $.Release.Namespace }}
 spec:
-  clusterIP: None
+  type: ClusterIP
   ports:
   - name: haproxy-metrics
     port: 8405
