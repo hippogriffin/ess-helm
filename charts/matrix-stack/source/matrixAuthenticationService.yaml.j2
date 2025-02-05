@@ -29,7 +29,7 @@ privateKeys:
 {{ sub_schema_values.nodeSelector() }}
 {{ sub_schema_values.tolerations(global=false, key='tolerations') }}
 {{ sub_schema_values.topologySpreadConstraints(global=true, key= 'topologySpreadConstraints') }}
-{{ sub_schema_values.podSecurityContext(user_id=1000, group_id=1000) }}
+{{ sub_schema_values.podSecurityContext(user_id=10005, group_id=10005) }}
 {{ sub_schema_values.containersSecurityContext(key='containersSecurityContext') }}
 {{ sub_schema_values.workloadAnnotations() }}
 {{ sub_schema_values.serviceMonitors(key= 'serviceMonitors') }}

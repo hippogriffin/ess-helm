@@ -40,7 +40,7 @@ app.kubernetes.io/version: {{ $root.Values.matrixTools.image.tag }}
 - {{ (printf "%s-generated" $root.Release.Name) }}:MAS_RSA_PRIVATE_KEY:rsa
 {{- end }}
 {{- if not .ecdsaPrime256v1 }}
-- {{ (printf "%s-generated" $root.Release.Name) }}:MAS_ECDSA_PRIME256V1_PUBLIC_KEY:ecdsaprime256v1
+- {{ (printf "%s-generated" $root.Release.Name) }}:MAS_ECDSA_PRIME256V1_PRIVATE_KEY:ecdsaprime256v1
 {{- end }}
 {{- if not .ecdsaSecp256k1 }}
 - {{ (printf "%s-generated" $root.Release.Name) }}:MAS_ECDSA_SECP256K1_PRIVATE_KEY:ecdsasecp256k1

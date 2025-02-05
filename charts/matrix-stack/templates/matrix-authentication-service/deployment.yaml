@@ -30,9 +30,8 @@ spec:
   template:
     metadata:
       labels:
-      labels:
         {{- include "element-io.matrix-authentication-service.labels" (dict "root" $ "context" .) | nindent 8 }}
-        k8s.element.io/confighash: "{{ include (print $.Template.BasePath "/matrix-authentication-service/mas_secret.yaml") $ | sha1sum }}"
+        k8s.element.io/confighash: "{{ include (print $.Template.BasePath "/matrix-authentication-service/secret.yaml") $ | sha1sum }}"
 {{- with .annotations }}
       annotations:
         {{- toYaml . | nindent 8 }}
@@ -50,7 +49,6 @@ spec:
                 - "{{ $.Release.Name }}-matrix-authentication-service"
             topologyKey: kubernetes.io/hostname
 {{- end }}
-      automountServiceAccountToken: false
 {{- include "element-io.ess-library.pods.commonSpec" (dict "root" $ "context" (dict "componentValues" . "key" "matrix-authentication-service" "deployment" true)) | nindent 6 }}
       initContainers:
       - name: render-config
@@ -99,7 +97,7 @@ spec:
                     )
                   )
               }}
-        - name: ECDSA_PRIME256V1_PUBLIC_KEY
+        - name: ECDSA_PRIME256V1_PRIVATE_KEY
           value: >-
             {{
               printf "{{ readfile \"/secrets/%s\" | indent 6 }}" (
@@ -107,9 +105,9 @@ spec:
                     dict "root" $
                     "context" (dict
                       "secretProperty" .ecdsaPrime256v1
-                      "initSecretKey" "MAS_ECDSA_PRIME256V1_PUBLIC_KEY"
+                      "initSecretKey" "MAS_ECDSA_PRIME256V1_PRIVATE_KEY"
                       "defaultSecretName" (printf "%s-matrix-authentication-service" $.Release.Name)
-                      "defaultSecretKey" "ECDSA_PRIME256V1_PUBLIC_KEY"
+                      "defaultSecretKey" "ECDSA_PRIME256V1_PRIVATE_KEY"
                     )
                  )
               )
@@ -288,9 +286,9 @@ spec:
       - emptyDir:
           medium: Memory
         name: "rendered-config"
-      - name: config
-        secret:
-          secretName: {{ $.Release.Name }}-matrix-authentication-service-config
+      - name: plain-config
+        configMap:
+          name: {{ $.Release.Name }}-matrix-authentication-service
 {{- range $secret := include "element-io.matrix-authentication-service.configSecrets" (dict "root" $ "context" .) | fromJsonArray }}
       - secret:
           secretName: {{ tpl $secret $ }}

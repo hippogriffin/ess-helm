@@ -9,6 +9,9 @@ elementWeb:
 
 serverName: ess-enterprise.localhost
 
+initSecrets:
+  enabled: false
+
 matrixAuthenticationService:
   enabled: true
 
