@@ -7,7 +7,6 @@ package secret
 
 import (
 	"context"
-	"encoding/base64"
 	"fmt"
 
 	"math/rand"
@@ -16,7 +15,6 @@ import (
 	corev1 "k8s.io/api/core/v1"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	"k8s.io/client-go/kubernetes"
-		"crypto/ed25519"
 )
 
 func GenerateSecret(client kubernetes.Interface, secretLabels map[string]string, namespace string, name string, key string, secretType args.SecretType) error {
@@ -59,7 +57,7 @@ func GenerateSecret(client kubernetes.Interface, secretLabels map[string]string,
 			randomString := generateRandomString(32)
 			existingSecret.Data[key] = []byte(randomString)
 		case args.SigningKey:
-			if signingKey, err := generateSigningKey(); err == nil {
+			if signingKey, err := generateSynapseSigningKey(); err == nil {
 				existingSecret.Data[key] = []byte(signingKey)
 			} else {
 				return fmt.Errorf("failed to generate signing key: %w", err)
@@ -84,13 +82,4 @@ func generateRandomString(size int) string {
 		bytes[i] = charset[rand.Intn(len(charset))]
 	}
 	return string(bytes)
-}
-
-func generateSigningKey() (string, error) {
-	_, priv, err := ed25519.GenerateKey(nil)
-	if err != nil {
-		return "", err
-	}
-	signingKey := fmt.Sprintf("ed25519 0 %s", base64.RawStdEncoding.EncodeToString(priv))
-	return signingKey, nil
 }

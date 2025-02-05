@@ -7,8 +7,8 @@ package secret
 import (
 	"context"
 	"reflect"
-	"testing"
 	"regexp"
+	"testing"
 
 	"github.com/element-hq/ess-helm/matrix-tools/internal/pkg/args"
 	corev1 "k8s.io/api/core/v1"
