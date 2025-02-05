@@ -1,7 +1,8 @@
 {{- /*
 Copyright 2024 New Vector Ltd
 
-SPDX-License-Identifier: LicenseRef-Element-Commercial */}}
+SPDX-License-Identifier: AGPL-3.0-only OR LicenseRef-Element-Commercial
+*/ -}}
 
 {{- $root := .root }}
 {{- with required "config.yaml missing context" .context }}
