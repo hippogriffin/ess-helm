@@ -17,9 +17,6 @@ synapse:
   registrationSharedSecret:
     secret: "{{ $.Release.Name }}-synapse-secrets"
     secretKey: registrationSharedSecret
-  signingKey:
-    secret: "{{ $.Release.Name }}-synapse-secrets"
-    secretKey: signingKey
 
   postgres:
     host: "{{ $.Release.Name }}-synapse-postgresql"

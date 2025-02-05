@@ -95,7 +95,6 @@ func generateSigningKey() (string, error) {
 	if err != nil {
 		return "", err
 	}
-	// f"{signing_key.alg} {signing_key.version} " f"{signedjson.key.encode_signing_key_base64(signing_key)}"
 	signingKey := fmt.Sprintf("ed25519 0 %s", base64.RawStdEncoding.EncodeToString(priv))
 	return signingKey, nil
 }
