@@ -6,7 +6,6 @@ package secret
 
 import (
 	"context"
-	"encoding/base64"
 	"reflect"
 	"testing"
 	"regexp"
@@ -140,17 +139,15 @@ func TestGenerateSecret(t *testing.T) {
 						if !reflect.DeepEqual(value, existingSecretValueBytes) {
 							t.Fatalf("The secret has been updated with the new value but it should not overwrite: %s", string(value))
 						}
-					} else if decodedValue, err := base64.StdEncoding.DecodeString(string(value)); err != nil {
-						t.Fatalf("Unexpected error while decoding secret data: %v", err)
 					} else {
 						switch (tc.secretType) {
 						case args.Rand32:
-							if len(string(decodedValue)) != 32 {
-								t.Fatalf("Unexpected data in secret: %v", decodedValue)
+							if len(string(value)) != 32 {
+								t.Fatalf("Unexpected data in secret: %v", value)
 							}
 						case args.SigningKey:
 							expectedPattern := "ed25519 0 [a-zA-Z0-9]+"
-							keyString := string(decodedValue)
+							keyString := string(value)
 							if !regexp.MustCompile(expectedPattern).MatchString(keyString) {
 								t.Fatalf("Unexpected key format: %v", keyString)
 							}

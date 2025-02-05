@@ -54,23 +54,19 @@ func GenerateSecret(client kubernetes.Interface, secretLabels map[string]string,
 		existingSecret.Data = make(map[string][]byte)
 	}
 	if _, ok := existingSecret.Data[key]; !ok {
-		var newValue []byte
 		switch secretType {
 		case args.Rand32:
 			randomString := generateRandomString(32)
-			newValue = make([]byte, base64.StdEncoding.EncodedLen(len(randomString)))
-			base64.StdEncoding.Encode(newValue, []byte(randomString))
+			existingSecret.Data[key] = []byte(randomString)
 		case args.SigningKey:
 			if signingKey, err := generateSigningKey(); err == nil {
-				newValue = make([]byte, base64.StdEncoding.EncodedLen(len(signingKey)))
-				base64.StdEncoding.Encode(newValue, []byte(signingKey))
+				existingSecret.Data[key] = []byte(signingKey)
 			} else {
 				return fmt.Errorf("failed to generate signing key: %w", err)
 			}
 		default:
 			return fmt.Errorf("unknown secret type for: %s:%s", name, key)
 		}
-		existingSecret.Data[key] = newValue
 	}
 
 	_, err = secretsClient.Update(ctx, existingSecret, metav1.UpdateOptions{})
