@@ -2,6 +2,9 @@
 #
 # SPDX-License-Identifier: AGPL-3.0-only OR LicenseRef-Element-Commercial
 
+initSecrets:
+  enabled: false
+
 elementWeb:
   enabled: false
 

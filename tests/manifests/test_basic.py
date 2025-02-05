@@ -16,6 +16,7 @@ async def test_nothing_enabled_renders_nothing(templates):
 @pytest.mark.parametrize("values_file", values_files_to_test)
 @pytest.mark.asyncio_cooperative
 async def test_values_file_renders_only_itself(component, templates):
+    # init-secrets does not render any manifest without any component needing it
     assert len(templates) > 0
 
     allowed_starts_with = [

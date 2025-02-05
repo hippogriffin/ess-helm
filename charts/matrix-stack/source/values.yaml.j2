@@ -9,6 +9,9 @@ SPDX-License-Identifier: AGPL-3.0-only OR LicenseRef-Element-Commercial
 {{ sub_schema_values.ess() }}
 
 ## Components
+initSecrets:
+  {% macro initSecrestValues() %}{% include 'init-secrets.yaml.j2'%}{% endmacro %}
+  {{- initSecrestValues() | trim | indent(2) }}
 
 elementWeb:
   {% macro elementWebValues() %}{% include 'element-web.yaml.j2'%}{% endmacro %}

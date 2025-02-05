@@ -4,7 +4,6 @@
 
 import asyncio
 import os
-import secrets
 
 import pyhelm3
 import pytest
@@ -55,7 +54,6 @@ async def helm_prerequisites(
                     labels={"app.kubernetes.io/managed-by": "pytest"},
                 ),
                 stringData={
-                    "macaroon": secrets.token_urlsafe(36),
                     "registrationSharedSecret": generated_data.synapse_registration_shared_secret,
                     "signingKey": generate_signing_key(),
                     "01-other-user-config.yaml": """

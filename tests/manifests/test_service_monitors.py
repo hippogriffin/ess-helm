@@ -6,7 +6,7 @@ from typing import Any, Dict, Iterator
 
 import pytest
 
-from . import component_details, values_files_to_test
+from . import component_details, shared_components_details, values_files_to_test
 
 
 def selector_match(labels: Dict[str, str], selector: Dict[str, str]) -> bool:
@@ -24,7 +24,7 @@ def find_services_matching_selector(templates: Iterator[Any], selector: Dict[str
 def find_workload_ids_matching_selector(templates: Iterator[Any], selector: Dict[str, str]) -> list[str]:
     workload_ids = []
     for template in templates:
-        if template["kind"] in ("Deployment", "StatefulSet") and selector_match(
+        if template["kind"] in ("Deployment", "StatefulSet", "Job") and selector_match(
             template["spec"]["template"]["metadata"]["labels"], selector
         ):
             workload_ids.append(f"{template['kind']}/{template['metadata']['name']}")
@@ -69,7 +69,10 @@ async def test_service_monitored_as_appropriate(component, values: dict, make_te
         and not any(
             [sub_component["has_service_monitor"] for sub_component in component_details[component]["sub_components"]]
         )
-        and not component_details[component].get("shared_components")
+        and not any(
+            shared_components_details[shared_component].get("has_service_monitor", True)
+            for shared_component in component_details[component].get("shared_components", [])
+        )
     ):
         for template in await make_templates(values):
             assert template["kind"] != "ServiceMonitor", f"{component} unexpectedly has a ServiceMonitor: {template=}"
@@ -90,7 +93,8 @@ async def test_service_monitored_as_appropriate(component, values: dict, make_te
                 "servicemonitor", "none"
             )
     for shared_component in component_details[component].get("shared_components", []):
-        values.setdefault(shared_component, {}).setdefault("serviceMonitors", {}).setdefault("enabled", False)
+        if shared_components_details[shared_component]["has_service_monitor"]:
+            values.setdefault(shared_component, {}).setdefault("serviceMonitors", {}).setdefault("enabled", False)
 
     # We should now have no ServiceMonitors rendered
     workloads_to_cover = set()
@@ -99,7 +103,7 @@ async def test_service_monitored_as_appropriate(component, values: dict, make_te
             template["kind"] != "ServiceMonitor"
         ), f"{component} unexpectedly has a ServiceMonitor when all are turned off"
         if (
-            template["kind"] in ["Deployment", "StatefulSet"]
+            template["kind"] in ["Deployment", "StatefulSet", "Job"]
             and template["metadata"]["labels"].get("servicemonitor", "some") != "none"
         ):
             workloads_to_cover.add(f"{template['kind']}/{template['metadata']['name']}")
@@ -127,11 +131,12 @@ async def test_service_monitored_as_appropriate(component, values: dict, make_te
         values[component][sub_component]["serviceMonitors"]["enabled"] = False
 
     for shared_component in component_details[component]["shared_components"]:
-        values.setdefault(shared_component, {})["serviceMonitors"]["enabled"] = True
-        # Shared components should not share any ServiceMonitors
-        shared_component_workload_ids = workload_ids_monitored(await make_templates(values))
-        assert seen_covered_workloads.intersection(shared_component_workload_ids) == set()
-        seen_covered_workloads.update(shared_component_workload_ids)
-        values[shared_component]["serviceMonitors"]["enabled"] = False
+        if shared_components_details[shared_component]["has_service_monitor"]:
+            values.setdefault(shared_component, {})["serviceMonitors"]["enabled"] = True
+            # Shared components should not share any ServiceMonitors
+            shared_component_workload_ids = workload_ids_monitored(await make_templates(values))
+            assert seen_covered_workloads.intersection(shared_component_workload_ids) == set()
+            seen_covered_workloads.update(shared_component_workload_ids)
+            values[shared_component]["serviceMonitors"]["enabled"] = False
 
     assert seen_covered_workloads.symmetric_difference(workloads_to_cover) == set()

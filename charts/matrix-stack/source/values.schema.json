@@ -40,6 +40,9 @@
     "topologySpreadConstraints": {
       "$ref": "file://common/topologySpreadConstraints.json"
     },
+    "initSecrets": {
+      "$ref": "file://init-secrets.json"
+    },
     "elementWeb": {
       "$ref": "file://element-web.json"
     },

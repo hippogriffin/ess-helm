@@ -5,6 +5,11 @@
 import copy
 from typing import Any, Dict
 
+_raw_shared_components_details = {
+    "initSecrets": {"hyphened_name": "init-secrets", "has_service_monitor": False, "has_ingress": False},
+    "haproxy": {},
+}
+
 _raw_component_details = {
     "elementWeb": {
         "hyphened_name": "element-web",
@@ -19,7 +24,7 @@ _raw_component_details = {
                 "has_service_monitor": False,
             },
         },
-        "shared_components": ["haproxy"],
+        "shared_components": ["initSecrets", "haproxy"],
     },
     "wellKnownDelegation": {
         "hyphened_name": "well-known",
@@ -30,9 +35,9 @@ _raw_component_details = {
 }
 
 
-def _enrich_components_to_test() -> Dict[str, Any]:
-    _component_details = copy.deepcopy(_raw_component_details)
-    for component in _raw_component_details:
+def _enrich_components_to_test(details) -> Dict[str, Any]:
+    _component_details = copy.deepcopy(details)
+    for component in details:
         _component_details[component].setdefault("hyphened_name", component)
 
         values_files = _component_details[component].setdefault("additional_values_files", [])
@@ -49,7 +54,8 @@ def _enrich_components_to_test() -> Dict[str, Any]:
     return _component_details
 
 
-component_details = _enrich_components_to_test()
+component_details = _enrich_components_to_test(_raw_component_details)
+shared_components_details = _enrich_components_to_test(_raw_shared_components_details)
 
 values_files_to_components = {
     values_file: component
