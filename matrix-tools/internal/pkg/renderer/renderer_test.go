@@ -112,6 +112,40 @@ only001Key: only_001`)),
 			expected: nil,
 			err:      true,
 		},
+		{
+			name:     "Indent Function Test",
+			readers: []io.Reader{
+				bytes.NewBuffer([]byte(`
+key:
+  indentedValue: |
+    ${INDENTED_KEY}
+anotherKey:
+  value`)),
+			},
+			env: map[string]string{
+				"INDENTED_KEY": "{{ readfile \"testdata/multiline\" | indent 4 }}",
+			},
+			expected: map[string]any{
+				"key": map[string]interface{}{
+					"indentedValue": "Line 1\n  Line 2\nLine 3\n",
+				},
+				"anotherKey": "value",
+			},
+			err: false,
+		},
+		{
+			name:     "UrlEncode Function Test",
+			readers: []io.Reader{
+				bytes.NewBuffer([]byte(`key: ${ENCODED_KEY}`)),
+			},
+			env: map[string]string{
+				"ENCODED_KEY": "{{ urlencode \"Hello, World!\" }}",
+			},
+			expected: map[string]any{
+				"key": "Hello%2C+World%21",
+			},
+			err: false,
+		},
 	}
 
 	for _, tc := range testCases {

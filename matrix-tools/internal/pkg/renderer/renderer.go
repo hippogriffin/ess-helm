@@ -14,7 +14,7 @@ import (
 	"strconv"
 	"strings"
 	"text/template"
-
+	"net/url"
 	"gopkg.in/yaml.v3"
 )
 
@@ -73,6 +73,14 @@ func quote(src string) string {
 	return strconv.Quote(src)
 }
 
+func indent(i int, src string) string {
+	return strings.Join(strings.Split(src, "\n"), "\n" + strings.Repeat(" ", i))
+}
+
+func urlencode(src string) string {
+	return url.QueryEscape(src)
+}
+
 // RenderConfig takes a list of io.Reader objects representing yaml configuration files
 // and returns a single map[string]any containing the deeply merged data as yaml format
 // The files are merged in the order they are provided.
@@ -93,10 +101,12 @@ func RenderConfig(sourceConfigs []io.Reader) (map[string]any, error) {
 		}
 
 		funcMap := template.FuncMap{
-			"readfile": readfile,
-			"hostname": os.Hostname,
-			"replace":  replace,
-			"quote":    quote,
+			"readfile":  readfile,
+			"hostname":  os.Hostname,
+			"replace":   replace,
+			"quote":     quote,
+			"urlencode": urlencode,
+			"indent":    indent,
 		}
 
 		envVarNames := extractEnvVarNames(string(fileContent))
