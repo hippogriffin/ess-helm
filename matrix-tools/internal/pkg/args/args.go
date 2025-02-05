@@ -16,6 +16,10 @@ const (
 	UnknownSecretType SecretType = iota
 	Rand32
 	SigningKey
+	RSA
+	EcdsaPrime256v1
+	EcdsaSecp256k1
+	EcdsaSecp384r1
 )
 
 func parseSecretType(value string) (SecretType, error) {
@@ -24,6 +28,14 @@ func parseSecretType(value string) (SecretType, error) {
 		return Rand32, nil
 	case "signingkey":
 		return SigningKey, nil
+	case "rsa":
+		return RSA, nil
+	case "ecdsaprime256v1":
+		return EcdsaPrime256v1, nil
+	case "ecdsasecp256k1":
+		return EcdsaSecp256k1, nil
+	case "ecdsasecp384r1":
+		return EcdsaSecp384r1, nil
 	default:
 		return UnknownSecretType, fmt.Errorf("unknown secret type: %s", value)
 	}

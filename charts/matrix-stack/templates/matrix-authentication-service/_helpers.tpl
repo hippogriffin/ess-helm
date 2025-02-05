@@ -27,6 +27,9 @@ app.kubernetes.io/version: {{ .image.tag }}
 {{- $root := .root -}}
 {{- with required "element-io.matrix-authentication-service.configSecrets missing context" .context -}}
 {{ $configSecrets := list (printf "%s-matrix-authentication-service" $root.Release.Name) }}
+{{- if and $root.Values.initSecrets.enabled (include "element-io.init-secrets.generated-secrets" (dict "root" $root)) }}
+{{ $configSecrets = append $configSecrets (printf "%s-generated" $root.Release.Name) }}
+{{- end }}
 {{- range $privateKey, $value := .privateKeys -}}
 {{- if $value.secret }}
 {{ $configSecrets = append $configSecrets (tpl $value.secret $root) }}

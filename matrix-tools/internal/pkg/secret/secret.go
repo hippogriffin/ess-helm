@@ -62,6 +62,30 @@ func GenerateSecret(client kubernetes.Interface, secretLabels map[string]string,
 			} else {
 				return fmt.Errorf("failed to generate signing key: %w", err)
 			}
+		case args.RSA:
+			if keyBytes, err := generateRSA(); err == nil {
+				existingSecret.Data[key] = keyBytes
+			} else {
+				return fmt.Errorf("failed to generate RSA key: %w", err)
+			}
+		case args.EcdsaPrime256v1:
+			if keyBytes, err := generateEcdsaPrime256v1(); err == nil {
+				existingSecret.Data[key] = keyBytes
+			} else {
+				return fmt.Errorf("failed to generate ECDSA Prime256v1 key: %w", err)
+			}
+		case args.EcdsaSecp256k1:
+			if keyBytes, err := generateEcdsaSecp256k1(); err == nil {
+				existingSecret.Data[key] = keyBytes
+			} else {
+				return fmt.Errorf("failed to generate ECDSA Secp256k1  key: %w", err)
+			}
+		case args.EcdsaSecp384r1:
+			if keyBytes, err := generateEcdsaSecp384r1(); err == nil {
+				existingSecret.Data[key] = keyBytes
+			} else {
+				return fmt.Errorf("failed to generate ECDSA Secp384r1  key: %w", err)
+			}
 		default:
 			return fmt.Errorf("unknown secret type for: %s:%s", name, key)
 		}
