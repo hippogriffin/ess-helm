@@ -33,7 +33,7 @@ http:
     - name: prometheus
     - name: connection-info
 
-{{- with required .postgres "matrixAuthenticationService.postgres is required" }}
+{{- with required "matrixAuthenticationService.postgres is required" .postgres }}
 database:
   uri: "postgresql://{{ .user }}:${MAS_DATABASE_PASSWORD}@{{ .host }}:{{ .port }}/{{ .database }}?sslmode={{ .sslmode }}&application_name=matrix-authentication-service"
 {{- end }}
@@ -44,7 +44,7 @@ telemetry:
 
 matrix:
   homeserver: "{{ $root.Values.serverName }}"
-  secret: {{ _parsed_mas_secrets.server_secret | to_json }}
+  secret: ${SYNAPSE_SHARED_SECRET}
   endpoint: "https://{{ $root.Values.synapse.ingress.host }}"
 
 secrets:

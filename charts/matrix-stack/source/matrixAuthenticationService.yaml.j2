@@ -10,6 +10,7 @@ SPDX-License-Identifier: AGPL-3.0-only OR LicenseRef-Element-Commercial
 {{ sub_schema_values.postgresLibPQ() }}
 
 {{ sub_schema_values.credential("Encryption secret", "encryptionSecret") }}
+{{ sub_schema_values.credential("Synapse - MAS Shared Secret", "synapseSharedSecret") }}
 
 ## Additional configuration to provide to Matrix Authentication Service.
 ## Each key under additional is an additioanal config to merge into Matrix Authentication Service config.yaml

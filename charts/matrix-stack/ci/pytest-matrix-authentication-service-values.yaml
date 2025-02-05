@@ -1,0 +1,73 @@
+# Copyright 2024 New Vector Ltd
+#
+# SPDX-License-Identifier: AGPL-3.0-only OR LicenseRef-Element-Commercial
+
+serverName: ess.localhost
+
+synapse:
+  additional:
+    00-userconfig.yaml:
+      config: |
+        push:
+          jitter_dalay: 10
+    01-other-user-config.yaml:
+      configSecret: "{{ $.Release.Name }}-synapse-secrets"
+      configSecretKey: "01-other-user-config.yaml"
+
+  registrationSharedSecret:
+    secret: "{{ $.Release.Name }}-synapse-secrets"
+    secretKey: registrationSharedSecret
+  signingKey:
+    secret: "{{ $.Release.Name }}-synapse-secrets"
+    secretKey: signingKey
+
+  postgres:
+    host: "{{ $.Release.Name }}-synapse-postgresql"
+    user: synapse_user
+    database: synapse_db
+    password:
+      secret: "{{ $.Release.Name }}-synapse-postgres-db"
+      secretKey: password
+
+  ingress:
+    host: synapse.{{ $.Values.serverName }}
+    tlsSecret: "{{ $.Release.Name }}-synapse-web-tls"
+
+  redis:
+    annotations:
+      has-no-service-monitor: "true"
+  workers:
+    sliding-sync:
+      enabled: true
+    media-repository:
+      enabled: true
+
+matrixAuthenticationService:
+  enabled: true
+
+  ingress:
+    host: mas.ess-enterprise.localhost
+
+  postgres:
+    host: postgres
+    user: mas
+    database: mas
+    password:
+      value: CHANGEME-teel5aghaenohhohghiavee5Koh8ahwo
+
+  additional:
+    0000-email:
+      config: |
+        email:
+          host: email.dev.local
+          port: 587
+          username: smtpuser
+          tlsMode: STARTTLS
+          from: "MAS <noreply@auth.dev.local>"
+          password: CHANGEME-5ahohhohgihavee5Ko
+
+elementWeb:
+  enabled: false
+
+wellKnownDelegation:
+  enabled: false

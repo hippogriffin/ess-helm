@@ -12,7 +12,7 @@ metadata:
   name: {{ $.Release.Name }}-matrix-authentication-service
   namespace: {{ $.Release.Namespace }}
   labels:
-    {{- include "element-io.matrix-authentication-service.labels" (dict "root" $) | nindent 4 }}
+    {{- include "element-io.matrix-authentication-service.labels" (dict "root" $ "context" .) | nindent 4 }}
 spec:
   type: {{ .ingress.service.type | default $.Values.ingress.service.type }}
   ports:

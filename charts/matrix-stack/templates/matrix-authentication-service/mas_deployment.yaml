@@ -84,27 +84,111 @@ spec:
         - /config-templates/config.yaml
         env:
 {{- with required "privateKeys is required for Matrix Authentication Service" .privateKeys }}
-{{- with required "rsa is required for Matrix Authentication Service" .rsa }}
         - name: RSA_PRIVATE_KEY
-          value: {{ printf "{{ readfile \"/secrets/%s/%s\" | quote }}" (tpl (.secret | default (printf "%s-matrix-authentication-service" $.Release.Name)) $) (.secretKey  | default "RSA_PRIVATE_KEY") }}
-{{- end }}
-{{- with .ecdsaPrime256v1 }}
+          value: >-
+              {{
+                printf "{{ readfile \"/secrets/%s\" | indent 6 }}" (
+                    include "element-io.ess-library.init-secret-path" (
+                      dict "root" $
+                      "context" (dict
+                        "secretProperty" .rsa
+                        "initSecretKey" "MAS_RSA_PRIVATE_KEY"
+                        "defaultSecretName" (printf "%s-matrix-authentication-service" $.Release.Name)
+                        "defaultSecretKey" "RSA_PRIVATE_KEY"
+                      )
+                    )
+                  )
+              }}
         - name: ECDSA_PRIME256V1_PUBLIC_KEY
-          value: {{ printf "{{ readfile \"/secrets/%s/%s\" | quote }}" (tpl (.secret | default (printf "%s-matrix-authentication-service" $.Release.Name)) $) (.secretKey | default "ECDSA_PRIME256V1_PRIVATE_KEY") }}
-{{- end }}
-{{- with .ecdsaSecp256k1 }}
+          value: >-
+            {{
+              printf "{{ readfile \"/secrets/%s\" | indent 6 }}" (
+                  include "element-io.ess-library.init-secret-path" (
+                    dict "root" $
+                    "context" (dict
+                      "secretProperty" .ecdsaPrime256v1
+                      "initSecretKey" "MAS_ECDSA_PRIME256V1_PUBLIC_KEY"
+                      "defaultSecretName" (printf "%s-matrix-authentication-service" $.Release.Name)
+                      "defaultSecretKey" "ECDSA_PRIME256V1_PUBLIC_KEY"
+                    )
+                 )
+              )
+            }}
         - name: ECDSA_SECP256K1_PRIVATE_KEY
-          value: {{ printf "{{ readfile \"/secrets/%s/%s\" | quote }}" (tpl (.secret | default (printf "%s-matrix-authentication-service" $.Release.Name)) $) (.secretKey  | default "ECDSA_SECP256K1_PRIVATE_KEY") }}
-{{- end }}
-{{- with .ecdsaSecp384r1 }}
+          value: >-
+            {{
+             printf "{{ readfile \"/secrets/%s\" | indent 6 }}" (
+                 include "element-io.ess-library.init-secret-path" (
+                     dict "root" $
+                     "context" (dict
+                       "secretProperty" .ecdsaSecp256k1
+                       "initSecretKey" "MAS_ECDSA_SECP256K1_PRIVATE_KEY"
+                       "defaultSecretName" (printf "%s-matrix-authentication-service" $.Release.Name)
+                       "defaultSecretKey" "ECDSA_SECP256K1_PRIVATE_KEY"
+                     )
+                )
+            )
+            }}
         - name: ECDSA_SECP384R1_PRIVATE_KEY
-          value: {{ printf "{{ readfile \"/secrets/%s/%s\" | quote }}" (tpl (.secret | default (printf "%s-matrix-authentication-service" $.Release.Name)) $) (.secretKey  | default "ECDSA_SECP384R1_PRIVATE_KEY") }}
-{{- end }}
+          value: >-
+            {{
+              printf "{{ readfile \"/secrets/%s\" | indent 6 }}" (
+                 include "element-io.ess-library.init-secret-path" (
+                     dict "root" $
+                     "context" (dict
+                       "secretProperty" .ecdsaSecp384r1
+                       "initSecretKey" "MAS_ECDSA_SECP384R1_PRIVATE_KEY"
+                       "defaultSecretName" (printf "%s-matrix-authentication-service" $.Release.Name)
+                       "defaultSecretKey" "ECDSA_SECP384R1_PRIVATE_KEY"
+                     )
+                 )
+              )
+            }}
 {{- end }}
         - name: POSTGRES_PASSWORD
-          value: {{ printf "{{ readfile \"/secrets/%s/%s\" | quote }}" (tpl (.postgres.password.secret | default (printf "%s-matrix-authentication-service" $.Release.Name)) $) (.postgres.password.secretKey  | default "POSTGRES_PASSWORD") }}
+          value: >-
+            {{
+              printf "{{ readfile \"/secrets/%s\" | urlescape }}" (
+                 include "element-io.ess-library.provided-secret-path" (
+                     dict "root" $
+                     "context" (dict
+                       "secretProperty" .postgres.password
+                       "defaultSecretName" (printf "%s-matrix-authentication-service" $.Release.Name)
+                       "defaultSecretKey" "POSTGRES_PASSWORD"
+                     )
+                  )
+                )
+            }}
         - name: ENCRYPTION_SECRET
-          value: {{ printf "{{ readfile \"/secrets/%s/%s\" | quote }}" (tpl (.encryptionSecret.secret | default (printf "%s-matrix-authentication-service" $.Release.Name)) $) (.encryptionSecret.secretKey  | default "ENCRYPTION_SECRET") }}
+          value: >-
+            {{
+              printf "{{ readfile \"/secrets/%s\" | quote }}" (
+                 include "element-io.ess-library.init-secret-path" (
+                     dict "root" $
+                     "context" (dict
+                       "secretProperty" .encryptionSecret
+                       "initSecretKey" "MAS_ENCRYPTION_SECRET"
+                       "defaultSecretName" (printf "%s-matrix-authentication-service" $.Release.Name)
+                       "defaultSecretKey" "ENCRYPTION_SECRET"
+                     )
+                  )
+                )
+            }}
+        - name: SYNAPSE_SHARED_SECRET
+          value: >-
+            {{
+              printf "{{ readfile \"/secrets/%s\" | quote }}" (
+                 include "element-io.ess-library.init-secret-path" (
+                     dict "root" $
+                     "context" (dict
+                       "secretProperty" .synapseSharedSecret
+                       "initSecretKey" "MAS_SYNAPSE_SHARED_SECRET"
+                       "defaultSecretName" (printf "%s-matrix-authentication-service" $.Release.Name)
+                       "defaultSecretKey" "SYNAPSE_SHARED_SECRET"
+                     )
+                  )
+                )
+            }}
 {{- with .resources }}
         resources:
           {{- toYaml . | nindent 10 }}
@@ -121,7 +205,7 @@ spec:
         - mountPath: /conf
           name: rendered-config
           readOnly: false
-{{- /* This init container job is kept despite https://github.com/matrix-org/matrix-authentication-service/pull/2432 so as to have --prune */ -}}
+{{- /* This init container job is kept despite https://github.com/matrix-org/matrix-authentication-service/pull/2432 so as to have --prune */}}
       - name: config
         args: ["config", "sync", "--prune"]
 {{- with .image -}}

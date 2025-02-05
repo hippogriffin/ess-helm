@@ -18,8 +18,7 @@ app.kubernetes.io/version: {{ .image.tag }}
 {{- define "element-io.matrix-authentication-service.config" }}
 {{- $root := .root -}}
 {{- with required "element-io.matrix-authentication-service.config missing context" .context -}}
-{{- $config := (tpl ($root.Files.Get "configs/matrix-authentication-service/config.yaml.tpl") (dict "root" $root "context" .)) | fromYaml }}
-{{- toYaml (merge (.additional | fromYaml) $config) }}
+{{- (tpl ($root.Files.Get "configs/matrix-authentication-service/config.yaml.tpl") (dict "root" $root "context" .)) }}
 {{- end }}
 {{- end }}
 

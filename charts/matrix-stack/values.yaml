@@ -630,6 +630,17 @@ matrixAuthenticationService:
   ##   secretKey: key-in-secret
   encryptionSecret: {}
 
+  ## Synapse - MAS Shared Secret.
+  ## It can either be provided inline in the Helm chart e.g.:
+  ## synapseSharedSecret:
+  ##   value: SecretValue
+  ##
+  ## Or it can be provided via an existing Secret e.g.:
+  ## synapseSharedSecret:
+  ##   secret: existing-secret
+  ##   secretKey: key-in-secret
+  synapseSharedSecret: {}
+
   ## Additional configuration to provide to Matrix Authentication Service.
   ## Each key under additional is an additioanal config to merge into Matrix Authentication Service config.yaml
   ## Full details on available configuration options can be found at https://element-hq.github.io/matrix-authentication-service/reference/configuration.html

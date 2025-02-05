@@ -13,6 +13,9 @@
     "encryptionSecret": {
       "$ref": "file://common/credential.json"
     },
+    "synapseSharedSecret": {
+      "$ref": "file://common/credential.json"
+    },
     "postgres": {
       "$ref": "file://common/postgres-libpq.json"
     },
