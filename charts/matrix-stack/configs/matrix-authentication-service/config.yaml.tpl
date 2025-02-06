@@ -48,6 +48,19 @@ matrix:
   secret: ${SYNAPSE_SHARED_SECRET}
   endpoint: "https://{{ tpl $root.Values.synapse.ingress.host $root }}"
 
+policy:
+  data:
+{{- if $root.Values.synapse.enabled }}
+    admin_clients:
+    - "0000000000000000000SYNAPSE"
+{{- else }}
+    admin_clients: {}
+{{- end }}
+    admin_users: []
+    client_registration:
+      allow_host_mismatch: false
+      allow_insecure_uris: false
+
 {{- if $root.Values.synapse.enabled }}
 clients:
 - client_id: "0000000000000000000SYNAPSE"
