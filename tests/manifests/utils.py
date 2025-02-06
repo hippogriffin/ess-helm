@@ -3,6 +3,8 @@
 # SPDX-License-Identifier: AGPL-3.0-only OR LicenseRef-Element-Commercial
 
 import json
+import random
+import string
 from collections.abc import Iterator
 from pathlib import Path
 from typing import Any
@@ -12,6 +14,11 @@ import pytest
 import yaml
 
 from . import component_details, values_files_to_components
+
+
+@pytest.fixture(scope="session")
+async def release_name():
+    return f"pytest-{''.join(random.choices(string.ascii_lowercase, k=6))}"
 
 
 @pytest.fixture(scope="session")
@@ -35,8 +42,8 @@ def values(values_file) -> dict[str, Any]:
 
 
 @pytest.fixture(scope="function")
-async def templates(chart: pyhelm3.Chart, values: dict[str, Any]):
-    return list([template for template in await helm_template(chart, "pytest", values) if template is not None])
+async def templates(chart: pyhelm3.Chart, release_name: str, values: dict[str, Any]):
+    return list([template for template in await helm_template(chart, release_name, values) if template is not None])
 
 
 async def helm_template(chart: pyhelm3.Chart, release_name: str, values: Any | None) -> Iterator[Any]:
@@ -69,9 +76,9 @@ async def helm_template(chart: pyhelm3.Chart, release_name: str, values: Any | N
 
 
 @pytest.fixture
-def make_templates(chart: pyhelm3.Chart):
+def make_templates(chart: pyhelm3.Chart, release_name: str):
     async def _make_templates(values):
-        return list([template for template in await helm_template(chart, "pytest", values) if template is not None])
+        return list([template for template in await helm_template(chart, release_name, values) if template is not None])
 
     return _make_templates
 
