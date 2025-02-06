@@ -240,5 +240,6 @@ async def test_ingress_services(templates):
                 else:
                     port_numbers = [port["port"] for port in found_service["spec"]["ports"]]
                     assert backend_service["port"]["number"] in port_numbers, (
-                        f"Port number {backend_service['port']['number']} not found in service {backend_service['name']}"
+                        f"Port number {backend_service['port']['number']} "
+                        f"not found in service {backend_service['name']}"
                     )

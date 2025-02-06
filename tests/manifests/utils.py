@@ -3,8 +3,9 @@
 # SPDX-License-Identifier: AGPL-3.0-only OR LicenseRef-Element-Commercial
 
 import json
+from collections.abc import Iterator
 from pathlib import Path
-from typing import Any, Dict, Iterator
+from typing import Any
 
 import pyhelm3
 import pytest
@@ -29,12 +30,12 @@ def component(values_file):
 
 
 @pytest.fixture(scope="function")
-def values(values_file) -> Dict[str, Any]:
+def values(values_file) -> dict[str, Any]:
     return yaml.safe_load((Path("charts/matrix-stack/ci") / values_file).read_text("utf-8"))
 
 
 @pytest.fixture(scope="function")
-async def templates(chart: pyhelm3.Chart, values: Dict[str, Any]):
+async def templates(chart: pyhelm3.Chart, values: dict[str, Any]):
     return list([template for template in await helm_template(chart, "pytest", values) if template is not None])
 
 

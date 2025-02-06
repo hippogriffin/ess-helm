@@ -3,7 +3,7 @@
 # SPDX-License-Identifier: AGPL-3.0-only OR LicenseRef-Element-Commercial
 
 import copy
-from typing import Any, Dict
+from typing import Any
 
 _raw_shared_components_details = {
     "initSecrets": {"hyphened_name": "init-secrets", "has_service_monitor": False, "has_ingress": False},
@@ -35,7 +35,7 @@ _raw_component_details = {
 }
 
 
-def _enrich_components_to_test(details) -> Dict[str, Any]:
+def _enrich_components_to_test(details) -> dict[str, Any]:
     _component_details = copy.deepcopy(details)
     for component in details:
         _component_details[component].setdefault("hyphened_name", component)

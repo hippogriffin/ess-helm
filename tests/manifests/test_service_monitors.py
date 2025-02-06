@@ -2,18 +2,19 @@
 #
 # SPDX-License-Identifier: AGPL-3.0-only OR LicenseRef-Element-Commercial
 
-from typing import Any, Dict, Iterator
+from collections.abc import Iterator
+from typing import Any
 
 import pytest
 
 from . import component_details, shared_components_details, values_files_to_test
 
 
-def selector_match(labels: Dict[str, str], selector: Dict[str, str]) -> bool:
+def selector_match(labels: dict[str, str], selector: dict[str, str]) -> bool:
     return all(labels[key] == value for key, value in selector.items())
 
 
-def find_services_matching_selector(templates: Iterator[Any], selector: Dict[str, str]) -> list[Any]:
+def find_services_matching_selector(templates: Iterator[Any], selector: dict[str, str]) -> list[Any]:
     services = []
     for template in templates:
         if template["kind"] == "Service" and selector_match(template["metadata"]["labels"], selector):
@@ -21,7 +22,7 @@ def find_services_matching_selector(templates: Iterator[Any], selector: Dict[str
     return services
 
 
-def find_workload_ids_matching_selector(templates: Iterator[Any], selector: Dict[str, str]) -> list[str]:
+def find_workload_ids_matching_selector(templates: Iterator[Any], selector: dict[str, str]) -> list[str]:
     workload_ids = []
     for template in templates:
         if template["kind"] in ("Deployment", "StatefulSet", "Job") and selector_match(
