@@ -36,7 +36,7 @@ http:
 
 {{- with required "matrixAuthenticationService.postgres is required" .postgres }}
 database:
-  uri: "postgresql://{{ .user }}:${MAS_DATABASE_PASSWORD}@{{ .host }}:{{ .port }}/{{ .database }}?sslmode={{ .sslmode }}&application_name=matrix-authentication-service"
+  uri: "postgresql://{{ .user }}:${POSTGRES_PASSWORD}@{{ tpl .host $root }}:{{ .port }}/{{ .database }}?{{ with .sslMode }}sslmode={{ . }}&{{ end }}application_name=matrix-authentication-service"
 {{- end }}
 
 telemetry:
@@ -49,21 +49,57 @@ matrix:
   endpoint: "https://{{ $root.Values.synapse.ingress.host }}"
 
 secrets:
-  encryption: ${MAS_ENCRYPTION_SECRET}
+  encryption: ${ENCRYPTION_SECRET}
 
   keys:
-  - kid: prime256v1
-    key: |
-      ${MAS_ECDSA_PRIME256V1_PRIVATE_KEY}
-  - kid: secp256k1
-    key: |
-      ${MAS_ECDSA_SECP256K1_PRIVATE_KEY}
-  - kid: secp384r1
-    key: |
-      ${MAS_ECDSA_SECP384R1_PRIVATE_KEY}
+{{- with required "privateKeys is required for Matrix Authentication Service" .privateKeys }}
   - kid: rsa
-    key: |
-      ${MAS_RSA_PRIVATE_KEY}
+    key_file: /secrets/{{
+                include "element-io.ess-library.init-secret-path" (
+                      dict "root" $root
+                      "context" (dict
+                        "secretProperty" .rsa
+                        "initSecretKey" "MAS_RSA_PRIVATE_KEY"
+                        "defaultSecretName" (printf "%s-matrix-authentication-service" $root.Release.Name)
+                        "defaultSecretKey" "RSA_PRIVATE_KEY"
+                      )
+                    ) }}
+  - kid: prime256v1
+    key_file: /secrets/{{
+                include "element-io.ess-library.init-secret-path" (
+                      dict "root" $root
+                      "context" (dict
+                        "secretProperty" .ecdsaPrime256v1
+                        "initSecretKey" "MAS_ECDSA_PRIME256V1_PRIVATE_KEY"
+                        "defaultSecretName" (printf "%s-matrix-authentication-service" $root.Release.Name)
+                        "defaultSecretKey" "ECDSA_PRIME256V1_PRIVATE_KEY"
+                      )
+                  ) }}
+{{ with .ecdsaSecp256k1 }}
+  - kid: secp256k1
+    key_file: /secrets/{{
+                include "element-io.ess-library.provided-secret-path" (
+                        dict "root" $root
+                        "context" (dict
+                          "secretProperty" .
+                          "defaultSecretName" (printf "%s-matrix-authentication-service" $root.Release.Name)
+                          "defaultSecretKey" "ECDSA_SECP256K1_PRIVATE_KEY"
+                        )
+                    ) }}
+{{- end }}
+{{ with .ecdsaSecp384r1 }}
+  - kid: secp384r1
+    key_file: /secrets/{{
+                include "element-io.ess-library.provided-secret-path" (
+                        dict "root" $root
+                        "context" (dict
+                          "secretProperty" .
+                          "defaultSecretName" (printf "%s-matrix-authentication-service" $root.Release.Name)
+                          "defaultSecretKey" "ECDSA_SECP384R1_PRIVATE_KEY"
+                        )
+                    ) }}
+{{- end }}
+{{- end }}
 experimental:
   access_token_ttl: 86400  # 1 day, up from 5 mins, until EX can better handle refresh tokens
 

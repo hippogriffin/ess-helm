@@ -17,9 +17,6 @@ synapse:
   registrationSharedSecret:
     secret: "{{ $.Release.Name }}-synapse-secrets"
     secretKey: registrationSharedSecret
-  signingKey:
-    secret: "{{ $.Release.Name }}-synapse-secrets"
-    secretKey: signingKey
 
   postgres:
     host: "{{ $.Release.Name }}-synapse-postgresql"
@@ -49,22 +46,12 @@ matrixAuthenticationService:
     host: mas.ess-enterprise.localhost
 
   postgres:
-    host: postgres
-    user: mas
-    database: mas
+    host: "{{ $.Release.Name }}-mas-postgresql"
+    user: mas_user
+    database: mas_db
     password:
-      value: CHANGEME-teel5aghaenohhohghiavee5Koh8ahwo
-
-  additional:
-    0000-email:
-      config: |
-        email:
-          host: email.dev.local
-          port: 587
-          username: smtpuser
-          tlsMode: STARTTLS
-          from: "MAS <noreply@auth.dev.local>"
-          password: CHANGEME-5ahohhohgihavee5Ko
+      secret: "{{ $.Release.Name }}-mas-postgres-db"
+      secretKey: password
 
 elementWeb:
   enabled: false

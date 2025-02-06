@@ -68,6 +68,7 @@ spec:
         command:
         - "/matrix-tools"
         - render-config
+        - -debug
         - -output
         - /conf/config.yaml
           {{- range $key := (.additional | keys | uniq | sortAlpha) -}}
@@ -81,68 +82,6 @@ spec:
           {{- end }}
         - /config-templates/config.yaml
         env:
-{{- with required "privateKeys is required for Matrix Authentication Service" .privateKeys }}
-        - name: RSA_PRIVATE_KEY
-          value: >-
-              {{
-                printf "{{ readfile \"/secrets/%s\" | indent 6 }}" (
-                    include "element-io.ess-library.init-secret-path" (
-                      dict "root" $
-                      "context" (dict
-                        "secretProperty" .rsa
-                        "initSecretKey" "MAS_RSA_PRIVATE_KEY"
-                        "defaultSecretName" (printf "%s-matrix-authentication-service" $.Release.Name)
-                        "defaultSecretKey" "RSA_PRIVATE_KEY"
-                      )
-                    )
-                  )
-              }}
-        - name: ECDSA_PRIME256V1_PRIVATE_KEY
-          value: >-
-            {{
-              printf "{{ readfile \"/secrets/%s\" | indent 6 }}" (
-                  include "element-io.ess-library.init-secret-path" (
-                    dict "root" $
-                    "context" (dict
-                      "secretProperty" .ecdsaPrime256v1
-                      "initSecretKey" "MAS_ECDSA_PRIME256V1_PRIVATE_KEY"
-                      "defaultSecretName" (printf "%s-matrix-authentication-service" $.Release.Name)
-                      "defaultSecretKey" "ECDSA_PRIME256V1_PRIVATE_KEY"
-                    )
-                 )
-              )
-            }}
-        - name: ECDSA_SECP256K1_PRIVATE_KEY
-          value: >-
-            {{
-             printf "{{ readfile \"/secrets/%s\" | indent 6 }}" (
-                 include "element-io.ess-library.init-secret-path" (
-                     dict "root" $
-                     "context" (dict
-                       "secretProperty" .ecdsaSecp256k1
-                       "initSecretKey" "MAS_ECDSA_SECP256K1_PRIVATE_KEY"
-                       "defaultSecretName" (printf "%s-matrix-authentication-service" $.Release.Name)
-                       "defaultSecretKey" "ECDSA_SECP256K1_PRIVATE_KEY"
-                     )
-                )
-            )
-            }}
-        - name: ECDSA_SECP384R1_PRIVATE_KEY
-          value: >-
-            {{
-              printf "{{ readfile \"/secrets/%s\" | indent 6 }}" (
-                 include "element-io.ess-library.init-secret-path" (
-                     dict "root" $
-                     "context" (dict
-                       "secretProperty" .ecdsaSecp384r1
-                       "initSecretKey" "MAS_ECDSA_SECP384R1_PRIVATE_KEY"
-                       "defaultSecretName" (printf "%s-matrix-authentication-service" $.Release.Name)
-                       "defaultSecretKey" "ECDSA_SECP384R1_PRIVATE_KEY"
-                     )
-                 )
-              )
-            }}
-{{- end }}
         - name: POSTGRES_PASSWORD
           value: >-
             {{
