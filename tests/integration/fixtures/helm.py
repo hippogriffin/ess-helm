@@ -90,12 +90,20 @@ retention:
 
 @pytest.fixture(autouse=True, scope="session")
 async def matrix_stack(
-    helm_client: pyhelm3.Client, ingress, helm_prerequisites, ess_namespace: Namespace, generated_data: ESSData
+    helm_client: pyhelm3.Client,
+    ingress,
+    helm_prerequisites,
+    ess_namespace: Namespace,
+    generated_data: ESSData,
+    loaded_matrix_tools: dict,
 ):
     with open(os.environ["TEST_VALUES_FILE"]) as stream:
         values = yaml.safe_load(stream)
 
     values["serverName"] = generated_data.server_name
+    values.setdefault("matrixTools", {})
+    values["matrixTools"].setdefault("image", {})
+    values["matrixTools"]["image"] = loaded_matrix_tools
 
     chart = await helm_client.get_chart("charts/matrix-stack")
     # Install or upgrade a release
