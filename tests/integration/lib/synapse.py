@@ -44,7 +44,7 @@ def generate_mac(username: str, password: str, admin: bool, registration_shared_
     return mac.hexdigest()
 
 
-async def create_user(
+async def create_synapse_user(
     synapse_fqdn: str,
     username: str,
     password: str,
