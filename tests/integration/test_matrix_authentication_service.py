@@ -1,4 +1,4 @@
-# Copyright 2024 New Vector Ltd
+# Copyright 2025 New Vector Ltd
 #
 # SPDX-License-Identifier: AGPL-3.0-only OR LicenseRef-Element-Commercial
 
@@ -11,7 +11,7 @@ from .lib.utils import aiohttp_post_json, value_file_has
 @pytest.mark.skipif(value_file_has("matrixAuthenticationService.enabled", False), reason="MAS not deployed")
 @pytest.mark.asyncio_cooperative
 async def test_matrix_authentication_service_graphql_endpoint(ingress_ready, generated_data: ESSData, ssl_context):
-    await ingress_ready("mas")
+    await ingress_ready("matrix-authentication-service")
     mas_query = {
         "query": "query UserByUsername($username: String!) { userByUsername(username: $username) { id lockedAt } }",
         "variables": {"username": "test"},

@@ -1,5 +1,5 @@
 {{- /*
-Copyright 2024 New Vector Ltd
+Copyright 2025 New Vector Ltd
 
 SPDX-License-Identifier: AGPL-3.0-only OR LicenseRef-Element-Commercial
 */ -}}
@@ -8,7 +8,7 @@ SPDX-License-Identifier: AGPL-3.0-only OR LicenseRef-Element-Commercial
 {{- $root := .root -}}
 {{- with required "element-io.matrix-authentication-service.labels missing context" .context -}}
 {{ include "element-io.ess-library.labels.common" (dict "root" $root "context" .labels) }}
-app.kubernetes.io/component: matrix-client
+app.kubernetes.io/component: matrix-authentication
 app.kubernetes.io/name: matrix-authentication-service
 app.kubernetes.io/instance: {{ $root.Release.Name }}-matrix-authentication-service
 app.kubernetes.io/version: {{ .image.tag }}
