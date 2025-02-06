@@ -33,6 +33,12 @@ func deepMergeMaps(source, destination map[string]any) error {
 				} else {
 					destination[key] = value
 				}
+			} else if srcArray, ok := value.([]any); ok {
+				if destArray, ok := destValue.([]any); ok {
+					destination[key] = append(destArray, srcArray...)
+				} else {
+					destination[key] = srcArray
+				}
 			} else {
 				destination[key] = value
 			}

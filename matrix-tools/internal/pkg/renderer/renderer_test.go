@@ -93,6 +93,8 @@ only001Key: only_001`)),
 			expected: map[string]any{
 				"overriddenKey": "value_001",
 				"overriddenArray": []any{
+					"item_000_a",
+					"item_000_b",
 					"item_001_a",
 					"item_001_b",
 				},
