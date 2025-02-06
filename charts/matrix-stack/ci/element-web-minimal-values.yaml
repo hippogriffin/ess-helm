@@ -9,6 +9,9 @@ elementWeb:
   ingress:
     host: element.ess.localhost
 
+matrixAuthenticationService:
+  enabled: false
+
 synapse:
   enabled: false
 
