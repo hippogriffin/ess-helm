@@ -1,20 +1,17 @@
-# Copyright 2025 New Vector Ltd
+# Copyright 2024 New Vector Ltd
 #
 # SPDX-License-Identifier: AGPL-3.0-only OR LicenseRef-Element-Commercial
-
-## Values file containing minimal values for components that are enabled by default only
-
-elementWeb:
-  enabled: false
 
 serverName: ess.localhost
 
 initSecrets:
   enabled: false
 
+elementWeb:
+  enabled: false
+
 matrixAuthenticationService:
   enabled: true
-
   ingress:
     host: mas.ess.localhost
 
@@ -24,17 +21,6 @@ matrixAuthenticationService:
     database: mas
     password:
       value: CHANGEME-teel5aghaenohhohghiavee5Koh8ahwo
-
-  additional:
-    0000-email:
-      config: |
-        email:
-          host: email.dev.local
-          port: 587
-          username: smtpuser
-          tlsMode: STARTTLS
-          from: "MAS <noreply@auth.dev.local>"
-          password: CHANGEME-5ahohhohgihavee5Ko
 
   encryptionSecret:
     value: CHANGEME-ahohhohgiavee5Koh8ahwo
@@ -55,21 +41,26 @@ matrixAuthenticationService:
         AwEHoUQDQgAE6521bYjZ789034nLz+oXJyVWqgUdDmRlKxvTfHsBhFtGpOaAoGCCqGSM49
         AwEAAKBcZW5jb2duZXQwgggYMIINL6Ado018734nLz+oXJyVWqgUdDmRlKxvTfHsBhFtGpOaAoGCCqGSM49AwEH
         ------END EC PRIVATE KEY-----
-    ecdsaSecp256k1:
-      value: |
-        -----BEGIN EC PRIVATE KEY-----
-        MHcCAQEEZFQZ789034nLz+oXJyVWqgUdDmRlKxvTfHsBhFtGpOaAoGCCqGSM49AwEHoUQDQgAE6521bYjZ789034nLz+oXJyVWqgUdDmRlKxvTfHsBhFtGpOaAoGCCqGSM49
-        ------END EC PRIVATE KEY-----
-    ecdsaSecp384r1:
-      value: |
-       -----BEGIN EC PRIVATE KEY-----
-        MHcCAQEEZFQZ789034nLz+oXJyVWqgUdDmRlKxvTfHsBhFtGpOaAoGCCqGSM49AwEHoUQDQgAE6521bYjZ789034nLz+oXJyVWqgUdDmRlKxvTfHsBhFtGpOaAoGCCqGSM49
-        ------END EC PRIVATE KEY-----
 
 synapse:
-  enabled: false
+  enabled: true
   ingress:
     host: synapse.ess.localhost
 
+  registrationSharedSecret:
+    value: CHANGEME-ooWo6jeidahhei3Hae0eer9U
+  macaroon:
+    value: CHANGEME-eek3Eigoh8ux8laeTingeej1
+  signingKey:
+    value: ed25519 0 bNQOzBUDszff7Ax81z6w0uZ1IPWoxYaazT7emaZEfpw
+
+  postgres:
+    host: ess-postgres
+    user: synapse_user
+    database: synapse
+    password:
+      secret: ess-postgres
+      secretKey: password
+
 wellKnownDelegation:
-  enabled: false
+  enabled: true

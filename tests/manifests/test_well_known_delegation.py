@@ -6,10 +6,25 @@ import json
 
 import pytest
 
+msc_2965_authentication = {
+    "org.matrix.msc2965.authentication": {
+        "issuer": "https://mas.ess.localhost/",
+        "account": "https://mas.ess.localhost/account",
+    }
+}
+synapse_federation = {"m.server": "synapse.ess.localhost:443"}
+synapse_base_url = {"m.homeserver": {"base_url": "https://synapse.ess.localhost"}}
 
-@pytest.mark.parametrize("values_file", ["well-known-minimal-values.yaml"])
-@pytest.mark.asyncio_cooperative
-async def test_only_additional_if_all_disabled_in_well_known(release_name, values, make_templates):
+
+async def assert_well_known_files(
+    release_name, values, make_templates, expected_client=None, expected_server=None, expected_element=None
+):
+    if expected_element is None:
+        expected_element = {}
+    if expected_server is None:
+        expected_server = {}
+    if expected_client is None:
+        expected_client = {}
     client_config = {"testclientkey": {"testsubket": "testvalue"}}
     server_config = {"testserverkey": {"testsubket": "testvalue"}}
     element_config = {"testelementkey": {"testsubket": "testvalue"}}
@@ -21,13 +36,13 @@ async def test_only_additional_if_all_disabled_in_well_known(release_name, value
     for template in await make_templates(values):
         if template["kind"] == "ConfigMap" and template["metadata"]["name"] == f"{release_name}-well-known-haproxy":
             client_from_json = json.loads(template["data"]["client"])
-            assert client_from_json == client_config
+            assert client_from_json == client_config | expected_client
 
             server_from_json = json.loads(template["data"]["server"])
-            assert server_from_json == server_config
+            assert server_from_json == server_config | expected_server
 
             element_from_json = json.loads(template["data"]["element.json"])
-            assert element_from_json == element_config
+            assert element_from_json == element_config | expected_element
 
             support_config_from_json = json.loads(template["data"]["support"])
             assert support_config == support_config_from_json
@@ -37,34 +52,33 @@ async def test_only_additional_if_all_disabled_in_well_known(release_name, value
         raise AssertionError("Unable to find WellKnownDelegationConfigMap")
 
 
+@pytest.mark.parametrize("values_file", ["well-known-minimal-values.yaml"])
+@pytest.mark.asyncio_cooperative
+async def test_only_additional_if_all_disabled_in_well_known(release_name, values, make_templates):
+    await assert_well_known_files(release_name, values, make_templates)
+
+
 @pytest.mark.parametrize("values_file", ["well-known-synapse-values.yaml"])
 @pytest.mark.asyncio_cooperative
 async def test_synapse_injected_in_server_and_client_well_known(release_name, values, make_templates):
-    client_config = {"testclientkey": {"testsubket": "testvalue"}}
-    server_config = {"testserverkey": {"testsubket": "testvalue"}}
-    element_config = {"testelementkey": {"testsubket": "testvalue"}}
-    support_config = {"testsupportkey": {"testsubket": "testvalue"}}
-    values["wellKnownDelegation"].setdefault("additional", {})["client"] = json.dumps(client_config)
-    values["wellKnownDelegation"].setdefault("additional", {})["server"] = json.dumps(server_config)
-    values["wellKnownDelegation"].setdefault("additional", {})["element"] = json.dumps(element_config)
-    values["wellKnownDelegation"].setdefault("additional", {})["support"] = json.dumps(support_config)
+    await assert_well_known_files(
+        release_name, values, make_templates, expected_client=synapse_base_url, expected_server=synapse_federation
+    )
 
-    synapse_federation = {"m.server": "synapse.ess.localhost:443"}
-    synapse_base_url = {"m.homeserver": {"base_url": "https://synapse.ess.localhost"}}
-    for template in await make_templates(values):
-        if template["kind"] == "ConfigMap" and template["metadata"]["name"] == f"{release_name}-well-known-haproxy":
-            client_from_json = json.loads(template["data"]["client"])
-            assert client_from_json == client_config | synapse_base_url
 
-            server_from_json = json.loads(template["data"]["server"])
-            assert server_from_json == server_config | synapse_federation
+@pytest.mark.parametrize("values_file", ["well-known-mas-values.yaml"])
+@pytest.mark.asyncio_cooperative
+async def test_mas_injected_in_client_well_known(release_name, values, make_templates):
+    await assert_well_known_files(release_name, values, make_templates, expected_client=msc_2965_authentication)
 
-            element_from_json = json.loads(template["data"]["element.json"])
-            assert element_from_json == element_config
 
-            support_from_json = json.loads(template["data"]["support"])
-            assert support_from_json == support_config
-
-            break
-    else:
-        raise AssertionError("Unable to find WellKnownDelegationConfigMap")
+@pytest.mark.parametrize("values_file", ["well-known-synapse-mas-values.yaml"])
+@pytest.mark.asyncio_cooperative
+async def test_synapse_and_mas_injected_in_client_and_server_well_known(release_name, values, make_templates):
+    await assert_well_known_files(
+        release_name,
+        values,
+        make_templates,
+        expected_client=(msc_2965_authentication | synapse_base_url),
+        expected_server=synapse_federation,
+    )
