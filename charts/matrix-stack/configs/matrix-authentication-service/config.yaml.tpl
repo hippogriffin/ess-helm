@@ -8,7 +8,7 @@ SPDX-License-Identifier: AGPL-3.0-only OR LicenseRef-Element-Commercial
 {{- with required "config.yaml missing context" .context }}
 
 http:
-  public_base: "https://{{ .ingress.host }}"
+  public_base: "https://{{ tpl .ingress.host $root }}"
   listeners:
   - name: web
     binds:
@@ -46,7 +46,7 @@ telemetry:
 matrix:
   homeserver: "{{ $root.Values.serverName }}"
   secret: ${SYNAPSE_SHARED_SECRET}
-  endpoint: "https://{{ $root.Values.synapse.ingress.host }}"
+  endpoint: "https://{{ tpl $root.Values.synapse.ingress.host $root }}"
 
 secrets:
   encryption: ${ENCRYPTION_SECRET}

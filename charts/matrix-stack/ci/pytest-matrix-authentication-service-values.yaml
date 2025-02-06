@@ -43,7 +43,8 @@ matrixAuthenticationService:
   enabled: true
 
   ingress:
-    host: mas.ess-enterprise.localhost
+    tlsSecret: "{{ $.Release.Name }}-mas-web-tls"
+    host: mas.{{ $.Values.serverName }}
 
   postgres:
     host: "{{ $.Release.Name }}-mas-postgresql"
