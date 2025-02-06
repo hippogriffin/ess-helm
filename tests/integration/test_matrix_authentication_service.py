@@ -10,7 +10,8 @@ from .lib.utils import aiohttp_post_json, value_file_has
 
 @pytest.mark.skipif(value_file_has("matrixAuthenticationService.enabled", False), reason="MAS not deployed")
 @pytest.mark.asyncio_cooperative
-async def test_matrix_authentication_service_graphql_endpoint(generated_data: ESSData, ssl_context):
+async def test_matrix_authentication_service_graphql_endpoint(ingress_ready, generated_data: ESSData, ssl_context):
+    await ingress_ready("mas")
     mas_query = {
         "query": "query UserByUsername($username: String!) { userByUsername(username: $username) { id lockedAt } }",
         "variables": {"username": "test"},

@@ -17,6 +17,9 @@ synapse:
 elementWeb:
   enabled: false
 
+matrixAuthenticationService:
+  enabled: false
+
 wellKnownDelegation:
   ingress:
     tlsSecret: "{{ $.Release.Name }}-well-known-web-tls"

@@ -42,5 +42,8 @@ synapse:
 elementWeb:
   enabled: false
 
+matrixAuthenticationService:
+  enabled: false
+
 wellKnownDelegation:
   enabled: false

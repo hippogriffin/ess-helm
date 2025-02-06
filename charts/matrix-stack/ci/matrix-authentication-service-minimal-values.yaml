@@ -7,7 +7,7 @@
 elementWeb:
   enabled: false
 
-serverName: ess-enterprise.localhost
+serverName: ess.localhost
 
 initSecrets:
   enabled: false
@@ -16,7 +16,7 @@ matrixAuthenticationService:
   enabled: true
 
   ingress:
-    host: mas.ess-enterprise.localhost
+    host: mas.ess.localhost
 
   postgres:
     host: postgres

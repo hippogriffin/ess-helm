@@ -35,6 +35,9 @@ elementWeb:
         },
     }
 
+matrixAuthenticationService:
+  enabled: false
+
 synapse:
   enabled: false
 
