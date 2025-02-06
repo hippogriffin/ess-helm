@@ -8,6 +8,7 @@ import (
 	"crypto/ed25519"
 	"encoding/base64"
 	"fmt"
+	"math/rand"
 )
 
 type SigningKey struct {
@@ -17,7 +18,7 @@ type SigningKey struct {
 }
 
 func generateSigningKey(version int) (*SigningKey, error) {
-	_, priv, err := ed25519.GenerateKey(nil)
+	_, priv, err := ed25519.GenerateKey(rand.New(rand.NewSource(0)))
 	if err != nil {
 		return nil, fmt.Errorf("failed to generate key: %w", err)
 	}
