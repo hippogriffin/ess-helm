@@ -39,7 +39,7 @@
       }
     },
     "ingress": {
-      "$ref": "file://synapse/ingress_with_additional_paths.json"
+      "$ref": "file://common/ingress.json"
     },
     "image": {
       "$ref": "file://common/image.json"

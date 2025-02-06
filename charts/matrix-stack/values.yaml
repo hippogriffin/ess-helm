@@ -562,6 +562,7 @@ haproxy:
   topologySpreadConstraints: []
 
 matrixAuthenticationService:
+  enabled: true
   # Details of the image to be used
   image:
     ## The host and (optional) port of the container image registry for this component.
@@ -573,7 +574,7 @@ matrixAuthenticationService:
 
     ## The tag of the container image to use.
     ## Defaults to the Chart's appVersion if not set
-    tag: 0.12.0
+    tag: 0.13.0
 
     ## Container digest to use. Used to pull the image instead of the image tag / Chart appVersion if set
     # digest:
@@ -647,9 +648,9 @@ matrixAuthenticationService:
   ## This can be provided in-line in the Helm Chart and/or via an existing Secret
   ## e.g.
   ## additional:
-  ##   0-guestConfig:
+  ##   0-customConfig:
   ##     config: |
-  ##       allow_guest_access: true
+  ##       <any valid configuration>
   ##   1-customConfig:
   ##     configSecret: custom-synapse-config
   ##     configSecretKey: shared.yaml
@@ -942,9 +943,9 @@ synapse:
   ## This can be provided in-line in the Helm Chart and/or via an existing Secret
   ## e.g.
   ## additional:
-  ##   0-guestConfig:
+  ##   0-customConfig:
   ##     config: |
-  ##       allow_guest_access: true
+  ##       <any valid configuration>
   ##   1-customConfig:
   ##     configSecret: custom-synapse-config
   ##     configSecretKey: shared.yaml
