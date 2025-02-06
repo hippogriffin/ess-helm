@@ -15,7 +15,7 @@ from ..artifacts import CertKey
 
 def generate_signing_key():
     signing_key = signedjson.key.generate_signing_key("0")
-    value = f"{signing_key.alg} {signing_key.version} " f"{signedjson.key.encode_signing_key_base64(signing_key)}"
+    value = f"{signing_key.alg} {signing_key.version} {signedjson.key.encode_signing_key_base64(signing_key)}"
     return value
 
 

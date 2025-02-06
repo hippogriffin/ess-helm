@@ -15,9 +15,9 @@ async def test_sets_nonRoot_uids_gids_in_pod_securityContext_by_default(template
         if template["kind"] in ["Deployment", "StatefulSet", "Job"]:
             id = f"{template['kind']}/{template['metadata']['name']}"
 
-            assert (
-                "securityContext" in template["spec"]["template"]["spec"]
-            ), f"Pod securityContext unexpectedly absent for {id}"
+            assert "securityContext" in template["spec"]["template"]["spec"], (
+                f"Pod securityContext unexpectedly absent for {id}"
+            )
 
             pod_securityContext = template["spec"]["template"]["spec"]["securityContext"]
 
@@ -28,12 +28,12 @@ async def test_sets_nonRoot_uids_gids_in_pod_securityContext_by_default(template
             assert "runAsNonRoot" in pod_securityContext, f"No runAsNonRoot in {id}'s Pod securityContext"
             assert pod_securityContext["runAsNonRoot"], f"{id} is running as root"
 
-            assert (
-                pod_securityContext["runAsUser"] == pod_securityContext["runAsGroup"]
-            ), f"{id} has distinct uid and gid in the Pod securityContext"
-            assert (
-                pod_securityContext["runAsGroup"] == pod_securityContext["fsGroup"]
-            ), f"{id} has distinct run and FS gids in the Pod securityContext"
+            assert pod_securityContext["runAsUser"] == pod_securityContext["runAsGroup"], (
+                f"{id} has distinct uid and gid in the Pod securityContext"
+            )
+            assert pod_securityContext["runAsGroup"] == pod_securityContext["fsGroup"], (
+                f"{id} has distinct run and FS gids in the Pod securityContext"
+            )
 
 
 @pytest.mark.parametrize("values_file", values_files_to_test)
@@ -51,9 +51,9 @@ async def test_can_nuke_pod_securityContext_ids(component, values, make_template
         if template["kind"] in ["Deployment", "StatefulSet", "Job"]:
             id = f"{template['kind']}/{template['metadata']['name']}"
 
-            assert (
-                "securityContext" in template["spec"]["template"]["spec"]
-            ), f"Pod securityContext unexpectedly absent for {id}"
+            assert "securityContext" in template["spec"]["template"]["spec"], (
+                f"Pod securityContext unexpectedly absent for {id}"
+            )
 
             pod_securityContext = template["spec"]["template"]["spec"]["securityContext"]
 
@@ -68,19 +68,19 @@ async def test_sets_seccompProfile_in_pod_securityContext_by_default(templates):
         if template["kind"] in ["Deployment", "StatefulSet", "Job"]:
             id = f"{template['kind']}/{template['metadata']['name']}"
 
-            assert (
-                "securityContext" in template["spec"]["template"]["spec"]
-            ), f"Pod securityContext unexpectedly absent for {id}"
+            assert "securityContext" in template["spec"]["template"]["spec"], (
+                f"Pod securityContext unexpectedly absent for {id}"
+            )
 
             pod_securityContext = template["spec"]["template"]["spec"]["securityContext"]
 
             assert "seccompProfile" in pod_securityContext, f"No seccompProfile in {id}'s Pod securityContext"
-            assert (
-                "type" in pod_securityContext["seccompProfile"]
-            ), f"No type in {id}'s Pod securityContext.seccompProfile"
-            assert (
-                pod_securityContext["seccompProfile"]["type"] == "RuntimeDefault"
-            ), f"{id} has unexpected seccompProfile type"
+            assert "type" in pod_securityContext["seccompProfile"], (
+                f"No type in {id}'s Pod securityContext.seccompProfile"
+            )
+            assert pod_securityContext["seccompProfile"]["type"] == "RuntimeDefault", (
+                f"{id} has unexpected seccompProfile type"
+            )
 
 
 @pytest.mark.parametrize("values_file", values_files_to_test)
@@ -94,9 +94,9 @@ async def test_can_nuke_pod_securityContext_seccompProfile(component, values, ma
         if template["kind"] in ["Deployment", "StatefulSet", "Job"]:
             id = f"{template['kind']}/{template['metadata']['name']}"
 
-            assert (
-                "securityContext" in template["spec"]["template"]["spec"]
-            ), f"Pod securityContext unexpectedly absent for {id}"
+            assert "securityContext" in template["spec"]["template"]["spec"], (
+                f"Pod securityContext unexpectedly absent for {id}"
+            )
 
             pod_securityContext = template["spec"]["template"]["spec"]["securityContext"]
 

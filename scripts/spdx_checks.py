@@ -6,11 +6,11 @@
 
 import re
 import sys
+from typing import Annotated
 
 import typer
 from spdx_tools.spdx.model import Document
 from spdx_tools.spdx.parser.tagvalue.parser import Parser
-from typing_extensions import Annotated
 
 
 def run_spdx_checks(input_file: Annotated[typer.FileText, typer.Argument()] = sys.stdin):

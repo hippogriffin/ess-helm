@@ -17,9 +17,9 @@ async def test_dont_automount_serviceaccount_tokens(templates):
         if template["kind"] in ["Deployment", "StatefulSet"]:
             id = f"{template['kind']}/{template['metadata']['name']}"
 
-            assert not template["spec"]["template"]["spec"][
-                "automountServiceAccountToken"
-            ], f"ServiceAccount token automounted for {id}"
+            assert not template["spec"]["template"]["spec"]["automountServiceAccountToken"], (
+                f"ServiceAccount token automounted for {id}"
+            )
 
 
 @pytest.mark.parametrize("values_file", values_files_to_test)
@@ -35,9 +35,9 @@ async def test_uses_serviceaccount_named_as_per_pod_controller_by_default(templa
             serviceaccount_names.add(template["metadata"]["name"])
 
     for id, template in workloads_by_id.items():
-        assert (
-            "serviceAccountName" in template["spec"]["template"]["spec"]
-        ), f"{id} does not set an explicit ServiceAccount"
+        assert "serviceAccountName" in template["spec"]["template"]["spec"], (
+            f"{id} does not set an explicit ServiceAccount"
+        )
 
         serviceaccount_name = template["spec"]["template"]["spec"]["serviceAccountName"]
         covered_serviceaccount_names.add(serviceaccount_name)
@@ -73,12 +73,12 @@ async def test_uses_serviceaccount_named_as_values_if_specified(component, value
             serviceaccount_names.append(template["metadata"]["name"])
 
     for id, template in workloads_by_id.items():
-        assert (
-            "serviceAccountName" in template["spec"]["template"]["spec"]
-        ), f"{id} does not set an explicit ServiceAccount"
-        assert (
-            template["spec"]["template"]["spec"]["serviceAccountName"] in serviceaccount_names
-        ), f"{id} does not reference a created ServiceAccount"
+        assert "serviceAccountName" in template["spec"]["template"]["spec"], (
+            f"{id} does not set an explicit ServiceAccount"
+        )
+        assert template["spec"]["template"]["spec"]["serviceAccountName"] in serviceaccount_names, (
+            f"{id} does not reference a created ServiceAccount"
+        )
         assert (
             template["metadata"]["labels"]["expected.name"]
             == template["spec"]["template"]["spec"]["serviceAccountName"]
@@ -111,9 +111,9 @@ async def test_does_not_create_serviceaccounts_if_configured_not_to(component, v
                     serviceaccount_names.add(template["metadata"]["name"])
 
             for id, template in workloads_by_id.items():
-                assert (
-                    "serviceAccountName" in template["spec"]["template"]["spec"]
-                ), f"{id} does not set an explicit ServiceAccount"
+                assert "serviceAccountName" in template["spec"]["template"]["spec"], (
+                    f"{id} does not set an explicit ServiceAccount"
+                )
 
                 serviceaccount_name = template["spec"]["template"]["spec"]["serviceAccountName"]
                 if template["metadata"]["labels"].get("serviceAccount", "some") == "none":
@@ -121,6 +121,6 @@ async def test_does_not_create_serviceaccounts_if_configured_not_to(component, v
                 else:
                     covered_serviceaccount_names.add(serviceaccount_name)
 
-            assert (
-                serviceaccount_names == covered_serviceaccount_names
-            ), f"{id} created ServiceAccounts that it shouldn't have"
+            assert serviceaccount_names == covered_serviceaccount_names, (
+                f"{id} created ServiceAccounts that it shouldn't have"
+            )

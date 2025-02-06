@@ -29,9 +29,9 @@ async def test_no_tolerations_by_default(templates):
         if template["kind"] in ["Deployment", "StatefulSet", "Job"]:
             id = f"{template['kind']}/{template['metadata']['name']}"
 
-            assert (
-                "tolerations" not in template["spec"]["template"]["spec"]
-            ), f"Tolerations unexpectedly present for {id}"
+            assert "tolerations" not in template["spec"]["template"]["spec"], (
+                f"Tolerations unexpectedly present for {id}"
+            )
 
 
 @pytest.mark.parametrize("values_file", values_files_to_test)

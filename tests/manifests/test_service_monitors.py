@@ -2,18 +2,19 @@
 #
 # SPDX-License-Identifier: AGPL-3.0-only OR LicenseRef-Element-Commercial
 
-from typing import Any, Dict, Iterator
+from collections.abc import Iterator
+from typing import Any
 
 import pytest
 
 from . import component_details, shared_components_details, values_files_to_test
 
 
-def selector_match(labels: Dict[str, str], selector: Dict[str, str]) -> bool:
+def selector_match(labels: dict[str, str], selector: dict[str, str]) -> bool:
     return all(labels[key] == value for key, value in selector.items())
 
 
-def find_services_matching_selector(templates: Iterator[Any], selector: Dict[str, str]) -> list[Any]:
+def find_services_matching_selector(templates: Iterator[Any], selector: dict[str, str]) -> list[Any]:
     services = []
     for template in templates:
         if template["kind"] == "Service" and selector_match(template["metadata"]["labels"], selector):
@@ -21,7 +22,7 @@ def find_services_matching_selector(templates: Iterator[Any], selector: Dict[str
     return services
 
 
-def find_workload_ids_matching_selector(templates: Iterator[Any], selector: Dict[str, str]) -> list[str]:
+def find_workload_ids_matching_selector(templates: Iterator[Any], selector: dict[str, str]) -> list[str]:
     workload_ids = []
     for template in templates:
         if template["kind"] in ("Deployment", "StatefulSet", "Job") and selector_match(
@@ -41,9 +42,9 @@ def workload_ids_for_service_monitor(service_monitor, templates) -> set[str]:
         workload_ids.extend(find_workload_ids_matching_selector(templates, service["spec"]["selector"]))
 
     assert len(workload_ids) > 0, f"No workloads behind ServiceMonitor {service_monitor['metadata']['name']}"
-    assert len(workload_ids) == len(
-        set(workload_ids)
-    ), f"ServiceMonitor {service_monitor['metadata']['name']} covers same workloads multiple times"
+    assert len(workload_ids) == len(set(workload_ids)), (
+        f"ServiceMonitor {service_monitor['metadata']['name']} covers same workloads multiple times"
+    )
     return set(workload_ids)
 
 
@@ -52,9 +53,9 @@ def workload_ids_monitored(templates: Iterator[Any]) -> set[str]:
     for template in templates:
         if template["kind"] == "ServiceMonitor":
             these_monitored_workload_ids = workload_ids_for_service_monitor(template, templates)
-            assert (
-                workload_ids_monitored.intersection(these_monitored_workload_ids) == set()
-            ), "Multiple ServiceMonitors cover the same workload"
+            assert workload_ids_monitored.intersection(these_monitored_workload_ids) == set(), (
+                "Multiple ServiceMonitors cover the same workload"
+            )
             workload_ids_monitored.update(these_monitored_workload_ids)
 
     return workload_ids_monitored
@@ -99,9 +100,9 @@ async def test_service_monitored_as_appropriate(component, values: dict, make_te
     # We should now have no ServiceMonitors rendered
     workloads_to_cover = set()
     for template in await make_templates(values):
-        assert (
-            template["kind"] != "ServiceMonitor"
-        ), f"{component} unexpectedly has a ServiceMonitor when all are turned off"
+        assert template["kind"] != "ServiceMonitor", (
+            f"{component} unexpectedly has a ServiceMonitor when all are turned off"
+        )
         if (
             template["kind"] in ["Deployment", "StatefulSet", "Job"]
             and template["metadata"]["labels"].get("servicemonitor", "some") != "none"

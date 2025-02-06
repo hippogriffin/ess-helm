@@ -21,14 +21,14 @@ async def test_templates_have_expected_labels(templates):
     ]
 
     for template in templates:
-        id = f"{template["kind"]}/{template["metadata"]["name"]}"
+        id = f"{template['kind']}/{template['metadata']['name']}"
         labels = template["metadata"]["labels"]
 
         for expected_label in expected_labels:
             assert expected_label in labels, f"{expected_label} label not present in {id}"
-            assert (
-                labels[expected_label] is not None
-            ), f"{expected_label} label is null in {id} and so won't be present in cluster"
+            assert labels[expected_label] is not None, (
+                f"{expected_label} label is null in {id} and so won't be present in cluster"
+            )
 
         assert labels["helm.sh/chart"].startswith("matrix-stack-")
         assert labels["app.kubernetes.io/managed-by"] == "Helm"
@@ -39,10 +39,10 @@ async def test_templates_have_expected_labels(templates):
             f"The app.kubernetes.io/instance label for {id}"
             "does not start with the expected chart release name of 'pytest'. "
         )
-        f"The label value is {labels["app.kubernetes.io/instance"]}"
+        f"The label value is {labels['app.kubernetes.io/instance']}"
 
         assert labels["app.kubernetes.io/instance"].replace("pytest-", "") == labels["app.kubernetes.io/name"], (
             f"The app.kubernetes.io/name label for {id}"
             "is not a concatenation of the expected chart release name of 'pytest' and the instance label. "
-            f"The label value is {labels["app.kubernetes.io/instance"]} vs {labels["app.kubernetes.io/name"]}"
+            f"The label value is {labels['app.kubernetes.io/instance']} vs {labels['app.kubernetes.io/name']}"
         )

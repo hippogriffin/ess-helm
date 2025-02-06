@@ -4,8 +4,9 @@
 
 import asyncio
 import os
+from collections.abc import AsyncGenerator
 from pathlib import Path
-from typing import Any, AsyncGenerator
+from typing import Any
 
 import pyhelm3
 import pytest
