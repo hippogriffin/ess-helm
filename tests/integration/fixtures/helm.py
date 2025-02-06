@@ -90,8 +90,12 @@ retention:
 
 @pytest.fixture(autouse=True, scope="session")
 async def matrix_stack(
-    helm_client: pyhelm3.Client, ingress, helm_prerequisites, ess_namespace: Namespace,
-    generated_data: ESSData, loaded_matrix_tools: dict
+    helm_client: pyhelm3.Client,
+    ingress,
+    helm_prerequisites,
+    ess_namespace: Namespace,
+    generated_data: ESSData,
+    loaded_matrix_tools: dict,
 ):
     with open(os.environ["TEST_VALUES_FILE"]) as stream:
         values = yaml.safe_load(stream)
