@@ -8,6 +8,9 @@ global:
 # To check that templating works against the ingress
 serverName: "{{ $.Values.global.baseDomain }}"
 
+initSecrets:
+  enabled: false
+
 synapse:
   enabled: false
 

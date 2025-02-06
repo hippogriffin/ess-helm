@@ -4,10 +4,8 @@
 
 serverName: ess.localhost
 
-matrixTools:
-  image:
-    pullPolicy: Never
-    digest: ""
+initSecrets:
+  enabled: false
 
 elementWeb:
   ingress:
