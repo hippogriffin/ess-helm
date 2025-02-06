@@ -6,7 +6,7 @@ import asyncio
 
 import pytest
 
-from ..lib.matrix_authentication_service import create_mas_user, get_client_token, get_mas_client_credentials
+from ..lib.matrix_authentication_service import create_mas_user, get_client_token
 from ..lib.synapse import create_synapse_user
 from ..lib.utils import value_file_has
 from .data import ESSData
@@ -20,8 +20,7 @@ async def users(request, matrix_stack, kube_client, generated_data: ESSData, ssl
 
     wait_for_users = []
     if value_file_has("matrixAuthenticationService.enabled"):
-        client_id, client_secret = await get_mas_client_credentials(kube_client, generated_data)
-        admin_token = await get_client_token(client_id, client_secret, f"mas.{generated_data.server_name}",
+        admin_token = await get_client_token(f"mas.{generated_data.server_name}",
                                              generated_data, ssl_context)
         for user in request.param:
             wait_for_users.append(

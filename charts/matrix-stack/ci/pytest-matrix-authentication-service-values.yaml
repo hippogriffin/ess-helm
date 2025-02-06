@@ -46,6 +46,11 @@ matrixAuthenticationService:
     tlsSecret: "{{ $.Release.Name }}-mas-web-tls"
     host: mas.{{ $.Values.serverName }}
 
+  additional:
+    000-pytest-admin:
+      configSecret: "{{ $.Release.Name }}-pytest-admin"
+      configSecretKey: "admin.yaml"
+
   postgres:
     host: "{{ $.Release.Name }}-mas-postgresql"
     user: mas_user

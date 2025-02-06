@@ -50,12 +50,7 @@ matrix:
 
 policy:
   data:
-{{- if $root.Values.synapse.enabled }}
-    admin_clients:
-    - "0000000000000000000SYNAPSE"
-{{- else }}
     admin_clients: {}
-{{- end }}
     admin_users: []
     client_registration:
       allow_host_mismatch: false

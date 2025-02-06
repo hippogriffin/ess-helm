@@ -2,29 +2,17 @@
 #
 # SPDX-License-Identifier: AGPL-3.0-only OR LicenseRef-Element-Commercial
 
-import base64
 from ssl import SSLContext
 from urllib.parse import urlparse
 
 import aiohttp
 from aiohttp_retry import RetryClient
-from lightkube import AsyncClient
-from lightkube.resources.core_v1 import Secret
 
 from ..fixtures import ESSData
 from .utils import aiohttp_post_json, retry_options
 
 
-async def get_mas_client_credentials(kube_client: AsyncClient, generated_data: ESSData):
-  generated_secret = await kube_client.get(Secret, name=f"{generated_data.release_name}-generated",
-                                           namespace=generated_data.ess_namespace)
-  client_id = "0000000000000000000SYNAPSE"
-  client_secret = base64.b64decode(generated_secret.data["MAS_SYNAPSE_OIDC_CLIENT_SECRET"]).decode("utf-8")
-  return client_id, client_secret
-
-
-async def get_client_token(client_id: str, client_secret: str, mas_fqdn: str,
-                                 generated_data: ESSData, ssl_context: SSLContext) -> str:
+async def get_client_token(mas_fqdn: str, generated_data: ESSData, ssl_context: SSLContext) -> str:
     client_credentials_data = {"grant_type": "client_credentials", "scope": "urn:mas:admin urn:mas:graphql:*"}
     url = f"https://{mas_fqdn}/oauth2/token"
     host = urlparse(url).hostname
@@ -35,7 +23,7 @@ async def get_client_token(client_id: str, client_secret: str, mas_fqdn: str,
         retry.post(
             url.replace(host, "127.0.0.1"), headers={"Host": host}, server_hostname=host,
             params=client_credentials_data,
-            auth=aiohttp.BasicAuth(client_id, client_secret),
+            auth=aiohttp.BasicAuth("000000000000000PYTESTADM1N", generated_data.mas_oidc_client_secret),
         ) as response,
     ):
         return await response.json()["access_token"]

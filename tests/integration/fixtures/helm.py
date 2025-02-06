@@ -46,6 +46,24 @@ async def helm_prerequisites(
                 bundled=True,
             )
         )
+        resources.append(
+            Secret(
+                metadata=ObjectMeta(
+                    name=f"{generated_data.release_name}-pytest-admin",
+                    namespace=generated_data.ess_namespace,
+                    labels={"app.kubernetes.io/managed-by": "pytest"},
+                ),
+                stringData={
+                    "admin.yaml": f"""
+policy:
+  data:
+    admin_clients:
+    - "0000000000000PYTESTADM1N"
+clients:
+- client_id: "000000000000000PYTESTADM1N"
+  client_auth_method: client_secret_basic
+  client_secret: {generated_data.mas_oidc_client_secret}
+""",}))
 
         setups.append(
             PostgresServer(
