@@ -43,7 +43,7 @@ jobs:
         golangci-lint run ./... -v --show-stats --no-config --modules-download-mode readonly --timeout 5m
 
     - name: Run tests
-      run: cd matrix-tools && go test -v ./...
+      run: cd matrix-tools && go test -v  -json ./... 2>&1 | gotestfmt
 
   # Build our application docker images in parallel.
   docker-build-and-push:
