@@ -96,6 +96,8 @@ async def test_service_monitored_as_appropriate(component, values: dict, make_te
     for shared_component in component_details[component].get("shared_components", []):
         if shared_components_details[shared_component]["has_service_monitor"]:
             values.setdefault(shared_component, {}).setdefault("serviceMonitors", {}).setdefault("enabled", False)
+        else:
+            values.setdefault(shared_component, {}).setdefault("labels", {}).setdefault("servicemonitor", "none")
 
     # We should now have no ServiceMonitors rendered
     workloads_to_cover = set()
