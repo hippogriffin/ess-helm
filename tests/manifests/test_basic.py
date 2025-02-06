@@ -4,7 +4,7 @@
 
 import pytest
 
-from . import component_details, values_files_to_test
+from . import component_details, shared_components_details, values_files_to_test
 
 
 @pytest.mark.parametrize("values_file", ["nothing-enabled-values.yaml"])
@@ -23,7 +23,7 @@ async def test_values_file_renders_only_itself(release_name, component, template
         f"{release_name}-{component_details[component]['hyphened_name']}",
     ]
     for shared_component in component_details[component].get("shared_components", []):
-        allowed_starts_with.append(f"{release_name}-{shared_component}")
+        allowed_starts_with.append(f"{release_name}-{shared_components_details[shared_component]['hyphened_name']}")
     for template in templates:
         assert any(template["metadata"]["name"].startswith(allowed_start) for allowed_start in allowed_starts_with), (
             f"{[template['metadata']['name']]} does not start with one of {allowed_starts_with}"
