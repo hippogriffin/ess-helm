@@ -68,7 +68,7 @@ func main() {
 		}
 
 		outputYAML, _ := yaml.Marshal(result)
-		fmt.Printf("Rendering config to file: %v", options.Output)
+		fmt.Printf("Rendering config to file: %v\n", options.Output)
 		if options.Debug {
 			fmt.Println(string(outputYAML))
 		}
