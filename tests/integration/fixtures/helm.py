@@ -15,7 +15,7 @@ from lightkube.resources.core_v1 import Namespace, Secret
 from ..lib.helpers import kubernetes_tls_secret
 from ..lib.utils import value_file_has
 from ..services import PostgresServer
-from .data import ESSData, generate_signing_key, unsafe_token
+from .data import ESSData, unsafe_token
 
 
 @pytest.fixture(scope="session")
@@ -34,6 +34,27 @@ async def helm_prerequisites(
                 [f"element.{generated_data.server_name}"],
                 bundled=True,
             )
+        )
+
+    if value_file_has("matrixAuthenticationService.enabled", True):
+        resources.append(
+            kubernetes_tls_secret(
+                f"{generated_data.release_name}-mas-web-tls",
+                generated_data.ess_namespace,
+                ca,
+                [f"mas.{generated_data.server_name}"],
+                bundled=True,
+            )
+        )
+
+        setups.append(
+            PostgresServer(
+                name=f"{generated_data.release_name}-mas",
+                namespace=generated_data.ess_namespace,
+                database="mas_db",
+                user="mas_user",
+                password=unsafe_token(36),
+            ).setup(helm_client, kube_client)
         )
 
     if value_file_has("synapse.enabled", True):
@@ -55,7 +76,6 @@ async def helm_prerequisites(
                 ),
                 stringData={
                     "registrationSharedSecret": generated_data.synapse_registration_shared_secret,
-                    "signingKey": generate_signing_key(),
                     "01-other-user-config.yaml": """
 retention:
   enabled: false
