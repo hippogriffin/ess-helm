@@ -76,11 +76,11 @@ func TestParseArgs(t *testing.T) {
 
 		{
 			name: "Multiple generated secrets",
-			args: []string{"cmd", "generate-secrets", "-secrets", "secret1:value1:rand32,secret2:value2:rand32"},
+			args: []string{"cmd", "generate-secrets", "-secrets", "secret1:value1:rand32,secret2:value2:signingkey"},
 			expected: &Options{
 				GeneratedSecrets: []GeneratedSecret{
 					{Name: "secret1", Key: "value1", Type: Rand32},
-					{Name: "secret2", Key: "value2", Type: Rand32},
+					{Name: "secret2", Key: "value2", Type: SigningKey},
 				},
 			},
 			err: false,

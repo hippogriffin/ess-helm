@@ -15,12 +15,15 @@ type SecretType int
 const (
 	UnknownSecretType SecretType = iota
 	Rand32
+	SigningKey
 )
 
 func parseSecretType(value string) (SecretType, error) {
 	switch value {
 	case "rand32":
 		return Rand32, nil
+	case "signingkey":
+		return SigningKey, nil
 	default:
 		return UnknownSecretType, fmt.Errorf("unknown secret type: %s", value)
 	}

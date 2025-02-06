@@ -22,6 +22,9 @@ app.kubernetes.io/version: {{ $root.Values.matrixTools.image.tag }}
 {{- if not .macaroon }}
 - {{ (printf "%s-generated" $root.Release.Name) }}:SYNAPSE_MACAROON:rand32
 {{- end }}
+{{- if not .signingKey }}
+- {{ (printf "%s-generated" $root.Release.Name) }}:SYNAPSE_SIGNING_KEY:signingkey
+{{- end }}
 {{- end }}
 {{- end }}
 {{- end }}
