@@ -69,13 +69,15 @@ async def aiottp_get_json(url: str, ssl_context: SSLContext) -> Any:
     """
     host = urlparse(url).hostname
 
-    async with aiohttp.ClientSession(connector=aiohttp.TCPConnector(ssl=ssl_context)) as session, RetryClient(
-        session, retry_options=retry_options, raise_for_status=True
-    ) as retry, retry.get(
-        url.replace(host, "127.0.0.1"),
-        headers={"Host": host},
-        server_hostname=host,
-    ) as response:
+    async with (
+        aiohttp.ClientSession(connector=aiohttp.TCPConnector(ssl=ssl_context)) as session,
+        RetryClient(session, retry_options=retry_options, raise_for_status=True) as retry,
+        retry.get(
+            url.replace(host, "127.0.0.1"),
+            headers={"Host": host},
+            server_hostname=host,
+        ) as response,
+    ):
         return await response.json()
 
 
@@ -96,11 +98,13 @@ async def aiohttp_post_json(url: str, data: dict, headers: dict, ssl_context: SS
     """
     host = urlparse(url).hostname
 
-    async with aiohttp.ClientSession(connector=aiohttp.TCPConnector(ssl=ssl_context)) as session, RetryClient(
-        session, retry_options=retry_options, raise_for_status=True
-    ) as retry, retry.post(
-        url.replace(host, "127.0.0.1"), headers=headers | {"Host": host}, server_hostname=host, json=data
-    ) as response:
+    async with (
+        aiohttp.ClientSession(connector=aiohttp.TCPConnector(ssl=ssl_context)) as session,
+        RetryClient(session, retry_options=retry_options, raise_for_status=True) as retry,
+        retry.post(
+            url.replace(host, "127.0.0.1"), headers=headers | {"Host": host}, server_hostname=host, json=data
+        ) as response,
+    ):
         return await response.json()
 
 
@@ -124,9 +128,10 @@ def value_file_has(property_path, expected=None):
                 a[key] = b[key]
         return a
 
-    with open(Path().resolve() / "charts" / "matrix-stack" / "values.yaml") as base_value_file, open(
-        os.environ["TEST_VALUES_FILE"]
-    ) as test_value_file:
+    with (
+        open(Path().resolve() / "charts" / "matrix-stack" / "values.yaml") as base_value_file,
+        open(os.environ["TEST_VALUES_FILE"]) as test_value_file,
+    ):
         data = merge(yaml.safe_load(base_value_file), yaml.safe_load(test_value_file))
 
     keys = property_path.split(".")

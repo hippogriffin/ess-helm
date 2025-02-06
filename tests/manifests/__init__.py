@@ -41,7 +41,7 @@ def _enrich_components_to_test(details) -> Dict[str, Any]:
         _component_details[component].setdefault("hyphened_name", component)
 
         values_files = _component_details[component].setdefault("additional_values_files", [])
-        values_files.append(f"{_component_details[component]["hyphened_name"]}-minimal-values.yaml")
+        values_files.append(f"{_component_details[component]['hyphened_name']}-minimal-values.yaml")
         _component_details[component]["values_files"] = values_files
         del _component_details[component]["additional_values_files"]
 

@@ -41,9 +41,9 @@ def workload_ids_for_service_monitor(service_monitor, templates) -> set[str]:
         workload_ids.extend(find_workload_ids_matching_selector(templates, service["spec"]["selector"]))
 
     assert len(workload_ids) > 0, f"No workloads behind ServiceMonitor {service_monitor['metadata']['name']}"
-    assert len(workload_ids) == len(
-        set(workload_ids)
-    ), f"ServiceMonitor {service_monitor['metadata']['name']} covers same workloads multiple times"
+    assert len(workload_ids) == len(set(workload_ids)), (
+        f"ServiceMonitor {service_monitor['metadata']['name']} covers same workloads multiple times"
+    )
     return set(workload_ids)
 
 
@@ -52,9 +52,9 @@ def workload_ids_monitored(templates: Iterator[Any]) -> set[str]:
     for template in templates:
         if template["kind"] == "ServiceMonitor":
             these_monitored_workload_ids = workload_ids_for_service_monitor(template, templates)
-            assert (
-                workload_ids_monitored.intersection(these_monitored_workload_ids) == set()
-            ), "Multiple ServiceMonitors cover the same workload"
+            assert workload_ids_monitored.intersection(these_monitored_workload_ids) == set(), (
+                "Multiple ServiceMonitors cover the same workload"
+            )
             workload_ids_monitored.update(these_monitored_workload_ids)
 
     return workload_ids_monitored
@@ -99,9 +99,9 @@ async def test_service_monitored_as_appropriate(component, values: dict, make_te
     # We should now have no ServiceMonitors rendered
     workloads_to_cover = set()
     for template in await make_templates(values):
-        assert (
-            template["kind"] != "ServiceMonitor"
-        ), f"{component} unexpectedly has a ServiceMonitor when all are turned off"
+        assert template["kind"] != "ServiceMonitor", (
+            f"{component} unexpectedly has a ServiceMonitor when all are turned off"
+        )
         if (
             template["kind"] in ["Deployment", "StatefulSet", "Job"]
             and template["metadata"]["labels"].get("servicemonitor", "some") != "none"

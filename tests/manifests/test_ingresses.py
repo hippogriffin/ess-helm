@@ -234,11 +234,11 @@ async def test_ingress_services(templates):
                 found_service = services_by_name[backend_service["name"]]
                 if backend_service["port"].get("name"):
                     port_names = [port["name"] for port in found_service["spec"]["ports"]]
-                    assert (
-                        backend_service["port"]["name"] in port_names
-                    ), f"Port name {backend_service['port']['name']} not found in service {backend_service['name']}"
+                    assert backend_service["port"]["name"] in port_names, (
+                        f"Port name {backend_service['port']['name']} not found in service {backend_service['name']}"
+                    )
                 else:
                     port_numbers = [port["port"] for port in found_service["spec"]["ports"]]
-                    assert (
-                        backend_service["port"]["number"] in port_numbers
-                    ), f"Port number {backend_service['port']['number']} not found in service {backend_service['name']}"
+                    assert backend_service["port"]["number"] in port_numbers, (
+                        f"Port number {backend_service['port']['number']} not found in service {backend_service['name']}"
+                    )

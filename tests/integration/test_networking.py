@@ -138,16 +138,14 @@ async def test_pods_monitored(
 
                 # Something monitored by multiple ServiceMonitors smells like a bug
                 assert covered_pod.metadata.name not in monitored_pods, (
-                    f"Pod {covered_pod.metadata.name} " "is monitored multiple times"
+                    f"Pod {covered_pod.metadata.name} is monitored multiple times"
                 )
 
                 monitored_pods.add(covered_pod.metadata.name)
                 service_monitor_is_useful = True
 
-        assert service_monitor_is_useful, (
-            f"ServiceMonitor {service_monitor['metadata']['name']} " "does not cover any pod"
-        )
+        assert service_monitor_is_useful, f"ServiceMonitor {service_monitor['metadata']['name']} does not cover any pod"
 
     assert all_monitorable_pods == monitored_pods, (
-        f"Some pods are not monitored : " f"{', '.join(list(set(all_monitorable_pods) ^ set(monitored_pods)))}"
+        f"Some pods are not monitored : {', '.join(list(set(all_monitorable_pods) ^ set(monitored_pods)))}"
     )

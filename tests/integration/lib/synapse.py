@@ -80,15 +80,17 @@ async def upload_media(synapse_fqdn: str, user_access_token: str, file_path: Pat
     params = {"filename": file_path.name}
 
     with open(file_path, "rb") as f:
-        async with aiohttp.ClientSession(connector=aiohttp.TCPConnector(ssl=ssl_context)) as session, RetryClient(
-            session, retry_options=retry_options, raise_for_status=True
-        ) as retry, retry.post(
-            "https://127.0.0.1/_matrix/media/v3/upload",
-            server_hostname=synapse_fqdn,
-            headers=headers,
-            params=params,
-            data=f.read(),
-        ) as response:
+        async with (
+            aiohttp.ClientSession(connector=aiohttp.TCPConnector(ssl=ssl_context)) as session,
+            RetryClient(session, retry_options=retry_options, raise_for_status=True) as retry,
+            retry.post(
+                "https://127.0.0.1/_matrix/media/v3/upload",
+                server_hostname=synapse_fqdn,
+                headers=headers,
+                params=params,
+                data=f.read(),
+            ) as response,
+        ):
             response_json = await response.json()
 
             assert response_json["content_uri"].startswith("mxc://")
@@ -106,13 +108,15 @@ async def download_media(
 
     # Initialize SHA-256 hasher
     sha256_hash = hashlib.sha256()
-    async with aiohttp.ClientSession(connector=aiohttp.TCPConnector(ssl=ssl_context)) as session, RetryClient(
-        session, retry_options=retry_options, raise_for_status=True
-    ) as retry, retry.get(
-        f"https://127.0.0.1/_matrix/client/v1/media/download/{server_name}/{content_id}",
-        headers=headers,
-        server_hostname=synapse_fqdn,
-    ) as response:
+    async with (
+        aiohttp.ClientSession(connector=aiohttp.TCPConnector(ssl=ssl_context)) as session,
+        RetryClient(session, retry_options=retry_options, raise_for_status=True) as retry,
+        retry.get(
+            f"https://127.0.0.1/_matrix/client/v1/media/download/{server_name}/{content_id}",
+            headers=headers,
+            server_hostname=synapse_fqdn,
+        ) as response,
+    ):
         # Process the stream in chunks
         while True:
             chunk = await response.content.read(8192)  # 8KB chunks
