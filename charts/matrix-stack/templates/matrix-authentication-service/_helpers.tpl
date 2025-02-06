@@ -34,16 +34,17 @@ app.kubernetes.io/version: {{ .image.tag }}
 {{ $configSecrets = append $configSecrets (tpl $value.secret $root) }}
 {{- end -}}
 {{- end -}}
+{{- with .synapseSharedSecret.secret -}}
+{{ $configSecrets = append $configSecrets (tpl . $root) }}
+{{- end -}}
+{{- with .synapseOIDCClientSecret.secret -}}
+{{ $configSecrets = append $configSecrets (tpl . $root) }}
+{{- end -}}
 {{- with .postgres.password.secret -}}
 {{ $configSecrets = append $configSecrets (tpl . $root) }}
 {{- end -}}
 {{- with .encryptionSecret.secret -}}
 {{ $configSecrets = append $configSecrets (tpl . $root) }}
-{{- end -}}
-{{- with .smtp }}
-{{- with .password.secret }}
-{{ $configSecrets = append $configSecrets (tpl . $root) }}
-{{- end -}}
 {{- end -}}
 {{- with .additional -}}
 {{- range $key := (. | keys | uniq | sortAlpha) -}}

@@ -48,6 +48,13 @@ matrix:
   secret: ${SYNAPSE_SHARED_SECRET}
   endpoint: "https://{{ tpl $root.Values.synapse.ingress.host $root }}"
 
+{{- if $root.Values.synapse.enabled }}
+clients:
+- client_id: "0000000000000000000SYNAPSE"
+  client_auth_method: client_secret_basic
+  client_secret: ${SYNAPSE_OIDC_CLIENT_SECRET}
+{{- end }}
+
 secrets:
   encryption: ${ENCRYPTION_SECRET}
 
