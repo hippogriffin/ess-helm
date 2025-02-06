@@ -5,13 +5,11 @@
 package secret
 
 import (
+	"crypto/ecdsa"
+	"crypto/elliptic"
 	"crypto/rand"
 	"crypto/rsa"
 	"crypto/x509"
-	"crypto/ecdsa"
-	"crypto/elliptic"
-
-	"github.com/dustinxie/ecc"
 )
 
 
@@ -36,23 +34,6 @@ func generateRSA() ([]byte, error) {
 
 func generateEcdsaPrime256v1() ([]byte, error) {
 	ecdsaPrivateKey, err := ecdsa.GenerateKey(elliptic.P256(), rand.Reader)
-	if err != nil {
-		return nil, err
-	}
-	return marshallKey(ecdsaPrivateKey)
-}
-
-
-func generateEcdsaSecp256k1() ([]byte, error) {
-	ecdsaPrivateKey, err := ecdsa.GenerateKey(ecc.P256k1(), rand.Reader)
-	if err != nil {
-		return nil, err
-	}
-	return marshallKey(ecdsaPrivateKey)
-}
-
-func generateEcdsaSecp384r1() ([]byte, error) {
-	ecdsaPrivateKey, err := ecdsa.GenerateKey(ecc.P384(), rand.Reader)
 	if err != nil {
 		return nil, err
 	}

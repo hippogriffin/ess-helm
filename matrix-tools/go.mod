@@ -9,6 +9,7 @@ go 1.23.4
 require gopkg.in/yaml.v3 v3.0.1
 
 require (
+	github.com/pkg/errors v0.9.1
 	k8s.io/api v0.32.1
 	k8s.io/apimachinery v0.32.1
 	k8s.io/client-go v0.32.1
@@ -17,7 +18,6 @@ require (
 
 require (
 	github.com/davecgh/go-spew v1.1.2-0.20180830191138-d8f796af33cc // indirect
-	github.com/dustinxie/ecc v0.0.0-20210511000915-959544187564 // indirect
 	github.com/emicklei/go-restful/v3 v3.11.0 // indirect
 	github.com/fxamacker/cbor/v2 v2.7.0 // indirect
 	github.com/go-logr/logr v1.4.2 // indirect
