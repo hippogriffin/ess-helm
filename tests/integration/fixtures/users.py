@@ -15,13 +15,12 @@ from .data import ESSData
 @pytest.fixture(scope="session")
 async def users(request, matrix_stack, kube_client, generated_data: ESSData, ssl_context, ingress_ready):
     await ingress_ready("synapse")
-    if value_file_has("matrixAuthenticationService.enabled"):
+    if value_file_has("matrixAuthenticationService.enabled", True):
         await ingress_ready("matrix-authentication-service")
 
     wait_for_users = []
-    if value_file_has("matrixAuthenticationService.enabled"):
-        admin_token = await get_client_token(f"mas.{generated_data.server_name}",
-                                             generated_data, ssl_context)
+    if value_file_has("matrixAuthenticationService.enabled", True):
+        admin_token = await get_client_token(f"mas.{generated_data.server_name}", generated_data, ssl_context)
         for user in request.param:
             wait_for_users.append(
                 create_mas_user(

@@ -21,12 +21,14 @@ async def get_client_token(mas_fqdn: str, generated_data: ESSData, ssl_context: 
         aiohttp.ClientSession(connector=aiohttp.TCPConnector(ssl=ssl_context)) as session,
         RetryClient(session, retry_options=retry_options, raise_for_status=True) as retry,
         retry.post(
-            url.replace(host, "127.0.0.1"), headers={"Host": host}, server_hostname=host,
-            params=client_credentials_data,
+            url.replace(host, "127.0.0.1"),
+            headers={"Host": host},
+            server_hostname=host,
+            data=client_credentials_data,
             auth=aiohttp.BasicAuth("000000000000000PYTESTADM1N", generated_data.mas_oidc_client_secret),
         ) as response,
     ):
-        return await response.json()["access_token"]
+        return (await response.json())["access_token"]
 
 
 async def create_mas_user(
@@ -43,23 +45,43 @@ async def create_mas_user(
     create_user_data = {"username": username}
     headers = {"Authorization": f"Bearer {bearer_token}"}
     response = await aiohttp_post_json(
-        f"{mas_fqdn}/api/admin/v1/users", headers=headers, data=create_user_data, ssl_context=ssl_context
+        f"https://{mas_fqdn}/api/admin/v1/users", headers=headers, data=create_user_data, ssl_context=ssl_context
     )
     user_id = response["data"]["id"]
 
     set_password_data = {"password": password, "skip_password_check": True}
 
     response = await aiohttp_post_json(
-        f"{mas_fqdn}/api/admin/v1/users/{user_id}/set-password", headers=headers, data=set_password_data,
-        ssl_context=ssl_context
+        f"https://{mas_fqdn}/api/admin/v1/users/{user_id}/set-password",
+        headers=headers,
+        data=set_password_data,
+        ssl_context=ssl_context,
     )
 
     set_admin_data = {"admin": admin}
 
     response = await aiohttp_post_json(
-        f"{mas_fqdn}/api/admin/v1/users/{user_id}/set-admin", headers=headers, data=set_admin_data,
-        ssl_context=ssl_context
+        f"https://{mas_fqdn}/api/admin/v1/users/{user_id}/set-admin",
+        headers=headers,
+        data=set_admin_data,
+        ssl_context=ssl_context,
     )
+
+    check_user_query = """
+        query UserByUsername($username: String!) {
+          userByUsername(username: $username) {
+              id lockedAt
+          }
+        }
+    """
+    check_user_data = {"query": check_user_query, "variables": {"username": username}}
+
+    headers = {"Authorization": f"Bearer {bearer_token}"}
+
+    response = await aiohttp_post_json(
+        f"https://{mas_fqdn}/graphql", headers=headers, data=check_user_data, ssl_context=ssl_context
+    )
+    graphql_user_id = response["data"]["userByUsername"]["id"]
 
     create_session_mutation = """
         mutation CreateOauth2Session($userId: String!, $scope: String!) {
@@ -68,12 +90,15 @@ async def create_mas_user(
             }
         }
     """
-    scopes = ["urn:matrix:org.matrix.msc2967.client:api:*",]
-    add_access_token_data ={"query": create_session_mutation,
-                            "variables": {"userId": user_id, "scope": " ".join(scopes)}}
+    scopes = [
+        "urn:matrix:org.matrix.msc2967.client:api:*",
+    ]
+    add_access_token_data = {
+        "query": create_session_mutation,
+        "variables": {"userId": graphql_user_id, "scope": " ".join(scopes)},
+    }
 
     response = await aiohttp_post_json(
-        f"{mas_fqdn}/graphql", headers=headers, data=add_access_token_data,
-        ssl_context=ssl_context
+        f"https://{mas_fqdn}/graphql", headers=headers, data=add_access_token_data, ssl_context=ssl_context
     )
     return response["data"]["createOauth2Session"]["accessToken"]
