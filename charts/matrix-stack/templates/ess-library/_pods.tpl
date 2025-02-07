@@ -8,11 +8,12 @@ SPDX-License-Identifier: AGPL-3.0-only OR LicenseRef-Element-Commercial
 {{- $root := .root -}}
 {{- with required "element-io.ess-library.pods.commonSpec missing context" .context -}}
 {{- $key := required "element-io.ess-library.pods.commonSpec missing context.key" .key -}}
+{{- $usesMatrixTools := .usesMatrixTools | default false -}}
 {{- $deployment := required "element-io.ess-library.pods.commonSpec missing context.deployment" .deployment -}}
 {{- with required "element-io.ess-library.pods.commonSpec missing context.componentValues" .componentValues -}}
 automountServiceAccountToken: false
 serviceAccountName: {{ include "element-io.ess-library.serviceAccountName" (dict "root" $root "context" (dict "serviceAccount" .serviceAccount "key" $key)) }}
-{{- include "element-io.ess-library.pods.pullSecrets" (dict "root" $root "context" .image) }}
+{{- include "element-io.ess-library.pods.pullSecrets" (dict "root" $root "context" (dict "pullSecrets" .image.pullSecrets "usesMatrixTools" $usesMatrixTools)) }}
 {{- with .podSecurityContext }}
 securityContext:
   {{- toYaml . | nindent 2 }}
@@ -30,7 +31,11 @@ nodeSelector:
 {{- define "element-io.ess-library.pods.pullSecrets" -}}
 {{- $root := .root -}}
 {{- with required "element-io.ess-library.pods.pullSecrets missing context" .context -}}
-{{- $pullSecrets := concat .pullSecrets $root.Values.imagePullSecrets }}
+{{- $pullSecrets := list }}
+{{- $pullSecrets = concat .pullSecrets $root.Values.imagePullSecrets }}
+{{- if .usesMatrixTools -}}
+{{- $pullSecrets = concat $pullSecrets $root.Values.matrixTools.image.pullSecrets }}
+{{- end }}
 {{- with ($pullSecrets | uniq) }}
 imagePullSecrets:
 {{ tpl (toYaml .) $root }}

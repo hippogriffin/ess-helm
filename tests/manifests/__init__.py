@@ -6,7 +6,12 @@ import copy
 from typing import Any
 
 _raw_shared_components_details = {
-    "initSecrets": {"hyphened_name": "init-secrets", "has_service_monitor": False, "has_ingress": False},
+    "initSecrets": {
+        "hyphened_name": "init-secrets",
+        "has_image": False,
+        "has_service_monitor": False,
+        "has_ingress": False,
+    },
     "haproxy": {},
 }
 
@@ -33,6 +38,7 @@ _raw_component_details = {
     "wellKnownDelegation": {
         "hyphened_name": "well-known",
         "has_service_monitor": False,
+        "has_image": False,
         "has_workloads": False,
         "shared_components": ["haproxy"],
     },
@@ -52,6 +58,7 @@ def _enrich_components_to_test(details) -> dict[str, Any]:
         _component_details[component].setdefault("has_ingress", True)
         _component_details[component].setdefault("has_service_monitor", True)
         _component_details[component].setdefault("has_workloads", True)
+        _component_details[component].setdefault("has_image", True)
         _component_details[component].setdefault("sub_components", {})
         for sub_component in _component_details[component]["sub_components"]:
             _component_details[component]["sub_components"][sub_component].setdefault("has_service_monitor", True)
