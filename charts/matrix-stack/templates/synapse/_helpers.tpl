@@ -89,3 +89,24 @@ app.kubernetes.io/version: {{ .image.tag }}
 {{- end -}}
 {{- end -}}
 {{- end -}}
+
+{{- define "element-io.synapse.ingress.additionalPaths" -}}
+{{- $root := .root -}}
+{{- with required "element-io.synapse.ingress.additionalPaths missing context" .context -}}
+{{- if $root.Values.matrixAuthenticationService.enabled -}}
+{{- range $apiVersion := list "api/v1" "r0" "v3" "unstable" }}
+{{- range $apiSubpath := list "login" "refresh" "logout" }}
+- path: "/_matrix/client/{{ $apiVersion }}/{{ $apiSubpath }}"
+  availability: only_externally
+  service:
+    name: "{{ $root.Release.Name }}-matrix-authentication-service"
+    port:
+      name: http
+{{- end }}
+{{- end }}
+{{- end }}
+{{- range $root.Values.synapse.ingress.additionalPaths }}
+- {{ . | toYaml | indent 2 | trim }}
+{{- end -}}
+{{- end -}}
+{{- end -}}
