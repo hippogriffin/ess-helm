@@ -68,7 +68,6 @@ spec:
         command:
         - "/matrix-tools"
         - render-config
-        - -debug
         - -output
         - /conf/config.yaml
           {{- range $key := (.additional | keys | uniq | sortAlpha) -}}

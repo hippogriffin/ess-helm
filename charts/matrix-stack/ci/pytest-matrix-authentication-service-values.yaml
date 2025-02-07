@@ -42,6 +42,10 @@ synapse:
 matrixAuthenticationService:
   enabled: true
 
+  extraEnv:
+  - name: DEBUG_RENDERING
+    value: "1"
+
   ingress:
     tlsSecret: "{{ $.Release.Name }}-mas-web-tls"
     host: mas.{{ $.Values.serverName }}

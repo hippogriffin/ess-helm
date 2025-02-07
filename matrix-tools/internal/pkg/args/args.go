@@ -63,7 +63,6 @@ func ParseArgs(args []string) (*Options, error) {
 
 	renderConfigSet := flag.NewFlagSet("render-config", flag.ExitOnError)
 	output := renderConfigSet.String("output", "", "Output file for rendering")
-	debug := renderConfigSet.Bool("debug", false, "Print the resulting file in stdout")
 
 	tcpWaitSet := flag.NewFlagSet("tcpwait", flag.ExitOnError)
 	tcpWait := tcpWaitSet.String("address", "", "Address to listen on for TCP connections")
@@ -84,7 +83,6 @@ func ParseArgs(args []string) (*Options, error) {
 			}
 			options.Files = append(options.Files, file)
 		}
-		options.Debug = *debug
 		options.Output = *output
 	case "tcpwait":
 		err := tcpWaitSet.Parse(args[2:])
