@@ -7,8 +7,4 @@ name: matrix-stack
 description: A Helm meta-chart for deploying a Matrix Stack from Element
 type: application
 version: "0.5.1-dev"
-dependencies:
-  - name: postgresql
-    version: 16.4.6
-    repository: oci://registry-1.docker.io/bitnamicharts
-    condition: postgresql.enable
+dependencies: []

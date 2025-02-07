@@ -17,6 +17,12 @@ app.kubernetes.io/version: {{ $root.Values.matrixTools.image.tag }}
 
 {{- define "element-io.init-secrets.generated-secrets" -}}
 {{- $root := .root -}}
+{{- with $root.Values.postgresql }}
+{{- if .enabled -}}
+- {{ (printf "%s-generated" $root.Release.Name) }}:POSTGRES_ESS_PASSWORD:rand32
+- {{ (printf "%s-generated" $root.Release.Name) }}:POSTGRES_ADMIN_PASSWORD:rand32
+{{- end }}
+{{- end }}
 {{- with $root.Values.synapse }}
 {{- if .enabled -}}
 {{- if not .macaroon }}
