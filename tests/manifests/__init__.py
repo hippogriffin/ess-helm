@@ -38,6 +38,7 @@ _raw_component_details = {
     "wellKnownDelegation": {
         "hyphened_name": "well-known",
         "has_service_monitor": False,
+        "has_image": False,
         "has_workloads": False,
         "shared_components": ["haproxy"],
     },

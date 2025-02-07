@@ -5,7 +5,7 @@
 import pytest
 
 from . import values_files_to_test
-from .utils import iterate_component_workload_parts
+from .utils import iterate_component_image_parts
 
 
 @pytest.mark.parametrize("values_file", values_files_to_test)
@@ -33,11 +33,10 @@ async def test_local_pull_secrets(component, values, base_values, make_templates
         {"name": "global-secret"},
     ]
     values.setdefault("matrixTools", {}).setdefault("image", {})["pullSecrets"] = [{"name": "matrix-tools-secret"}]
-    iterate_component_workload_parts(
+    iterate_component_image_parts(
         component,
         values,
         lambda workload, values: workload.setdefault("image", {"pullSecrets": [{"name": "local-secret"}]}),
-        "has_image",
     )
 
     for template in await make_templates(values):
