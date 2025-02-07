@@ -70,10 +70,6 @@ synapse:
 
   registrationSharedSecret:
     value: A Secret
-  macaroon:
-    value: Another Secret
-  signingKey:
-    value: ed25519 0 bNQOzBUDszff7Ax81z6w0uZ1IPWoxYaazT7emaZEfpw
 
   postgres:
     host: ess-postgres
@@ -117,6 +113,56 @@ synapse:
 ```
 
 Other settings for Synapse can be seen under the `synapse` section of
+`helm show values` for this chart.
+
+## Matrix Authentication Service
+
+A minimal set of values to bring up Matrix Authentication Service (MAS) would be
+```yaml
+serverName: ess.localhost
+
+matrixAuthenticationService:
+  ingress:
+    host: mas.ess.localhost
+
+  postgres:
+    host: ess-postgres
+    user: mas_user
+    database: mas
+    password:
+      secret: ess-postgres
+      secretKey: password
+```
+
+`serverName` is the value that is embedded in user IDs, room IDs, etc. It can't be changed
+after the initial deployment and so should be chosen carefully. If federating
+`https://<serverName>/.well-known/matrix/server` must be available and contain the
+location of this MAS. Future versions of this chart will do this for you.
+
+Additional MAS configuration can be provided inline in the values as a string with
+```yaml
+matrixAuthenticationService:
+  additional:
+    ## Either reference config to inject by:
+    1-custom-config:
+      config: |
+        admin_contact: "mailto:admin@example.com"
+    ## Either reference an existing `Secret` by:
+    2-custom-config:
+      configSecret: custom-mas-config
+      configSecretKey: shared.yaml
+```
+
+Full details on available configuration options can be found at
+https://element-hq.github.io/matrix-authentication-service/
+
+MAS is enabled for deployment by default can be disabled with the following values
+```yaml
+matrixAuthenticationService:
+  enabled: false
+```
+
+Other settings for MAS can be seen under the `matrixAuthenticationService` section of
 `helm show values` for this chart.
 
 ## Element Web
