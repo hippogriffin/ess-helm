@@ -5,7 +5,7 @@
 import pytest
 
 from . import values_files_to_test
-from .utils import iterate_component_image_parts
+from .utils import iterate_component_workload_parts
 
 
 @pytest.mark.parametrize("values_file", values_files_to_test)
@@ -33,10 +33,11 @@ async def test_local_pull_secrets(component, values, base_values, make_templates
         {"name": "global-secret"},
     ]
     values.setdefault("matrixTools", {}).setdefault("image", {})["pullSecrets"] = [{"name": "matrix-tools-secret"}]
-    iterate_component_image_parts(
+    iterate_component_workload_parts(
         component,
         values,
         lambda workload, values: workload.setdefault("image", {"pullSecrets": [{"name": "local-secret"}]}),
+        "has_image",
     )
 
     for template in await make_templates(values):
@@ -51,6 +52,15 @@ async def test_local_pull_secrets(component, values, base_values, make_templates
                     )
                 ]
             )
+            containers_with_matrix_tools_image = [
+                base_values["matrixTools"]["image"]["repository"] in x["image"]
+                for x in (
+                    template["spec"]["template"]["spec"]["containers"]
+                    + template["spec"]["template"]["spec"].get("initContainers", [])
+                )
+            ]
+            any_container_uses_matrix_tools_image = any(containers_with_matrix_tools_image)
+            containers_only_uses_matrix_tools_image = all(containers_with_matrix_tools_image)
 
             assert "imagePullSecrets" in template["spec"]["template"]["spec"], f"{id} should have an imagePullSecrets"
 
