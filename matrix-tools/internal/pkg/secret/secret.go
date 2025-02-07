@@ -8,8 +8,9 @@ package secret
 import (
 	"context"
 	"fmt"
-
-	"math/rand"
+	"encoding/hex"
+	"crypto/rand"
+	"math/big"
 
 	"github.com/element-hq/ess-helm/matrix-tools/internal/pkg/args"
 	corev1 "k8s.io/api/core/v1"
@@ -54,13 +55,32 @@ func GenerateSecret(client kubernetes.Interface, secretLabels map[string]string,
 	if _, ok := existingSecret.Data[key]; !ok {
 		switch secretType {
 		case args.Rand32:
-			randomString := generateRandomString(32)
-			existingSecret.Data[key] = []byte(randomString)
+			if randomString, err := generateRandomString(32); err == nil {
+				existingSecret.Data[key] = randomString
+			}
 		case args.SigningKey:
 			if signingKey, err := generateSynapseSigningKey(); err == nil {
 				existingSecret.Data[key] = []byte(signingKey)
 			} else {
 				return fmt.Errorf("failed to generate signing key: %w", err)
+			}
+		case args.Hex32:
+			if hexBytes, err := generateRandomBytesHex(32); err == nil {
+				existingSecret.Data[key] = hexBytes
+			} else {
+				return fmt.Errorf("failed to generate Hex32 : %w", err)
+			}
+		case args.RSA:
+			if keyBytes, err := generateRSA(); err == nil {
+				existingSecret.Data[key] = keyBytes
+			} else {
+				return fmt.Errorf("failed to generate RSA key: %w", err)
+			}
+		case args.EcdsaPrime256v1:
+			if keyBytes, err := generateEcdsaPrime256v1(); err == nil {
+				existingSecret.Data[key] = keyBytes
+			} else {
+				return fmt.Errorf("failed to generate ECDSA Prime256v1 key: %w", err)
 			}
 		default:
 			return fmt.Errorf("unknown secret type for: %s:%s", name, key)
@@ -75,11 +95,25 @@ func GenerateSecret(client kubernetes.Interface, secretLabels map[string]string,
 	return nil
 }
 
-func generateRandomString(size int) string {
+func generateRandomString(size int) ([]byte, error) {
 	const charset = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789"
 	bytes := make([]byte, size)
 	for i := range bytes {
-		bytes[i] = charset[rand.Intn(len(charset))]
+		randIndex, err := rand.Int(rand.Reader, big.NewInt(int64(len(charset))))
+		if err != nil {
+			return nil, fmt.Errorf("failed to generate random string : %w", err)
+		}
+		bytes[i] = charset[randIndex.Int64()]
 	}
-	return string(bytes)
+	return bytes, nil
+}
+
+func generateRandomBytesHex(size int) ([]byte, error) {
+	key := make([]byte, size)
+	if _, err := rand.Read(key); err != nil {
+		return nil, fmt.Errorf("failed to generate key : %w", err)
+	}
+	encodedKey := make([]byte, hex.EncodedLen(len(key)))
+	hex.Encode(encodedKey, key)
+	return encodedKey, nil
 }

@@ -21,6 +21,10 @@ haproxy:
   {% macro haproxyValues() %}{% include 'haproxy.yaml.j2'%}{% endmacro %}
   {{- haproxyValues() | trim | indent(2) }}
 
+matrixAuthenticationService:
+  {% macro matrixAuthenticationServiceValues() %}{% include 'matrixAuthenticationService.yaml.j2'%}{% endmacro %}
+  {{- matrixAuthenticationServiceValues() | trim | indent(2) }}
+
 synapse:
   {% macro synapseValues() %}{% include 'synapse.yaml.j2'%}{% endmacro %}
   {{- synapseValues() | trim | indent(2) }}

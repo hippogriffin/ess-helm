@@ -10,6 +10,18 @@ elementWeb:
   ingress:
     host: element.ess.localhost
 
+matrixAuthenticationService:
+  ingress:
+    host: mas.ess.localhost
+
+  postgres:
+    host: ess-postgres
+    user: mas_user
+    database: mas
+    password:
+      secret: ess-postgres
+      secretKey: password
+
 synapse:
   ingress:
     host: synapse.ess.localhost

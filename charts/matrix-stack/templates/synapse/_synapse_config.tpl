@@ -70,6 +70,25 @@ ip_range_blacklist:
 - 'ff00::/8'
 - 'fec0::/10'
 
+{{- if $root.Values.matrixAuthenticationService.enabled }}
+experimental_features:
+  msc3861:
+    enabled: true
+
+    issuer: http://{{ $root.Release.Name }}-matrix-authentication-service.{{ $root.Release.Namespace }}.svc.cluster.local:8080/
+    client_id: 0000000000000000000SYNAPSE
+    client_auth_method: client_secret_basic
+    # client.<client_id> in the MAS secret
+    client_secret: ${MAS_OIDC_CLIENT_SECRET}
+    # serverSecret in the MAS secret
+    admin_token: ${MAS_SHARED_SECRET}
+    introspection_endpoint: "http://{{ $root.Release.Name }}-matrix-authentication-service.{{ $root.Release.Namespace }}.svc.cluster.local:8080/oauth2/introspect"
+
+password_config:
+  localdb_enabled: false
+  enabled: false
+{{- end }}
+
 {{- if dig "appservice" "enabled" false .workers }}
 
 notify_appservices_from_worker: appservice-0

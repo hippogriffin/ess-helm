@@ -68,7 +68,10 @@ func main() {
 		}
 
 		outputYAML, _ := yaml.Marshal(result)
-		fmt.Printf("Rendering config to file: %v", options.Output)
+		fmt.Printf("Rendering config to file: %v\n", options.Output)
+		if os.Getenv("DEBUG_RENDERING") == "1" {
+			fmt.Println(string(outputYAML))
+		}
 		err = os.WriteFile(options.Output, outputYAML, 0644)
 		if err != nil {
 			fmt.Println("Error writing to file:", err)

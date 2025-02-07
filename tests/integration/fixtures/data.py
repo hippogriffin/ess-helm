@@ -8,15 +8,8 @@ import string
 from dataclasses import dataclass
 
 import pytest
-import signedjson.key
 
 from ..artifacts import CertKey
-
-
-def generate_signing_key():
-    signing_key = signedjson.key.generate_signing_key("0")
-    value = f"{signing_key.alg} {signing_key.version} {signedjson.key.encode_signing_key_base64(signing_key)}"
-    return value
 
 
 def unsafe_token(size):
@@ -35,6 +28,9 @@ class ESSData:
 
     # Only here because we need to refer to it, in the tests, after the Secret has been constructed
     synapse_registration_shared_secret: str
+
+    # Only here because we need to refer to it, in the tests, after the Secret has been constructed
+    mas_oidc_client_secret: str
 
     @property
     def release_name(self):
@@ -55,4 +51,5 @@ async def generated_data(ca):
         secrets_random=random_string(string.ascii_lowercase + string.digits, 8),
         ca=ca,
         synapse_registration_shared_secret=secrets.token_urlsafe(36),
+        mas_oidc_client_secret=secrets.token_urlsafe(36),
     )

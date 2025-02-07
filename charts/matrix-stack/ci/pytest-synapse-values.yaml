@@ -14,6 +14,10 @@ synapse:
       configSecret: "{{ $.Release.Name }}-synapse-secrets"
       configSecretKey: "01-other-user-config.yaml"
 
+  extraEnv:
+  - name: DEBUG_RENDERING
+    value: "1"
+
   registrationSharedSecret:
     secret: "{{ $.Release.Name }}-synapse-secrets"
     secretKey: registrationSharedSecret
@@ -40,6 +44,9 @@ synapse:
       enabled: true
 
 elementWeb:
+  enabled: false
+
+matrixAuthenticationService:
   enabled: false
 
 wellKnownDelegation:

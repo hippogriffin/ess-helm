@@ -8,6 +8,9 @@ initSecrets:
 elementWeb:
   enabled: false
 
+matrixAuthenticationService:
+  enabled: false
+
 synapse:
   enabled: false
 

@@ -15,6 +15,10 @@ _raw_component_details = {
         "hyphened_name": "element-web",
         "has_service_monitor": False,
     },
+    "matrixAuthenticationService": {
+        "hyphened_name": "matrix-authentication-service",
+        "shared_components": ["initSecrets"],
+    },
     "synapse": {
         "additional_values_files": [
             "synapse-worker-example-values.yaml",

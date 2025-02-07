@@ -16,6 +16,11 @@ const (
 	UnknownSecretType SecretType = iota
 	Rand32
 	SigningKey
+	Hex32
+	RSA
+	EcdsaPrime256v1
+	EcdsaSecp256k1
+	EcdsaSecp384r1
 )
 
 func parseSecretType(value string) (SecretType, error) {
@@ -24,6 +29,14 @@ func parseSecretType(value string) (SecretType, error) {
 		return Rand32, nil
 	case "signingkey":
 		return SigningKey, nil
+	case "hex32":
+		return Hex32, nil
+	case "rsa":
+		return RSA, nil
+	case "ecdsaprime256v1":
+		return EcdsaPrime256v1, nil
+	case "ecdsasecp256k1":
+		return EcdsaSecp256k1, nil
 	default:
 		return UnknownSecretType, fmt.Errorf("unknown secret type: %s", value)
 	}
@@ -39,6 +52,7 @@ type GeneratedSecret struct {
 type Options struct {
 	Files            []string
 	Output           string
+	Debug					 bool
 	Address          string
 	GeneratedSecrets []GeneratedSecret
 	SecretLabels     map[string]string

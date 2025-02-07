@@ -19,7 +19,7 @@ from lightkube.generic_resource import async_load_in_cluster_generic_resources, 
 from lightkube.resources.apiextensions_v1 import CustomResourceDefinition
 from pytest_kubernetes.providers import AClusterManager
 
-retry_options = JitterRetry(attempts=30, statuses=[429], retry_all_server_errors=False)
+retry_options = JitterRetry(attempts=30, statuses=[429, 500, 503], retry_all_server_errors=False)
 
 
 @dataclass
@@ -105,7 +105,11 @@ async def aiohttp_post_json(url: str, data: dict, headers: dict, ssl_context: SS
             url.replace(host, "127.0.0.1"), headers=headers | {"Host": host}, server_hostname=host, json=data
         ) as response,
     ):
-        return await response.json()
+        # If we can 204: NO CONTENT, we dont want to try to parse json
+        if response.status != 204:
+            return await response.json()
+        else:
+            return {}
 
 
 def value_file_has(property_path, expected=None):

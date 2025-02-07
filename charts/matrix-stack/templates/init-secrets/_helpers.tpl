@@ -27,5 +27,28 @@ app.kubernetes.io/version: {{ $root.Values.matrixTools.image.tag }}
 {{- end }}
 {{- end }}
 {{- end }}
+{{- with $root.Values.matrixAuthenticationService }}
+{{- if .enabled }}
+{{- if $root.Values.synapse.enabled }}
+{{- if not .synapseSharedSecret }}
+- {{ (printf "%s-generated" $root.Release.Name) }}:MAS_SYNAPSE_SHARED_SECRET:rand32
+{{- end -}}
+{{- if not .synapseOIDCClientSecret }}
+- {{ (printf "%s-generated" $root.Release.Name) }}:MAS_SYNAPSE_OIDC_CLIENT_SECRET:rand32
+{{- end -}}
+{{- end -}}
+{{- if not .encryptionSecret }}
+- {{ (printf "%s-generated" $root.Release.Name) }}:MAS_ENCRYPTION_SECRET:hex32
+{{- end -}}
+{{- with .privateKeys }}
+{{- if not .rsa }}
+- {{ (printf "%s-generated" $root.Release.Name) }}:MAS_RSA_PRIVATE_KEY:rsa
+{{- end }}
+{{- if not .ecdsaPrime256v1 }}
+- {{ (printf "%s-generated" $root.Release.Name) }}:MAS_ECDSA_PRIME256V1_PRIVATE_KEY:ecdsaprime256v1
+{{- end }}
+{{- end }}
+{{- end }}
+{{- end }}
 {{- end }}
 

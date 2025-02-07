@@ -28,6 +28,7 @@ jobs:
       matrix:
         test-component:
         - element-web
+        - matrix-authentication-service
         - synapse
         - well-known-delegation
     steps:

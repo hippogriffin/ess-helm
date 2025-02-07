@@ -1,0 +1,60 @@
+# Copyright 2025 New Vector Ltd
+#
+# SPDX-License-Identifier: AGPL-3.0-only OR LicenseRef-Element-Commercial
+
+## Values file containing minimal values for components that are enabled by default only
+
+elementWeb:
+  enabled: false
+
+initSecrets:
+  enabled: false
+
+matrixAuthenticationService:
+  enabled: true
+
+  ingress:
+    host: mas.ess.localhost
+
+  postgres:
+    host: postgres
+    user: mas
+    database: mas
+    password:
+      value: CHANGEME-teel5aghaenohhohghiavee5Koh8ahwo
+
+  additional:
+    0000-matrix-server:
+      config: |
+        clients:
+        - client_id: "0000000000000000000SYNAPSE"
+          client_auth_method: client_secret_basic
+          client_secret: CHANGEME-eiv6wae8shooPhie4ief8ru2egahbah0
+        matrix:
+          homeserver: "external.localhost
+          secret: jaix6Am9Shut7zeiduu7ua5maengag3o
+          endpoint: https://syn.external.localhost
+
+  encryptionSecret:
+    value: CHANGEME-ahohhohgiavee5Koh8ahwo
+
+  privateKeys:
+    rsa:
+      value: |
+        -----BEGIN RSA PRIVATE KEY-----
+        MIIEowIBAAKCAQEA6521bYjZ789034nLz+oXJyVWqgUdDmRlKxvTfHsBhFtGpOaAoGCCqGSM49AwEHoUQDQgAE6521bYjZ789034nLz+oXJyVWqgUdDmRlKxvTfHsBhFtGpOaAoGCCqGSM49
+        ------END RSA PRIVATE KEY-----
+    ecdsaPrime256v1:
+      value: |
+        -----BEGIN EC PRIVATE KEY-----
+        MHcCAQEEIYjZ789034nLz+oXJyVWqgUdDmRlKxvTfHsBhFtGpOaAoGCCqGSM49
+        AwEHoUQDQgAE6521bYjZ789034nLz+oXJyVWqgUdDmRlKxvTfHsBhFtGpOaAoGCCqGSM49
+        AwEAAKBcZW5jb2duZXQwgggYMIINL6Ado018734nLz+oXJyVWqgUdDmRlKxvTfHsBhFtGpOaAoGCCqGSM49AwEH
+        ------END EC PRIVATE KEY-----
+
+
+synapse:
+  enabled: false
+
+wellKnownDelegation:
+  enabled: false
