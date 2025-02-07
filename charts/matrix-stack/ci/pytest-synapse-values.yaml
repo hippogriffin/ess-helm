@@ -43,6 +43,10 @@ synapse:
     media-repository:
       enabled: true
 
+initSecrets:
+  annotations:
+    has-no-service-monitor: "true"
+
 elementWeb:
   enabled: false
 

@@ -63,6 +63,10 @@ matrixAuthenticationService:
       secret: "{{ $.Release.Name }}-mas-postgres-db"
       secretKey: password
 
+initSecrets:
+  annotations:
+    has-no-service-monitor: "true"
+
 elementWeb:
   enabled: false
 

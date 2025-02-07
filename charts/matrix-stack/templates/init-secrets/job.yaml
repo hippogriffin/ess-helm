@@ -32,6 +32,8 @@ spec:
 {{- with .annotations }}
         {{- toYaml . | nindent 8 }}
 {{- end }}
+      labels:
+        {{- include "element-io.init-secrets.labels" (dict "root" $ "context" .) | nindent 8 }}
     spec:
       restartPolicy: OnFailure
       automountServiceAccountToken: true

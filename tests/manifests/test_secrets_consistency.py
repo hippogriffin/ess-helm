@@ -22,7 +22,7 @@ def get_configmap(templates, configmap_name):
     raise ValueError(f"ConfigMap {configmap_name} not found")
 
 
-def get_secret(templates, secret_name):
+def get_secret(templates, other_secrets, secret_name):
     """
     Get the content of a Secret with the given name.
     :param secret_name: The name of the Secret to retrieve.
@@ -31,6 +31,9 @@ def get_secret(templates, secret_name):
     for t in templates:
         if t["kind"] == "Secret" and t["metadata"]["name"] == secret_name:
             return t
+    for s in other_secrets:
+        if s["metadata"]["name"] == secret_name:
+            return s
     raise ValueError(f"Secret {secret_name} not found")
 
 
@@ -63,7 +66,7 @@ def match_in_content(container_name, mounted_secret_keys, mount_path, match_in):
 
 @pytest.mark.parametrize("values_file", values_files_to_test)
 @pytest.mark.asyncio_cooperative
-async def test_secrets_consistency(templates):
+async def test_secrets_consistency(templates, other_secrets):
     """
     Test to ensure that all secrets are properly mounted and consistent across the cluster.
 
@@ -88,7 +91,7 @@ async def test_secrets_consistency(templates):
                 current_volume = get_volume_from_mount(template, volume_mount)
                 if "secret" in current_volume:
                     # Extract the paths where this volume's secrets are mounted
-                    secret = get_secret(templates, current_volume["secret"]["secretName"])
+                    secret = get_secret(templates, other_secrets, current_volume["secret"]["secretName"])
                     if "subPath" in volume_mount:
                         # When using subPath, the key is mounted as the mountPath itself
                         mounted_secret_keys.append(f"{volume_mount['mountPath']}")

@@ -9,9 +9,11 @@ from . import values_files_to_test
 
 @pytest.mark.parametrize("values_file", values_files_to_test)
 @pytest.mark.asyncio_cooperative
-async def test_volumes_mounts_exists(templates):
+async def test_volumes_mounts_exists(templates, other_secrets):
     configmaps_names = [t["metadata"]["name"] for t in templates if t["kind"] == "ConfigMap"]
-    secrets_names = [t["metadata"]["name"] for t in templates if t["kind"] == "Secret"]
+    secrets_names = [t["metadata"]["name"] for t in templates if t["kind"] == "Secret"] + [
+        s["metadata"]["name"] for s in other_secrets
+    ]
     for template in templates:
         if template["kind"] in ["Deployment", "StatefulSet", "Job"]:
             volumes_names = []
