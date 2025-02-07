@@ -1913,6 +1913,47 @@
       },
       "additionalProperties": false
     },
+    "postgresql": {
+      "$id": "file://synapse",
+      "$schema": "https://json-schema.org/draft/2020-12/schema",
+      "type": "object",
+      "additionalProperties": true,
+      "properties": {
+        "enabled": {
+          "type": "boolean"
+        },
+        "adminPassword": {
+          "type": "object",
+          "properties": {
+            "value": {
+              "type": "string"
+            },
+            "secret": {
+              "type": "string"
+            },
+            "secretKey": {
+              "type": "string"
+            }
+          },
+          "additionalProperties": false
+        },
+        "essPassword": {
+          "type": "object",
+          "properties": {
+            "value": {
+              "type": "string"
+            },
+            "secret": {
+              "type": "string"
+            },
+            "secretKey": {
+              "type": "string"
+            }
+          },
+          "additionalProperties": false
+        }
+      }
+    },
     "synapse": {
       "$id": "file://synapse",
       "$schema": "https://json-schema.org/draft/2020-12/schema",

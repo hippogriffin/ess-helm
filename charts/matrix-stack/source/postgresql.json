@@ -1,0 +1,17 @@
+{
+  "$id": "file://synapse",
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "type": "object",
+  "additionalProperties": true,
+  "properties": {
+    "enabled": {
+      "type": "boolean"
+    },
+    "adminPassword": {
+      "$ref": "file://common/credential.json"
+    },
+    "essPassword": {
+      "$ref": "file://common/credential.json"
+    }
+  }
+}
