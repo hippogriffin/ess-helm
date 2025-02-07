@@ -34,10 +34,15 @@ http:
     - name: prometheus
     - name: connection-info
 
-{{- with required "matrixAuthenticationService.postgres is required" .postgres }}
+
 database:
+{{ if .postgres }}
   uri: "postgresql://{{ .user }}:${POSTGRES_PASSWORD}@{{ tpl .host $root }}:{{ .port }}/{{ .database }}?{{ with .sslMode }}sslmode={{ . }}&{{ end }}application_name=matrix-authentication-service"
-{{- end }}
+{{ else if $root.Values.postgres.enabled -}}
+  uri: "postgresql://mas_user:${POSTGRES_PASSWORD}@{{ $root.Release.Name }}-postgresql-hl.{{ $root.Release.Namespace }}.svc.cluster.local:5432/mas?sslmode=prefer&application_name=matrix-authentication-service"
+{{ else }}
+  {{ fail "MAS requires .matrixAuthenticationService.postgres.* configured, or internal chart .postgres to be enabled" }}
+{{ end }}
 
 telemetry:
   metrics:

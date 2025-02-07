@@ -246,7 +246,7 @@ labels: {}
   # host:
 
   ## PostgreSQL port
-  port: 5432
+  # port: 5432
 
   ## PostgreSQL username
   # user:
@@ -255,8 +255,8 @@ labels: {}
   # database:
 
   ## TLS settins to use for the PostgreSQL connection
-  sslMode: prefer
-{{ credential("PostgreSQL password", "password") | indent(2) }}
+  # sslMode: prefer
+{{ (credential("PostgreSQL password", "password") | indent(2)).split('\n') | join('\n#') }}
 {%- endmacro %}
 
 {% macro resources(requests_memory, requests_cpu, limits_memory, key='resources') %}

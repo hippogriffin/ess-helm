@@ -597,7 +597,7 @@ matrixAuthenticationService:
     # host:
 
     ## PostgreSQL port
-    port: 5432
+    # port: 5432
 
     ## PostgreSQL username
     # user:
@@ -606,18 +606,18 @@ matrixAuthenticationService:
     # database:
 
     ## TLS settins to use for the PostgreSQL connection
-    sslMode: prefer
+    # sslMode: prefer
 
-    ## PostgreSQL password.
-    ## It can either be provided inline in the Helm chart e.g.:
-    ## password:
-    ##   value: SecretValue
-    ##
-    ## Or it can be provided via an existing Secret e.g.:
-    ## password:
-    ##   secret: existing-secret
-    ##   secretKey: key-in-secret
-    password: {}
+  #  ## PostgreSQL password.
+  #  ## It can either be provided inline in the Helm chart e.g.:
+  #  ## password:
+  #  ##   value: SecretValue
+  #  ##
+  #  ## Or it can be provided via an existing Secret e.g.:
+  #  ## password:
+  #  ##   secret: existing-secret
+  #  ##   secretKey: key-in-secret
+  #  password: {}
 
 
   ## Encryption secret.
@@ -918,13 +918,7 @@ postgresql:
 
   primary:
     initdb:
-      scripts:
-        init-dbs.sh: |
-          #!/bin/sh
-          (echo -n $POSTGRES_POSTGRES_PASSWORD | psql -W -U postgres -tc "SELECT 1 FROM pg_database WHERE datname = 'synapse'" | grep -q 1) || \
-          (echo -n $POSTGRES_POSTGRES_PASSWORD | createdb --encoding=UTF8 --locale=C --template=template0 --owner=ess_user synapse -U postgres)
-          (echo -n $POSTGRES_POSTGRES_PASSWORD | psql -W -U postgres -tc "SELECT 1 FROM pg_database WHERE datname = 'mas'" | grep -q 1) || \
-          (echo -n $POSTGRES_POSTGRES_PASSWORD | createdb --encoding=UTF8 --locale=C --template=template0 --owner=ess_user mas -U postgres)
+      scriptsConfigMap: "{{ $.Release.Name }}-postgresql-initdb"
 
 synapse:
   enabled: true
@@ -934,7 +928,7 @@ synapse:
     # host:
 
     ## PostgreSQL port
-    port: 5432
+    # port: 5432
 
     ## PostgreSQL username
     # user:
@@ -943,18 +937,18 @@ synapse:
     # database:
 
     ## TLS settins to use for the PostgreSQL connection
-    sslMode: prefer
+    # sslMode: prefer
 
-    ## PostgreSQL password.
-    ## It can either be provided inline in the Helm chart e.g.:
-    ## password:
-    ##   value: SecretValue
-    ##
-    ## Or it can be provided via an existing Secret e.g.:
-    ## password:
-    ##   secret: existing-secret
-    ##   secretKey: key-in-secret
-    password: {}
+  #  ## PostgreSQL password.
+  #  ## It can either be provided inline in the Helm chart e.g.:
+  #  ## password:
+  #  ##   value: SecretValue
+  #  ##
+  #  ## Or it can be provided via an existing Secret e.g.:
+  #  ## password:
+  #  ##   secret: existing-secret
+  #  ##   secretKey: key-in-secret
+  #  password: {}
   ## Configures the media store for Synapse
   media:
     ## Configures the PersistentVolumeClaim to be used for storage
