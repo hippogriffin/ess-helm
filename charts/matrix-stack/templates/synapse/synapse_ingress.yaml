@@ -21,7 +21,7 @@ spec:
   - host: {{ (tpl .ingress.host $) | quote }}
     http:
       paths:
-{{- range .ingress.additionalPaths -}}
+{{- range (include "element-io.synapse.ingress.additionalPaths" (dict "root" $ "context" .)) | fromYamlArray -}}
 {{- if eq .availability "only_externally" }}
       - path: {{ .path }}
         pathType: Prefix
@@ -45,7 +45,7 @@ spec:
    defined additional paths. If so, let the other service handle it and don't
    add it here. */}}
 {{- $_pathAlreadyDefined := false }}
-{{- range $.Values.synapse.ingress.additionalPaths -}}
+{{- range (include "element-io.synapse.ingress.additionalPaths" (dict "root" $ "context" .)) | fromYamlArray -}}
 {{- if has .availability (list "only_externally" "blocked") }}
 {{- if hasPrefix .path $synapsePath }}
 {{- $_pathAlreadyDefined = true }}
