@@ -29,11 +29,13 @@ app.kubernetes.io/version: {{ $root.Values.matrixTools.image.tag }}
 {{- end }}
 {{- with $root.Values.matrixAuthenticationService }}
 {{- if .enabled }}
+{{- if $root.Values.synapse.enabled }}
 {{- if not .synapseSharedSecret }}
 - {{ (printf "%s-generated" $root.Release.Name) }}:MAS_SYNAPSE_SHARED_SECRET:rand32
 {{- end -}}
 {{- if not .synapseOIDCClientSecret }}
 - {{ (printf "%s-generated" $root.Release.Name) }}:MAS_SYNAPSE_OIDC_CLIENT_SECRET:rand32
+{{- end -}}
 {{- end -}}
 {{- if not .encryptionSecret }}
 - {{ (printf "%s-generated" $root.Release.Name) }}:MAS_ENCRYPTION_SECRET:hex32

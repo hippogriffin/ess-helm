@@ -43,10 +43,16 @@ telemetry:
   metrics:
     exporter: prometheus
 
+{{- /*
+  If Synapse is enabled the serverName is required by Synapse,
+  and we can use internal Synapse shared secret.
+  If Synapse is disabled, users should provide the whole matrix block,
+  including the servername and the secret, as additional configuration.
+*/ -}}
+{{- if $root.Values.synapse.enabled }}
 matrix:
   homeserver: "{{ $root.Values.serverName }}"
   secret: ${SYNAPSE_SHARED_SECRET}
-{{- if $root.Values.synapse.enabled }}
   endpoint: "http://{{ $root.Release.Name }}-synapse-main.{{ $root.Release.Namespace }}.svc.cluster.local:8008"
 {{- end }}
 

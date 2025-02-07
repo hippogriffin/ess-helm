@@ -110,6 +110,7 @@ spec:
                   )
                 )
             }}
+{{- if $.Values.synapse.enabled }}
         - name: SYNAPSE_SHARED_SECRET
           value: >-
             {{
@@ -140,6 +141,7 @@ spec:
                   )
                 )
             }}
+{{- end }}
 {{- with .resources }}
         resources:
           {{- toYaml . | nindent 10 }}
