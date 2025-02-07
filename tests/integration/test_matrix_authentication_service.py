@@ -19,6 +19,6 @@ async def test_matrix_authentication_service_graphql_endpoint(ingress_ready, gen
     json_content = await aiohttp_post_json(
         f"https://mas.{generated_data.server_name}/graphql", mas_query, {}, ssl_context
     )
-    # When not authenticated, the userByUsername will return an empty result whatever the username queried
     assert "errors" not in json_content or len(json_content["errors"]) == 0, json_content
+    # When not authenticated, the userByUsername will return an empty result whatever the username queried
     assert json_content["data"] == {"userByUsername": None}
