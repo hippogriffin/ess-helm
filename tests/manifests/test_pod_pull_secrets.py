@@ -64,7 +64,16 @@ async def test_local_pull_secrets(component, values, base_values, make_templates
             assert "imagePullSecrets" in template["spec"]["template"]["spec"], f"{id} should have an imagePullSecrets"
 
             secret_names = [x["name"] for x in template["spec"]["template"]["spec"]["imagePullSecrets"]]
-            if any_container_uses_matrix_tools_image:
+            if containers_only_uses_matrix_tools_image:
+                assert len(template["spec"]["template"]["spec"]["imagePullSecrets"]) == 2, (
+                    f"Expected {id} to have 2 image pull secrets"
+                )
+                assert "matrix-tools-secret" in secret_names and "global-secret" in secret_names, (
+                    f"Expected {id} to have image pull secret names: local-secret, global-secret, "
+                    f"got {','.join(secret_names)}"
+                )
+
+            elif any_container_uses_matrix_tools_image:
                 assert len(template["spec"]["template"]["spec"]["imagePullSecrets"]) == 3, (
                     f"Expected {id} to have 3 image pull secrets"
                 )

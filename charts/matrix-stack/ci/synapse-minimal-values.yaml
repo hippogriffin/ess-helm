@@ -5,7 +5,7 @@
 serverName: ess.localhost
 
 initSecrets:
-  enabled: false
+  enabled: true
 
 elementWeb:
   enabled: false
@@ -19,10 +19,6 @@ synapse:
 
   registrationSharedSecret:
     value: CHANGEME-ooWo6jeidahhei3Hae0eer9U
-  macaroon:
-    value: CHANGEME-eek3Eigoh8ux8laeTingeej1
-  signingKey:
-    value: ed25519 0 bNQOzBUDszff7Ax81z6w0uZ1IPWoxYaazT7emaZEfpw
 
   postgres:
     host: ess-postgres
