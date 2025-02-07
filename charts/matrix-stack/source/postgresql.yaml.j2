@@ -8,13 +8,4 @@ enabled: true
 {{- sub_schema_values.credential("Postgres Admin Password", "adminPassword", initIfAbsent=true) }}
 {{- sub_schema_values.credential("ESS Role Password", "essPassword", initIfAbsent=true) }}
 
-auth:
-  existingSecret: "{% raw %}{{ $.Release.Name }}{% endraw %}-postgres-db"
-  username: "ess_user"
-  secretKeys:
-    adminPasswordKey: "adminPassword"
-    userPasswordKey: "essPassword"
-
-primary:
-  initdb:
-    scriptsConfigMap: "{% raw %}{{ $.Release.Name }}{% endraw %}-postgresql-initdb"
+{{- sub_schema_values.persistentVolumeClaim("storage") }}

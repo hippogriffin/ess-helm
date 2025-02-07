@@ -1,0 +1,28 @@
+{{- /*
+Copyright 2024 New Vector Ltd
+
+SPDX-License-Identifier: AGPL-3.0-only OR LicenseRef-Element-Commercial
+*/ -}}
+
+{{- with .Values.postgresql -}}
+{{- if .enabled -}}
+{{- if not .storage.existingClaim }}
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  labels:
+    {{- include "element-io.postgresql.labels" (dict "root" $ "context" .) | nindent 4 }}
+  name: {{ $.Release.Name }}-postgresql-data
+  namespace: {{ $.Release.Namespace }}
+spec:
+{{- with .storage.storageClassName }}
+  storageClassName: {{ . }}
+{{- end }}
+  accessModes:
+  - ReadWriteOnce
+  resources:
+    requests:
+      storage: {{ .storage.size }}
+{{- end }}
+{{- end -}}
+{{- end -}}
