@@ -663,7 +663,7 @@ matrixAuthenticationService:
   ##     config: |
   ##       <any valid configuration>
   ##   1-customConfig:
-  ##     configSecret: custom-synapse-config
+  ##     configSecret: custom-config
   ##     configSecretKey: shared.yaml
   ##
   ## Most settings are configurable but some settings are owned by the chart and can't overwritten
@@ -958,7 +958,7 @@ synapse:
   ##     config: |
   ##       <any valid configuration>
   ##   1-customConfig:
-  ##     configSecret: custom-synapse-config
+  ##     configSecret: custom-config
   ##     configSecretKey: shared.yaml
   ##
   ## Most settings are configurable but some settings are owned by the chart and can't overwritten
