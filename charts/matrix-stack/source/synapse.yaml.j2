@@ -12,9 +12,9 @@ enabled: true
 media:
 {{- sub_schema_values.persistentVolumeClaim("storage") | indent(2) }}
 
-{{- sub_schema_values.credential("Key used to sign events and federation requests.\n## This needs to be the full signing key starting `ed25519 ...`", "signingKey") }}
+{{- sub_schema_values.credential("Key used to sign events and federation requests.\n## This needs to be the full signing key starting `ed25519 ...`", "signingKey", initIfAbsent=True) }}
 {{- sub_schema_values.credential("Shared Secret to registering users without having any users provisioned", "registrationSharedSecret") }}
-{{- sub_schema_values.credential("Secret used to sign Synapse issued tokens", "macaroon") }}
+{{- sub_schema_values.credential("Secret used to sign Synapse issued tokens", "macaroon", initIfAbsent=True) }}
 
 ## Additional configuration to provide to all Synapse processes.
 ## Each key under additional is an additioanal config to merge into synapse homeserver.yaml

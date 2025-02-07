@@ -10,19 +10,19 @@ enabled: true
 
 {{ sub_schema_values.postgresLibPQ() }}
 
-{{ sub_schema_values.credential("Encryption secret", "encryptionSecret") }}
-{{ sub_schema_values.credential("Synapse - MAS Shared Secret", "synapseSharedSecret") }}
-{{ sub_schema_values.credential("Synapse - MAS OIDC Client Secret", "synapseOIDCClientSecret") }}
+{{ sub_schema_values.credential("Encryption secret", "encryptionSecret", initIfAbsent=True) }}
+{{ sub_schema_values.credential("Synapse - MAS Shared Secret", "synapseSharedSecret", initIfAbsent=True) }}
+{{ sub_schema_values.credential("Synapse - MAS OIDC Client Secret", "synapseOIDCClientSecret", initIfAbsent=True) }}
 
 ## Additional configuration to provide to Matrix Authentication Service.
 ## Each key under additional is an additioanal config to merge into Matrix Authentication Service config.yaml
 ## Full details on available configuration options can be found at https://element-hq.github.io/matrix-authentication-service/reference/configuration.html
 {{- sub_schema_values.additionalConfig() }}
 privateKeys:
-{{ sub_schema_values.credential("ECDSA Prime256v1 Private Key", "ecdsaPrime256v1") | indent(2) }}
+{{ sub_schema_values.credential("RSA Private Key", "rsa", initIfAbsent=True) | indent(2) }}
+{{ sub_schema_values.credential("ECDSA Prime256v1 Private Key", "ecdsaPrime256v1", initIfAbsent=True) | indent(2) }}
 {{ sub_schema_values.credential("ECDSA Secp256k1 Private Key", "ecdsaSecp256k1") | indent(2) }}
 {{ sub_schema_values.credential("ECDSA Secp384r1 Private Key", "ecdsaSecp384r1") | indent(2) }}
-{{ sub_schema_values.credential("RSA Private Key", "rsa") | indent(2) }}
 
 {{ sub_schema_values.ingress() }}
 
