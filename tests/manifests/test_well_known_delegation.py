@@ -9,7 +9,7 @@ import pytest
 
 @pytest.mark.parametrize("values_file", ["well-known-minimal-values.yaml"])
 @pytest.mark.asyncio_cooperative
-async def test_only_additional_if_all_disabled_in_well_known(values, make_templates):
+async def test_only_additional_if_all_disabled_in_well_known(release_name, values, make_templates):
     client_config = {"testclientkey": {"testsubket": "testvalue"}}
     server_config = {"testserverkey": {"testsubket": "testvalue"}}
     element_config = {"testelementkey": {"testsubket": "testvalue"}}
@@ -19,7 +19,7 @@ async def test_only_additional_if_all_disabled_in_well_known(values, make_templa
     values["wellKnownDelegation"].setdefault("additional", {})["element"] = json.dumps(element_config)
     values["wellKnownDelegation"].setdefault("additional", {})["support"] = json.dumps(support_config)
     for template in await make_templates(values):
-        if template["kind"] == "ConfigMap" and template["metadata"]["name"] == "pytest-well-known-haproxy":
+        if template["kind"] == "ConfigMap" and template["metadata"]["name"] == f"{release_name}-well-known-haproxy":
             client_from_json = json.loads(template["data"]["client"])
             assert client_from_json == client_config
 
@@ -39,7 +39,7 @@ async def test_only_additional_if_all_disabled_in_well_known(values, make_templa
 
 @pytest.mark.parametrize("values_file", ["well-known-synapse-values.yaml"])
 @pytest.mark.asyncio_cooperative
-async def test_synapse_injected_in_server_and_client_well_known(values, make_templates):
+async def test_synapse_injected_in_server_and_client_well_known(release_name, values, make_templates):
     client_config = {"testclientkey": {"testsubket": "testvalue"}}
     server_config = {"testserverkey": {"testsubket": "testvalue"}}
     element_config = {"testelementkey": {"testsubket": "testvalue"}}
@@ -52,7 +52,7 @@ async def test_synapse_injected_in_server_and_client_well_known(values, make_tem
     synapse_federation = {"m.server": "synapse.ess.localhost:443"}
     synapse_base_url = {"m.homeserver": {"base_url": "https://synapse.ess.localhost"}}
     for template in await make_templates(values):
-        if template["kind"] == "ConfigMap" and template["metadata"]["name"] == "pytest-well-known-haproxy":
+        if template["kind"] == "ConfigMap" and template["metadata"]["name"] == f"{release_name}-well-known-haproxy":
             client_from_json = json.loads(template["data"]["client"])
             assert client_from_json == client_config | synapse_base_url
 

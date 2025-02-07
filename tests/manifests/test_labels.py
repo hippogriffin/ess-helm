@@ -9,7 +9,7 @@ from . import values_files_to_test
 
 @pytest.mark.parametrize("values_file", values_files_to_test)
 @pytest.mark.asyncio_cooperative
-async def test_templates_have_expected_labels(templates):
+async def test_templates_have_expected_labels(release_name, templates):
     expected_labels = [
         "helm.sh/chart",
         "app.kubernetes.io/managed-by",
@@ -34,15 +34,17 @@ async def test_templates_have_expected_labels(templates):
         assert labels["app.kubernetes.io/managed-by"] == "Helm"
         assert labels["app.kubernetes.io/part-of"] == "matrix-stack"
 
-        # The instance label is <release name>-<name label>. The release name for the manifest tests is "pytest"
-        assert labels["app.kubernetes.io/instance"].startswith("pytest-"), (
+        # The instance label is <release name>-<name label>.
+        assert labels["app.kubernetes.io/instance"].startswith(f"{release_name}-"), (
             f"The app.kubernetes.io/instance label for {id}"
-            "does not start with the expected chart release name of 'pytest'. "
+            f"does not start with the expected chart release name of '{release_name}'. "
         )
         f"The label value is {labels['app.kubernetes.io/instance']}"
 
-        assert labels["app.kubernetes.io/instance"].replace("pytest-", "") == labels["app.kubernetes.io/name"], (
+        assert (
+            labels["app.kubernetes.io/instance"].replace(f"{release_name}-", "") == labels["app.kubernetes.io/name"]
+        ), (
             f"The app.kubernetes.io/name label for {id}"
-            "is not a concatenation of the expected chart release name of 'pytest' and the instance label. "
+            "is not a concatenation of the expected chart release name of '{release_name}' and the instance label. "
             f"The label value is {labels['app.kubernetes.io/instance']} vs {labels['app.kubernetes.io/name']}"
         )
