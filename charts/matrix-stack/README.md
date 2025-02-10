@@ -119,7 +119,6 @@ Other settings for Synapse can be seen under the `synapse` section of
 
 A minimal set of values to bring up Matrix Authentication Service (MAS) would be
 ```yaml
-serverName: ess.localhost
 
 matrixAuthenticationService:
   ingress:
@@ -133,11 +132,6 @@ matrixAuthenticationService:
       secret: ess-postgres
       secretKey: password
 ```
-
-`serverName` is the value that is embedded in user IDs, room IDs, etc. It can't be changed
-after the initial deployment and so should be chosen carefully. If federating
-`https://<serverName>/.well-known/matrix/server` must be available and contain the
-location of this MAS. Future versions of this chart will do this for you.
 
 Additional MAS configuration can be provided inline in the values as a string with
 ```yaml
@@ -202,7 +196,7 @@ Other settings for Element Web can be seen under the `elementWeb` section of
 
 A minimal set of values to bring up Well Known Delegation would be
 ```yaml
-servername: ess.localhost
+serverName: ess.localhost
 ```
 
 If Synapse is enabled, its ingress host will be configured in Well Known Delegation config file as well.
