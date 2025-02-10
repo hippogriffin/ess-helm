@@ -19,7 +19,7 @@ async def get_client_token(mas_fqdn: str, generated_data: ESSData, ssl_context: 
 
     async with (
         aiohttp.ClientSession(connector=aiohttp.TCPConnector(ssl=ssl_context)) as session,
-        RetryClient(session, retry_options=retry_options, raise_for_status=True) as retry,
+        RetryClient(session, _options=retry_options, raise_for_status=True) as retry,
         retry.post(
             url.replace(host, "127.0.0.1"),
             headers={"Host": host},
