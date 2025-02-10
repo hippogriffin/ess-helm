@@ -5,7 +5,7 @@
 from .ca import ca, ssl_context
 from .cluster import cluster, ess_namespace, helm_client, ingress, kube_client, prometheus_operator_crds, registry
 from .data import ESSData, generated_data
-from .helm import helm_prerequisites, ingress_ready, matrix_stack
+from .helm import helm_prerequisites, ingress_ready, matrix_stack, secrets_generated
 from .matrix_tools import build_matrix_tools, loaded_matrix_tools
 from .users import users
 
@@ -25,6 +25,7 @@ __all__ = [
     matrix_stack,
     prometheus_operator_crds,
     registry,
+    secrets_generated,
     ssl_context,
     users,
 ]

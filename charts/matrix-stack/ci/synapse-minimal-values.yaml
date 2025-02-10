@@ -14,8 +14,6 @@ matrixAuthenticationService:
 synapse:
   ingress:
     host: synapse.ess.localhost
-  registrationSharedSecret:
-    value: CHANGEME-ooWo6jeidahhei3Hae0eer9U
   postgres:
     host: ess-postgres
     user: synapse_user

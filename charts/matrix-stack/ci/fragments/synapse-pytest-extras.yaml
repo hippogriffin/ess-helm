@@ -12,11 +12,6 @@ synapse:
       configSecret: "{{ $.Release.Name }}-synapse-secrets"
       configSecretKey: "01-other-user-config.yaml"
 
-  registrationSharedSecret:
-    value: null
-    secret: "{{ $.Release.Name }}-synapse-secrets"
-    secretKey: registrationSharedSecret
-
   extraEnv:
   - name: DEBUG_RENDERING
     value: "1"

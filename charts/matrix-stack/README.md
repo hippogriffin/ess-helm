@@ -68,9 +68,6 @@ synapse:
   ingress:
     host: synapse.ess.localhost
 
-  registrationSharedSecret:
-    value: A Secret
-
   postgres:
     host: ess-postgres
     user: synapse_user
@@ -80,9 +77,9 @@ synapse:
       secretKey: password
 ```
 
-The 4 credentials shown can either be provided inline in the values with `value` or if you
-have an existing `Secret` in the cluster in the same namespace you can use `secret` and
-`secretKey` to reference it. Signing keys 
+Credentials are generated if possible. Alternatively they can either be provided inline
+in the values with `value` or if you have an existing `Secret` in the cluster in the
+same namespace you can use `secret` and`secretKey` to reference it.
 
 `serverName` is the value that is embedded in user IDs, room IDs, etc. It can't be changed
 after the initial deployment and so should be chosen carefully. If federating

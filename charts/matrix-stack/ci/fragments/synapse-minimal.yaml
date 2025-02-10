@@ -12,6 +12,3 @@ synapse:
   enabled: true
   ingress:
     host: synapse.ess.localhost
-
-  registrationSharedSecret:
-    value: CHANGEME-ooWo6jeidahhei3Hae0eer9U

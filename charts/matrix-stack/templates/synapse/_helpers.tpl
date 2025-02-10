@@ -157,10 +157,11 @@ app.kubernetes.io/version: {{ .image.tag }}
     {{
       printf "{{ readfile \"/secrets/%s\" | quote }}"
         (
-          include "element-io.ess-library.provided-secret-path" (
+          include "element-io.ess-library.init-secret-path" (
             dict "root" $root
             "context" (dict
               "secretProperty" .registrationSharedSecret
+              "initSecretKey" "SYNAPSE_REGISTRATION_SHARED_SECRET"
               "defaultSecretName" (printf "%s-synapse" $root.Release.Name)
               "defaultSecretKey" "REGISTRATION_SHARED_SECRET"
             )

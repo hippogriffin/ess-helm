@@ -3,6 +3,7 @@
 # SPDX-License-Identifier: AGPL-3.0-only OR LicenseRef-Element-Commercial
 
 import asyncio
+import base64
 import os
 
 import pyhelm3
@@ -96,7 +97,6 @@ clients:
                     labels={"app.kubernetes.io/managed-by": "pytest"},
                 ),
                 stringData={
-                    "registrationSharedSecret": generated_data.synapse_registration_shared_secret,
                     "01-other-user-config.yaml": """
 retention:
   enabled: false
@@ -189,3 +189,23 @@ def ingress_ready(cluster, matrix_stack, generated_data: ESSData):
         )
 
     return _ingress_ready
+
+
+@pytest.fixture(scope="session")
+def secrets_generated(cluster, kube_client: AsyncClient, matrix_stack, generated_data: ESSData):
+    async def _secrets_generated(secret_key) -> str:
+        await asyncio.to_thread(
+            cluster.wait,
+            name=f"job/{generated_data.release_name}-init-secrets",
+            namespace=generated_data.ess_namespace,
+            waitfor="condition=complete",
+        )
+        generated_secret = await kube_client.get(
+            Secret, namespace=generated_data.ess_namespace, name=f"{generated_data.release_name}-generated"
+        )
+
+        assert secret_key in generated_secret.data
+        base64_encoded_secret_value = generated_secret.data[secret_key]
+        return base64.standard_b64decode(base64_encoded_secret_value).decode("utf-8")
+
+    return _secrets_generated

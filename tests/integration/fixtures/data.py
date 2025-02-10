@@ -27,9 +27,6 @@ class ESSData:
     ca: CertKey
 
     # Only here because we need to refer to it, in the tests, after the Secret has been constructed
-    synapse_registration_shared_secret: str
-
-    # Only here because we need to refer to it, in the tests, after the Secret has been constructed
     mas_oidc_client_secret: str
 
     @property
@@ -50,6 +47,5 @@ async def generated_data(ca):
     return ESSData(
         secrets_random=random_string(string.ascii_lowercase + string.digits, 8),
         ca=ca,
-        synapse_registration_shared_secret=secrets.token_urlsafe(36),
         mas_oidc_client_secret=secrets.token_urlsafe(36),
     )

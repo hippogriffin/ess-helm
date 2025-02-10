@@ -13,7 +13,7 @@ from .data import ESSData
 
 
 @pytest.fixture(scope="session")
-async def users(request, matrix_stack, kube_client, generated_data: ESSData, ssl_context, ingress_ready):
+async def users(request, matrix_stack, secrets_generated, generated_data: ESSData, ssl_context, ingress_ready):
     await ingress_ready("synapse")
     if value_file_has("matrixAuthenticationService.enabled", True):
         await ingress_ready("matrix-authentication-service")
@@ -33,6 +33,7 @@ async def users(request, matrix_stack, kube_client, generated_data: ESSData, ssl
                 )
             )
     else:
+        synapse_registration_shared_secret = await secrets_generated("SYNAPSE_REGISTRATION_SHARED_SECRET")
         for user in request.param:
             wait_for_users.append(
                 create_synapse_user(
@@ -40,7 +41,7 @@ async def users(request, matrix_stack, kube_client, generated_data: ESSData, ssl
                     user,
                     generated_data.secrets_random,
                     False,
-                    generated_data.synapse_registration_shared_secret,
+                    synapse_registration_shared_secret,
                     ssl_context,
                 )
             )

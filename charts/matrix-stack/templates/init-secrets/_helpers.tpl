@@ -22,6 +22,9 @@ app.kubernetes.io/version: {{ $root.Values.matrixTools.image.tag }}
 {{- if not .macaroon }}
 - {{ (printf "%s-generated" $root.Release.Name) }}:SYNAPSE_MACAROON:rand32
 {{- end }}
+{{- if not .registrationSharedSecret }}
+- {{ (printf "%s-generated" $root.Release.Name) }}:SYNAPSE_REGISTRATION_SHARED_SECRET:rand32
+{{- end }}
 {{- if not .signingKey }}
 - {{ (printf "%s-generated" $root.Release.Name) }}:SYNAPSE_SIGNING_KEY:signingkey
 {{- end }}
@@ -51,4 +54,3 @@ app.kubernetes.io/version: {{ $root.Values.matrixTools.image.tag }}
 {{- end }}
 {{- end }}
 {{- end }}
-
