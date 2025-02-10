@@ -13,7 +13,7 @@ from aiohttp_retry import JitterRetry, RetryClient
 
 from .utils import KubeCtl, aiohttp_post_json, aiottp_get_json
 
-retry_options = JitterRetry(attempts=7, statuses=[429], retry_all_server_errors=False)
+retry_options = JitterRetry(attempts=12, statuses=[429], retry_all_server_errors=False)
 
 
 async def get_nonce(synapse_fqdn: str, ssl_context) -> str:
