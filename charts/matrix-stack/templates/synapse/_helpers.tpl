@@ -122,21 +122,6 @@ app.kubernetes.io/version: {{ .image.tag }}
 {{- define "element-io.synapse.matrixToolsEnv" }}
 {{- $root := .root -}}
 {{- with required "element-io.synapse.matrixToolsEnv missing context" .context -}}
-- name: SYNAPSE_MACAROON
-  value: >-
-    {{
-      printf "{{ readfile \"/secrets/%s\" | quote }}" (
-          include "element-io.ess-library.init-secret-path" (
-            dict "root" $root
-            "context" (dict
-              "secretProperty" .macaroon
-              "initSecretKey" "SYNAPSE_MACAROON"
-              "defaultSecretName" (printf "%s-synapse" $root.Release.Name)
-              "defaultSecretKey" "MACAROON"
-            )
-          )
-        )
-    }}
 - name: SYNAPSE_POSTGRES_PASSWORD
   value: >-
     {{

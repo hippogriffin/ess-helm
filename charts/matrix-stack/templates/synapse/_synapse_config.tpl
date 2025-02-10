@@ -29,7 +29,15 @@ signing_key_path: /secrets/{{
     ) }}
 enable_metrics: true
 log_config: "/conf/log_config.yaml"
-macaroon_secret_key: ${SYNAPSE_MACAROON}
+macaroon_secret_key_path:  /secrets/{{
+  include "element-io.ess-library.init-secret-path" (
+    dict "root" $root "context" (
+      dict "secretProperty" .macaroon
+           "initSecretKey" "SYNAPSE_MACAROON"
+           "defaultSecretName" (printf "%s-synapse" $root.Release.Name)
+           "defaultSecretKey" "MACAROON"
+      )
+    ) }}
 registration_shared_secret_path: /secrets/{{
   include "element-io.ess-library.init-secret-path" (
     dict "root" $root "context" (
