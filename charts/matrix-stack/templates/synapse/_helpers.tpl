@@ -152,22 +152,6 @@ app.kubernetes.io/version: {{ .image.tag }}
           )
         )
     }}
-- name: SYNAPSE_REGISTRATION_SHARED_SECRET
-  value: >-
-    {{
-      printf "{{ readfile \"/secrets/%s\" | quote }}"
-        (
-          include "element-io.ess-library.init-secret-path" (
-            dict "root" $root
-            "context" (dict
-              "secretProperty" .registrationSharedSecret
-              "initSecretKey" "SYNAPSE_REGISTRATION_SHARED_SECRET"
-              "defaultSecretName" (printf "%s-synapse" $root.Release.Name)
-              "defaultSecretKey" "REGISTRATION_SHARED_SECRET"
-            )
-          )
-        )
-    }}
 {{- if $root.Values.matrixAuthenticationService.enabled }}
 - name: MAS_SHARED_SECRET
   value: >-
