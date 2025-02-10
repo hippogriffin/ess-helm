@@ -19,6 +19,7 @@ async def build_matrix_tools():
             files=str(project_folder / "docker-bake.hcl"),
             targets="matrix-tools",
             set={"*.tags": "localhost:5000/matrix-tools:pytest"},
+            load=True,
         )
 
 
