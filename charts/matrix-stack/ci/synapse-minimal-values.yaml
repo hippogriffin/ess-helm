@@ -1,31 +1,28 @@
-# Copyright 2024 New Vector Ltd
+# Copyright 2024-2025 New Vector Ltd
 #
 # SPDX-License-Identifier: AGPL-3.0-only OR LicenseRef-Element-Commercial
-
-serverName: ess.localhost
+#
+# source_fragments: synapse-minimal.yaml synapse-test-postgres.yaml init-secrets-minimal.yaml
+# DO NOT EDIT DIRECTLY. Edit the fragment files to add / modify / remove values
 
 initSecrets:
   enabled: true
-
 elementWeb:
   enabled: false
-
 matrixAuthenticationService:
   enabled: false
-
 synapse:
   ingress:
     host: synapse.ess.localhost
-
   registrationSharedSecret:
     value: CHANGEME-ooWo6jeidahhei3Hae0eer9U
-
   postgres:
     host: ess-postgres
     user: synapse_user
     database: synapse
     password:
-      value: CHANGEME-ooWo6jeidahhei3Hae0eer9U
-
+      secret: ess-postgres
+      secretKey: password
 wellKnownDelegation:
   enabled: false
+serverName: ess.localhost

@@ -1,10 +1,25 @@
-# Copyright 2024 New Vector Ltd
+# Copyright 2024-2025 New Vector Ltd
 #
 # SPDX-License-Identifier: AGPL-3.0-only OR LicenseRef-Element-Commercial
+#
+# source_fragments: synapse-minimal.yaml synapse-pytest-extras.yaml init-secrets-minimal.yaml init-secrets-pytest-extras.yaml
+# DO NOT EDIT DIRECTLY. Edit the fragment files to add / modify / remove values
 
-serverName: ess.localhost
-
+initSecrets:
+  enabled: true
+  annotations:
+    has-no-service-monitor: "true"
+elementWeb:
+  enabled: false
+matrixAuthenticationService:
+  enabled: false
 synapse:
+  ingress:
+    host: synapse.{{ $.Values.serverName }}
+    tlsSecret: "{{ $.Release.Name }}-synapse-web-tls"
+  registrationSharedSecret:
+    secret: "{{ $.Release.Name }}-synapse-secrets"
+    secretKey: registrationSharedSecret
   additional:
     00-userconfig.yaml:
       config: |
@@ -13,15 +28,9 @@ synapse:
     01-other-user-config.yaml:
       configSecret: "{{ $.Release.Name }}-synapse-secrets"
       configSecretKey: "01-other-user-config.yaml"
-
   extraEnv:
-  - name: DEBUG_RENDERING
-    value: "1"
-
-  registrationSharedSecret:
-    secret: "{{ $.Release.Name }}-synapse-secrets"
-    secretKey: registrationSharedSecret
-
+    - name: DEBUG_RENDERING
+      value: "1"
   postgres:
     host: "{{ $.Release.Name }}-synapse-postgresql"
     user: synapse_user
@@ -29,11 +38,6 @@ synapse:
     password:
       secret: "{{ $.Release.Name }}-synapse-postgres-db"
       secretKey: password
-
-  ingress:
-    host: synapse.{{ $.Values.serverName }}
-    tlsSecret: "{{ $.Release.Name }}-synapse-web-tls"
-
   redis:
     annotations:
       has-no-service-monitor: "true"
@@ -42,16 +46,6 @@ synapse:
       enabled: true
     media-repository:
       enabled: true
-
-initSecrets:
-  annotations:
-    has-no-service-monitor: "true"
-
-elementWeb:
-  enabled: false
-
-matrixAuthenticationService:
-  enabled: false
-
 wellKnownDelegation:
   enabled: false
+serverName: ess.localhost

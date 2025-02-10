@@ -1,10 +1,41 @@
-# Copyright 2025 New Vector Ltd
+# Copyright 2024-2025 New Vector Ltd
 #
 # SPDX-License-Identifier: AGPL-3.0-only OR LicenseRef-Element-Commercial
+#
+# source_fragments: synapse-minimal.yaml synapse-pytest-extras.yaml matrix-authentication-service-minimal.yaml matrix-authentication-service-pytest-extras.yaml init-secrets-minimal.yaml init-secrets-pytest-extras.yaml
+# DO NOT EDIT DIRECTLY. Edit the fragment files to add / modify / remove values
 
-serverName: ess.localhost
-
+initSecrets:
+  enabled: true
+  annotations:
+    has-no-service-monitor: "true"
+elementWeb:
+  enabled: false
+matrixAuthenticationService:
+  ingress:
+    host: mas.{{ $.Values.serverName }}
+    tlsSecret: "{{ $.Release.Name }}-mas-web-tls"
+  extraEnv:
+    - name: DEBUG_RENDERING
+      value: "1"
+  additional:
+    000-pytest-admin:
+      configSecret: "{{ $.Release.Name }}-pytest-admin"
+      configSecretKey: "admin.yaml"
+  postgres:
+    host: "{{ $.Release.Name }}-mas-postgresql"
+    user: mas_user
+    database: mas_db
+    password:
+      secret: "{{ $.Release.Name }}-mas-postgres-db"
+      secretKey: password
 synapse:
+  ingress:
+    host: synapse.{{ $.Values.serverName }}
+    tlsSecret: "{{ $.Release.Name }}-synapse-web-tls"
+  registrationSharedSecret:
+    secret: "{{ $.Release.Name }}-synapse-secrets"
+    secretKey: registrationSharedSecret
   additional:
     00-userconfig.yaml:
       config: |
@@ -13,11 +44,9 @@ synapse:
     01-other-user-config.yaml:
       configSecret: "{{ $.Release.Name }}-synapse-secrets"
       configSecretKey: "01-other-user-config.yaml"
-
-  registrationSharedSecret:
-    secret: "{{ $.Release.Name }}-synapse-secrets"
-    secretKey: registrationSharedSecret
-
+  extraEnv:
+    - name: DEBUG_RENDERING
+      value: "1"
   postgres:
     host: "{{ $.Release.Name }}-synapse-postgresql"
     user: synapse_user
@@ -25,11 +54,6 @@ synapse:
     password:
       secret: "{{ $.Release.Name }}-synapse-postgres-db"
       secretKey: password
-
-  ingress:
-    host: synapse.{{ $.Values.serverName }}
-    tlsSecret: "{{ $.Release.Name }}-synapse-web-tls"
-
   redis:
     annotations:
       has-no-service-monitor: "true"
@@ -38,37 +62,6 @@ synapse:
       enabled: true
     media-repository:
       enabled: true
-
-matrixAuthenticationService:
-  enabled: true
-
-  extraEnv:
-  - name: DEBUG_RENDERING
-    value: "1"
-
-  ingress:
-    tlsSecret: "{{ $.Release.Name }}-mas-web-tls"
-    host: mas.{{ $.Values.serverName }}
-
-  additional:
-    000-pytest-admin:
-      configSecret: "{{ $.Release.Name }}-pytest-admin"
-      configSecretKey: "admin.yaml"
-
-  postgres:
-    host: "{{ $.Release.Name }}-mas-postgresql"
-    user: mas_user
-    database: mas_db
-    password:
-      secret: "{{ $.Release.Name }}-mas-postgres-db"
-      secretKey: password
-
-initSecrets:
-  annotations:
-    has-no-service-monitor: "true"
-
-elementWeb:
-  enabled: false
-
 wellKnownDelegation:
   enabled: false
+serverName: ess.localhost

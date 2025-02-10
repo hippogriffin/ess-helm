@@ -1,35 +1,29 @@
-# Copyright 2024 New Vector Ltd
+# Copyright 2024-2025 New Vector Ltd
 #
 # SPDX-License-Identifier: AGPL-3.0-only OR LicenseRef-Element-Commercial
-
-serverName: ess.localhost
+#
+# source_fragments: matrix-authentication-service-minimal.yaml matrix-authentication-service-test-postgres.yaml matrix-authentication-service-checkov.yaml init-secrets-minimal.yaml
+# DO NOT EDIT DIRECTLY. Edit the fragment files to add / modify / remove values
 
 initSecrets:
-  enabled: false
-
+  enabled: true
 elementWeb:
   enabled: false
-
 matrixAuthenticationService:
   ingress:
     host: mas.ess.localhost
-
   postgres:
     host: postgres
     user: mas
     database: mas
     password:
-      value: CHANGEME-teel5aghaenohhohghiavee5Koh8ahwo
-
+      secret: ess-postgres
+      secretKey: password
   annotations:
     checkov.io/skip1: CKV_K8S_11=We deliberately don't set CPU limits. Pod is BestEffort not Guaranteed
     checkov.io/skip2: CKV_K8S_43=No digests
     checkov.io/skip3: CKV2_K8S_6=No network policy yet
-
 synapse:
   enabled: false
-  ingress:
-    host: synapse.ess.localhost
-
 wellKnownDelegation:
   enabled: false

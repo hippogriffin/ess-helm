@@ -1,0 +1,17 @@
+# Copyright 2025 New Vector Ltd
+#
+# SPDX-License-Identifier: AGPL-3.0-only OR LicenseRef-Element-Commercial
+#
+# The secrets listed here are ones that `initSecrets` can't generate yet.
+# Postgres details are also required but this fragment will be combined with
+# synapse-test-postgres-values.yaml or synapse-pytest-extra-values.yaml
+
+serverName: ess.localhost
+
+synapse:
+  enabled: true
+  ingress:
+    host: synapse.ess.localhost
+
+  registrationSharedSecret:
+    value: CHANGEME-ooWo6jeidahhei3Hae0eer9U

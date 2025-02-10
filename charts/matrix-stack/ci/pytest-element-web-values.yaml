@@ -1,45 +1,35 @@
-# Copyright 2024 New Vector Ltd
+# Copyright 2024-2025 New Vector Ltd
 #
 # SPDX-License-Identifier: AGPL-3.0-only OR LicenseRef-Element-Commercial
-
-serverName: ess.localhost
+#
+# source_fragments: element-web-minimal.yaml element-web-pytest-extras.yaml
+# DO NOT EDIT DIRECTLY. Edit the fragment files to add / modify / remove values
 
 initSecrets:
   enabled: false
-
 elementWeb:
   ingress:
     host: element.{{ $.Values.serverName }}
     tlsSecret: "{{ $.Release.Name }}-element-web-tls"
-
   replicas: 1
-
   annotations:
     has-no-service-monitor: "true"
-
   additional:
-    {
-      "default_server_config": {
-        "m.homeserver": {
-          "base_url": "https://synapse.{{ $.Values.serverName }}",
-        }
-      },
-      "element_call":
-        {"url": "https://call.{{ $.Values.serverName }}", "use_exclusively": true},
-      "features":
-        {
-          "feature_video_rooms": true,
-          "feature_group_calls": true,
-          "feature_new_room_decoration_ui": true,
-          "feature_element_call_video_rooms": true,
-        },
-    }
-
+    "default_server_config":
+      "m.homeserver":
+        "base_url": "https://synapse.{{ $.Values.serverName }}"
+    "element_call":
+      "url": "https://call.{{ $.Values.serverName }}"
+      "use_exclusively": true
+    "features":
+      "feature_video_rooms": true
+      "feature_group_calls": true
+      "feature_new_room_decoration_ui": true
+      "feature_element_call_video_rooms": true
 matrixAuthenticationService:
   enabled: false
-
 synapse:
   enabled: false
-
 wellKnownDelegation:
   enabled: false
+serverName: ess.localhost

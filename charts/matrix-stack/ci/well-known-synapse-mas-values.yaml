@@ -1,59 +1,29 @@
-# Copyright 2024 New Vector Ltd
+# Copyright 2024-2025 New Vector Ltd
 #
 # SPDX-License-Identifier: AGPL-3.0-only OR LicenseRef-Element-Commercial
-
-serverName: ess.localhost
+#
+# source_fragments: well-known-minimal.yaml synapse-minimal.yaml synapse-test-postgres.yaml matrix-authentication-service-minimal.yaml matrix-authentication-service-test-postgres.yaml init-secrets-minimal.yaml
+# DO NOT EDIT DIRECTLY. Edit the fragment files to add / modify / remove values
 
 initSecrets:
-  enabled: false
-
+  enabled: true
 elementWeb:
   enabled: false
-
 matrixAuthenticationService:
-  enabled: true
   ingress:
     host: mas.ess.localhost
-
   postgres:
     host: postgres
     user: mas
     database: mas
     password:
-      value: CHANGEME-teel5aghaenohhohghiavee5Koh8ahwo
-
-  encryptionSecret:
-    value: CHANGEME-ahohhohgiavee5Koh8ahwo
-
-  synapseSharedSecret:
-    value: CHANGEME-ooWo6jeidahhei3Hae0eer9U
-
-  privateKeys:
-    rsa:
-      value: |
-        -----BEGIN RSA PRIVATE KEY-----
-        MIIEowIBAAKCAQEA6521bYjZ789034nLz+oXJyVWqgUdDmRlKxvTfHsBhFtGpOaAoGCCqGSM49AwEHoUQDQgAE6521bYjZ789034nLz+oXJyVWqgUdDmRlKxvTfHsBhFtGpOaAoGCCqGSM49
-        ------END RSA PRIVATE KEY-----
-    ecdsaPrime256v1:
-      value: |
-        -----BEGIN EC PRIVATE KEY-----
-        MHcCAQEEIYjZ789034nLz+oXJyVWqgUdDmRlKxvTfHsBhFtGpOaAoGCCqGSM49
-        AwEHoUQDQgAE6521bYjZ789034nLz+oXJyVWqgUdDmRlKxvTfHsBhFtGpOaAoGCCqGSM49
-        AwEAAKBcZW5jb2duZXQwgggYMIINL6Ado018734nLz+oXJyVWqgUdDmRlKxvTfHsBhFtGpOaAoGCCqGSM49AwEH
-        ------END EC PRIVATE KEY-----
-
+      secret: ess-postgres
+      secretKey: password
 synapse:
-  enabled: true
   ingress:
     host: synapse.ess.localhost
-
   registrationSharedSecret:
     value: CHANGEME-ooWo6jeidahhei3Hae0eer9U
-  macaroon:
-    value: CHANGEME-eek3Eigoh8ux8laeTingeej1
-  signingKey:
-    value: ed25519 0 bNQOzBUDszff7Ax81z6w0uZ1IPWoxYaazT7emaZEfpw
-
   postgres:
     host: ess-postgres
     user: synapse_user
@@ -61,6 +31,6 @@ synapse:
     password:
       secret: ess-postgres
       secretKey: password
-
 wellKnownDelegation:
   enabled: true
+serverName: ess.localhost
