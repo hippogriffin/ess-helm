@@ -13,7 +13,7 @@ import pyhelm3
 import pytest
 import yaml
 
-from . import component_details, values_files_to_components
+from . import component_details, shared_components_details, values_files_to_components
 
 
 @pytest.fixture(scope="session")
@@ -34,6 +34,11 @@ async def chart(helm_client: pyhelm3.Client):
 @pytest.fixture(scope="function")
 def component(values_file):
     return values_files_to_components[values_file]
+
+
+@pytest.fixture(scope="session")
+def base_values(values_file) -> dict[str, Any]:
+    return yaml.safe_load(Path("charts/matrix-stack/values.yaml").read_text("utf-8"))
 
 
 @pytest.fixture(scope="function")
@@ -154,13 +159,22 @@ def make_templates(chart: pyhelm3.Chart, release_name: str):
     return _make_templates
 
 
-def iterate_component_workload_parts(component, values, setter):
-    if component_details[component]["has_workloads"]:
+def iterate_component_parts(component, values, setter, if_condition):
+    if component_details[component][if_condition]:
         setter(values[component], values)
         for sub_component in component_details[component]["sub_components"]:
             setter(values[component].setdefault(sub_component, {}), values)
     for shared_component in component_details[component].get("shared_components", []):
-        setter(values.setdefault(shared_component, {}), values)
+        if shared_components_details[shared_component][if_condition]:
+            setter(values.setdefault(shared_component, {}), values)
+
+
+def iterate_component_workload_parts(component, values, setter):
+    iterate_component_parts(component, values, setter, "has_workloads")
+
+
+def iterate_component_image_parts(component, values, setter):
+    iterate_component_parts(component, values, setter, "has_image")
 
 
 def get_or_empty(d, key):
