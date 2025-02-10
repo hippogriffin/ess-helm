@@ -48,7 +48,8 @@ jobs:
         # Ensure all JSON files are consistently formatted
         for file in $(git ls-files | grep json); do yq -iP --indent 2 -o json '.' $file; done
 
-        # Rebuild the charts with from the current source
+        # Rebuild the charts & test values files with from the current source
+        scripts/assemble_ci_values_files_from_fragments.sh
         version=$(yq '.version' charts/matrix-stack/Chart.yaml)
         scripts/assemble_helm_charts_from_fragments.sh
         scripts/set_chart_version.sh "$version"
