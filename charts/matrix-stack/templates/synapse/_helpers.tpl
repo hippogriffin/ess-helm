@@ -110,3 +110,97 @@ app.kubernetes.io/version: {{ .image.tag }}
 {{- end -}}
 {{- end -}}
 {{- end -}}
+
+
+{{- /* The filesystem structure is `/secrets`/<< secret name>>/<< secret key >>.
+        The non-defaulted values are handling the case where the credential is provided by an existing Secret
+        The default values are handling the case where the credential is provided plain in the Helm chart and we add it to our Secret with a well-known key.
+
+        These could be done as env vars with valueFrom.secretKeyRef, but that triggers CKV_K8S_35.
+        Environment variables values found in the config file as ${VARNAME} are parsed through go template engine before being replaced in the target file.
+*/}}
+{{- define "element-io.synapse.matrixToolsEnv" }}
+{{- $root := .root -}}
+{{- with required "element-io.synapse.matrixToolsEnv missing context" .context -}}
+- name: SYNAPSE_MACAROON
+  value: >-
+    {{
+      printf "{{ readfile \"/secrets/%s\" | quote }}" (
+          include "element-io.ess-library.init-secret-path" (
+            dict "root" $root
+            "context" (dict
+              "secretProperty" .macaroon
+              "initSecretKey" "SYNAPSE_MACAROON"
+              "defaultSecretName" (printf "%s-synapse" $root.Release.Name)
+              "defaultSecretKey" "MACAROON"
+            )
+          )
+        )
+    }}
+- name: SYNAPSE_POSTGRES_PASSWORD
+  value: >-
+    {{
+      printf "{{ readfile \"/secrets/%s\" | quote }}"
+        (
+          include "element-io.ess-library.provided-secret-path" (
+            dict "root" $root
+            "context" (dict
+              "secretProperty" .postgres.password
+              "defaultSecretName" (printf "%s-synapse" $root.Release.Name)
+              "defaultSecretKey" "POSTGRES_PASSWORD"
+            )
+          )
+        )
+    }}
+- name: SYNAPSE_REGISTRATION_SHARED_SECRET
+  value: >-
+    {{
+      printf "{{ readfile \"/secrets/%s\" | quote }}"
+        (
+          include "element-io.ess-library.provided-secret-path" (
+            dict "root" $root
+            "context" (dict
+              "secretProperty" .registrationSharedSecret
+              "defaultSecretName" (printf "%s-synapse" $root.Release.Name)
+              "defaultSecretKey" "REGISTRATION_SHARED_SECRET"
+            )
+          )
+        )
+    }}
+{{- if $root.Values.matrixAuthenticationService.enabled }}
+- name: MAS_SHARED_SECRET
+  value: >-
+    {{
+    printf "{{ readfile \"/secrets/%s\" | quote }}" (
+        include "element-io.ess-library.init-secret-path" (
+            dict "root" $root
+            "context" (dict
+              "secretProperty" $root.Values.matrixAuthenticationService.synapseSharedSecret
+              "initSecretKey" "MAS_SYNAPSE_SHARED_SECRET"
+              "defaultSecretName" (printf "%s-matrix-authentication-service" $root.Release.Name)
+              "defaultSecretKey" "SYNAPSE_SHARED_SECRET"
+            )
+        )
+      )
+    }}
+- name: MAS_OIDC_CLIENT_SECRET
+  value: >-
+    {{
+      printf "{{ readfile \"/secrets/%s\" | quote }}" (
+        include "element-io.ess-library.init-secret-path" (
+            dict "root" $root
+            "context" (dict
+              "secretProperty" $root.Values.matrixAuthenticationService.synapseOIDCClientSecret
+              "initSecretKey" "MAS_SYNAPSE_OIDC_CLIENT_SECRET"
+              "defaultSecretName" (printf "%s-matrix-authentication-service" $root.Release.Name)
+              "defaultSecretKey" "SYNAPSE_OIDC_CLIENT_SECRET"
+            )
+          )
+        )
+    }}
+{{- end }}
+- name: APPLICATION_NAME
+  value: >-
+    {{ printf "{{ hostname | replace \"-synapse-\" \"\" }}" }}
+{{- end }}
+{{- end }}
