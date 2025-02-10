@@ -96,7 +96,7 @@ def generated_secrets(release_name: str, values: Any | None, helm_generated_temp
 
 def external_secrets(values):
     def find_credential(values_fragment):
-        for value in values_fragment.values():
+        for value in values_fragment.values() if isinstance(values_fragment, dict) else values_fragment:
             if isinstance(value, dict):
                 if "secret" in value and "secretKey" in value and len(value) == 2:
                     yield (value["secret"], value["secretKey"])
@@ -106,7 +106,8 @@ def external_secrets(values):
                     yield from find_credential(value)
             elif isinstance(value, list):
                 for inner in value:
-                    yield from find_credential(inner)
+                    if isinstance(inner, (dict, list)):
+                        yield from find_credential(inner)
 
     external_secrets_to_keys = {}
     for secret_name, secretKey in find_credential(values):
