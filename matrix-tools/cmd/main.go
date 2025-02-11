@@ -7,6 +7,7 @@ package main
 import (
 	"fmt"
 	"os"
+	"io"
 
 	"flag"
 
@@ -32,6 +33,21 @@ func getKubernetesClient() (kubernetes.Interface, error) {
 	return clientset, nil
 }
 
+
+func readFiles(paths []string) ([]io.Reader, []func() error, error) {
+	files := make([]io.Reader, 0)
+	closeFiles := make([]func() error, 0)
+	for _, path := range paths {
+		fileReader, err := os.Open(path)
+		if err != nil {
+			return files, closeFiles, fmt.Errorf("failed to open file: %w", err)
+		}
+		files = append(files, fileReader)
+		closeFiles = append(closeFiles, fileReader.Close)
+	}
+	return files, closeFiles, nil
+}
+
 func main() {
 	options, err := args.ParseArgs(os.Args)
 	if err != nil {
@@ -39,12 +55,9 @@ func main() {
 		os.Exit(1)
 	}
 
-	if options.Address != "" {
-		tcpwait.WaitForTCP(options.Address)
-	}
-
-	if options.Output != "" && len(options.Files) > 0 {
-		fileReaders, closeFiles, err := renderer.ReadFiles(options.Files)
+	switch options.Command {
+	case args.RenderConfig:
+		fileReaders, closeFiles, err := readFiles(options.Files)
 		defer func() {
 			for _, closeFn := range closeFiles {
 				err := closeFn()
@@ -66,8 +79,12 @@ func main() {
 			}
 			os.Exit(1)
 		}
+		var outputYAML []byte
+		if outputYAML, err = yaml.Marshal(result); err != nil {
+			fmt.Println("Error marshalling merged config to YAML:", err)
+			os.Exit(1)
+		}
 
-		outputYAML, _ := yaml.Marshal(result)
 		fmt.Printf("Rendering config to file: %v\n", options.Output)
 		if os.Getenv("DEBUG_RENDERING") == "1" {
 			fmt.Println(string(outputYAML))
@@ -77,9 +94,9 @@ func main() {
 			fmt.Println("Error writing to file:", err)
 			os.Exit(1)
 		}
-	}
-
-	if len(options.GeneratedSecrets) > 0 {
+	case args.TCPWait:
+		tcpwait.WaitForTCP(options.Address)
+	case args.GenerateSecrets:
 		clientset, err := getKubernetesClient()
 		if err != nil {
 			fmt.Println("Error getting Kubernetes client: ", err)
@@ -99,5 +116,9 @@ func main() {
 				os.Exit(1)
 			}
 		}
+	default:
+		fmt.Printf("Unknown command")
+		os.Exit(1)
 	}
 }
+

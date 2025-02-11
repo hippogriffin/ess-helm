@@ -10,6 +10,14 @@ import (
 	"strings"
 )
 
+type CommandType int
+
+const (
+	RenderConfig CommandType = iota
+	GenerateSecrets
+	TCPWait
+)
+
 type SecretType int
 
 const (
@@ -50,6 +58,7 @@ type GeneratedSecret struct {
 }
 
 type Options struct {
+	Command          CommandType
 	Files            []string
 	Output           string
 	Debug					 bool
@@ -84,6 +93,7 @@ func ParseArgs(args []string) (*Options, error) {
 			options.Files = append(options.Files, file)
 		}
 		options.Output = *output
+		options.Command = RenderConfig
 	case "tcpwait":
 		err := tcpWaitSet.Parse(args[2:])
 		if err != nil {
@@ -92,6 +102,7 @@ func ParseArgs(args []string) (*Options, error) {
 		if *tcpWait != "" {
 			options.Address = *tcpWait
 		}
+		options.Command = TCPWait
 	case "generate-secrets":
 		err := generateSecretsSet.Parse(args[2:])
 		if err != nil {
@@ -118,6 +129,7 @@ func ParseArgs(args []string) (*Options, error) {
 			}
 		}
 		options.SecretLabels["app.kubernetes.io/managed-by"] = "matrix-tools-init-secrets"
+		options.Command = GenerateSecrets
 	default:
 		return nil, flag.ErrHelp
 	}

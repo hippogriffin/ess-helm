@@ -49,20 +49,6 @@ func deepMergeMaps(source, destination map[string]any) error {
 	return nil
 }
 
-func ReadFiles(configFiles []string) ([]io.Reader, []func() error, error) {
-	files := make([]io.Reader, 0)
-	closeFiles := make([]func() error, 0)
-	for _, configFile := range configFiles {
-		fileReader, err := os.Open(configFile)
-		if err != nil {
-			return files, closeFiles, fmt.Errorf("failed to open file: %w", err)
-		}
-		files = append(files, fileReader)
-		closeFiles = append(closeFiles, fileReader.Close)
-	}
-	return files, closeFiles, nil
-}
-
 func readfile(path string) (string, error) {
 	content, err := os.ReadFile(path)
 	if err != nil {
