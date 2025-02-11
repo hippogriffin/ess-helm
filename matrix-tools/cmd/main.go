@@ -34,11 +34,11 @@ func getKubernetesClient() (kubernetes.Interface, error) {
 }
 
 
-func readFiles(configFiles []string) ([]io.Reader, []func() error, error) {
+func readFiles(paths []string) ([]io.Reader, []func() error, error) {
 	files := make([]io.Reader, 0)
 	closeFiles := make([]func() error, 0)
-	for _, configFile := range configFiles {
-		fileReader, err := os.Open(configFile)
+	for _, path := range paths {
+		fileReader, err := os.Open(path)
 		if err != nil {
 			return files, closeFiles, fmt.Errorf("failed to open file: %w", err)
 		}
