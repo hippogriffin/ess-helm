@@ -8,6 +8,9 @@ SPDX-License-Identifier: AGPL-3.0-only OR LicenseRef-Element-Commercial
 
 A Helm Chart to deploy the Element Server Suite (ESS).
 
+**This readme is primarily aimed at developing on the chart. The user readme is at
+[charts/matrix-stack/README.md](charts/matrix-stack/README.md)**
+
 ## Developing
 
 Requirements for development:

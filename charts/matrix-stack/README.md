@@ -9,6 +9,16 @@ SPDX-License-Identifier: AGPL-3.0-only OR LicenseRef-Element-Commercial
 This Helm chart deploys a coherent Matrix Stack. It currently includes the following components
 * [Synapse](https://github.com/element-hq/synapse) as a Matrix homeserver
 * [Element Web](https://github.com/element-hq/element-web) as a Matrix client
+* [Matrix Authentication Service](https://github.com/element-hq/matrix-authentication-service) for authentication on the Matrix homeserver
+* Well Known Delegation file hosting to enable Matrix client and Matrix federation discovery of this deployment
+
+## Requirements
+
+The chart requires:
+* An ingress controller installed in the cluster already
+* TLS certificates for Ingresses
+* If using Synapse or Matrix Authentication Service, a Postgres instance
+* If using Synapse, the ability to create `PersistentVolumeClaims` to store media
 
 ## Common
 
