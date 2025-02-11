@@ -10,7 +10,8 @@ import pytest
 import yaml
 from lightkube import AsyncClient
 from lightkube.models.meta_v1 import ObjectMeta
-from lightkube.resources.core_v1 import Namespace, Secret
+from lightkube.resources.core_v1 import Endpoints, Namespace, Secret, Service
+from lightkube.resources.networking_v1 import Ingress
 
 from ..lib.helpers import kubernetes_tls_secret
 from ..lib.utils import value_file_has
@@ -179,7 +180,7 @@ async def matrix_stack(
 
 
 @pytest.fixture(scope="session")
-def ingress_ready(cluster, matrix_stack, generated_data: ESSData):
+def ingress_ready(cluster, kube_client: AsyncClient, matrix_stack, generated_data: ESSData):
     async def _ingress_ready(ingress_suffix):
         await asyncio.to_thread(
             cluster.wait,
@@ -187,5 +188,32 @@ def ingress_ready(cluster, matrix_stack, generated_data: ESSData):
             namespace=generated_data.ess_namespace,
             waitfor="jsonpath='{.status.loadBalancer.ingress[0].ip}'",
         )
+        ingress = await kube_client.get(
+            Ingress, f"{generated_data.release_name}-{ingress_suffix}", namespace=generated_data.ess_namespace
+        )
+        for rule in ingress.spec.rules:
+            for path in rule.http.paths:
+                service = await kube_client.get(
+                    Service, path.backend.service.name, namespace=generated_data.ess_namespace
+                )
+                await asyncio.to_thread(
+                    cluster.wait,
+                    name=f"endpoints/{service.metadata.name}",
+                    namespace=generated_data.ess_namespace,
+                    waitfor="jsonpath='{.subsets[].addresses}'",
+                )
+
+                endpoints_ready = False
+                while not endpoints_ready:
+                    endpoint = await kube_client.get(
+                        Endpoints, name=service.metadata.name, namespace=generated_data.ess_namespace
+                    )
+
+                    for subset in endpoint.subsets:
+                        if not subset or subset.notReadyAddresses or not subset.addresses or not subset.ports:
+                            await asyncio.sleep(0.1)
+                            break
+                    else:
+                        endpoints_ready = True
 
     return _ingress_ready
