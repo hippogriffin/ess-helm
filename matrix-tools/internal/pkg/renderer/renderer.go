@@ -137,7 +137,10 @@ func RenderConfig(sourceConfigs []io.Reader) (map[string]any, error) {
 
 		var data map[string]any
 		if err := yaml.Unmarshal(fileContent, &data); err != nil {
-			return nil, fmt.Errorf("Post-processed YAML is invalid: %s with error: %v", string(fileContent), err)
+			if os.Getenv("DEBUG_RENDERING") == "1" {
+				fmt.Println(string(fileContent))
+			}
+			return nil, fmt.Errorf("Post-processed YAML is invalid: %v", err)
 		}
 
 		if err := deepMergeMaps(data, output); err != nil {
