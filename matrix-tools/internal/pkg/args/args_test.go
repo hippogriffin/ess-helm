@@ -51,6 +51,7 @@ func TestParseArgs(t *testing.T) {
 			expected: &Options{
 				Files:  []string{"file1", "file2"},
 				Output: "outputFile",
+				Command: RenderConfig,
 			},
 			err: false,
 		},
@@ -59,6 +60,7 @@ func TestParseArgs(t *testing.T) {
 			args: []string{"cmd", "tcpwait", "-address", "address:port"},
 			expected: &Options{
 				Address: "server:port",
+				Command: TCPWait,
 			},
 			err: false,
 		},
@@ -70,6 +72,7 @@ func TestParseArgs(t *testing.T) {
 					{Name: "secret1", Key: "value1", Type: Rand32},
 				},
 				SecretLabels: map[string]string{"mykey": "myval"},
+				Command: GenerateSecrets,
 			},
 			err: false,
 		},
@@ -82,6 +85,7 @@ func TestParseArgs(t *testing.T) {
 					{Name: "secret1", Key: "value1", Type: Rand32},
 					{Name: "secret2", Key: "value2", Type: SigningKey},
 				},
+				Command: GenerateSecrets,
 			},
 			err: false,
 		},
