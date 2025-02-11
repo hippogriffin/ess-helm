@@ -1,0 +1,18 @@
+# Copyright 2025 New Vector Ltd
+#
+# SPDX-License-Identifier: AGPL-3.0-only OR LicenseRef-Element-Commercial
+---
+version: 2
+updates:
+  - package-ecosystem: "github-actions"
+    directory: "/matrix-tools"
+    schedule:
+      interval: "weekly"
+  - package-ecosystem: "pip"
+    directory: "/"
+    schedule:
+      interval: "weekly"
+  - package-ecosystem: "gomod"
+    directory: "/matrix-tools"
+    schedule:
+      interval: "weekly"
