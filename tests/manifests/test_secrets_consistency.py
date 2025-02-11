@@ -113,10 +113,14 @@ async def test_secrets_consistency(templates, other_secrets):
                     # We can't verify rendered-config, it's generated at runtime
                     uses_rendered_config = True
 
+            assert len(secrets_mount_paths) == len(set(secrets_mount_paths)), (
+                f"Secrets mount paths are not unique in {template['metadata']['name']}: {secrets_mount_paths}"
+            )
+
             # We look for all secrets mountPath in configs and commands
             # And using a regex, make sure that patterns `<mount path>/<some key>`
             # refers <some key> to an existing mounted secret key
-            for mount_path in set(secrets_mount_paths):
+            for mount_path in secrets_mount_paths:
                 mount_path_found = False
                 # Parse container commands to find paths which would match a mounted secret
                 # Make sure that paths which match are actually present in mounted secrets
