@@ -5,11 +5,14 @@ SPDX-License-Identifier: AGPL-3.0-only OR LicenseRef-Element-Commercial
 #}
 enabled: true
 
+postgresExporter:
+  {{- sub_schema_values.image(registry='docker.io', repository='prometheuscommunity/postgres-exporter', tag='v0.16.0') | indent(2) }}
+
 {{- sub_schema_values.credential("Postgres Admin Password", "adminPassword", initIfAbsent=true) }}
 {{- sub_schema_values.credential("ESS Role Password", "essPassword", initIfAbsent=true) }}
 
 {{- sub_schema_values.persistentVolumeClaim("storage") }}
-{{- sub_schema_values.image(registry='docker.io', repository='postgres', tag='16.6') }}
+{{- sub_schema_values.image(registry='docker.io', repository='postgres', tag='16-alpine') }}
 {{- sub_schema_values.labels() }}
 {{- sub_schema_values.workloadAnnotations() }}
 {{- sub_schema_values.containersSecurityContext() }}

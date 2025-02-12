@@ -135,7 +135,7 @@ We have an init container to render & merge the config for several reasons:
 {{- if .postgres }}
         - "{{ (tpl .postgres.host $) }}:{{ .postgres.port }}"
 {{- else }}
-        - "{{ $.Release.Name }}-postgresql-hl.{{ $.Release.Namespace }}.svc.cluster.local:5432"
+        - "{{ $.Release.Name }}-postgresql.{{ $.Release.Namespace }}.svc.cluster.local:5432"
 {{- end }}
 {{- with .resources }}
         resources:
@@ -162,7 +162,7 @@ We have an init container to render & merge the config for several reasons:
         - >
           [ -e "/usr/lib/`uname -m`-linux-gnu/libjemalloc.so.2" ] && export LD_PRELOAD="/usr/lib/`uname -m`-linux-gnu/libjemalloc.so.2";
           python3 -m {{ include "element-io.synapse.process.app" (dict "root" $ "context" $processType) }} -c /conf/homeserver.yaml
-{{- with (include "element-io.synapse.env" (dict "root" $ "context" .)) -}}
+{{- with (include "element-io.synapse.env" (dict "root" $ "context" .)) }}
         env:
           {{- . | nindent 10 }}
 {{- end }}

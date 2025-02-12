@@ -50,6 +50,8 @@ spec:
         securityContext:
           {{- toYaml . | nindent 10 }}
 {{- end }}
+        env:
+        {{- include "element-io.postgresql.env" (dict "root" $ "context" .) | nindent 8 }}
         args:
         {{ include "element-io.postgresql.args" (dict "root" $ "context" .) | nindent 8 }}
 {{- with .resources }}
@@ -74,8 +76,20 @@ spec:
         - containerPort: 5432
           name: postgres
         volumeMounts:
+{{- range $secret := include "element-io.postgresql.configSecrets" (dict "root" $ "context" .) | fromJsonArray }}
+        - mountPath: /secrets/{{ tpl $secret $ }}
+          name: "secret-{{ tpl $secret $ }}"
+          readOnly: true
+{{- end }}
+        - name: config
+          mountPath: /docker-entrypoint-initdb.d/init-ess-dbs.sh
+          subPath: init-dbs.sh
         - name: database
           mountPath: /var/lib/postgresql/data
+        - name: temp
+          mountPath: /tmp
+        - name: var-run
+          mountPath: /var/run
       - name: postgres-init-password
 {{- with .image -}}
 {{- if .digest }}
@@ -94,7 +108,7 @@ spec:
         - /bin/sh
         - -c
         - >
-          POSTGRES_ADMIN_PASSWORD=`cat /secrets/{{
+          export POSTGRES_PASSWORD=`cat /secrets/{{
   include "element-io.ess-library.init-secret-path" (
     dict "root" $ "context" (
       dict "secretProperty" .adminPassword
@@ -102,8 +116,8 @@ spec:
             "defaultSecretName" (printf "%s-postgresql" $.Release.Name)
             "defaultSecretKey" "ADMIN_PASSWORD"
       )
-    ) }}`
-          POSTGRES_ESS_PASSWORD=`cat /secrets/{{
+    ) }}`;
+          export POSTGRES_ESS_PASSWORD=`cat /secrets/{{
   include "element-io.ess-library.init-secret-path" (
     dict "root" $ "context" (
       dict "secretProperty" .essPassword
@@ -111,14 +125,20 @@ spec:
             "defaultSecretName" (printf "%s-postgresql" $.Release.Name)
             "defaultSecretKey" "ESS_PASSWORD"
       )
-    ) }}`
-          while ! pg_isready -h localhost; do echo "Postgres not yet ready"; sleep 1; done;
+    ) }}`;
+          while ! pg_isready -h localhost -d postgres -U postgres; do echo "Postgres not yet ready"; sleep 1; done;
           echo "Postgres now ready, so changing password";
-          psql -w -U postgres -h localhost \
-            -c "ALTER USER ess_user PASSWORD '$ESS_PASSWORD';" ;
+          psql -w -U postgres -h localhost
+          -c "ALTER USER ess_user PASSWORD '"$POSTGRES_ESS_PASSWORD"'";
           trap : TERM INT; sleep 9999999999d & wait
+        volumeMounts:
+{{- range $secret := include "element-io.postgresql.configSecrets" (dict "root" $ "context" .) | fromJsonArray }}
+        - mountPath: /secrets/{{ tpl $secret $ }}
+          name: "secret-{{ tpl $secret $ }}"
+          readOnly: true
+{{- end }}
       - name: postgres-exporter
-{{- with .image -}}
+{{- with .postgresExporter.image -}}
 {{- if .digest }}
         image: "{{ .registry }}/{{ .repository }}@{{ .digest }}"
         imagePullPolicy: {{ .pullPolicy | default "IfNotPresent" }}
@@ -148,14 +168,12 @@ spec:
           requests:
             cpu: 100m
             memory: 100Mi
-        volumesMounts:
-{{- range $secret := include "element-io.postgresql.configSecrets" (dict "root" $ "context" .) | fromJsonArray }}
-        - mountPath: /secrets/{{ tpl $secret $ }}
-          name: "secret-{{ tpl $secret $ }}"
-          readOnly: true
-{{- end }}
       terminationGracePeriodSeconds: 60
       volumes:
+      - emptyDir: {}
+        name: temp
+      - emptyDir: {}
+        name: var-run
 {{- range $secret := include "element-io.postgresql.configSecrets" (dict "root" $ "context" .) | fromJsonArray }}
       - secret:
           secretName: {{ tpl $secret $ }}

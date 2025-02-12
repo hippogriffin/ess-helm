@@ -7,6 +7,17 @@
     "enabled": {
       "type": "boolean"
     },
+    "image": {
+      "$ref": "file://common/image.json"
+    },
+    "postgresExporter": {
+      "type": "object",
+      "properties": {
+        "image": {
+          "$ref": "file://common/image.json"
+        }
+      }
+    },
     "adminPassword": {
       "$ref": "file://common/credential.json"
     },

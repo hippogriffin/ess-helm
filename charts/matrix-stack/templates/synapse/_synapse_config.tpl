@@ -51,18 +51,18 @@ registration_shared_secret_path: /secrets/{{
 database:
   name: psycopg2
   args:
-{{ if .postgres }}
+{{- if .postgres }}
     user: {{ required "Synapse requires postgres.user set" .postgres.user }}
     password: ${SYNAPSE_POSTGRES_PASSWORD}
     database: {{ required "Synapse requires postgres.database set" .postgres.database }}
     host: {{ required "Synapse requires postgres.host set" .postgres.host }}
     port: {{ .postgres.port | default 5432 }}
     sslmode: {{ .postgres.sslMode | default "prefer" }}
-{{ else if $root.Values.postgresql.enabled -}}
-    user: "synapse_user"
+{{- else if $root.Values.postgresql.enabled }}
+    user: "ess_user"
     password: ${SYNAPSE_POSTGRES_PASSWORD}
     database: "synapse"
-    host: "{{ $root.Release.Name }}-postgresql-hl.{{ $root.Release.Namespace }}.svc.cluster.local"
+    host: "{{ $root.Release.Name }}-postgresql.{{ $root.Release.Namespace }}.svc.cluster.local"
     port: 5432
     sslmode: prefer
 {{ else }}

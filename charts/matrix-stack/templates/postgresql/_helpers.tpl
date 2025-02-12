@@ -12,7 +12,7 @@ SPDX-License-Identifier: AGPL-3.0-only OR LicenseRef-Element-Commercial
 app.kubernetes.io/component: matrix-stack-db
 app.kubernetes.io/name: postgresql
 app.kubernetes.io/instance: {{ $root.Release.Name }}-postgresql
-app.kubernetes.io/version: {{ .image.tag }}
+app.kubernetes.io/version: {{ .image.tag | quote }}
 {{- end }}
 {{- end }}
 
@@ -50,16 +50,14 @@ true
 {{- $root := .root -}}
 {{- with required "element-io.postgresql.configSecrets missing context" .context -}}
   {{- $value := .resources.limits.memory }}
-  {{- if hasPrefix $value "Mi" }}
-    {{- printf "%d" (int64 (trimSuffix "Mi" $value)) | mul 1024 | int64 -}}
-  {{- else if hasPrefix $value "Gi" }}
-    {{- printf "%d" (int64 (trimSuffix "Gi" $value)) | mul 1048576 | int64 -}}
-  {{- else if hasPrefix $value "Ti" }}
-    {{- printf "%d" (int64 (trimSuffix "Ti" $value)) | mul 1073741824 | int64 -}}
-  {{- else if hasPrefix $value "K" }}
-    {{- printf "%d" (int64 (trimSuffix "K" $value)) | mul 1024 | int64 -}}
-  {{- else }}
-    {{- printf "%d" $value | mul 1024 | int64 -}}
+  {{- if  $value | hasSuffix "Mi" }}
+    {{- printf "%d" (trimSuffix "Mi" $value) | int64 -}}
+  {{- else if  $value | hasSuffix "Gi" }}
+    {{- printf "%d" (mul (int64 (trimSuffix "Gi" $value)) 1024) | int64 -}}
+  {{- else if  $value | hasSuffix "Ti" }}
+    {{- printf "%d" (mul (mul (int64 (trimSuffix "Ti" $value)) 1024) 1024) | int64 -}}
+  {{- else -}}
+    {{- fail (printf "Could not compute Postgres memory limits from %s" $value) -}}
   {{- end -}}
 {{- end -}}
 {{- end -}}
@@ -75,5 +73,36 @@ true
 - "shared_buffers={{ printf "%s" (printf "%dMB" (div $memoryLimitsMB 4)) }}"
 - "-c"
 - "effective_cache_size={{ printf "%s" (printf "%dMB" (sub $memoryLimitsMB 256)) }}"
+{{- end -}}
+{{- end -}}
+
+{{- define "element-io.postgresql.env" }}
+{{- $root := .root -}}
+{{- with required "element-io.postgresql.env missing context" .context -}}
+{{- $resultEnv := dict -}}
+{{- range $envEntry := .extraEnv -}}
+{{- $_ := set $resultEnv $envEntry.name $envEntry.value -}}
+{{- end -}}
+{{- $overrideEnv := dict "POSTGRES_PASSWORD_FILE" (printf "/secrets/%s"
+                            (include "element-io.ess-library.init-secret-path" (
+                              dict "root" $root "context" (
+                                dict "secretProperty" .adminPassword
+                                      "initSecretKey" "POSTGRESQL_ADMIN_PASSWORD"
+                                      "defaultSecretName" (printf "%s-postgresql" $root.Release.Name)
+                                      "defaultSecretKey" "ADMIN_PASSWORD"
+                                )
+                              )
+                            )
+                          )
+                        "PGDATA" "/var/lib/postgresql/data/pgdata"
+                        "POSTGRES_INITDB_ARGS" "-E UTF8"
+                        "LC_COLLATE" "C"
+                        "LC_CTYPE" "C"
+-}}
+{{- $resultEnv := merge $resultEnv $overrideEnv -}}
+{{- range $key, $value := $resultEnv }}
+- name: {{ $key | quote }}
+  value: {{ $value | quote }}
+{{- end -}}
 {{- end -}}
 {{- end -}}

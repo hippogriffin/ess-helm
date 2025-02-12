@@ -111,7 +111,7 @@ imagePullSecrets: []
   ## The tag of the container image to use.
   ## Defaults to the Chart's appVersion if not set
 {%- if tag | length > 0 %}
-  tag: {{ tag }}
+  tag: "{{ tag }}"
 {%- else %}
   # tag:
 {%- endif %}

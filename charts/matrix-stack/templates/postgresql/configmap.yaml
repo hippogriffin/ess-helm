@@ -10,16 +10,35 @@ apiVersion: v1
 kind: ConfigMap
 metadata:
   labels:
-    enabled: {{ (include "element-io.postgresql.enabled" (dict "root" $)) }}
-    {{- include "element-io.haproxy.labels" (dict "root" $ "context" .) | nindent 4 }}
+    {{- include "element-io.postgresql.labels" (dict "root" $ "context" .) | nindent 4 }}
   name: {{ $.Release.Name }}-postgresql
   namespace: {{ $.Release.Namespace }}
 data:
   init-dbs.sh: |
     #!/bin/sh
-{{- range $dbname := list "synapse" "mas" -}}
-    (echo -n $POSTGRES_POSTGRES_PASSWORD | psql -W -U postgres -tc "SELECT 1 FROM pg_database WHERE datname = '{{ $dbname }}'" | grep -q 1) || \
-    (echo -n $POSTGRES_POSTGRES_PASSWORD | createdb --encoding=UTF8 --locale=C --template=template0 --owner=ess_user {{ $dbname }} -U postgres)
+    export POSTGRES_PASSWORD=`cat /secrets/{{
+        include "element-io.ess-library.init-secret-path" (
+      dict "root" $ "context" (
+        dict "secretProperty" .adminPassword
+              "initSecretKey" "POSTGRESQL_ADMIN_PASSWORD"
+              "defaultSecretName" (printf "%s-postgresql" $.Release.Name)
+              "defaultSecretKey" "ADMIN_PASSWORD"
+        )
+    ) }}`;
+    export ESS_PASSWORD=`cat /secrets/{{
+  include "element-io.ess-library.init-secret-path" (
+    dict "root" $ "context" (
+      dict "secretProperty" .essPassword
+            "initSecretKey" "POSTGRESQL_ESS_PASSWORD"
+            "defaultSecretName" (printf "%s-postgresql" $.Release.Name)
+            "defaultSecretKey" "ESS_PASSWORD"
+      )
+    ) }}`;
+    (echo -n $POSTGRES_PASSWORD | psql -W -U postgres -tc "SELECT 1 FROM pg_catalog.pg_roles WHERE rolname = 'ess_user'" | grep -q 1) || \
+    (echo -n $POSTGRES_PASSWORD | psql -W -U postgres -c "CREATE ROLE ess_user LOGIN PASSWORD '"$ESS_PASSWORD"'");
+{{- range $dbname := list "synapse" "mas" }}
+    (echo -n $POSTGRES_PASSWORD | psql -W -U postgres -tc "SELECT 1 FROM pg_database WHERE datname = '{{ $dbname }}'" | grep -q 1) || \
+    (echo -n $POSTGRES_PASSWORD | createdb --encoding=UTF8 --locale=C --template=template0 --owner=ess_user {{ $dbname }} -U postgres)
 {{- end -}}
 {{- end -}}
 {{- end -}}
