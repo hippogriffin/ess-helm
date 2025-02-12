@@ -1,10 +1,10 @@
-{#
-Copyright 2023 New Vector Ltd
+{{- /*
+Copyright 2024 New Vector Ltd
 
-SPDX-License-Identifier: LicenseRef-EnterpriseEdition
-#}
-
----
+SPDX-License-Identifier: AGPL-3.0-only OR LicenseRef-Element-Commercial
+*/ -}}
+{{- with $.Values.postgresql -}}
+{{- if (include "element-io.postgresql.enabled" (dict "root" $)) }}
 apiVersion: apps/v1
 kind: StatefulSet
 metadata:
@@ -16,11 +16,11 @@ metadata:
     k8s.element.io/confighash: "{{ include (print $.Template.BasePath "/postgresql/secret.yaml") $ | sha1sum }}"
     k8s.element.io/logconfighash: "{{ include (print $.Template.BasePath "/postgresql/configmap.yaml") $ | sha1sum }}"
 spec:
-  serviceName: {{ $.Release.Name }}-synapse-{{ $processType }}
+  serviceName: {{ $.Release.Name }}-postgresql
   replicas: {{ .instances | default 1 }}
   selector:
     matchLabels:
-      app.kubernetes.io/instance: {{ $.Release.Name }}-synapse-{{ $processType }}
+      app.kubernetes.io/instance: {{ $.Release.Name }}-postgresql
   updateStrategy:
     type: RollingUpdate
   template:
@@ -51,12 +51,7 @@ spec:
           {{- toYaml . | nindent 10 }}
 {{- end }}
         args:
-        - -c
-        - max_connections={{ ((memory_limits_mb / 16) | int) }}
-        - -c
-        - shared_buffers={{ ((memory_limits_mb / 4) | int) }}MB
-        - -c
-        - effective_cache_size={{ memory_limits_mb - 256 }}MB
+        {{ include "element-io.postgresql.args" (dict "root" $ "context" .) | nindent 8 }}
 {{- with .resources }}
         resources:
           {{- toYaml . | nindent 10 }}
@@ -67,12 +62,12 @@ spec:
               command: ["pg_ctl", "stop", "-D", "/var/lib/postgresql/data", "-w", "-t", "55", "-m", "fast"]
         readinessProbe:
           exec:
-            command: ["psql", "-w", "-U", "{{ postgres_in_cluster.user }}", "-d", "{{ postgres_in_cluster.db }}", "-c", "SELECT 1"]
+            command: ["psql", "-w", "-U", "postgres", "-d", "postgres", "-c", "SELECT 1"]
           initialDelaySeconds: 15
           timeoutSeconds: 2
         livenessProbe:
           exec:
-            command: ["psql", "-w", "-U", "{{ postgres_in_cluster.user }}", "-d", "{{ postgres_in_cluster.db }}", "-c", "SELECT 1"]
+            command: ["psql", "-w", "-U", "postgres", "-d", "postgres", "-c", "SELECT 1"]
           initialDelaySeconds: 45
           timeoutSeconds: 2
         ports:
@@ -99,8 +94,24 @@ spec:
         - /bin/sh
         - -c
         - >
-          POSTGRES_ADMIN_PASSWORD=`cat /secrets/ADMIN_PASSWORD`
-          POSTGRES_ESS_PASSWORD=`cat /secrets/ADMIN_PASSWORD`
+          POSTGRES_ADMIN_PASSWORD=`cat /secrets/{{
+  include "element-io.ess-library.init-secret-path" (
+    dict "root" $ "context" (
+      dict "secretProperty" .adminPassword
+            "initSecretKey" "POSTGRESQL_ADMIN_PASSWORD"
+            "defaultSecretName" (printf "%s-postgresql" $.Release.Name)
+            "defaultSecretKey" "ADMIN_PASSWORD"
+      )
+    ) }}`
+          POSTGRES_ESS_PASSWORD=`cat /secrets/{{
+  include "element-io.ess-library.init-secret-path" (
+    dict "root" $ "context" (
+      dict "secretProperty" .essPassword
+            "initSecretKey" "POSTGRESQL_ESS_PASSWORD"
+            "defaultSecretName" (printf "%s-postgresql" $.Release.Name)
+            "defaultSecretKey" "ESS_PASSWORD"
+      )
+    ) }}`
           while ! pg_isready -h localhost; do echo "Postgres not yet ready"; sleep 1; done;
           echo "Postgres now ready, so changing password";
           psql -w -U postgres -h localhost \
@@ -137,8 +148,24 @@ spec:
           requests:
             cpu: 100m
             memory: 100Mi
+        volumesMounts:
+{{- range $secret := include "element-io.postgresql.configSecrets" (dict "root" $ "context" .) | fromJsonArray }}
+        - mountPath: /secrets/{{ tpl $secret $ }}
+          name: "secret-{{ tpl $secret $ }}"
+          readOnly: true
+{{- end }}
       terminationGracePeriodSeconds: 60
       volumes:
+{{- range $secret := include "element-io.postgresql.configSecrets" (dict "root" $ "context" .) | fromJsonArray }}
+      - secret:
+          secretName: {{ tpl $secret $ }}
+        name: secret-{{ tpl $secret $ }}
+{{- end }}
+      - name: config
+        configMap:
+          name: {{ $.Release.Name }}-postgresql
       - name: database
         persistentVolumeClaim:
           claimName: {{ $.Release.Name }}-postgresql-data
+{{- end }}
+{{- end }}

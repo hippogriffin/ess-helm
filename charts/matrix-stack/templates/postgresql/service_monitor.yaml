@@ -5,7 +5,7 @@ SPDX-License-Identifier: AGPL-3.0-only OR LicenseRef-Element-Commercial
 */ -}}
 
 {{- with .Values.postgresql -}}
-{{- if .enabled -}}
+{{- if (include "element-io.postgresql.enabled" (dict "root" $)) }}
 {{- if $.Capabilities.APIVersions.Has "monitoring.coreos.com/v1/ServiceMonitor" }}
 {{- if .serviceMonitors.enabled }}
 apiVersion: monitoring.coreos.com/v1
@@ -21,7 +21,7 @@ spec:
     port: metrics
   selector:
     matchLabels:
-      app.kubernetes.io/instance: {{ $root.Release.Name }}-postgresql
+      app.kubernetes.io/instance: {{ $.Release.Name }}-postgresql
 {{- end }}
 {{- end }}
 {{- end -}}

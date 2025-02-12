@@ -85,7 +85,7 @@ spec:
           value: >-
             {{
               printf "{{ readfile \"/secrets/%s\" | urlencode }}" (
-                 include "element-io.ess-library.provided-secret-path" (
+                 include "element-io.ess-library.postgresql-secret-path" (
                      dict "root" $
                      "context" (dict
                        "secretProperty" .postgres.password
@@ -176,7 +176,11 @@ spec:
         - "/matrix-tools"
         - tcpwait
         - -address
+{{- if .postgres }}
         - "{{ (tpl .postgres.host $) }}:{{ .postgres.port }}"
+{{- else }}
+        - "{{ $.Release.Name }}-postgresql-hl.{{ $.Release.Namespace }}.svc.cluster.local:5432"
+{{- end }}
 {{- with .resources }}
         resources:
           {{- toYaml . | nindent 10 }}

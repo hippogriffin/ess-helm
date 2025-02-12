@@ -1951,6 +1951,21 @@
             }
           },
           "additionalProperties": false
+        },
+        "storage": {
+          "type": "object",
+          "properties": {
+            "existingClaim": {
+              "type": "string"
+            },
+            "size": {
+              "type": "string"
+            },
+            "storageClass": {
+              "type": "string"
+            }
+          },
+          "additionalProperties": false
         }
       }
     },

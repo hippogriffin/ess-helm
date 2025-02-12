@@ -9,3 +9,14 @@ enabled: true
 {{- sub_schema_values.credential("ESS Role Password", "essPassword", initIfAbsent=true) }}
 
 {{- sub_schema_values.persistentVolumeClaim("storage") }}
+{{- sub_schema_values.image(registry='docker.io', repository='postgres', tag='16.6') }}
+{{- sub_schema_values.labels() }}
+{{- sub_schema_values.workloadAnnotations() }}
+{{- sub_schema_values.containersSecurityContext() }}
+{{- sub_schema_values.nodeSelector() }}
+{{- sub_schema_values.podSecurityContext(user_id='10091', group_id='10091') }}
+{{- sub_schema_values.resources(requests_memory='100Mi', requests_cpu='100m', limits_memory='4Gi') }}
+{{- sub_schema_values.serviceAccount() }}
+{{- sub_schema_values.serviceMonitors() }}
+{{- sub_schema_values.tolerations() }}
+{{- sub_schema_values.topologySpreadConstraints() }}

@@ -81,8 +81,6 @@ app.kubernetes.io/version: {{ .image.tag }}
 {{- range $envEntry := .extraEnv -}}
 {{- $_ := set $resultEnv $envEntry.name $envEntry.value -}}
 {{- end -}}
-{{- $overrideEnv := dict "POSTGRES_HOST" (tpl .postgres.host $root) "POSTGRES_PORT" .postgres.port  -}}
-{{- $resultEnv := merge $resultEnv $overrideEnv -}}
 {{- range $key, $value := $resultEnv }}
 - name: {{ $key | quote }}
   value: {{ $value | quote }}
@@ -127,7 +125,7 @@ app.kubernetes.io/version: {{ .image.tag }}
     {{
       printf "{{ readfile \"/secrets/%s\" | quote }}"
         (
-          include "element-io.ess-library.provided-secret-path" (
+          include "element-io.ess-library.postgresql-secret-path" (
             dict "root" $root
             "context" (dict
               "secretProperty" .postgres.password

@@ -117,8 +117,10 @@ responsibleForMedia
 {{- with .macaroon.secret -}}
 {{ $configSecrets = append $configSecrets (tpl . $root) }}
 {{- end -}}
-{{- with .postgres.password.secret -}}
+{{- with .postgres -}}
+{{- with .password.secret -}}
 {{ $configSecrets = append $configSecrets (tpl . $root) }}
+{{- end -}}
 {{- end -}}
 {{- with .registrationSharedSecret.secret -}}
 {{ $configSecrets = append $configSecrets (tpl . $root) }}

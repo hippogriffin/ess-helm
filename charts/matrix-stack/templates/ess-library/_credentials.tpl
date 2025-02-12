@@ -59,3 +59,24 @@ SPDX-License-Identifier: AGPL-3.0-only OR LicenseRef-Element-Commercial
 {{- end -}}
 {{- end -}}
 {{- end -}}
+
+
+{{- define "element-io.ess-library.postgresql-secret-path" -}}
+{{- $root := .root -}}
+{{- with required "element-io.ess-library.postgresql-secret-path" .context -}}
+{{- $secretProperty := .secretProperty -}}
+{{- $defaultSecretName := required "element-io.ess-library.postgresql-secret-path context missing defaultSecretName" .defaultSecretName -}}
+{{- $defaultSecretKey := required "element-io.ess-library.postgresql-secret-path context missing defaultSecretKey" .defaultSecretKey -}}
+{{- if not $secretProperty -}}
+  {{- if not $root.Values.postgresql.essPassword }}
+    {{- if $root.Values.initSecrets.enabled -}}
+    {{- printf "%s/%s" (printf "%s-generated" $root.Release.Name) "POSTGRESQL_ESS_PASSWORD" -}}
+    {{- end -}}
+  {{- else -}}
+    {{- include "element-io.ess-library.provided-secret-path" (dict "root" $root "context" (dict "secretProperty" $root.Values.postgresql.essPassword "defaultSecretName" (printf "%s-postgresql" $root.Release.Name) "defaultSecretKey" "ESS_PASSWORD")) -}}
+  {{- end -}}
+{{- else -}}
+  {{- include "element-io.ess-library.provided-secret-path" (dict "root" $root "context" (dict "secretProperty" $secretProperty "defaultSecretName" $defaultSecretName "defaultSecretKey" $defaultSecretKey)) -}}
+{{- end -}}
+{{- end -}}
+{{- end -}}

@@ -40,8 +40,10 @@ app.kubernetes.io/version: {{ .image.tag }}
 {{- with .synapseOIDCClientSecret.secret -}}
 {{ $configSecrets = append $configSecrets (tpl . $root) }}
 {{- end -}}
-{{- with .postgres.password.secret -}}
+{{- with .postgres }}
+{{- with .password.secret -}}
 {{ $configSecrets = append $configSecrets (tpl . $root) }}
+{{- end -}}
 {{- end -}}
 {{- with .encryptionSecret.secret -}}
 {{ $configSecrets = append $configSecrets (tpl . $root) }}
