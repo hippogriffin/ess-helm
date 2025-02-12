@@ -15,6 +15,12 @@
       "properties": {
         "image": {
           "$ref": "file://common/image.json"
+        },
+        "containersSecurityContext": {
+          "$ref": "file://common/containersSecurityContext.json"
+        },
+        "resources": {
+          "$ref": "file://common/resources.json"
         }
       }
     },

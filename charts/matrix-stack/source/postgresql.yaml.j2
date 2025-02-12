@@ -7,6 +7,8 @@ enabled: true
 
 postgresExporter:
   {{- sub_schema_values.image(registry='docker.io', repository='prometheuscommunity/postgres-exporter', tag='v0.16.0') | indent(2) }}
+  {{- sub_schema_values.resources(requests_memory='100Mi', requests_cpu='100m', limits_memory='500Mi')| indent(2) }}
+  {{- sub_schema_values.containersSecurityContext()| indent(2) }}
 
 {{- sub_schema_values.credential("Postgres Admin Password", "adminPassword", initIfAbsent=true) }}
 {{- sub_schema_values.credential("ESS Role Password", "essPassword", initIfAbsent=true) }}

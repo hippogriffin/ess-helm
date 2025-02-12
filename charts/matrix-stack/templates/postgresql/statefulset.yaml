@@ -93,8 +93,9 @@ spec:
           mountPath: /tmp
         - name: var-run
           mountPath: /var/run
+{{- with .postgresExporter }}
       - name: postgres-exporter
-{{- with .postgresExporter.image -}}
+{{- with .image -}}
 {{- if .digest }}
         image: "{{ .registry }}/{{ .repository }}@{{ .digest }}"
         imagePullPolicy: {{ .pullPolicy | default "IfNotPresent" }}
@@ -134,13 +135,11 @@ spec:
           periodSeconds: 2
           timeoutSeconds: 2
           successThreshold: 2
+{{- with .resources }}
         resources:
-          limits:
-            cpu: "1"
-            memory: 500Mi
-          requests:
-            cpu: 100m
-            memory: 100Mi
+          {{- toYaml . | nindent 10 }}
+{{- end }}
+{{- end }}
       terminationGracePeriodSeconds: 60
       volumes:
       - emptyDir: {}
