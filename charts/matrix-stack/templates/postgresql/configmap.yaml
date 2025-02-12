@@ -1,5 +1,5 @@
 {{- /*
-Copyright 2024 New Vector Ltd
+Copyright 2025 New Vector Ltd
 
 SPDX-License-Identifier: AGPL-3.0-only OR LicenseRef-Element-Commercial
 */ -}}
@@ -12,7 +12,7 @@ metadata:
   labels:
     enabled: {{ (include "element-io.postgresql.enabled" (dict "root" $)) }}
     {{- include "element-io.haproxy.labels" (dict "root" $ "context" .) | nindent 4 }}
-  name: {{ $.Release.Name }}-postgresql-initdb
+  name: {{ $.Release.Name }}-postgresql
   namespace: {{ $.Release.Namespace }}
 data:
   init-dbs.sh: |

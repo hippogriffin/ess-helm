@@ -1,5 +1,5 @@
 {{- /*
-Copyright 2024 New Vector Ltd
+Copyright 2025 New Vector Ltd
 
 SPDX-License-Identifier: AGPL-3.0-only OR LicenseRef-Element-Commercial
 */ -}}
@@ -14,6 +14,7 @@ metadata:
   name: {{ $.Release.Name }}-postgresql
   namespace: {{ $.Release.Namespace }}
 spec:
+  clusterIP: None
   ports:
   - port: 5432
     name: postgres

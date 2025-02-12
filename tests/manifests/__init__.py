@@ -13,6 +13,9 @@ _raw_shared_components_details = {
         "has_ingress": False,
     },
     "haproxy": {},
+    "postgresql": {
+        "has_ingress": False,
+    },
 }
 
 _raw_component_details = {
@@ -22,7 +25,7 @@ _raw_component_details = {
     },
     "matrixAuthenticationService": {
         "hyphened_name": "matrix-authentication-service",
-        "shared_components": ["initSecrets"],
+        "shared_components": ["initSecrets", "postgresql"],
     },
     "synapse": {
         "additional_values_files": [
@@ -33,7 +36,7 @@ _raw_component_details = {
                 "has_service_monitor": False,
             },
         },
-        "shared_components": ["initSecrets", "haproxy"],
+        "shared_components": ["initSecrets", "haproxy", "postgresql"],
     },
     "wellKnownDelegation": {
         "hyphened_name": "well-known",

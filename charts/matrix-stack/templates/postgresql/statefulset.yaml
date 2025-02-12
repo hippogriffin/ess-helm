@@ -1,5 +1,5 @@
 {{- /*
-Copyright 2024 New Vector Ltd
+Copyright 2025 New Vector Ltd
 
 SPDX-License-Identifier: AGPL-3.0-only OR LicenseRef-Element-Commercial
 */ -}}
@@ -10,7 +10,7 @@ kind: StatefulSet
 metadata:
   labels:
     {{- include "element-io.postgresql.labels" (dict "root" $ "context" .) | nindent 4 }}
-  name: {{ $.Release.Name }}-postgresql-data
+  name: {{ $.Release.Name }}-postgresql
   namespace: {{ $.Release.Namespace }}
   annotations:
     k8s.element.io/confighash: "{{ include (print $.Template.BasePath "/postgresql/secret.yaml") $ | sha1sum }}"
