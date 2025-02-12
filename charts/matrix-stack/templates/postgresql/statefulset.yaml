@@ -15,6 +15,9 @@ metadata:
   annotations:
     k8s.element.io/confighash: "{{ include (print $.Template.BasePath "/postgresql/secret.yaml") $ | sha1sum }}"
     k8s.element.io/logconfighash: "{{ include (print $.Template.BasePath "/postgresql/configmap.yaml") $ | sha1sum }}"
+{{- with .annotations }}
+    {{- toYaml . | nindent 4 }}
+{{- end }}
 spec:
   serviceName: {{ $.Release.Name }}-postgresql
   replicas: {{ .instances | default 1 }}
