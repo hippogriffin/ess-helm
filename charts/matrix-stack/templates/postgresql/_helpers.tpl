@@ -31,7 +31,10 @@ true
 {{- define "element-io.postgresql.configSecrets" -}}
 {{- $root := .root -}}
 {{- with required "element-io.postgresql.configSecrets missing context" .context -}}
-{{ $configSecrets := list (printf "%s-postgresql" $root.Release.Name) }}
+{{- $configSecrets := list }}
+{{- if or .adminPassword.value  .essPassword.value }}
+{{- $configSecrets = $configSecrets append (printf "%s-postgresql" $root.Release.Name) }}
+{{- end }}
 {{- if and $root.Values.initSecrets.enabled (include "element-io.init-secrets.generated-secrets" (dict "root" $root)) }}
 {{ $configSecrets = append $configSecrets (printf "%s-generated" $root.Release.Name) }}
 {{- end }}

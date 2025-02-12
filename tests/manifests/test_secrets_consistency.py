@@ -146,7 +146,7 @@ async def test_secrets_consistency(templates, other_secrets):
                             mount_path_found = True
                 if not mount_path_found and not uses_rendered_config:
                     raise AssertionError(
-                        f"{volume_mount['mountPath']} used in container {container['name']} "
+                        f"{mount_path} used in container {container['name']} "
                         f"but no config {','.join([cm['metadata']['name'] for cm in mounted_config_maps])} "
                         f"or env variable, or command is using it"
                     )
