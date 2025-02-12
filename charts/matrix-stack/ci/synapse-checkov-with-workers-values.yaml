@@ -2,7 +2,7 @@
 #
 # SPDX-License-Identifier: AGPL-3.0-only OR LicenseRef-Element-Commercial
 #
-# source_fragments: synapse-minimal.yaml synapse-test-postgres.yaml synapse-some-workers-running.yaml synapse-checkov.yaml haproxy-checkov.yaml init-secrets-minimal.yaml init-secrets-checkov.yaml
+# source_fragments: synapse-minimal.yaml synapse-some-workers-running.yaml synapse-checkov.yaml haproxy-checkov.yaml init-secrets-minimal.yaml init-secrets-checkov.yaml postgresql-minimal.yaml postgresql-checkov.yaml
 # DO NOT EDIT DIRECTLY. Edit the fragment files to add / modify / remove values
 
 initSecrets:
@@ -16,16 +16,15 @@ elementWeb:
   enabled: false
 matrixAuthenticationService:
   enabled: false
+postgresql:
+  enabled: true
+  annotations:
+    checkov.io/skip1: CKV_K8S_11=We deliberately don't set CPU limits. Pod is BestEffort not Guaranteed
+    checkov.io/skip2: CKV_K8S_43=No digests
+    checkov.io/skip3: CKV2_K8S_6=No network policy yet
 synapse:
   ingress:
     host: synapse.ess.localhost
-  postgres:
-    host: ess-postgres
-    user: synapse_user
-    database: synapse
-    password:
-      secret: ess-postgres
-      secretKey: password
   workers:
     appservice:
       enabled: true

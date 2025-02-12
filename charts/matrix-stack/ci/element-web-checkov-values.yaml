@@ -16,6 +16,8 @@ elementWeb:
     checkov.io/skip3: CKV2_K8S_6=No network policy yet
 matrixAuthenticationService:
   enabled: false
+postgresql:
+  enabled: false
 synapse:
   enabled: false
 wellKnownDelegation:

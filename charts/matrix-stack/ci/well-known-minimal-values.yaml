@@ -11,6 +11,8 @@ elementWeb:
   enabled: false
 matrixAuthenticationService:
   enabled: false
+postgresql:
+  enabled: false
 synapse:
   enabled: false
 wellKnownDelegation:

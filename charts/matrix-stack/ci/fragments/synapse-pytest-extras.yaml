@@ -16,14 +16,6 @@ synapse:
   - name: DEBUG_RENDERING
     value: "1"
 
-  postgres:
-    host: "{{ $.Release.Name }}-synapse-postgresql"
-    user: synapse_user
-    database: synapse_db
-    password:
-      secret: "{{ $.Release.Name }}-synapse-postgres-db"
-      secretKey: password
-
   ingress:
     host: synapse.{{ $.Values.serverName }}
     tlsSecret: "{{ $.Release.Name }}-synapse-web-tls"
