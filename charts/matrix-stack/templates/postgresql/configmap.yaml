@@ -34,7 +34,10 @@ data:
             "defaultSecretKey" "ESS_PASSWORD"
       )
     ) }}`;
-    (echo -n $POSTGRES_PASSWORD | psql -W -U postgres -tc "SELECT 1 FROM pg_catalog.pg_roles WHERE rolname = 'ess_user'" | grep -q 1) || \
+    (
+      (echo -n $POSTGRES_PASSWORD | psql -W -U postgres -tc "SELECT 1 FROM pg_catalog.pg_roles WHERE rolname = 'ess_user'" | grep -q 1) && \
+      (echo -n $POSTGRES_PASSWORD | psql -W -U postgres -c "ALTER USER ess_user PASSWORD '"$ESS_PASSWORD"'")
+    ) || \
     (echo -n $POSTGRES_PASSWORD | psql -W -U postgres -c "CREATE ROLE ess_user LOGIN PASSWORD '"$ESS_PASSWORD"'");
 {{- range $dbname := list "synapse" "mas" }}
     (echo -n $POSTGRES_PASSWORD | psql -W -U postgres -tc "SELECT 1 FROM pg_database WHERE datname = '{{ $dbname }}'" | grep -q 1) || \
