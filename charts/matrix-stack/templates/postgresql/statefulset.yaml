@@ -115,8 +115,6 @@ spec:
           value: "localhost?sslmode=disable"
         - name: DATA_SOURCE_USER
           value: "postgres"
-        - name: PG_EXPORTER_METRIC_PREFIX
-          value: metrics
         startupProbe:
           httpGet:
             path: /metrics
