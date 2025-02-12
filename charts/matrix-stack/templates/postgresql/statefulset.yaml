@@ -93,53 +93,6 @@ spec:
           mountPath: /tmp
         - name: var-run
           mountPath: /var/run
-      - name: postgres-init-password
-{{- with .image -}}
-{{- if .digest }}
-        image: "{{ .registry }}/{{ .repository }}@{{ .digest }}"
-        imagePullPolicy: {{ .pullPolicy | default "IfNotPresent" }}
-{{- else }}
-        image: "{{ .registry }}/{{ .repository }}:{{ .tag }}"
-        imagePullPolicy: {{ .pullPolicy | default "Always" }}
-{{- end }}
-{{- end }}
-{{- with .containersSecurityContext }}
-        securityContext:
-          {{- toYaml . | nindent 10 }}
-{{- end }}
-        command:
-        - /bin/sh
-        - -c
-        - >
-          export POSTGRES_PASSWORD=`cat /secrets/{{
-  include "element-io.ess-library.init-secret-path" (
-    dict "root" $ "context" (
-      dict "secretProperty" .adminPassword
-            "initSecretKey" "POSTGRESQL_ADMIN_PASSWORD"
-            "defaultSecretName" (printf "%s-postgresql" $.Release.Name)
-            "defaultSecretKey" "ADMIN_PASSWORD"
-      )
-    ) }}`;
-          export POSTGRES_ESS_PASSWORD=`cat /secrets/{{
-  include "element-io.ess-library.init-secret-path" (
-    dict "root" $ "context" (
-      dict "secretProperty" .essPassword
-            "initSecretKey" "POSTGRESQL_ESS_PASSWORD"
-            "defaultSecretName" (printf "%s-postgresql" $.Release.Name)
-            "defaultSecretKey" "ESS_PASSWORD"
-      )
-    ) }}`;
-          while ! pg_isready -h localhost -d postgres -U postgres; do echo "Postgres not yet ready"; sleep 1; done;
-          echo "Postgres now ready, so changing password";
-          psql -w -U postgres -h localhost
-          -c "ALTER USER ess_user PASSWORD '"$POSTGRES_ESS_PASSWORD"'";
-          trap : TERM INT; sleep 9999999999d & wait
-        volumeMounts:
-{{- range $secret := include "element-io.postgresql.configSecrets" (dict "root" $ "context" .) | fromJsonArray }}
-        - mountPath: /secrets/{{ tpl $secret $ }}
-          name: "secret-{{ tpl $secret $ }}"
-          readOnly: true
-{{- end }}
       - name: postgres-exporter
 {{- with .postgresExporter.image -}}
 {{- if .digest }}
@@ -159,11 +112,30 @@ spec:
           containerPort: 9187
         env:
         - name: DATA_SOURCE_URI
-          value: "postgres?sslmode=disable"
+          value: "localhost?sslmode=disable"
         - name: DATA_SOURCE_USER
           value: "postgres"
         - name: PG_EXPORTER_METRIC_PREFIX
           value: metrics
+        startupProbe:
+          httpGet:
+            path: /metrics
+            port: metrics
+          periodSeconds: 2
+          failureThreshold: 20
+        livenessProbe:
+          httpGet:
+            path: /metrics
+            port: metrics
+          periodSeconds: 6
+          timeoutSeconds: 2
+        readinessProbe:
+          httpGet:
+            path: /metrics
+            port: metrics
+          periodSeconds: 2
+          timeoutSeconds: 2
+          successThreshold: 2
         resources:
           limits:
             cpu: "1"
