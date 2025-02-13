@@ -1,31 +1,25 @@
-# Copyright 2025 New Vector Ltd
+# Copyright 2024-2025 New Vector Ltd
 #
 # SPDX-License-Identifier: AGPL-3.0-only OR LicenseRef-Element-Commercial
-
-## Values file containing minimal values for components that are enabled by default only
-
-elementWeb:
-  enabled: false
+#
+# source_fragments: matrix-authentication-service-minimal.yaml matrix-authentication-service-test-postgres.yaml init-secrets-minimal.yaml
+# DO NOT EDIT DIRECTLY. Edit the fragment files to add / modify / remove values
 
 initSecrets:
   enabled: true
-
+elementWeb:
+  enabled: false
 matrixAuthenticationService:
-  enabled: true
-
   ingress:
     host: mas.ess.localhost
-
   postgres:
     host: postgres
     user: mas
     database: mas
     password:
-      value: CHANGEME-teel5aghaenohhohghiavee5Koh8ahwo
-
-
+      secret: ess-postgres
+      secretKey: password
 synapse:
   enabled: false
-
 wellKnownDelegation:
   enabled: false

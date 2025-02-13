@@ -62,6 +62,15 @@ def _enrich_components_to_test(details) -> dict[str, Any]:
         _component_details[component].setdefault("sub_components", {})
         for sub_component in _component_details[component]["sub_components"]:
             _component_details[component]["sub_components"][sub_component].setdefault("has_service_monitor", True)
+
+        _component_details[component].setdefault("secret_values_files", [])
+        if "initSecrets" in _component_details[component].setdefault("shared_components", []):
+            _component_details[component]["secret_values_files"].append(
+                f"{_component_details[component]['hyphened_name']}-secrets-in-helm-values.yaml"
+            )
+            _component_details[component]["secret_values_files"].append(
+                f"{_component_details[component]['hyphened_name']}-secrets-externally-values.yaml"
+            )
     return _component_details
 
 
@@ -73,9 +82,13 @@ values_files_to_components = {
     for component, details in component_details.items()
     for values_file in details["values_files"]
 }
-values_files_to_test = values_files_to_components.keys()
+values_files_to_test = list(values_files_to_components.keys())
 values_files_with_ingresses = [
     values_file
     for values_file, component in values_files_to_components.items()
     if component_details[component]["has_ingress"]
+]
+
+secrets_values_files_to_test = [
+    values_file for details in component_details.values() for values_file in details["secret_values_files"]
 ]

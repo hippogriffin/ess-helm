@@ -1,35 +1,26 @@
-# Copyright 2024 New Vector Ltd
+# Copyright 2024-2025 New Vector Ltd
 #
 # SPDX-License-Identifier: AGPL-3.0-only OR LicenseRef-Element-Commercial
-
-serverName: ess.localhost
+#
+# source_fragments: synapse-minimal.yaml synapse-test-postgres.yaml synapse-some-workers-running.yaml synapse-checkov.yaml haproxy-checkov.yaml init-secrets-minimal.yaml init-secrets-checkov.yaml
+# DO NOT EDIT DIRECTLY. Edit the fragment files to add / modify / remove values
 
 initSecrets:
-  enabled: false
-
-elementWeb:
-  enabled: false
-
-matrixAuthenticationService:
-  enabled: false
-
-haproxy:
+  enabled: true
   annotations:
     checkov.io/skip1: CKV_K8S_11=We deliberately don't set CPU limits. Pod is BestEffort not Guaranteed
     checkov.io/skip2: CKV_K8S_43=No digests
     checkov.io/skip3: CKV2_K8S_6=No network policy yet
-
+    checkov.io/skip4: CKV_K8S_38=The job needs a service account
+elementWeb:
+  enabled: false
+matrixAuthenticationService:
+  enabled: false
 synapse:
   ingress:
     host: synapse.ess.localhost
-
   registrationSharedSecret:
     value: CHANGEME-ooWo6jeidahhei3Hae0eer9U
-  macaroon:
-    value: CHANGEME-eek3Eigoh8ux8laeTingeej1
-  signingKey:
-    value: ed25519 0 bNQOzBUDszff7Ax81z6w0uZ1IPWoxYaazT7emaZEfpw
-
   postgres:
     host: ess-postgres
     user: synapse_user
@@ -37,12 +28,6 @@ synapse:
     password:
       secret: ess-postgres
       secretKey: password
-
-  annotations:
-    checkov.io/skip1: CKV_K8S_11=We deliberately don't set CPU limits. Pod is BestEffort not Guaranteed
-    checkov.io/skip2: CKV_K8S_43=No digests
-    checkov.io/skip3: CKV2_K8S_6=No network policy yet
-
   workers:
     appservice:
       enabled: true
@@ -50,11 +35,22 @@ synapse:
       enabled: true
     event-persister:
       enabled: true
+    federation-reader:
+      enabled: true
+  annotations:
+    checkov.io/skip1: CKV_K8S_11=We deliberately don't set CPU limits. Pod is BestEffort not Guaranteed
+    checkov.io/skip2: CKV_K8S_43=No digests
+    checkov.io/skip3: CKV2_K8S_6=No network policy yet
   redis:
     annotations:
       checkov.io/skip1: CKV_K8S_11=We deliberately don't set CPU limits. Pod is BestEffort not Guaranteed
       checkov.io/skip2: CKV_K8S_43=No digests
       checkov.io/skip3: CKV2_K8S_6=No network policy yet
-
 wellKnownDelegation:
   enabled: false
+serverName: ess.localhost
+haproxy:
+  annotations:
+    checkov.io/skip1: CKV_K8S_11=We deliberately don't set CPU limits. Pod is BestEffort not Guaranteed
+    checkov.io/skip2: CKV_K8S_43=No digests
+    checkov.io/skip3: CKV2_K8S_6=No network policy yet

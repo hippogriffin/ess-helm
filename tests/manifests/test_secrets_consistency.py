@@ -6,7 +6,7 @@ import re
 
 import pytest
 
-from . import values_files_to_test
+from . import secrets_values_files_to_test, values_files_to_test
 from .utils import get_or_empty
 
 
@@ -64,7 +64,7 @@ def match_in_content(container_name, mounted_secret_keys, mount_path, match_in):
     return found_mount
 
 
-@pytest.mark.parametrize("values_file", values_files_to_test)
+@pytest.mark.parametrize("values_file", values_files_to_test + secrets_values_files_to_test)
 @pytest.mark.asyncio_cooperative
 async def test_secrets_consistency(templates, other_secrets):
     """

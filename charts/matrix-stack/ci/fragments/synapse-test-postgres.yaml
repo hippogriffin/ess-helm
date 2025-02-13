@@ -1,0 +1,12 @@
+# Copyright 2025 New Vector Ltd
+#
+# SPDX-License-Identifier: AGPL-3.0-only OR LicenseRef-Element-Commercial
+
+synapse:
+  postgres:
+    host: ess-postgres
+    user: synapse_user
+    database: synapse
+    password:
+      secret: ess-postgres
+      secretKey: password

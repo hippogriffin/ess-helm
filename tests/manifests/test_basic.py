@@ -10,13 +10,20 @@ from . import component_details, shared_components_details, values_files_to_test
 @pytest.mark.parametrize("values_file", ["nothing-enabled-values.yaml"])
 @pytest.mark.asyncio_cooperative
 async def test_nothing_enabled_renders_nothing(templates):
-    assert len(templates) == 0
+    assert len(templates) == 0, f"{templates} were generated but none were expected"
+
+
+@pytest.mark.parametrize("values_file", ["nothing-enabled-values.yaml"])
+@pytest.mark.asyncio_cooperative
+async def test_initSecrets_on_its_own_renders_nothing(values, make_templates):
+    values["initSecrets"]["enabled"] = True
+    templates = await make_templates(values)
+    assert len(templates) == 0, f"{templates} were generated but none were expected"
 
 
 @pytest.mark.parametrize("values_file", values_files_to_test)
 @pytest.mark.asyncio_cooperative
 async def test_values_file_renders_only_itself(release_name, component, templates):
-    # init-secrets does not render any manifest without any component needing it
     assert len(templates) > 0
 
     allowed_starts_with = [

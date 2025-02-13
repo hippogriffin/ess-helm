@@ -47,6 +47,33 @@ Similarly the version number of the chart can be changed with
 `scripts/set_chart_version.sh <version>`. Any changes this makes must be committed to Git
 as well.
 
+The various test values files in `charts/matrix-stack/ci` are also mostly assembled from
+fragments. The fragments live in the `fragments` sub-directory. An assembled values file
+is annotated with a `# source_fragments: <space separated list of fragment filenames>`
+comment. `scripts/assemble_ci_values_files_from_fragments.sh` is then run to regenerate
+the values file from fragments. The listed fragments are combined with
+`nothing-enabled-values.yaml` such that no default-enabled components are configured.
+
+For each component there must be a values file named
+* `<component>-minimal-values.yaml` - this should contain the absolute minimal values
+  required to get a working instance of the component. Any credentials should be
+  generated if possible
+* `<component>-checkov-values.yaml` - this should contain the minimal values to get
+  checkov to pass on a working instance of the component
+* If the component has credentials the following values are also required:
+  * `<component>-secrets-in-helm-values.yaml` - where any credentials are provided in
+    the values file itself. The credential values themselves are not important
+  * `<component>-secrets-externally-values.yaml` - where the values file contains
+    details of `Secret`s that could contain the credentials. The `Secret` name
+    should include `{{ $.Release.Name }}` to prove the field is templatable. The
+    exact `Secret` name and key themselves are otherwise not important
+
+Other values may exist for a component to demonstrate and test some interesting
+configuration and resulting templates.
+
+Assembly of values files from fragments is optional and opt-in but it is strongly
+recommended.
+
 ### Running a test cluster
 
 A test cluster can be constructed with `./scripts/setup_test_cluster.sh`. It will:
@@ -98,13 +125,13 @@ From the project root: `ct lint`
 This will test the chart with all values files matching
 `charts/matrix-stack/ci/*-values.yaml`.
 
-From a sub-chart directory: `ct lint --charts . --validate-maintainers=false`
+From the `matrix-stack` directory: `ct lint --charts . --validate-maintainers=false`
 
 ### checkov
 
 Detects misconfigurations and lack of hardening in the manifests.
 
-From `charts/matrix-stack`: `checkov -d . --framework helm --quiet --var-file ci/<checkov values file>`
+From `charts/matrix-stack`: `HELM_NAMESPACE=ess checkov -d . --framework helm --quiet --var-file ci/<checkov values file>`
 
 Other values files can be used but the values files named `checkov<something>values.yaml` will have
 any test suppression annotations required.
@@ -161,7 +188,8 @@ We are not going to expose every single application configuration option.
 
 The chart changelog is built using towncrier. Every PR requires a newsfragment created using : `towncrier create`. The fragment number should match the PR number.
 
-Each newsfragment accepts on type of artifct hub kind changes : `added`, `changed`, `removed`, `fixed`, `security`.
+Each newsfragment accepts on type of ArtifactHub kind changes : `added`, `changed`, `removed`, `fixed`, `security`. The `internal` type
+is accepted but will not be shown in ArtifactHub.
 
 The changelog is built on release time using `towncrier build` in the chart directory. The changelog is also injected into the `Chart.yaml` under the annotation `artifacthub.io/changes`.
 

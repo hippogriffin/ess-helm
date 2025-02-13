@@ -1,25 +1,23 @@
-# Copyright 2024 New Vector Ltd
+# Copyright 2024-2025 New Vector Ltd
 #
 # SPDX-License-Identifier: AGPL-3.0-only OR LicenseRef-Element-Commercial
-
-global:
-  baseDomain: ess.localhost
-
-# To check that templating works against the ingress
-serverName: "{{ $.Values.global.baseDomain }}"
+#
+# source_fragments: well-known-minimal.yaml well-known-pytest-extras.yaml
+# DO NOT EDIT DIRECTLY. Edit the fragment files to add / modify / remove values
 
 initSecrets:
   enabled: false
-
-synapse:
-  enabled: false
-
 elementWeb:
   enabled: false
-
 matrixAuthenticationService:
   enabled: false
-
+synapse:
+  enabled: false
 wellKnownDelegation:
+  enabled: true
   ingress:
     tlsSecret: "{{ $.Release.Name }}-well-known-web-tls"
+# To check that templating works against the ingress
+serverName: "{{ $.Values.global.baseDomain }}"
+global:
+  baseDomain: ess.localhost

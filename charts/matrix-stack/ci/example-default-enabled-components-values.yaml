@@ -1,38 +1,30 @@
-# Copyright 2024 New Vector Ltd
+# Copyright 2024-2025 New Vector Ltd
 #
 # SPDX-License-Identifier: AGPL-3.0-only OR LicenseRef-Element-Commercial
+#
+# source_fragments: element-web-minimal.yaml synapse-minimal.yaml synapse-test-postgres.yaml matrix-authentication-service-minimal.yaml matrix-authentication-service-test-postgres.yaml init-secrets-minimal.yaml well-known-minimal.yaml
+# DO NOT EDIT DIRECTLY. Edit the fragment files to add / modify / remove values
 
-## Values file containing minimal values for components that are enabled by default only
-
-serverName: ess.localhost
-
+initSecrets:
+  enabled: true
 elementWeb:
   ingress:
     host: element.ess.localhost
-
 matrixAuthenticationService:
   ingress:
     host: mas.ess.localhost
-
   postgres:
-    host: ess-postgres
-    user: mas_user
+    host: postgres
+    user: mas
     database: mas
     password:
       secret: ess-postgres
       secretKey: password
-
 synapse:
   ingress:
     host: synapse.ess.localhost
-
   registrationSharedSecret:
     value: CHANGEME-ooWo6jeidahhei3Hae0eer9U
-  macaroon:
-    value: CHANGEME-eek3Eigoh8ux8laeTingeej1
-  signingKey:
-    value: ed25519 0 bNQOzBUDszff7Ax81z6w0uZ1IPWoxYaazT7emaZEfpw
-
   postgres:
     host: ess-postgres
     user: synapse_user
@@ -40,3 +32,6 @@ synapse:
     password:
       secret: ess-postgres
       secretKey: password
+wellKnownDelegation:
+  enabled: true
+serverName: ess.localhost

@@ -1,21 +1,21 @@
-# Copyright 2024 New Vector Ltd
+# Copyright 2024-2025 New Vector Ltd
 #
 # SPDX-License-Identifier: AGPL-3.0-only OR LicenseRef-Element-Commercial
-
-serverName: ess.localhost
+#
+# source_fragments: well-known-minimal.yaml haproxy-checkov.yaml
+# DO NOT EDIT DIRECTLY. Edit the fragment files to add / modify / remove values
 
 initSecrets:
   enabled: false
-
 elementWeb:
   enabled: false
-
 matrixAuthenticationService:
   enabled: false
-
 synapse:
   enabled: false
-
+wellKnownDelegation:
+  enabled: true
+serverName: ess.localhost
 haproxy:
   annotations:
     checkov.io/skip1: CKV_K8S_11=We deliberately don't set CPU limits. Pod is BestEffort not Guaranteed
