@@ -93,6 +93,66 @@ spec:
           mountPath: /tmp
         - name: var-run
           mountPath: /var/run
+      - name: postgres-ess-updater
+{{- with .image -}}
+{{- if .digest }}
+        image: "{{ .registry }}/{{ .repository }}@{{ .digest }}"
+        imagePullPolicy: {{ .pullPolicy | default "IfNotPresent" }}
+{{- else }}
+        image: "{{ .registry }}/{{ .repository }}:{{ .tag }}"
+        imagePullPolicy: {{ .pullPolicy | default "Always" }}
+{{- end }}
+{{- end }}
+        command:
+        - /bin/sh
+        - -c
+        - >
+          while ! pg_isready -d postgres -U postgres -h localhost; do echo "Postgres not yet ready"; sleep 1; done;
+          echo "Postgres now ready, so changing password";
+          export PGHOST=localhost;
+          /bin/sh /var/run/configure-ess-dbs.sh;
+          echo "Done";
+          trap : TERM INT; sleep infinity & wait
+{{- with .containersSecurityContext }}
+        securityContext:
+          {{- toYaml . | nindent 10 }}
+{{- end }}
+        env:
+        {{- include "element-io.postgres.env" (dict "root" $ "context" .) | nindent 8 }}
+        args:
+        {{ include "element-io.postgres.args" (dict "root" $ "context" .) | nindent 8 }}
+{{- with .resources }}
+        resources:
+          {{- toYaml . | nindent 10 }}
+{{- end }}
+        lifecycle:
+          preStop:
+            exec:
+              command: ["pg_ctl", "stop", "-D", "/var/lib/postgres/data", "-w", "-t", "55", "-m", "fast"]
+        readinessProbe:
+          exec:
+            command: ["psql", "-w", "-U", "postgres", "-d", "postgres", "-c", "SELECT 1"]
+          initialDelaySeconds: 15
+          timeoutSeconds: 2
+        livenessProbe:
+          exec:
+            command: ["psql", "-w", "-U", "postgres", "-d", "postgres", "-c", "SELECT 1"]
+          initialDelaySeconds: 45
+          timeoutSeconds: 2
+        ports:
+        - containerPort: 5432
+          name: postgres
+        volumeMounts:
+{{- range $secret := include "element-io.postgres.configSecrets" (dict "root" $ "context" .) | fromJsonArray }}
+        - mountPath: /secrets/{{ tpl $secret $ }}
+          name: "secret-{{ tpl $secret $ }}"
+          readOnly: true
+{{- end }}
+        - name: config
+          mountPath: /var/run/configure-ess-dbs.sh
+          subPath: configure-dbs.sh
+        - name: var-run
+          mountPath: /var/run
 {{- with .postgresExporter }}
       - name: postgres-exporter
 {{- with .image -}}

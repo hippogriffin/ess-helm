@@ -9,8 +9,13 @@ SPDX-License-Identifier: AGPL-3.0-only OR LicenseRef-Element-Commercial
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-{{- with .annotations }}
   annotations:
+    {{ include "element-io.ess-library.postgres-annotation" (dict "root" $ "context" (dict
+                                                                "postgresProperty" .postgres
+                                                                "defaultSecretName" (printf "%s-matrix-authentication-service" $.Release.Name)
+                                                                )
+                                            ) -}}
+{{- with .annotations }}
     {{- toYaml . | nindent 4 }}
 {{- end }}
   labels:
@@ -32,8 +37,13 @@ spec:
       labels:
         {{- include "element-io.matrix-authentication-service.labels" (dict "root" $ "context" .) | nindent 8 }}
         k8s.element.io/confighash: "{{ include (print $.Template.BasePath "/matrix-authentication-service/secret.yaml") $ | sha1sum }}"
-{{- with .annotations }}
       annotations:
+        {{ include "element-io.ess-library.postgres-annotation" (dict "root" $ "context" (dict
+                                                                "postgresProperty" .postgres
+                                                                "defaultSecretName" (printf "%s-matrix-authentication-service" $.Release.Name)
+                                                                )
+                                            ) -}}
+{{- with .annotations }}
         {{- toYaml . | nindent 8 }}
 {{- end }}
     spec:

@@ -80,3 +80,58 @@ SPDX-License-Identifier: AGPL-3.0-only OR LicenseRef-Element-Commercial
 {{- end -}}
 {{- end -}}
 {{- end -}}
+
+
+{{- define "element-io.ess-library.postgres-secret-name" -}}
+{{- $root := .root -}}
+{{- with required "element-io.ess-library.postgres-secret-name" .context -}}
+{{- $postgresProperty := required "element-io.ess-library.postgres-secret-name context missing postgresProperty" .postgresProperty -}}
+{{- $defaultSecretName := required "element-io.ess-library.postgres-secret-name context missing defaultSecretName" .defaultSecretName -}}
+{{- if $postgresProperty -}}
+    {{- if $postgresProperty.password.value -}}
+    {{- $defaultSecretName -}}
+    {{- else -}}
+    {{- tpl $postgresProperty.password.secret $root -}}
+    {{- end -}}
+{{- else if $root.Values.postgres.essPassword }}
+    {{- if $root.Values.postgres.essPassword.value -}}
+    {{- printf "%s-postgres" $root.Release.Name -}}
+    {{- else -}}
+    {{- tpl $root.Values.postgres.essPassword.secret $root -}}
+    {{- end -}}
+{{- else -}}
+  {{- if $root.Values.initSecrets.enabled -}}
+  {{- printf "%s-generated" $root.Release.Name -}}
+  {{- else -}}
+  {{- fail "No postgres password set and initSecrets not set" -}}
+  {{- end -}}
+{{- end -}}
+{{- end -}}
+{{- end -}}
+
+
+{{- define "element-io.ess-library.postgres-annotation" -}}
+{{- $root := .root -}}
+{{- with required "element-io.ess-library.postgres-secret-name" .context -}}
+{{- $postgresProperty := required "elment-io.ess-library.postgres-secret-name context missing postgresProperty" .postgresProperty -}}
+k8s.element.io/postgresPasswordHash: {{ if $postgresProperty -}}
+    {{- if $postgresProperty.password.value -}}
+    {{- $postgresProperty.password.value | sha1sum -}}
+    {{- else -}}
+    {{- (printf "%s-%s" (tpl $postgresProperty.password.secret $root) $postgresProperty.password.secretKey) | sha1sum -}}
+    {{- end -}}
+{{- else if $root.Values.postgres.essPassword }}
+    {{- if $root.Values.postgres.essPassword.value -}}
+    {{- $root.Values.postgres.essPassword.value | sha1sum -}}
+    {{- else -}}
+    {{- (printf "%s-%s" (tpl $root.Values.postgres.essPassword.secret $root) $root.Values.postgres.essPassword.secretKey) | sha1sum -}}
+    {{- end -}}
+{{- else -}}
+  {{- if $root.Values.initSecrets.enabled -}}
+  {{- (printf "%s-generated" $root.Release.Name) | sha1sum  -}}
+  {{- else -}}
+  {{- fail "No postgres password set and initSecrets not set" -}}
+  {{- end -}}
+{{- end -}}
+{{- end -}}
+{{- end -}}

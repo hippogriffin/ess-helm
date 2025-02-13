@@ -29,6 +29,13 @@ app.kubernetes.io/version: {{ .image.tag }}
 {{- if and $root.Values.initSecrets.enabled (include "element-io.init-secrets.generated-secrets" (dict "root" $root)) }}
 {{ $configSecrets = append $configSecrets (printf "%s-generated" $root.Release.Name) }}
 {{- end }}
+{{- $configSecrets = append $configSecrets (include "element-io.ess-library.postgres-secret-name"
+                                            (dict "root" $root "context" (dict
+                                                                "postgresProperty" .postgres
+                                                                "defaultSecretName" (printf "%s-matrix-authentication-service" $root.Release.Name)
+                                                                )
+                                            )
+                                        ) -}}
 {{- range $privateKey, $value := .privateKeys -}}
 {{- if $value.secret }}
 {{ $configSecrets = append $configSecrets (tpl $value.secret $root) }}
@@ -39,11 +46,6 @@ app.kubernetes.io/version: {{ .image.tag }}
 {{- end -}}
 {{- with .synapseOIDCClientSecret.secret -}}
 {{ $configSecrets = append $configSecrets (tpl . $root) }}
-{{- end -}}
-{{- with .postgres }}
-{{- with .password.secret -}}
-{{ $configSecrets = append $configSecrets (tpl . $root) }}
-{{- end -}}
 {{- end -}}
 {{- with .encryptionSecret.secret -}}
 {{ $configSecrets = append $configSecrets (tpl . $root) }}

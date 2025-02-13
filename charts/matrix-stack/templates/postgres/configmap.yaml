@@ -14,7 +14,7 @@ metadata:
   name: {{ $.Release.Name }}-postgres
   namespace: {{ $.Release.Namespace }}
 data:
-  init-dbs.sh: |
+  configure-dbs.sh: |
     #!/bin/sh
     export POSTGRES_PASSWORD=`cat /secrets/{{
         include "element-io.ess-library.init-secret-path" (
