@@ -90,9 +90,12 @@ shared_components_details = _enrich_components_to_test(_raw_shared_components_de
 values_files_to_components = {
     values_file: component
     for component, details in component_details.items()
-    for values_file in details["values_files"]
+    for values_file in (details["values_files"] + details["secret_values_files"])
 }
-values_files_to_test = list(values_files_to_components.keys())
+
+values_files_to_test = [
+    values_file for details in component_details.values() for values_file in (details["values_files"])
+]
 values_files_with_ingresses = [
     values_file
     for values_file, component in values_files_to_components.items()
