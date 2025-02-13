@@ -66,7 +66,7 @@ database:
     port: 5432
     sslmode: prefer
 {{ else }}
-  {{ fail "Synapse requires .synapse.postgres.* configured, or internal chart .postgres to be enabled with postgres.enabled: true" }}
+  {{ fail "Synapse requires synapse.postgres.* to be configured, or the internal chart Postgres to be enabled with postgres.enabled: true" }}
 {{ end }}
 
     application_name: ${APPLICATION_NAME}
