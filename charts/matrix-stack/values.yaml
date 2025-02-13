@@ -608,16 +608,16 @@ matrixAuthenticationService:
     ## TLS settins to use for the PostgreSQL connection
     # sslMode: prefer
 
-  #  ## PostgreSQL password.
-  #  ## It can either be provided inline in the Helm chart e.g.:
-  #  ## password:
-  #  ##   value: SecretValue
-  #  ##
-  #  ## Or it can be provided via an existing Secret e.g.:
-  #  ## password:
-  #  ##   secret: existing-secret
-  #  ##   secretKey: key-in-secret
-  #  password: {}
+    ## PostgreSQL password.
+    ## It can either be provided inline in the Helm chart e.g.:
+    ## password:
+    ##   value: SecretValue
+    ##
+    ## Or it can be provided via an existing Secret e.g.:
+    ## password:
+    ##   secret: existing-secret
+    ##   secretKey: key-in-secret
+    # password: {}
 
 
   ## Encryption secret.
@@ -1174,16 +1174,16 @@ synapse:
     ## TLS settins to use for the PostgreSQL connection
     # sslMode: prefer
 
-  #  ## PostgreSQL password.
-  #  ## It can either be provided inline in the Helm chart e.g.:
-  #  ## password:
-  #  ##   value: SecretValue
-  #  ##
-  #  ## Or it can be provided via an existing Secret e.g.:
-  #  ## password:
-  #  ##   secret: existing-secret
-  #  ##   secretKey: key-in-secret
-  #  password: {}
+    ## PostgreSQL password.
+    ## It can either be provided inline in the Helm chart e.g.:
+    ## password:
+    ##   value: SecretValue
+    ##
+    ## Or it can be provided via an existing Secret e.g.:
+    ## password:
+    ##   secret: existing-secret
+    ##   secretKey: key-in-secret
+    # password: {}
   ## Configures the media store for Synapse
   media:
     ## Configures the PersistentVolumeClaim to be used for storage
