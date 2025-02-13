@@ -5,14 +5,15 @@
 # source_fragments: synapse-minimal.yaml synapse-all-workers-running.yaml init-secrets-minimal.yaml postgres-minimal.yaml
 # DO NOT EDIT DIRECTLY. Edit the fragment files to add / modify / remove values
 
-initSecrets:
-  enabled: true
 elementWeb:
   enabled: false
+initSecrets:
+  enabled: true
 matrixAuthenticationService:
   enabled: false
 postgres:
   enabled: true
+serverName: ess.localhost
 synapse:
   ingress:
     host: synapse.ess.localhost
@@ -57,4 +58,3 @@ synapse:
       enabled: true
 wellKnownDelegation:
   enabled: false
-serverName: ess.localhost

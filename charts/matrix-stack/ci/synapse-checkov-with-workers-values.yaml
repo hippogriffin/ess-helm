@@ -5,26 +5,41 @@
 # source_fragments: synapse-minimal.yaml synapse-some-workers-running.yaml synapse-checkov.yaml haproxy-checkov.yaml init-secrets-minimal.yaml init-secrets-checkov.yaml postgres-minimal.yaml postgres-checkov.yaml
 # DO NOT EDIT DIRECTLY. Edit the fragment files to add / modify / remove values
 
+elementWeb:
+  enabled: false
+haproxy:
+  annotations:
+    checkov.io/skip1: CKV_K8S_11=We deliberately don't set CPU limits. Pod is BestEffort not Guaranteed
+    checkov.io/skip2: CKV_K8S_43=No digests
+    checkov.io/skip3: CKV2_K8S_6=No network policy yet
 initSecrets:
-  enabled: true
   annotations:
     checkov.io/skip1: CKV_K8S_11=We deliberately don't set CPU limits. Pod is BestEffort not Guaranteed
     checkov.io/skip2: CKV_K8S_43=No digests
     checkov.io/skip3: CKV2_K8S_6=No network policy yet
     checkov.io/skip4: CKV_K8S_38=The job needs a service account
-elementWeb:
-  enabled: false
+  enabled: true
 matrixAuthenticationService:
   enabled: false
 postgres:
-  enabled: true
   annotations:
     checkov.io/skip1: CKV_K8S_11=We deliberately don't set CPU limits. Pod is BestEffort not Guaranteed
     checkov.io/skip2: CKV_K8S_43=No digests
     checkov.io/skip3: CKV2_K8S_6=No network policy yet
+  enabled: true
+serverName: ess.localhost
 synapse:
+  annotations:
+    checkov.io/skip1: CKV_K8S_11=We deliberately don't set CPU limits. Pod is BestEffort not Guaranteed
+    checkov.io/skip2: CKV_K8S_43=No digests
+    checkov.io/skip3: CKV2_K8S_6=No network policy yet
   ingress:
     host: synapse.ess.localhost
+  redis:
+    annotations:
+      checkov.io/skip1: CKV_K8S_11=We deliberately don't set CPU limits. Pod is BestEffort not Guaranteed
+      checkov.io/skip2: CKV_K8S_43=No digests
+      checkov.io/skip3: CKV2_K8S_6=No network policy yet
   workers:
     appservice:
       enabled: true
@@ -34,20 +49,5 @@ synapse:
       enabled: true
     federation-reader:
       enabled: true
-  annotations:
-    checkov.io/skip1: CKV_K8S_11=We deliberately don't set CPU limits. Pod is BestEffort not Guaranteed
-    checkov.io/skip2: CKV_K8S_43=No digests
-    checkov.io/skip3: CKV2_K8S_6=No network policy yet
-  redis:
-    annotations:
-      checkov.io/skip1: CKV_K8S_11=We deliberately don't set CPU limits. Pod is BestEffort not Guaranteed
-      checkov.io/skip2: CKV_K8S_43=No digests
-      checkov.io/skip3: CKV2_K8S_6=No network policy yet
 wellKnownDelegation:
   enabled: false
-serverName: ess.localhost
-haproxy:
-  annotations:
-    checkov.io/skip1: CKV_K8S_11=We deliberately don't set CPU limits. Pod is BestEffort not Guaranteed
-    checkov.io/skip2: CKV_K8S_43=No digests
-    checkov.io/skip3: CKV2_K8S_6=No network policy yet
