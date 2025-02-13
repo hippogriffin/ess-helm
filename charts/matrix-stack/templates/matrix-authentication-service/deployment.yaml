@@ -110,6 +110,7 @@ spec:
                      dict "root" $
                      "context" (dict
                        "secretProperty" .encryptionSecret
+                       "secretPath" ".matrixAuthenticationService.encryptionSecret"
                        "initSecretKey" "MAS_ENCRYPTION_SECRET"
                        "defaultSecretName" (printf "%s-matrix-authentication-service" $.Release.Name)
                        "defaultSecretKey" "ENCRYPTION_SECRET"
@@ -126,6 +127,7 @@ spec:
                      dict "root" $
                      "context" (dict
                        "secretProperty" .synapseSharedSecret
+                       "secretPath" ".matrixAuthenticationService.synapseSharedSecret"
                        "initSecretKey" "MAS_SYNAPSE_SHARED_SECRET"
                        "defaultSecretName" (printf "%s-matrix-authentication-service" $.Release.Name)
                        "defaultSecretKey" "SYNAPSE_SHARED_SECRET"
@@ -141,6 +143,7 @@ spec:
                      dict "root" $
                      "context" (dict
                        "secretProperty" .synapseOIDCClientSecret
+                       "secretPath" ".matrixAuthenticationService.synapseOIDCClientSecret"
                        "initSecretKey" "MAS_SYNAPSE_OIDC_CLIENT_SECRET"
                        "defaultSecretName" (printf "%s-matrix-authentication-service" $.Release.Name)
                        "defaultSecretKey" "SYNAPSE_OIDC_CLIENT_SECRET"

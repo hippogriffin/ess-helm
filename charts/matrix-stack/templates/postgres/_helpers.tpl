@@ -104,6 +104,7 @@ true
                             (include "element-io.ess-library.init-secret-path" (
                               dict "root" $root "context" (
                                 dict "secretProperty" .adminPassword
+                                      "secretPath" ".postgres.adminPassword"
                                       "initSecretKey" "POSTGRES_ADMIN_PASSWORD"
                                       "defaultSecretName" (printf "%s-postgres" $root.Release.Name)
                                       "defaultSecretKey" "ADMIN_PASSWORD"
