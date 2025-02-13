@@ -68,7 +68,7 @@ jobs:
       uses: actions/checkout@v4
 
     - name: Set up chart-testing
-      uses: helm/chart-testing-action@v2.6.1
+      uses: helm/chart-testing-action@v2.7.0
 
     - name: Run chart-testing (lint)
       run: |
