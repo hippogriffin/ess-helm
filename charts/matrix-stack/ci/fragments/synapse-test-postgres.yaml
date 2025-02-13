@@ -7,6 +7,3 @@ synapse:
     host: ess-postgres
     user: synapse_user
     database: synapse
-    password:
-      secret: ess-postgres
-      secretKey: password

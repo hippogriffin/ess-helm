@@ -74,6 +74,13 @@ def _enrich_components_to_test(details) -> dict[str, Any]:
             _component_details[component]["secret_values_files"].append(
                 f"{_component_details[component]['hyphened_name']}-secrets-externally-values.yaml"
             )
+        if "postgresql" in _component_details[component].setdefault("shared_components", []):
+            _component_details[component]["secret_values_files"].append(
+                f"{_component_details[component]['hyphened_name']}-postgresql-secrets-in-helm-values.yaml"
+            )
+            _component_details[component]["secret_values_files"].append(
+                f"{_component_details[component]['hyphened_name']}-postgresql-secrets-externally-values.yaml"
+            )
     return _component_details
 
 
