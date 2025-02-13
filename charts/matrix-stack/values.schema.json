@@ -1914,10 +1914,9 @@
       "additionalProperties": false
     },
     "postgres": {
-      "$id": "file://synapse",
+      "$id": "file://postgres",
       "$schema": "https://json-schema.org/draft/2020-12/schema",
       "type": "object",
-      "additionalProperties": true,
       "properties": {
         "enabled": {
           "type": "boolean"
@@ -2350,8 +2349,118 @@
             "type": "object",
             "additionalProperties": false
           }
+        },
+        "topologySpreadConstraints": {
+          "type": "array",
+          "items": {
+            "required": [
+              "maxSkew",
+              "topologyKey"
+            ],
+            "properties": {
+              "labelSelector": {
+                "type": "object",
+                "properties": {
+                  "matchExpressions": {
+                    "type": "array",
+                    "items": {
+                      "type": "object",
+                      "required": [
+                        "key",
+                        "operator"
+                      ],
+                      "properties": {
+                        "key": {
+                          "type": "string"
+                        },
+                        "operator": {
+                          "type": "string",
+                          "enum": [
+                            "In",
+                            "NotIn",
+                            "Exists",
+                            "DoesNotExist"
+                          ]
+                        },
+                        "values": {
+                          "type": "array",
+                          "items": {
+                            "type": "string"
+                          }
+                        }
+                      },
+                      "additionalProperties": false
+                    }
+                  },
+                  "matchLabels": {
+                    "type": [
+                      "object",
+                      "null"
+                    ],
+                    "additionalProperties": {
+                      "type": "string"
+                    }
+                  }
+                },
+                "additionalProperties": false
+              },
+              "matchLabelKeys": {
+                "type": [
+                  "array",
+                  "null"
+                ],
+                "items": {
+                  "type": "string"
+                }
+              },
+              "maxSkew": {
+                "type": "integer",
+                "minium": 1
+              },
+              "minDomains": {
+                "type": "integer",
+                "minium": 0
+              },
+              "nodeAffinityPolicy": {
+                "type": "string",
+                "enum": [
+                  "Honor",
+                  "Ignore"
+                ]
+              },
+              "nodeTaintsPolicy": {
+                "type": "string",
+                "enum": [
+                  "Honor",
+                  "Ignore"
+                ]
+              },
+              "topologyKey": {
+                "type": "string"
+              },
+              "whenUnsatisfiable": {
+                "type": "string",
+                "enum": [
+                  "DoNotSchedule",
+                  "ScheduleAnyway"
+                ]
+              }
+            },
+            "type": "object",
+            "additionalProperties": false
+          }
+        },
+        "serviceMonitors": {
+          "type": "object",
+          "properties": {
+            "enabled": {
+              "type": "boolean"
+            }
+          },
+          "additionalProperties": false
         }
-      }
+      },
+      "additionalProperties": false
     },
     "synapse": {
       "$id": "file://synapse",
