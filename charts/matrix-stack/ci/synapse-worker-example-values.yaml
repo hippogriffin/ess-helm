@@ -2,7 +2,7 @@
 #
 # SPDX-License-Identifier: AGPL-3.0-only OR LicenseRef-Element-Commercial
 #
-# source_fragments: synapse-minimal.yaml synapse-all-workers-running.yaml init-secrets-minimal.yaml
+# source_fragments: synapse-minimal.yaml synapse-all-workers-running.yaml init-secrets-minimal.yaml postgresql-minimal.yaml
 # DO NOT EDIT DIRECTLY. Edit the fragment files to add / modify / remove values
 
 initSecrets:
@@ -12,7 +12,7 @@ elementWeb:
 matrixAuthenticationService:
   enabled: false
 postgresql:
-  enabled: false
+  enabled: true
 synapse:
   ingress:
     host: synapse.ess.localhost
