@@ -140,11 +140,4 @@ spec:
   - "${namespace}.localhost"
   - "*.${namespace}.localhost"
 EOF
-
-  # Resources can be set via the POSTGRES_RESOURCES_PRESET env var to presets in
-  # https://github.com/bitnami/charts/blob/main/bitnami/common/templates/_resources.tpl#L15
-  helm --kube-context $kind_context_name upgrade -i postgres oci://registry-1.docker.io/bitnamicharts/postgresql \
-    --namespace "$namespace" \
-    -f "$root_folder/tests/integration/fixtures/files/charts/postgres.yml" \
-    --set primary.resourcesPreset="${POSTGRES_RESOURCES_PRESET:-micro}"
 done
