@@ -5,7 +5,7 @@
 version: 2
 updates:
   - package-ecosystem: "github-actions"
-    directory: "/matrix-tools"
+    directory: "/"
     schedule:
       interval: "weekly"
   - package-ecosystem: "pip"
