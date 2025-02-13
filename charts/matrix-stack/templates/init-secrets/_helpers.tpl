@@ -17,8 +17,8 @@ app.kubernetes.io/version: {{ $root.Values.matrixTools.image.tag }}
 
 {{- define "element-io.init-secrets.generated-secrets" -}}
 {{- $root := .root -}}
-{{- with $root.Values.postgresql }}
-{{- if (include "element-io.postgresql.enabled" (dict "root" $root)) -}}
+{{- with $root.Values.postgres }}
+{{- if (include "element-io.postgres.enabled" (dict "root" $root)) -}}
 {{- if not .essPassword }}
 - {{ (printf "%s-generated" $root.Release.Name) }}:POSTGRESQL_ESS_PASSWORD:rand32
 {{- end }}

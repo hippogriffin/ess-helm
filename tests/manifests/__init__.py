@@ -13,7 +13,7 @@ _raw_shared_components_details = {
         "has_ingress": False,
     },
     "haproxy": {},
-    "postgresql": {
+    "postgres": {
         "has_ingress": False,
     },
 }
@@ -25,7 +25,7 @@ _raw_component_details = {
     },
     "matrixAuthenticationService": {
         "hyphened_name": "matrix-authentication-service",
-        "shared_components": ["initSecrets", "postgresql"],
+        "shared_components": ["initSecrets", "postgres"],
     },
     "synapse": {
         "additional_values_files": [
@@ -36,7 +36,7 @@ _raw_component_details = {
                 "has_service_monitor": False,
             },
         },
-        "shared_components": ["initSecrets", "haproxy", "postgresql"],
+        "shared_components": ["initSecrets", "haproxy", "postgres"],
     },
     "wellKnownDelegation": {
         "hyphened_name": "well-known",
@@ -74,12 +74,12 @@ def _enrich_components_to_test(details) -> dict[str, Any]:
             _component_details[component]["secret_values_files"].append(
                 f"{_component_details[component]['hyphened_name']}-secrets-externally-values.yaml"
             )
-        if "postgresql" in _component_details[component].setdefault("shared_components", []):
+        if "postgres" in _component_details[component].setdefault("shared_components", []):
             _component_details[component]["secret_values_files"].append(
-                f"{_component_details[component]['hyphened_name']}-postgresql-secrets-in-helm-values.yaml"
+                f"{_component_details[component]['hyphened_name']}-postgres-secrets-in-helm-values.yaml"
             )
             _component_details[component]["secret_values_files"].append(
-                f"{_component_details[component]['hyphened_name']}-postgresql-secrets-externally-values.yaml"
+                f"{_component_details[component]['hyphened_name']}-postgres-secrets-externally-values.yaml"
             )
     return _component_details
 

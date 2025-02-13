@@ -28,7 +28,7 @@ elementWeb:
       "feature_element_call_video_rooms": true
 matrixAuthenticationService:
   enabled: false
-postgresql:
+postgres:
   enabled: false
 synapse:
   enabled: false

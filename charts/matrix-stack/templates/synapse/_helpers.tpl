@@ -125,7 +125,7 @@ app.kubernetes.io/version: {{ .image.tag }}
     {{
       printf "{{ readfile \"/secrets/%s\" | quote }}"
         (
-          include "element-io.ess-library.postgresql-secret-path" (
+          include "element-io.ess-library.postgres-secret-path" (
             dict "root" $root
             "context" (dict
               "secretProperty" .postgres.password

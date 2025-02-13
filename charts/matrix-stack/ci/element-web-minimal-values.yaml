@@ -12,7 +12,7 @@ elementWeb:
     host: element.ess.localhost
 matrixAuthenticationService:
   enabled: false
-postgresql:
+postgres:
   enabled: false
 synapse:
   enabled: false

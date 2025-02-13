@@ -2,7 +2,7 @@
 #
 # SPDX-License-Identifier: AGPL-3.0-only OR LicenseRef-Element-Commercial
 #
-# source_fragments: matrix-authentication-service-minimal.yaml matrix-authentication-service-external-synapse.yaml init-secrets-minimal.yaml postgresql-minimal.yaml
+# source_fragments: matrix-authentication-service-minimal.yaml matrix-authentication-service-external-synapse.yaml init-secrets-minimal.yaml postgres-minimal.yaml
 # DO NOT EDIT DIRECTLY. Edit the fragment files to add / modify / remove values
 
 initSecrets:
@@ -23,7 +23,7 @@ matrixAuthenticationService:
           homeserver: "external.localhost
           secret: jaix6Am9Shut7zeiduu7ua5maengag3o
           endpoint: https://syn.external.localhost
-postgresql:
+postgres:
   enabled: true
 synapse:
   enabled: false

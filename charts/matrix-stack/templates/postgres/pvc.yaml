@@ -4,15 +4,15 @@ Copyright 2025 New Vector Ltd
 SPDX-License-Identifier: AGPL-3.0-only OR LicenseRef-Element-Commercial
 */ -}}
 
-{{- with $.Values.postgresql -}}
-{{- if (include "element-io.postgresql.enabled" (dict "root" $)) }}
+{{- with $.Values.postgres -}}
+{{- if (include "element-io.postgres.enabled" (dict "root" $)) }}
 {{- if not .storage.existingClaim }}
 apiVersion: v1
 kind: PersistentVolumeClaim
 metadata:
   labels:
-    {{- include "element-io.postgresql.labels" (dict "root" $ "context" .) | nindent 4 }}
-  name: {{ $.Release.Name }}-postgresql-data
+    {{- include "element-io.postgres.labels" (dict "root" $ "context" .) | nindent 4 }}
+  name: {{ $.Release.Name }}-postgres-data
   namespace: {{ $.Release.Namespace }}
 spec:
 {{- with .storage.storageClassName }}

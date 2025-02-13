@@ -13,7 +13,7 @@ elementWeb:
 matrixAuthenticationService:
   ingress:
     host: mas.ess.localhost
-postgresql:
+postgres:
   enabled: false
 synapse:
   ingress:

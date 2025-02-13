@@ -135,7 +135,7 @@ We have an init container to render & merge the config for several reasons:
 {{- if .postgres }}
         - "{{ (tpl .postgres.host $) }}:{{ .postgres.port }}"
 {{- else }}
-        - "{{ $.Release.Name }}-postgresql.{{ $.Release.Namespace }}.svc.cluster.local:5432"
+        - "{{ $.Release.Name }}-postgres.{{ $.Release.Namespace }}.svc.cluster.local:5432"
 {{- end }}
 {{- with .resources }}
         resources:

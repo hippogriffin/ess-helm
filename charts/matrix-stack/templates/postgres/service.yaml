@@ -4,14 +4,14 @@ Copyright 2025 New Vector Ltd
 SPDX-License-Identifier: AGPL-3.0-only OR LicenseRef-Element-Commercial
 */ -}}
 
-{{- with $.Values.postgresql -}}
-{{- if (include "element-io.postgresql.enabled" (dict "root" $)) }}
+{{- with $.Values.postgres -}}
+{{- if (include "element-io.postgres.enabled" (dict "root" $)) }}
 apiVersion: v1
 kind: Service
 metadata:
   labels:
-    {{- include "element-io.postgresql.labels" (dict "root" $ "context" .) | nindent 4 }}
-  name: {{ $.Release.Name }}-postgresql
+    {{- include "element-io.postgres.labels" (dict "root" $ "context" .) | nindent 4 }}
+  name: {{ $.Release.Name }}-postgres
   namespace: {{ $.Release.Namespace }}
 spec:
   clusterIP: None
@@ -22,6 +22,6 @@ spec:
     name: metrics
   type: ClusterIP
   selector:
-    app.kubernetes.io/instance: {{ $.Release.Name }}-postgresql
+    app.kubernetes.io/instance: {{ $.Release.Name }}-postgres
 {{- end -}}
 {{- end -}}

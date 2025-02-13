@@ -61,19 +61,19 @@ SPDX-License-Identifier: AGPL-3.0-only OR LicenseRef-Element-Commercial
 {{- end -}}
 
 
-{{- define "element-io.ess-library.postgresql-secret-path" -}}
+{{- define "element-io.ess-library.postgres-secret-path" -}}
 {{- $root := .root -}}
-{{- with required "element-io.ess-library.postgresql-secret-path" .context -}}
+{{- with required "element-io.ess-library.postgres-secret-path" .context -}}
 {{- $secretProperty := .secretProperty -}}
-{{- $defaultSecretName := required "element-io.ess-library.postgresql-secret-path context missing defaultSecretName" .defaultSecretName -}}
-{{- $defaultSecretKey := required "element-io.ess-library.postgresql-secret-path context missing defaultSecretKey" .defaultSecretKey -}}
+{{- $defaultSecretName := required "element-io.ess-library.postgres-secret-path context missing defaultSecretName" .defaultSecretName -}}
+{{- $defaultSecretKey := required "element-io.ess-library.postgres-secret-path context missing defaultSecretKey" .defaultSecretKey -}}
 {{- if not $secretProperty -}}
-  {{- if not $root.Values.postgresql.essPassword }}
+  {{- if not $root.Values.postgres.essPassword }}
     {{- if $root.Values.initSecrets.enabled -}}
     {{- printf "%s/%s" (printf "%s-generated" $root.Release.Name) "POSTGRESQL_ESS_PASSWORD" -}}
     {{- end -}}
   {{- else -}}
-    {{- include "element-io.ess-library.provided-secret-path" (dict "root" $root "context" (dict "secretProperty" $root.Values.postgresql.essPassword "defaultSecretName" (printf "%s-postgresql" $root.Release.Name) "defaultSecretKey" "ESS_PASSWORD")) -}}
+    {{- include "element-io.ess-library.provided-secret-path" (dict "root" $root "context" (dict "secretProperty" $root.Values.postgres.essPassword "defaultSecretName" (printf "%s-postgres" $root.Release.Name) "defaultSecretKey" "ESS_PASSWORD")) -}}
   {{- end -}}
 {{- else -}}
   {{- include "element-io.ess-library.provided-secret-path" (dict "root" $root "context" (dict "secretProperty" $secretProperty "defaultSecretName" $defaultSecretName "defaultSecretKey" $defaultSecretKey)) -}}

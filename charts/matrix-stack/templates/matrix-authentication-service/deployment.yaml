@@ -85,7 +85,7 @@ spec:
           value: >-
             {{
               printf "{{ readfile \"/secrets/%s\" | urlencode }}" (
-                 include "element-io.ess-library.postgresql-secret-path" (
+                 include "element-io.ess-library.postgres-secret-path" (
                      dict "root" $
                      "context" (dict
                        "secretProperty" .postgres.password
@@ -179,7 +179,7 @@ spec:
 {{- if .postgres }}
         - "{{ (tpl .postgres.host $) }}:{{ .postgres.port }}"
 {{- else }}
-        - "{{ $.Release.Name }}-postgresql.{{ $.Release.Namespace }}.svc.cluster.local:5432"
+        - "{{ $.Release.Name }}-postgres.{{ $.Release.Namespace }}.svc.cluster.local:5432"
 {{- end }}
 {{- with .resources }}
         resources:

@@ -28,8 +28,8 @@ Although we are trying to update the database reliably with the chart, it is pro
 
 On a production deployment, we advise you to host your own Postgres instance, and configure it accordingly
 for each of the following the components, if you enable them:
-- Synapse under `synapse.postgresql`
-- Matrix Authentication Service under `matrixAuthenticationService.postgresql`
+- Synapse under `synapse.postgres`
+- Matrix Authentication Service under `matrixAuthenticationService.postgres`
 
 ## Common
 

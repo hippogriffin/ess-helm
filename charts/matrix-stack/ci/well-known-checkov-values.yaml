@@ -11,7 +11,7 @@ elementWeb:
   enabled: false
 matrixAuthenticationService:
   enabled: false
-postgresql:
+postgres:
   enabled: false
 synapse:
   enabled: false

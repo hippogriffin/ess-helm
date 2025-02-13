@@ -58,15 +58,15 @@ database:
     host: {{ required "Synapse requires postgres.host set" .postgres.host }}
     port: {{ .postgres.port | default 5432 }}
     sslmode: {{ .postgres.sslMode | default "prefer" }}
-{{- else if $root.Values.postgresql.enabled }}
+{{- else if $root.Values.postgres.enabled }}
     user: "ess_user"
     password: ${SYNAPSE_POSTGRES_PASSWORD}
     database: "synapse"
-    host: "{{ $root.Release.Name }}-postgresql.{{ $root.Release.Namespace }}.svc.cluster.local"
+    host: "{{ $root.Release.Name }}-postgres.{{ $root.Release.Namespace }}.svc.cluster.local"
     port: 5432
     sslmode: prefer
 {{ else }}
-  {{ fail "Synapse requires .synapse.postgres.* configured, or internal chart .postgresql to be enabled" }}
+  {{ fail "Synapse requires .synapse.postgres.* configured, or internal chart .postgres to be enabled" }}
 {{ end }}
 
     application_name: ${APPLICATION_NAME}

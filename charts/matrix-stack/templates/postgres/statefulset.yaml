@@ -3,43 +3,43 @@ Copyright 2025 New Vector Ltd
 
 SPDX-License-Identifier: AGPL-3.0-only OR LicenseRef-Element-Commercial
 */ -}}
-{{- with $.Values.postgresql -}}
-{{- if (include "element-io.postgresql.enabled" (dict "root" $)) }}
+{{- with $.Values.postgres -}}
+{{- if (include "element-io.postgres.enabled" (dict "root" $)) }}
 apiVersion: apps/v1
 kind: StatefulSet
 metadata:
   labels:
-    {{- include "element-io.postgresql.labels" (dict "root" $ "context" .) | nindent 4 }}
-  name: {{ $.Release.Name }}-postgresql
+    {{- include "element-io.postgres.labels" (dict "root" $ "context" .) | nindent 4 }}
+  name: {{ $.Release.Name }}-postgres
   namespace: {{ $.Release.Namespace }}
   annotations:
-    k8s.element.io/confighash: "{{ include (print $.Template.BasePath "/postgresql/secret.yaml") $ | sha1sum }}"
-    k8s.element.io/logconfighash: "{{ include (print $.Template.BasePath "/postgresql/configmap.yaml") $ | sha1sum }}"
+    k8s.element.io/confighash: "{{ include (print $.Template.BasePath "/postgres/secret.yaml") $ | sha1sum }}"
+    k8s.element.io/logconfighash: "{{ include (print $.Template.BasePath "/postgres/configmap.yaml") $ | sha1sum }}"
 {{- with .annotations }}
     {{- toYaml . | nindent 4 }}
 {{- end }}
 spec:
-  serviceName: {{ $.Release.Name }}-postgresql
+  serviceName: {{ $.Release.Name }}-postgres
   replicas: {{ .instances | default 1 }}
   selector:
     matchLabels:
-      app.kubernetes.io/instance: {{ $.Release.Name }}-postgresql
+      app.kubernetes.io/instance: {{ $.Release.Name }}-postgres
   updateStrategy:
     type: RollingUpdate
   template:
     metadata:
       labels:
-        {{- include "element-io.postgresql.labels" (dict "root" $ "context" .) | nindent 8 }}
+        {{- include "element-io.postgres.labels" (dict "root" $ "context" .) | nindent 8 }}
       annotations:
-        k8s.element.io/confighash: "{{ include (print $.Template.BasePath "/postgresql/secret.yaml") $ | sha1sum }}"
-        k8s.element.io/logconfighash: "{{ include (print $.Template.BasePath "/postgresql/configmap.yaml") $ | sha1sum }}"
+        k8s.element.io/confighash: "{{ include (print $.Template.BasePath "/postgres/secret.yaml") $ | sha1sum }}"
+        k8s.element.io/logconfighash: "{{ include (print $.Template.BasePath "/postgres/configmap.yaml") $ | sha1sum }}"
 {{- with .annotations }}
         {{- toYaml . | nindent 8 }}
 {{- end }}
     spec:
-{{- include "element-io.ess-library.pods.commonSpec" (dict "root" $ "context" (dict "componentValues" . "key" "postgresql" "deployment" false)) | nindent 6 }}
+{{- include "element-io.ess-library.pods.commonSpec" (dict "root" $ "context" (dict "componentValues" . "key" "postgres" "deployment" false)) | nindent 6 }}
       containers:
-      - name: postgresql
+      - name: postgres
 {{- with .image -}}
 {{- if .digest }}
         image: "{{ .registry }}/{{ .repository }}@{{ .digest }}"
@@ -54,9 +54,9 @@ spec:
           {{- toYaml . | nindent 10 }}
 {{- end }}
         env:
-        {{- include "element-io.postgresql.env" (dict "root" $ "context" .) | nindent 8 }}
+        {{- include "element-io.postgres.env" (dict "root" $ "context" .) | nindent 8 }}
         args:
-        {{ include "element-io.postgresql.args" (dict "root" $ "context" .) | nindent 8 }}
+        {{ include "element-io.postgres.args" (dict "root" $ "context" .) | nindent 8 }}
 {{- with .resources }}
         resources:
           {{- toYaml . | nindent 10 }}
@@ -64,7 +64,7 @@ spec:
         lifecycle:
           preStop:
             exec:
-              command: ["pg_ctl", "stop", "-D", "/var/lib/postgresql/data", "-w", "-t", "55", "-m", "fast"]
+              command: ["pg_ctl", "stop", "-D", "/var/lib/postgres/data", "-w", "-t", "55", "-m", "fast"]
         readinessProbe:
           exec:
             command: ["psql", "-w", "-U", "postgres", "-d", "postgres", "-c", "SELECT 1"]
@@ -79,7 +79,7 @@ spec:
         - containerPort: 5432
           name: postgres
         volumeMounts:
-{{- range $secret := include "element-io.postgresql.configSecrets" (dict "root" $ "context" .) | fromJsonArray }}
+{{- range $secret := include "element-io.postgres.configSecrets" (dict "root" $ "context" .) | fromJsonArray }}
         - mountPath: /secrets/{{ tpl $secret $ }}
           name: "secret-{{ tpl $secret $ }}"
           readOnly: true
@@ -88,7 +88,7 @@ spec:
           mountPath: /docker-entrypoint-initdb.d/init-ess-dbs.sh
           subPath: init-dbs.sh
         - name: database
-          mountPath: /var/lib/postgresql/data
+          mountPath: /var/lib/postgres/data
         - name: temp
           mountPath: /tmp
         - name: var-run
@@ -146,16 +146,16 @@ spec:
         name: temp
       - emptyDir: {}
         name: var-run
-{{- range $secret := include "element-io.postgresql.configSecrets" (dict "root" $ "context" .) | fromJsonArray }}
+{{- range $secret := include "element-io.postgres.configSecrets" (dict "root" $ "context" .) | fromJsonArray }}
       - secret:
           secretName: {{ tpl $secret $ }}
         name: secret-{{ tpl $secret $ }}
 {{- end }}
       - name: config
         configMap:
-          name: {{ $.Release.Name }}-postgresql
+          name: {{ $.Release.Name }}-postgres
       - name: database
         persistentVolumeClaim:
-          claimName: {{ $.Release.Name }}-postgresql-data
+          claimName: {{ $.Release.Name }}-postgres-data
 {{- end }}
 {{- end }}

@@ -1913,7 +1913,7 @@
       },
       "additionalProperties": false
     },
-    "postgresql": {
+    "postgres": {
       "$id": "file://synapse",
       "$schema": "https://json-schema.org/draft/2020-12/schema",
       "type": "object",
