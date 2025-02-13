@@ -116,6 +116,7 @@ responsibleForMedia
 {{- end }}
 {{- $configSecrets = append $configSecrets (include "element-io.ess-library.postgres-secret-name"
                                             (dict "root" $root "context" (dict
+                                                                "essPassword" "synapse"
                                                                 "postgresProperty" .postgres
                                                                 "defaultSecretName" (printf "%s-synapse" $root.Release.Name)
                                                                 )

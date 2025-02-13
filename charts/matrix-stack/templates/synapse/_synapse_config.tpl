@@ -59,7 +59,7 @@ database:
     port: {{ .postgres.port | default 5432 }}
     sslmode: {{ .postgres.sslMode | default "prefer" }}
 {{- else if $root.Values.postgres.enabled }}
-    user: "ess_user"
+    user: "synapse_user"
     password: ${SYNAPSE_POSTGRES_PASSWORD}
     database: "synapse"
     host: "{{ $root.Release.Name }}-postgres.{{ $root.Release.Namespace }}.svc.cluster.local"

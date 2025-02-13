@@ -46,6 +46,7 @@ spec:
         k8s.element.io/as-registration-{{ $index }}-hash: "{{ (lookup "v1" "ConfigMap" $.Release.Namespace $appservice.registrationFileConfigMap) | toJson | sha1sum }}"
 {{- end }}
         {{ include "element-io.ess-library.postgres-label" (dict "root" $ "context" (dict
+                                                                "essPassword" "synapse"
                                                                 "postgresProperty" .postgres
                                                                 "defaultSecretName" (printf "%s-matrix-authentication-service" $.Release.Name)
                                                                 )
@@ -136,7 +137,7 @@ We have an init container to render & merge the config for several reasons:
         - "/matrix-tools"
         - tcpwait
         - -address
-        - {{ include "element-io.ess-library.postgres-host-port" (dict "root" $ "context" .postgres)}}
+        - {{ include "element-io.ess-library.postgres-host-port" (dict "root" $ "context" (dict "postgres" .postgres)) | quote }}
 {{- with .resources }}
         resources:
           {{- toYaml . | nindent 10 }}

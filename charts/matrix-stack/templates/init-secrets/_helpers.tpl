@@ -19,11 +19,18 @@ app.kubernetes.io/version: {{ $root.Values.matrixTools.image.tag }}
 {{- $root := .root -}}
 {{- with $root.Values.postgres }}
 {{- if (include "element-io.postgres.enabled" (dict "root" $root)) -}}
-{{- if not .essPassword }}
-- {{ (printf "%s-generated" $root.Release.Name) }}:POSTGRESQL_ESS_PASSWORD:rand32
+{{- if and $root.Values.synapse.enabled
+          (not $root.Values.synapse.postgres)
+          (not $root.Values.postgres.essPasswords.synapse) }}
+- {{ (printf "%s-generated" $root.Release.Name) }}:POSTGRES_SYNAPSE_PASSWORD:rand32
+{{- end }}
+{{- if and $root.Values.matrixAuthenticationService.enabled
+          (not $root.Values.matrixAuthenticationService.postgres)
+          (not $root.Values.postgres.essPasswords.matrixAuthenticationService) }}
+- {{ (printf "%s-generated" $root.Release.Name) }}:POSTGRES_MATRIXAUTHENTICATIONSERVICE_PASSWORD:rand32
 {{- end }}
 {{- if not .adminPassword }}
-- {{ (printf "%s-generated" $root.Release.Name) }}:POSTGRESQL_ADMIN_PASSWORD:rand32
+- {{ (printf "%s-generated" $root.Release.Name) }}:POSTGRES_ADMIN_PASSWORD:rand32
 {{- end }}
 {{- end }}
 {{- end }}

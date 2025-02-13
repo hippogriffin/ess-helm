@@ -26,8 +26,16 @@
     "adminPassword": {
       "$ref": "file://common/credential.json"
     },
-    "essPassword": {
-      "$ref": "file://common/credential.json"
+    "essPasswords": {
+      "type": "object",
+      "properties": {
+        "synapse": {
+          "$ref": "file://common/credential.json"
+        },
+        "matrixAuthenticationService": {
+          "$ref": "file://common/credential.json"
+        }
+      }
     },
     "storage": {
       "$ref": "file://common/persistentVolumeClaim.json"

@@ -128,6 +128,8 @@ app.kubernetes.io/version: {{ .image.tag }}
           include "element-io.ess-library.postgres-secret-path" (
             dict "root" $root
             "context" (dict
+              "essPassword" "synapse"
+              "initSecretKey" "POSTGRES_SYNAPSE_PASSWORD"
               "secretProperty" .postgres.password
               "defaultSecretName" (printf "%s-synapse" $root.Release.Name)
               "defaultSecretKey" "POSTGRES_PASSWORD"

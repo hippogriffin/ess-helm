@@ -28,11 +28,22 @@ true
 {{- end }}
 {{- end }}
 
+{{- define "element-io.postgres.anyEssPasswordHasValue" }}
+{{- $root := .root -}}
+{{- with required "element-io.postgres.configSecrets missing context" .context -}}
+{{- range .essPasswords -}}
+{{- if .value -}}
+true
+{{- end -}}
+{{- end -}}
+{{- end -}}
+{{- end -}}
+
 {{- define "element-io.postgres.configSecrets" -}}
 {{- $root := .root -}}
 {{- with required "element-io.postgres.configSecrets missing context" .context -}}
 {{- $configSecrets := list }}
-{{- if or .adminPassword.value  .essPassword.value }}
+{{- if or .adminPassword.value (include "element-io.postgres.anyEssPasswordHasValue" (dict "root" $root "context" .)) }}
 {{- $configSecrets = append $configSecrets  (printf "%s-postgres" $root.Release.Name) }}
 {{- end }}
 {{- if and $root.Values.initSecrets.enabled (include "element-io.init-secrets.generated-secrets" (dict "root" $root)) }}
@@ -41,9 +52,12 @@ true
 {{- with .adminPassword.secret -}}
 {{ $configSecrets = append $configSecrets (tpl . $root) }}
 {{- end -}}
-{{- with .essPassword.secret -}}
+{{- range $key := (.essPasswords | keys | uniq | sortAlpha) -}}
+{{- $prop := index $root.Values.postgres.essPasswords $key }}
+{{- with $prop.secret -}}
 {{ $configSecrets = append $configSecrets (tpl . $root) }}
-{{- end -}}
+{{- end }}
+{{- end }}
 {{ $configSecrets | uniq | toJson }}
 {{- end }}
 {{- end }}
@@ -90,7 +104,7 @@ true
                             (include "element-io.ess-library.init-secret-path" (
                               dict "root" $root "context" (
                                 dict "secretProperty" .adminPassword
-                                      "initSecretKey" "POSTGRESQL_ADMIN_PASSWORD"
+                                      "initSecretKey" "POSTGRES_ADMIN_PASSWORD"
                                       "defaultSecretName" (printf "%s-postgres" $root.Release.Name)
                                       "defaultSecretKey" "ADMIN_PASSWORD"
                                 )
