@@ -993,7 +993,7 @@ postgres:
 
     ## The tag of the container image to use.
     ## Defaults to the Chart's appVersion if not set
-    tag: "16-alpine"
+    tag: "17-alpine"
 
     ## Container digest to use. Used to pull the image instead of the image tag / Chart appVersion if set
     # digest:
