@@ -142,11 +142,7 @@ We have an init container to render & merge the config for several reasons:
         - "/matrix-tools"
         - tcpwait
         - -address
-{{- if .postgres }}
-        - "{{ (tpl .postgres.host $) }}:{{ .postgres.port }}"
-{{- else }}
-        - "{{ $.Release.Name }}-postgres.{{ $.Release.Namespace }}.svc.cluster.local:5432"
-{{- end }}
+        - {{ include "element-io.ess-library.postgres-host-port" (dict "root" $ "context" .postgres)}}
 {{- with .resources }}
         resources:
           {{- toYaml . | nindent 10 }}
