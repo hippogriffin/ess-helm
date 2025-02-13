@@ -20,7 +20,7 @@ metadata:
 {{- end }}
 spec:
   serviceName: {{ $.Release.Name }}-postgres
-  replicas: {{ .instances | default 1 }}
+  replicas: 1
   selector:
     matchLabels:
       app.kubernetes.io/instance: {{ $.Release.Name }}-postgres
