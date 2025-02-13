@@ -10,6 +10,7 @@ This Helm chart deploys a coherent Matrix Stack. It currently includes the follo
 * [Synapse](https://github.com/element-hq/synapse) as a Matrix homeserver
 * [Element Web](https://github.com/element-hq/element-web) as a Matrix client
 * [Matrix Authentication Service](https://github.com/element-hq/matrix-authentication-service) for authentication on the Matrix homeserver
+* [PostgreSQL](https://hub.docker.com/_/postgres) as a simple internal DB
 * Well Known Delegation file hosting to enable Matrix client and Matrix federation discovery of this deployment
 
 ## Requirements
@@ -17,8 +18,17 @@ This Helm chart deploys a coherent Matrix Stack. It currently includes the follo
 The chart requires:
 * An ingress controller installed in the cluster already
 * TLS certificates for Ingresses
-* If using Synapse or Matrix Authentication Service, a Postgres instance
 * If using Synapse, the ability to create `PersistentVolumeClaims` to store media
+
+### Recommandations
+
+The chart comes with an internal postgres database which will be automatically setup by default.
+
+On a production deployment, we advise you to host your own Postgres instance, and configure it accordingly. The chart's built in Postgres is primarily for demonstration.
+
+For each of the following the components, the postgres configuration can be configured in:
+- Synapse under `synapse.postgres`
+- Matrix Authentication Service under `matrixAuthenticationService.postgres`
 
 ## Common
 
@@ -77,14 +87,6 @@ serverName: ess.localhost
 synapse:
   ingress:
     host: synapse.ess.localhost
-
-  postgres:
-    host: ess-postgres
-    user: synapse_user
-    database: synapse
-    password:
-      secret: ess-postgres
-      secretKey: password
 ```
 
 Credentials are generated if possible. Alternatively they can either be provided inline
@@ -130,14 +132,6 @@ A minimal set of values to bring up Matrix Authentication Service (MAS) would be
 matrixAuthenticationService:
   ingress:
     host: mas.ess.localhost
-
-  postgres:
-    host: ess-postgres
-    user: mas_user
-    database: mas
-    password:
-      secret: ess-postgres
-      secretKey: password
 ```
 
 Additional MAS configuration can be provided inline in the values as a string with

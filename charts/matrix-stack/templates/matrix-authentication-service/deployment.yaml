@@ -32,6 +32,11 @@ spec:
       labels:
         {{- include "element-io.matrix-authentication-service.labels" (dict "root" $ "context" .) | nindent 8 }}
         k8s.element.io/confighash: "{{ include (print $.Template.BasePath "/matrix-authentication-service/secret.yaml") $ | sha1sum }}"
+        {{ include "element-io.ess-library.postgres-label" (dict "root" $ "context" (dict
+                                                                "essPassword" "matrixAuthenticationService"
+                                                                "postgresProperty" .postgres
+                                                                )
+                                            ) -}}
 {{- with .annotations }}
       annotations:
         {{- toYaml . | nindent 8 }}
@@ -85,9 +90,11 @@ spec:
           value: >-
             {{
               printf "{{ readfile \"/secrets/%s\" | urlencode }}" (
-                 include "element-io.ess-library.provided-secret-path" (
+                 include "element-io.ess-library.postgres-secret-path" (
                      dict "root" $
                      "context" (dict
+                       "essPassword" "matrixAuthenticationService"
+                       "initSecretKey" "POSTGRES_MATRIXAUTHENTICATIONSERVICE_PASSWORD"
                        "secretProperty" .postgres.password
                        "defaultSecretName" (printf "%s-matrix-authentication-service" $.Release.Name)
                        "defaultSecretKey" "POSTGRES_PASSWORD"
@@ -176,7 +183,7 @@ spec:
         - "/matrix-tools"
         - tcpwait
         - -address
-        - "{{ (tpl .postgres.host $) }}:{{ .postgres.port }}"
+        - {{ include "element-io.ess-library.postgres-host-port" (dict "root" $ "context" (dict "postgres" .postgres)) | quote }}
 {{- with .resources }}
         resources:
           {{- toYaml . | nindent 10 }}

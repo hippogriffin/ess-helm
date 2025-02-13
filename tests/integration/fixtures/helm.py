@@ -16,8 +16,7 @@ from lightkube.resources.networking_v1 import Ingress
 
 from ..lib.helpers import kubernetes_tls_secret
 from ..lib.utils import value_file_has
-from ..services import PostgresServer
-from .data import ESSData, unsafe_token
+from .data import ESSData
 
 
 @pytest.fixture(scope="session")
@@ -70,16 +69,6 @@ clients:
             )
         )
 
-        setups.append(
-            PostgresServer(
-                name=f"{generated_data.release_name}-mas",
-                namespace=generated_data.ess_namespace,
-                database="mas_db",
-                user="mas_user",
-                password=unsafe_token(36),
-            ).setup(helm_client, kube_client)
-        )
-
     if value_file_has("synapse.enabled", True):
         resources.append(
             kubernetes_tls_secret(
@@ -104,16 +93,6 @@ retention:
 """,
                 },
             )
-        )
-
-        setups.append(
-            PostgresServer(
-                name=f"{generated_data.release_name}-synapse",
-                namespace=generated_data.ess_namespace,
-                database="synapse_db",
-                user="synapse_user",
-                password=unsafe_token(36),
-            ).setup(helm_client, kube_client)
         )
 
     if value_file_has("wellKnownDelegation.enabled", True):

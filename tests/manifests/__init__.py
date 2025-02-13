@@ -13,6 +13,9 @@ _raw_shared_components_details = {
         "has_ingress": False,
     },
     "haproxy": {},
+    "postgres": {
+        "has_ingress": False,
+    },
 }
 
 _raw_component_details = {
@@ -22,7 +25,7 @@ _raw_component_details = {
     },
     "matrixAuthenticationService": {
         "hyphened_name": "matrix-authentication-service",
-        "shared_components": ["initSecrets"],
+        "shared_components": ["initSecrets", "postgres"],
     },
     "synapse": {
         "additional_values_files": [
@@ -33,7 +36,7 @@ _raw_component_details = {
                 "has_service_monitor": False,
             },
         },
-        "shared_components": ["initSecrets", "haproxy"],
+        "shared_components": ["initSecrets", "haproxy", "postgres"],
     },
     "wellKnownDelegation": {
         "hyphened_name": "well-known",
@@ -71,6 +74,13 @@ def _enrich_components_to_test(details) -> dict[str, Any]:
             _component_details[component]["secret_values_files"].append(
                 f"{_component_details[component]['hyphened_name']}-secrets-externally-values.yaml"
             )
+        if "postgres" in _component_details[component].setdefault("shared_components", []):
+            _component_details[component]["secret_values_files"].append(
+                f"{_component_details[component]['hyphened_name']}-postgres-secrets-in-helm-values.yaml"
+            )
+            _component_details[component]["secret_values_files"].append(
+                f"{_component_details[component]['hyphened_name']}-postgres-secrets-externally-values.yaml"
+            )
     return _component_details
 
 
@@ -80,9 +90,12 @@ shared_components_details = _enrich_components_to_test(_raw_shared_components_de
 values_files_to_components = {
     values_file: component
     for component, details in component_details.items()
-    for values_file in details["values_files"]
+    for values_file in (details["values_files"] + details["secret_values_files"])
 }
-values_files_to_test = list(values_files_to_components.keys())
+
+values_files_to_test = [
+    values_file for details in component_details.values() for values_file in (details["values_files"])
+]
 values_files_with_ingresses = [
     values_file
     for values_file, component in values_files_to_components.items()

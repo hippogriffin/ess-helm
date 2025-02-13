@@ -52,6 +52,9 @@
     "matrixAuthenticationService": {
       "$ref": "file://matrixAuthenticationService.json"
     },
+    "postgres": {
+      "$ref": "file://postgres.json"
+    },
     "synapse": {
       "$ref": "file://synapse.json"
     },

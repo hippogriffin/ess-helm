@@ -2,7 +2,7 @@
 #
 # SPDX-License-Identifier: AGPL-3.0-only OR LicenseRef-Element-Commercial
 #
-# source_fragments: synapse-minimal.yaml synapse-pytest-extras.yaml init-secrets-minimal.yaml init-secrets-pytest-extras.yaml
+# source_fragments: synapse-minimal.yaml synapse-pytest-extras.yaml init-secrets-minimal.yaml init-secrets-pytest-extras.yaml postgres-minimal.yaml
 # DO NOT EDIT DIRECTLY. Edit the fragment files to add / modify / remove values
 
 initSecrets:
@@ -13,6 +13,8 @@ elementWeb:
   enabled: false
 matrixAuthenticationService:
   enabled: false
+postgres:
+  enabled: true
 synapse:
   ingress:
     host: synapse.{{ $.Values.serverName }}
@@ -28,13 +30,6 @@ synapse:
   extraEnv:
     - name: DEBUG_RENDERING
       value: "1"
-  postgres:
-    host: "{{ $.Release.Name }}-synapse-postgresql"
-    user: synapse_user
-    database: synapse_db
-    password:
-      secret: "{{ $.Release.Name }}-synapse-postgres-db"
-      secretKey: password
   redis:
     annotations:
       has-no-service-monitor: "true"

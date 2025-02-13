@@ -114,10 +114,15 @@ responsibleForMedia
 {{- if and $root.Values.initSecrets.enabled (include "element-io.init-secrets.generated-secrets" (dict "root" $root)) }}
 {{ $configSecrets = append $configSecrets (printf "%s-generated" $root.Release.Name) }}
 {{- end }}
+{{- $configSecrets = append $configSecrets (include "element-io.ess-library.postgres-secret-name"
+                                            (dict "root" $root "context" (dict
+                                                                "essPassword" "synapse"
+                                                                "postgresProperty" .postgres
+                                                                "defaultSecretName" (printf "%s-synapse" $root.Release.Name)
+                                                                )
+                                            )
+                                        ) -}}
 {{- with .macaroon.secret -}}
-{{ $configSecrets = append $configSecrets (tpl . $root) }}
-{{- end -}}
-{{- with .postgres.password.secret -}}
 {{ $configSecrets = append $configSecrets (tpl . $root) }}
 {{- end -}}
 {{- with .registrationSharedSecret.secret -}}

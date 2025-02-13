@@ -54,13 +54,14 @@ def get_volume_from_mount(template, volume_mount):
     )
 
 
-def match_in_content(container_name, mounted_secret_keys, mount_path, match_in):
+def match_in_content(container_name, mounted_secret_keys, mount_path, matches_in):
     found_mount = False
-    for match in re.findall(rf"{mount_path}/([^\s\n\");]+)", match_in):
-        assert f"{mount_path}/{match}" in mounted_secret_keys, (
-            f"{mount_path}/{match} used in {container_name} but it is not found from any mounted secret"
-        )
-        found_mount = True
+    for match_in in matches_in:
+        for match in re.findall(rf"{mount_path}/([^\s\n\")`;]+)", match_in):
+            assert f"{mount_path}/{match}" in mounted_secret_keys, (
+                f"{mount_path}/{match} used in {container_name} but it is not found from any mounted secret"
+            )
+            found_mount = True
     return found_mount
 
 
@@ -128,8 +129,7 @@ async def test_secrets_consistency(templates, other_secrets):
                     f"container {container['name']}",
                     mounted_secret_keys,
                     mount_path,
-                    "\n".join(e.get("value", "") for e in container.get("env", []))
-                    + "\n".join(container.get("command", [])),
+                    [e.get("value", "") for e in container.get("env", [])] + container.get("command", []),
                 ):
                     mount_path_found = True
 
@@ -141,12 +141,12 @@ async def test_secrets_consistency(templates, other_secrets):
                             f"configmap {cm['metadata']['name']}/{data} mounted in {container['name']}",
                             mounted_secret_keys,
                             mount_path,
-                            content,
+                            [content],
                         ):
                             mount_path_found = True
                 if not mount_path_found and not uses_rendered_config:
                     raise AssertionError(
-                        f"{volume_mount['mountPath']} used in container {container['name']} "
+                        f"{mount_path} used in container {container['name']} "
                         f"but no config {','.join([cm['metadata']['name'] for cm in mounted_config_maps])} "
                         f"or env variable, or command is using it"
                     )

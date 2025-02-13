@@ -11,7 +11,7 @@ async def test_appservice_configmaps_are_templated(release_name, values, make_te
     values["synapse"].setdefault("appservices", []).append({"registrationFileConfigMap": "as-{{ $.Release.Name }}"})
 
     for template in await make_templates(values):
-        if template["kind"] == "StatefulSet":
+        if template["metadata"]["name"].startswith(f"{release_name}-synapse") and template["kind"] == "StatefulSet":
             for volume in template["spec"]["template"]["spec"]["volumes"]:
                 if (
                     "configMap" in volume
@@ -20,7 +20,10 @@ async def test_appservice_configmaps_are_templated(release_name, values, make_te
                 ):
                     break
             else:
-                raise AssertionError("The appservice configMap wasn't included in the volumes")
+                raise AssertionError(
+                    "The appservice configMap wasn't included in the volumes : "
+                    f"{','.join([volume['name'] for volume in template['spec']['template']['spec']['volumes']])}"
+                )
 
             for volumeMount in template["spec"]["template"]["spec"]["containers"][0]["volumeMounts"]:
                 if (

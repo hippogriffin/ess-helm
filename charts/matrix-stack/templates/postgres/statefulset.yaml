@@ -1,0 +1,221 @@
+{{- /*
+Copyright 2025 New Vector Ltd
+
+SPDX-License-Identifier: AGPL-3.0-only OR LicenseRef-Element-Commercial
+*/ -}}
+{{- with $.Values.postgres -}}
+{{- if (include "element-io.postgres.enabled" (dict "root" $)) }}
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  labels:
+    {{- include "element-io.postgres.labels" (dict "root" $ "context" .) | nindent 4 }}
+  name: {{ $.Release.Name }}-postgres
+  namespace: {{ $.Release.Namespace }}
+  annotations:
+    k8s.element.io/secrethash: "{{ include (print $.Template.BasePath "/postgres/secret.yaml") $ | sha1sum }}"
+    k8s.element.io/confighash: "{{ include (print $.Template.BasePath "/postgres/configmap.yaml") $ | sha1sum }}"
+{{- with .annotations }}
+    {{- toYaml . | nindent 4 }}
+{{- end }}
+spec:
+  serviceName: {{ $.Release.Name }}-postgres
+  replicas: 1
+  selector:
+    matchLabels:
+      app.kubernetes.io/instance: {{ $.Release.Name }}-postgres
+  updateStrategy:
+    type: RollingUpdate
+  template:
+    metadata:
+      labels:
+        {{- include "element-io.postgres.labels" (dict "root" $ "context" .) | nindent 8 }}
+      annotations:
+        k8s.element.io/secrethash: "{{ include (print $.Template.BasePath "/postgres/secret.yaml") $ | sha1sum }}"
+        k8s.element.io/confighash: "{{ include (print $.Template.BasePath "/postgres/configmap.yaml") $ | sha1sum }}"
+{{- with .annotations }}
+        {{- toYaml . | nindent 8 }}
+{{- end }}
+    spec:
+{{- include "element-io.ess-library.pods.commonSpec" (dict "root" $ "context" (dict "componentValues" . "key" "postgres" "deployment" false)) | nindent 6 }}
+      containers:
+      - name: postgres
+{{- with .image -}}
+{{- if .digest }}
+        image: "{{ .registry }}/{{ .repository }}@{{ .digest }}"
+        imagePullPolicy: {{ .pullPolicy | default "IfNotPresent" }}
+{{- else }}
+        image: "{{ .registry }}/{{ .repository }}:{{ .tag }}"
+        imagePullPolicy: {{ .pullPolicy | default "Always" }}
+{{- end }}
+{{- end }}
+{{- with .containersSecurityContext }}
+        securityContext:
+          {{- toYaml . | nindent 10 }}
+{{- end }}
+        env:
+        {{- include "element-io.postgres.env" (dict "root" $ "context" .) | nindent 8 }}
+        args:
+        {{ include "element-io.postgres.args" (dict "root" $ "context" .) | nindent 8 }}
+{{- with .resources }}
+        resources:
+          {{- toYaml . | nindent 10 }}
+{{- end }}
+        lifecycle:
+          preStop:
+            exec:
+              command: ["pg_ctl", "stop", "-D", "/var/lib/postgres/data", "-w", "-t", "55", "-m", "fast"]
+        readinessProbe:
+          exec:
+            command: ["psql", "-w", "-U", "postgres", "-d", "postgres", "-c", "SELECT 1"]
+          initialDelaySeconds: 15
+          timeoutSeconds: 2
+        livenessProbe:
+          exec:
+            command: ["psql", "-w", "-U", "postgres", "-d", "postgres", "-c", "SELECT 1"]
+          initialDelaySeconds: 45
+          timeoutSeconds: 2
+        ports:
+        - containerPort: 5432
+          name: postgres
+        volumeMounts:
+{{- range $secret := include "element-io.postgres.configSecrets" (dict "root" $ "context" .) | fromJsonArray }}
+        - mountPath: /secrets/{{ tpl $secret $ }}
+          name: "secret-{{ tpl $secret $ }}"
+          readOnly: true
+{{- end }}
+        - name: config
+          mountPath: /docker-entrypoint-initdb.d/init-ess-dbs.sh
+          subPath: init-dbs.sh
+        - name: database
+          mountPath: /var/lib/postgres/data
+        - name: temp
+          mountPath: /tmp
+        - name: var-run
+          mountPath: /var/run
+      - name: postgres-ess-updater
+{{- with .image -}}
+{{- if .digest }}
+        image: "{{ .registry }}/{{ .repository }}@{{ .digest }}"
+        imagePullPolicy: {{ .pullPolicy | default "IfNotPresent" }}
+{{- else }}
+        image: "{{ .registry }}/{{ .repository }}:{{ .tag }}"
+        imagePullPolicy: {{ .pullPolicy | default "Always" }}
+{{- end }}
+{{- end }}
+        command:
+        - /bin/sh
+        - -c
+        - >
+          while ! pg_isready -d postgres -U postgres -h localhost; do echo "Postgres not yet ready"; sleep 1; done;
+          echo "Postgres now ready, so changing password";
+          export PGHOST=localhost;
+          /bin/sh /var/run/configure-ess-dbs.sh;
+          echo "Done";
+          trap : TERM INT; sleep infinity & wait
+{{- with .containersSecurityContext }}
+        securityContext:
+          {{- toYaml . | nindent 10 }}
+{{- end }}
+        env:
+        {{- include "element-io.postgres.env" (dict "root" $ "context" .) | nindent 8 }}
+        args:
+        {{ include "element-io.postgres.args" (dict "root" $ "context" .) | nindent 8 }}
+{{- with .resources }}
+        resources:
+          {{- toYaml . | nindent 10 }}
+{{- end }}
+        lifecycle:
+          preStop:
+            exec:
+              command: ["pg_ctl", "stop", "-D", "/var/lib/postgres/data", "-w", "-t", "55", "-m", "fast"]
+        readinessProbe:
+          exec:
+            command: ["psql", "-w", "-U", "postgres", "-d", "postgres", "-c", "SELECT 1"]
+          initialDelaySeconds: 15
+          timeoutSeconds: 2
+        livenessProbe:
+          exec:
+            command: ["psql", "-w", "-U", "postgres", "-d", "postgres", "-c", "SELECT 1"]
+          initialDelaySeconds: 45
+          timeoutSeconds: 2
+        ports:
+        - containerPort: 5432
+          name: postgres
+        volumeMounts:
+{{- range $secret := include "element-io.postgres.configSecrets" (dict "root" $ "context" .) | fromJsonArray }}
+        - mountPath: /secrets/{{ tpl $secret $ }}
+          name: "secret-{{ tpl $secret $ }}"
+          readOnly: true
+{{- end }}
+        - name: config
+          mountPath: /var/run/configure-ess-dbs.sh
+          subPath: configure-dbs.sh
+        - name: var-run
+          mountPath: /var/run
+{{- with .postgresExporter }}
+      - name: postgres-exporter
+{{- with .image -}}
+{{- if .digest }}
+        image: "{{ .registry }}/{{ .repository }}@{{ .digest }}"
+        imagePullPolicy: {{ .pullPolicy | default "IfNotPresent" }}
+{{- else }}
+        image: "{{ .registry }}/{{ .repository }}:{{ .tag }}"
+        imagePullPolicy: {{ .pullPolicy | default "Always" }}
+{{- end }}
+{{- end }}
+{{- with .containersSecurityContext }}
+        securityContext:
+          {{- toYaml . | nindent 10 }}
+{{- end }}
+        ports:
+        - name: metrics
+          containerPort: 9187
+        env:
+        - name: DATA_SOURCE_URI
+          value: "localhost?sslmode=disable"
+        - name: DATA_SOURCE_USER
+          value: "postgres"
+        startupProbe:
+          httpGet:
+            path: /metrics
+            port: metrics
+          periodSeconds: 2
+          failureThreshold: 20
+        livenessProbe:
+          httpGet:
+            path: /metrics
+            port: metrics
+          periodSeconds: 6
+          timeoutSeconds: 2
+        readinessProbe:
+          httpGet:
+            path: /metrics
+            port: metrics
+          periodSeconds: 2
+          timeoutSeconds: 2
+          successThreshold: 2
+{{- with .resources }}
+        resources:
+          {{- toYaml . | nindent 10 }}
+{{- end }}
+{{- end }}
+      terminationGracePeriodSeconds: 60
+      volumes:
+      - emptyDir: {}
+        name: temp
+      - emptyDir: {}
+        name: var-run
+{{- range $secret := include "element-io.postgres.configSecrets" (dict "root" $ "context" .) | fromJsonArray }}
+      - secret:
+          secretName: {{ tpl $secret $ }}
+        name: secret-{{ tpl $secret $ }}
+{{- end }}
+      - name: config
+        configMap:
+          name: {{ $.Release.Name }}-postgres
+      - name: database
+        persistentVolumeClaim:
+          claimName: {{ $.Release.Name }}-postgres-data
+{{- end }}
+{{- end }}

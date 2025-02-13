@@ -15,11 +15,3 @@ matrixAuthenticationService:
     000-pytest-admin:
       configSecret: "{{ $.Release.Name }}-pytest-admin"
       configSecretKey: "admin.yaml"
-
-  postgres:
-    host: "{{ $.Release.Name }}-mas-postgresql"
-    user: mas_user
-    database: mas_db
-    password:
-      secret: "{{ $.Release.Name }}-mas-postgres-db"
-      secretKey: password

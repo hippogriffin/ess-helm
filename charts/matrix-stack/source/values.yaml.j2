@@ -25,6 +25,10 @@ matrixAuthenticationService:
   {% macro matrixAuthenticationServiceValues() %}{% include 'matrixAuthenticationService.yaml.j2'%}{% endmacro %}
   {{- matrixAuthenticationServiceValues() | trim | indent(2) }}
 
+postgres:
+  {% macro postgresValues() %}{% include 'postgres.yaml.j2'%}{% endmacro %}
+  {{- postgresValues() | trim | indent(2) }}
+
 synapse:
   {% macro synapseValues() %}{% include 'synapse.yaml.j2'%}{% endmacro %}
   {{- synapseValues() | trim | indent(2) }}

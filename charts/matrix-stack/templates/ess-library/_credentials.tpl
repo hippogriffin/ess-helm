@@ -1,5 +1,5 @@
 {{- /*
-Copyright 2024 New Vector Ltd
+Copyright 2024-2025 New Vector Ltd
 
 SPDX-License-Identifier: AGPL-3.0-only OR LicenseRef-Element-Commercial
 */ -}}
@@ -59,3 +59,72 @@ SPDX-License-Identifier: AGPL-3.0-only OR LicenseRef-Element-Commercial
 {{- end -}}
 {{- end -}}
 {{- end -}}
+
+
+{{- define "element-io.ess-library.postgres-secret-path" -}}
+{{- $root := .root -}}
+{{- with required "element-io.ess-library.postgres-secret-path" .context -}}
+{{- $secretProperty := .secretProperty -}}
+{{- $essPassword := required "element-io.ess-library.postgres-secret-path context missing essPassword" .essPassword -}}
+{{- $initSecretKey := required "element-io.ess-library.postgres-secret-path context missing initSecretKey" .initSecretKey -}}
+{{- $defaultSecretName := required "element-io.ess-library.postgres-secret-path context missing defaultSecretName" .defaultSecretName -}}
+{{- $defaultSecretKey := required "element-io.ess-library.postgres-secret-path context missing defaultSecretKey" .defaultSecretKey -}}
+{{- if not $secretProperty -}}
+  {{- if (not (index $root.Values.postgres.essPasswords $essPassword)) }}
+    {{- if $root.Values.initSecrets.enabled -}}
+    {{- printf "%s/%s" (printf "%s-generated" $root.Release.Name) $initSecretKey -}}
+    {{- end -}}
+  {{- else -}}
+    {{- include "element-io.ess-library.provided-secret-path" (dict
+                  "root" $root
+                  "context" (dict
+                    "secretProperty" (index $root.Values.postgres.essPasswords $essPassword)
+                    "defaultSecretName" (printf "%s-postgres" $root.Release.Name)
+                    "defaultSecretKey" (printf "ESS_PASSWORD_%s" ($essPassword | upper))
+                  )
+                )
+    -}}
+  {{- end -}}
+{{- else -}}
+  {{- include "element-io.ess-library.provided-secret-path" (dict
+                "root" $root
+                "context" (dict
+                  "secretProperty" $secretProperty
+                  "defaultSecretName" $defaultSecretName
+                  "defaultSecretKey" $defaultSecretKey
+                )
+              )
+    -}}
+{{- end -}}
+{{- end -}}
+{{- end -}}
+
+
+{{- define "element-io.ess-library.postgres-secret-name" -}}
+{{- $root := .root -}}
+{{- with required "element-io.ess-library.postgres-secret-name" .context -}}
+{{- $essPassword := required "element-io.ess-library.postgres-secret-name context missing essPassword" .essPassword -}}
+{{- $postgresProperty := required "element-io.ess-library.postgres-secret-name context missing postgresProperty" .postgresProperty -}}
+{{- $defaultSecretName := required "element-io.ess-library.postgres-secret-name context missing defaultSecretName" .defaultSecretName -}}
+{{- if $postgresProperty -}}
+    {{- if $postgresProperty.password.value -}}
+    {{- $defaultSecretName -}}
+    {{- else -}}
+    {{- tpl $postgresProperty.password.secret $root -}}
+    {{- end -}}
+{{- else if (index $root.Values.postgres.essPasswords $essPassword) }}
+    {{- if (index $root.Values.postgres.essPasswords $essPassword).value -}}
+    {{- printf "%s-postgres" $root.Release.Name -}}
+    {{- else -}}
+    {{- tpl (index $root.Values.postgres.essPasswords $essPassword).secret $root -}}
+    {{- end -}}
+{{- else -}}
+  {{- if $root.Values.initSecrets.enabled -}}
+  {{- printf "%s-generated" $root.Release.Name -}}
+  {{- else -}}
+  {{- fail "No postgres password set and initSecrets not set" -}}
+  {{- end -}}
+{{- end -}}
+{{- end -}}
+{{- end -}}
+
