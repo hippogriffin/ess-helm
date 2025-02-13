@@ -48,7 +48,6 @@ spec:
         {{ include "element-io.ess-library.postgres-label" (dict "root" $ "context" (dict
                                                                 "essPassword" "synapse"
                                                                 "postgresProperty" .postgres
-                                                                "defaultSecretName" (printf "%s-matrix-authentication-service" $.Release.Name)
                                                                 )
                                             ) -}}
 {{- with .annotations }}

@@ -33,9 +33,8 @@ spec:
         {{- include "element-io.matrix-authentication-service.labels" (dict "root" $ "context" .) | nindent 8 }}
         k8s.element.io/confighash: "{{ include (print $.Template.BasePath "/matrix-authentication-service/secret.yaml") $ | sha1sum }}"
         {{ include "element-io.ess-library.postgres-label" (dict "root" $ "context" (dict
-                                                                "essPassword" "synapse"
+                                                                "essPassword" "matrixAuthenticationService"
                                                                 "postgresProperty" .postgres
-                                                                "defaultSecretName" (printf "%s-matrix-authentication-service" $.Release.Name)
                                                                 )
                                             ) -}}
 {{- with .annotations }}
