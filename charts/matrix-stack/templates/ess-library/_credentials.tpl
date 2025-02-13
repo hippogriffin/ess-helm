@@ -110,7 +110,7 @@ SPDX-License-Identifier: AGPL-3.0-only OR LicenseRef-Element-Commercial
 {{- end -}}
 
 
-{{- define "element-io.ess-library.postgres-annotation" -}}
+{{- define "element-io.ess-library.postgres-label" -}}
 {{- $root := .root -}}
 {{- with required "element-io.ess-library.postgres-secret-name" .context -}}
 {{- $postgresProperty := required "elment-io.ess-library.postgres-secret-name context missing postgresProperty" .postgresProperty -}}

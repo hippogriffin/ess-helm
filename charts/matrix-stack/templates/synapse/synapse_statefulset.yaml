@@ -13,13 +13,8 @@ SPDX-License-Identifier: AGPL-3.0-only OR LicenseRef-Element-Commercial
 apiVersion: apps/v1
 kind: StatefulSet
 metadata:
-  annotations:
-    {{ include "element-io.ess-library.postgres-annotation" (dict "root" $ "context" (dict
-                                                                "postgresProperty" .postgres
-                                                                "defaultSecretName" (printf "%s-synapse" $.Release.Name)
-                                                                )
-                                            ) -}}
 {{- with .annotations }}
+  annotations:
     {{- toYaml . | nindent 4 }}
 {{- end }}
   labels:
@@ -50,14 +45,13 @@ spec:
 {{- range $index, $appservice := .appservices }}
         k8s.element.io/as-registration-{{ $index }}-hash: "{{ (lookup "v1" "ConfigMap" $.Release.Namespace $appservice.registrationFileConfigMap) | toJson | sha1sum }}"
 {{- end }}
-
-      annotations:
-        {{ include "element-io.ess-library.postgres-annotation" (dict "root" $ "context" (dict
+        {{ include "element-io.ess-library.postgres-label" (dict "root" $ "context" (dict
                                                                 "postgresProperty" .postgres
                                                                 "defaultSecretName" (printf "%s-matrix-authentication-service" $.Release.Name)
                                                                 )
                                             ) -}}
 {{- with .annotations }}
+      annotations:
         {{- toYaml . | nindent 8 }}
 {{- end }}
     spec:
