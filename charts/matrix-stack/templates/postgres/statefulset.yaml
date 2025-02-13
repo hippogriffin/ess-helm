@@ -13,8 +13,8 @@ metadata:
   name: {{ $.Release.Name }}-postgres
   namespace: {{ $.Release.Namespace }}
   annotations:
-    k8s.element.io/confighash: "{{ include (print $.Template.BasePath "/postgres/secret.yaml") $ | sha1sum }}"
-    k8s.element.io/logconfighash: "{{ include (print $.Template.BasePath "/postgres/configmap.yaml") $ | sha1sum }}"
+    k8s.element.io/secrethash: "{{ include (print $.Template.BasePath "/postgres/secret.yaml") $ | sha1sum }}"
+    k8s.element.io/confighash: "{{ include (print $.Template.BasePath "/postgres/configmap.yaml") $ | sha1sum }}"
 {{- with .annotations }}
     {{- toYaml . | nindent 4 }}
 {{- end }}
@@ -31,8 +31,8 @@ spec:
       labels:
         {{- include "element-io.postgres.labels" (dict "root" $ "context" .) | nindent 8 }}
       annotations:
-        k8s.element.io/confighash: "{{ include (print $.Template.BasePath "/postgres/secret.yaml") $ | sha1sum }}"
-        k8s.element.io/logconfighash: "{{ include (print $.Template.BasePath "/postgres/configmap.yaml") $ | sha1sum }}"
+        k8s.element.io/secrethash: "{{ include (print $.Template.BasePath "/postgres/secret.yaml") $ | sha1sum }}"
+        k8s.element.io/confighash: "{{ include (print $.Template.BasePath "/postgres/configmap.yaml") $ | sha1sum }}"
 {{- with .annotations }}
         {{- toYaml . | nindent 8 }}
 {{- end }}
