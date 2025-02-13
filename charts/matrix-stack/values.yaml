@@ -916,8 +916,8 @@ postgres:
     resources:
       ## Requests describes the minimum amount of compute resources required. More info: https://kubernetes.io/docs/concepts/configuration/manage-compute-resources-container/
       requests:
-        memory: 100Mi
-        cpu: 100m
+        memory: 10Mi
+        cpu: 10m
 
       ## Limits describes the maximum amount of compute resources allowed. More info: https://kubernetes.io/docs/concepts/configuration/manage-compute-resources-container/
       limits:
