@@ -22,7 +22,7 @@ jobs:
     - name: Checkout
       uses: actions/checkout@v4
 
-    - uses: matrix-org/setup-python-poetry
+    - uses: matrix-org/setup-python-poetry@v1
       with:
         poetry-version: "1.8.5"
         python-version: "3.x"

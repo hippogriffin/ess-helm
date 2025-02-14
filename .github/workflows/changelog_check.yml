@@ -15,7 +15,7 @@ jobs:
           fetch-depth: 0
           ref: ${{github.event.pull_request.head.sha}}
 
-      - uses: matrix-org/setup-python-poetry
+      - uses: matrix-org/setup-python-poetry@v1
         with:
           python-version: "3.x"
           poetry-version: "1.8.5"
