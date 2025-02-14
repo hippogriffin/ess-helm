@@ -69,7 +69,7 @@ class PotentiallyExistingKindCluster(KindManager):
 async def cluster():
     # This name must match what `setup_test_cluster.sh` would create
     this_cluster = PotentiallyExistingKindCluster("ess-helm")
-    this_cluster.create(ClusterOptions(cluster_config="kind-ci.yml" if os.environ.get("CI") else "kind.yml"))
+    this_cluster.create(ClusterOptions(cluster_config="kind.yml"))
 
     yield this_cluster
 
