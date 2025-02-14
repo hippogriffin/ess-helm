@@ -24,11 +24,10 @@ jobs:
     - name: Checkout
       uses: actions/checkout@v4
 
-    - uses: actions/setup-python@v4
-      with:
-        python-version: 3.13
-
     - uses: matrix-org/setup-python-poetry
+      with:
+        python-version: "3.x"
+        poetry-version: "1.8.5"
 
     - name: Build and check for changes
       run: |
@@ -75,8 +74,9 @@ jobs:
         poetry_venv=$(poetry env info -p)
         sed -i "s|^VIRTUAL_ENV=.*|VIRTUAL_ENV=$poetry_venv|" "${GITHUB_ENV}"
 
-    - uses: matrix-org/setup-python-poetry@v1
+    - uses: matrix-org/setup-python-poetry
       with:
+        poetry-version: "1.8.5"
         python-version: "3.x"
 
     - name: Run kubeconform

@@ -22,8 +22,9 @@ jobs:
     - name: Checkout
       uses: actions/checkout@v4
 
-    - uses: matrix-org/setup-python-poetry@v1
+    - uses: matrix-org/setup-python-poetry
       with:
+        poetry-version: "1.8.5"
         python-version: "3.x"
 
     - name: reuse-lint
