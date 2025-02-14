@@ -22,6 +22,9 @@ _raw_component_details = {
     "elementWeb": {
         "hyphened_name": "element-web",
         "has_service_monitor": False,
+        "paths_consistency_noqa": [
+            "/etc/nginx"
+        ]
     },
     "matrixAuthenticationService": {
         "hyphened_name": "matrix-authentication-service",

@@ -117,10 +117,14 @@ def get_keys_from_container_using_rendered_config(template, templates, other_sec
 @pytest.mark.asyncio_cooperative
 async def test_secrets_consistency(templates, other_secrets, component):
     """
-    Test to ensure that all secrets are properly mounted and consistent across the cluster.
+    Test to ensure that all configmaps and secrets are properly mounted and consistent across the cluster.
 
-    This test checks if each secret is correctly associated with its respective volume and container,
+    This test checks if each secret and configmap is correctly associated with its respective volume and container,
     ensuring that no inconsistencies or missing configurations exist.
+
+    The test also tries to find some configuration inconsistency. For each env, args, command, and config files,
+    it will read its content and find paths matching potential mounted secrets or configmap data.
+    If there's a match, it makes sure that it points to an existing data mounted in the container.
     """
     workloads = [t for t in templates if t["kind"] in ("Deployment", "StatefulSet", "Job")]
     for template in workloads:
