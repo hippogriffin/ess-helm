@@ -16,7 +16,15 @@ async def test_nothing_enabled_renders_nothing(templates):
 @pytest.mark.parametrize("values_file", ["nothing-enabled-values.yaml"])
 @pytest.mark.asyncio_cooperative
 async def test_initSecrets_on_its_own_renders_nothing(values, make_templates):
-    values["initSecrets"]["enabled"] = True
+    values.setdefault("initSecrets", {})["enabled"] = True
+    templates = await make_templates(values)
+    assert len(templates) == 0, f"{templates} were generated but none were expected"
+
+
+@pytest.mark.parametrize("values_file", ["nothing-enabled-values.yaml"])
+@pytest.mark.asyncio_cooperative
+async def test_postgres_on_its_own_renders_nothing(values, make_templates):
+    values.setdefault("postgres", {})["enabled"] = True
     templates = await make_templates(values)
     assert len(templates) == 0, f"{templates} were generated but none were expected"
 

@@ -9,11 +9,7 @@ elementWeb:
   enabled: false
 global:
   baseDomain: ess.localhost
-initSecrets:
-  enabled: false
 matrixAuthenticationService:
-  enabled: false
-postgres:
   enabled: false
 # To check that templating works against the ingress
 serverName: "{{ $.Values.global.baseDomain }}"

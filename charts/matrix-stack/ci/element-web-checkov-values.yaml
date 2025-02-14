@@ -12,11 +12,7 @@ elementWeb:
     checkov.io/skip3: CKV2_K8S_6=No network policy yet
   ingress:
     host: element.ess.localhost
-initSecrets:
-  enabled: false
 matrixAuthenticationService:
-  enabled: false
-postgres:
   enabled: false
 synapse:
   enabled: false
