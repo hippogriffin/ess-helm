@@ -36,10 +36,13 @@ jobs:
       run: |
         echo "$(poetry env info -p)/bin" >> "${GITHUB_PATH}"
 
+    # until https://github.com/engineerd/setup-kind/issues/257 is resolved
     - uses: engineerd/setup-kind@v0.6.2
       with:
         config: tests/integration/fixtures/files/clusters/kind.yml
         name: kind-ess-helm
+        version: "v0.25.0"
+
 
     - uses: azure/setup-helm@v4.2.0
 
