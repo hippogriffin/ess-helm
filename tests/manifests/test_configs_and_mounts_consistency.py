@@ -1,6 +1,6 @@
 # Copyright 2025 New Vector Ltd
 #
-# SPDX-License-Identifier: LicenseRef-Element-Commercial
+# SPDX-License-Identifier: AGPL-3.0-only OR LicenseRef-Element-Commercial
 
 import re
 
@@ -68,18 +68,20 @@ def match_in_content(container_name, mounted_keys, mount_path, matches_in):
 
 def get_key_from_render_config(template):
     for container in template["spec"]["template"]["spec"]["initContainers"]:
-        if container['name'] == "render-config":
+        if container["name"] == "render-config":
             for idx, cmd in enumerate(container["command"]):
                 if cmd == "-output":
-                    return container["command"][idx+1].split('/')[-1]
-    raise AssertionError(f"{template['kind']}/{template['metadata']['name']} has a rendered-config volume, "
-                         "but no render-config output file could be found")
+                    return container["command"][idx + 1].split("/")[-1]
+    raise AssertionError(
+        f"{template['kind']}/{template['metadata']['name']} has a rendered-config volume, "
+        "but no render-config output file could be found"
+    )
 
 
 def get_mounts_part(secret_or_cm, volume_mount):
     mounted_keys = []
     if "subPath" in volume_mount:
-        mounted_keys.append(volume_mount['mountPath'])
+        mounted_keys.append(volume_mount["mountPath"])
         # The regex tries to find secrets in configfiles, commands & env
         # based on their parent mount point so we drop the filename from
         # the mount path
@@ -96,7 +98,7 @@ def get_mounts_part(secret_or_cm, volume_mount):
 def get_keys_from_container_using_rendered_config(template, templates, other_secrets):
     mounted_keys = []
     for container in template["spec"]["template"]["spec"]["containers"]:
-        if "rendered-config" in [v['name'] for v in container["volumeMounts"]]:
+        if "rendered-config" in [v["name"] for v in container["volumeMounts"]]:
             for volume_mount in container["volumeMounts"]:
                 current_volume = get_volume_from_mount(template, volume_mount)
                 if "secret" in current_volume:
@@ -159,11 +161,11 @@ async def test_secrets_consistency(templates, other_secrets, component):
                     mount_parents.append(parent)
                     mounted_keys += keys
                 elif "emptyDir" in current_volume and current_volume["name"] == "rendered-config":
-                        # We can't verify rendered-config, it's generated at runtime
-                        uses_rendered_config = True
-                        mount_paths.append(volume_mount["mountPath"])
-                        mount_parents.append(volume_mount["mountPath"])
-                        mounted_keys.append(f"{volume_mount['mountPath']}/{get_key_from_render_config(template)}")
+                    # We can't verify rendered-config, it's generated at runtime
+                    uses_rendered_config = True
+                    mount_paths.append(volume_mount["mountPath"])
+                    mount_parents.append(volume_mount["mountPath"])
+                    mounted_keys.append(f"{volume_mount['mountPath']}/{get_key_from_render_config(template)}")
 
             assert len(mounted_keys) == len(set(mounted_keys)), (
                 f"Mounted key paths are not unique in {template['metadata']['name']}: {mounted_keys}"
@@ -177,7 +179,6 @@ async def test_secrets_consistency(templates, other_secrets, component):
             if container["name"] == "render-config":
                 mounted_keys += get_keys_from_container_using_rendered_config(template, templates, other_secrets)
 
-
             # We look for all secrets mountPath parents directories in configs and commands
             # And using a regex, make sure that patterns `<parent mount path>/<some key>`
             # refers <some key> to an existing mounted secret key
@@ -185,10 +186,11 @@ async def test_secrets_consistency(templates, other_secrets, component):
                 # If for some path, the configuration cannot be made explicit
                 # we add them to the list of exceptions
                 # For example, nginx container uses /etc/nginx natively.
-                if parent_path in component_details[component]["paths_consistency_noqa"] \
-                    or parent_path in [path
-                                       for shared in component_details[component]["shared_components"]
-                                       for path in shared_components_details[shared]["paths_consistency_noqa"]]:
+                if parent_path in component_details[component]["paths_consistency_noqa"] or parent_path in [
+                    path
+                    for shared in component_details[component]["shared_components"]
+                    for path in shared_components_details[shared]["paths_consistency_noqa"]
+                ]:
                     continue
                 mount_path_found = False
 

@@ -13,21 +13,14 @@ _raw_shared_components_details = {
         "has_ingress": False,
     },
     "haproxy": {},
-    "postgres": {
-        "has_ingress": False,
-        "paths_consistency_noqa": [
-            "/docker-entrypoint-initdb.d"
-        ]
-    },
+    "postgres": {"has_ingress": False, "paths_consistency_noqa": ["/docker-entrypoint-initdb.d"]},
 }
 
 _raw_component_details = {
     "elementWeb": {
         "hyphened_name": "element-web",
         "has_service_monitor": False,
-        "paths_consistency_noqa": [
-            "/etc/nginx"
-        ]
+        "paths_consistency_noqa": ["/etc/nginx"],
     },
     "matrixAuthenticationService": {
         "hyphened_name": "matrix-authentication-service",
