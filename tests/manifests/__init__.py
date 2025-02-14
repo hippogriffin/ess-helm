@@ -13,15 +13,14 @@ _raw_shared_components_details = {
         "has_ingress": False,
     },
     "haproxy": {},
-    "postgres": {
-        "has_ingress": False,
-    },
+    "postgres": {"has_ingress": False, "paths_consistency_noqa": ["/docker-entrypoint-initdb.d"]},
 }
 
 _raw_component_details = {
     "elementWeb": {
         "hyphened_name": "element-web",
         "has_service_monitor": False,
+        "paths_consistency_noqa": ["/etc/nginx"],
     },
     "matrixAuthenticationService": {
         "hyphened_name": "matrix-authentication-service",
@@ -61,6 +60,7 @@ def _enrich_components_to_test(details) -> dict[str, Any]:
         _component_details[component].setdefault("has_ingress", True)
         _component_details[component].setdefault("has_service_monitor", True)
         _component_details[component].setdefault("has_workloads", True)
+        _component_details[component].setdefault("paths_consistency_noqa", [])
         _component_details[component].setdefault("has_image", _component_details[component]["has_workloads"])
         _component_details[component].setdefault("sub_components", {})
         for sub_component in _component_details[component]["sub_components"]:
