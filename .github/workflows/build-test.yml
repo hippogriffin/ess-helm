@@ -19,27 +19,16 @@ jobs:
   # We want to ensure that the commit of built changes does happen, so fail if building creates changes
   # If this gets problematic we change to not committing the built schemas/values to git
   no-changes-after-building:
-    runs-on: cpu-s
-    container:
-      image: ghcr.io/${{ github.repository }}/ci-runner
-      credentials:
-        username: ${{ github.actor }}
-        password: ${{ secrets.GITHUB_TOKEN }}
+    runs-on: ubuntu-latest
     steps:
     - name: Checkout
       uses: actions/checkout@v4
 
-    - name: Define a cache for the virtual environment based on the dependencies lock file
-      uses: actions/cache@v4
+    - uses: actions/setup-python@v4
       with:
-        path: ./.venv
-        key: venv-${{ hashFiles('poetry.lock') }}
+        python-version: 3.13
 
-    - name: Install venv
-      run: |
-        poetry env info
-        poetry install
-        echo "$(poetry env info -p)/bin" >> "${GITHUB_PATH}"
+    - uses: matrix-org/setup-python-poetry
 
     - name: Build and check for changes
       run: |
@@ -57,12 +46,7 @@ jobs:
         git diff --exit-code
 
   helm-lint:
-    runs-on: cpu-s
-    container:
-      image: ghcr.io/${{ github.repository }}/ci-runner
-      credentials:
-        username: ${{ github.actor }}
-        password: ${{ secrets.GITHUB_TOKEN }}
+    runs-on: ubuntu-latest
     steps:
     - name: Checkout
       uses: actions/checkout@v4
@@ -82,13 +66,6 @@ jobs:
           echo 'Error: $ is used in a .tpl files, but helm passes the local context to the special variable $ in included templates.'; exit 1 
         } || echo "OK."
 
-
-    - name: Define a cache for the virtual environment based on the dependencies lock file
-      uses: actions/cache@v4
-      with:
-        path: ./.venv
-        key: venv-${{ hashFiles('poetry.lock') }}
-
     - name: Install venv
       run: |
         # helm/chart-testing-action sets up its own venv that we have no control over
@@ -98,9 +75,9 @@ jobs:
         poetry_venv=$(poetry env info -p)
         sed -i "s|^VIRTUAL_ENV=.*|VIRTUAL_ENV=$poetry_venv|" "${GITHUB_ENV}"
 
-        poetry env info
-        poetry install -n
-        echo "$(poetry env info -p)/bin" >> "${GITHUB_PATH}"
+    - uses: matrix-org/setup-python-poetry@v1
+      with:
+        python-version: "3.x"
 
     - name: Run kubeconform
       run: |

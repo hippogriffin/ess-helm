@@ -5,7 +5,7 @@
 name: Run Pytest tests
 
 on:
-  pull_request_target:
+  pull_request:
   push:
     branches:
     - main
@@ -13,16 +13,7 @@ on:
 
 jobs:
   pytest:
-    # /!!!!!!!!!!!!!\
-    # ~~~~WARNING~~~~
-    # This runner is highly-privileged and we can't go FOSS Until we redesign
-    # how we do CI tests
-    runs-on: dind-privileged-m
-    container:
-      image: ghcr.io/${{ github.repository }}/ci-runner
-      credentials:
-        username: ${{ github.actor }}
-        password: ${{ secrets.GITHUB_TOKEN }}
+    runs-on: ubuntu-latest
     strategy:
       fail-fast: false
       matrix:
@@ -36,15 +27,16 @@ jobs:
       with:
         ref: ${{ github.event.pull_request.head.sha }}
 
-    - name: Define a cache for the virtual environment based on the dependencies lock file
-      uses: actions/cache@v4
+    - uses: matrix-org/setup-python-poetry@v1
       with:
-        path: ./.venv
-        key: venv-${{ hashFiles('poetry.lock') }}
+        python-version: "3.x"
 
-    - name: Install dependencies
-      run: |
-        poetry install
+    - uses: engineerd/setup-kind@v0.6.2
+      with:
+        config: tests/integration/fixtures/files/clusters/kind.yml
+        name: kind-ess-helm
+
+    - uses: azure/setup-helm@v4.2.0
 
     - name: Test with pytest
       run: |

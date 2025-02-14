@@ -8,36 +8,16 @@ on: [pull_request]
 jobs:
   check-newsfile:
     if: ${{ (github.base_ref == 'main'  || contains(github.base_ref, 'release-')) && github.actor != 'dependabot[bot]' && github.actor != 'github-actions[bot]' }}
-    runs-on: cpu-s
-    container:
-      image: ghcr.io/${{ github.repository }}/ci-runner
-      credentials:
-        username: ${{ github.actor }}
-        password: ${{ secrets.GITHUB_TOKEN }}
+    runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
         with:
           fetch-depth: 0
           ref: ${{github.event.pull_request.head.sha}}
 
-      - name: Define a cache for the virtual environment based on the dependencies lock file
-        uses: actions/cache@v4
+      - uses: matrix-org/setup-python-poetry@v1
         with:
-          path: ./.venv
-          key: venv-${{ hashFiles('poetry.lock') }}
-
-      - name: Install venv
-        run: |
-          # helm/chart-testing-action sets up its own venv that we have no control over
-          # We don't want to use it for this
-          unset VIRTUAL_ENV
-          # Or future actions
-          poetry_venv=$(poetry env info -p)
-          sed -i "s|^VIRTUAL_ENV=.*|VIRTUAL_ENV=$poetry_venv|" "${GITHUB_ENV}"
-
-          poetry env info
-          poetry install -n
-          echo "$(poetry env info -p)/bin" >> "${GITHUB_PATH}"
+          python-version: "3.x"
 
       - name: Run towncrier
         run: |
