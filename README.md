@@ -120,12 +120,12 @@ of the repository or the chart. Instructions on how to run them locally can be f
 
 Wrapper over `helm lint` with other Helm based linting checks.
 
-From the project root: `ct lint`
+From the project root: `bash scripts/ct-lint.sh`
 
 This will test the chart with all values files matching
 `charts/matrix-stack/ci/*-values.yaml`.
 
-From the `matrix-stack` directory: `ct lint --charts . --validate-maintainers=false`
+From the `matrix-stack` directory: `bash scripts/ct-lint.sh --charts . --validate-maintainers=false`
 
 ### checkov
 
