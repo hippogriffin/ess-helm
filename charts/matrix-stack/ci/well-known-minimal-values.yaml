@@ -5,16 +5,16 @@
 # source_fragments: well-known-minimal.yaml
 # DO NOT EDIT DIRECTLY. Edit the fragment files to add / modify / remove values
 
-initSecrets:
-  enabled: false
 elementWeb:
+  enabled: false
+initSecrets:
   enabled: false
 matrixAuthenticationService:
   enabled: false
 postgres:
   enabled: false
+serverName: ess.localhost
 synapse:
   enabled: false
 wellKnownDelegation:
   enabled: true
-serverName: ess.localhost

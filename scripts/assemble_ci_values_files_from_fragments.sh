@@ -31,6 +31,8 @@ for values_file in "$values_file_root"/*-values.yaml; do
   yq_command+=" head_comment=\"\""
   # Pretty print but with double quotes
   yq_command+=" style=\"double\""
+  # Sort keys for diff stability if we reorder the fragments
+  yq_command+=" | sort_keys(..)"
   # Remove any fields with null values so we have a way of removing things
   yq_command+=" | del(... | select(. == null))"
   # We could remove enabled: true for all default enabled components by setting enabled: null in their minimal values file,

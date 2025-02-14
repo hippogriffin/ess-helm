@@ -5,15 +5,7 @@
 # source_fragments: element-web-minimal.yaml element-web-pytest-extras.yaml
 # DO NOT EDIT DIRECTLY. Edit the fragment files to add / modify / remove values
 
-initSecrets:
-  enabled: false
 elementWeb:
-  ingress:
-    host: element.{{ $.Values.serverName }}
-    tlsSecret: "{{ $.Release.Name }}-element-web-tls"
-  replicas: 1
-  annotations:
-    has-no-service-monitor: "true"
   additional:
     "default_server_config":
       "m.homeserver":
@@ -22,16 +14,24 @@ elementWeb:
       "url": "https://call.{{ $.Values.serverName }}"
       "use_exclusively": true
     "features":
-      "feature_video_rooms": true
+      "feature_element_call_video_rooms": true
       "feature_group_calls": true
       "feature_new_room_decoration_ui": true
-      "feature_element_call_video_rooms": true
+      "feature_video_rooms": true
+  annotations:
+    has-no-service-monitor: "true"
+  ingress:
+    host: element.{{ $.Values.serverName }}
+    tlsSecret: "{{ $.Release.Name }}-element-web-tls"
+  replicas: 1
+initSecrets:
+  enabled: false
 matrixAuthenticationService:
   enabled: false
 postgres:
   enabled: false
+serverName: ess.localhost
 synapse:
   enabled: false
 wellKnownDelegation:
   enabled: false
-serverName: ess.localhost

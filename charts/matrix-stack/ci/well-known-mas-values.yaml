@@ -5,17 +5,17 @@
 # source_fragments: well-known-minimal.yaml matrix-authentication-service-minimal.yaml init-secrets-minimal.yaml postgres-minimal.yaml
 # DO NOT EDIT DIRECTLY. Edit the fragment files to add / modify / remove values
 
-initSecrets:
-  enabled: true
 elementWeb:
   enabled: false
+initSecrets:
+  enabled: true
 matrixAuthenticationService:
   ingress:
     host: mas.ess.localhost
 postgres:
   enabled: true
+serverName: ess.localhost
 synapse:
   enabled: false
 wellKnownDelegation:
   enabled: true
-serverName: ess.localhost

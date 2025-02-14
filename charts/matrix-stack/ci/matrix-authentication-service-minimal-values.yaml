@@ -5,10 +5,10 @@
 # source_fragments: matrix-authentication-service-minimal.yaml init-secrets-minimal.yaml postgres-minimal.yaml
 # DO NOT EDIT DIRECTLY. Edit the fragment files to add / modify / remove values
 
-initSecrets:
-  enabled: true
 elementWeb:
   enabled: false
+initSecrets:
+  enabled: true
 matrixAuthenticationService:
   ingress:
     host: mas.ess.localhost
