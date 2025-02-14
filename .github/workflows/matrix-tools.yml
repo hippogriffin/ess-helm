@@ -35,6 +35,7 @@ jobs:
 
     - uses: golangci/golangci-lint-action@v6
       with:
+        working-directory: matrix-tools
         args: -v --show-stats --no-config --modules-download-mode readonly --timeout 5m
 
     - uses: GoTestTools/gotestfmt-action@v2
