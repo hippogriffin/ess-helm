@@ -32,6 +32,10 @@ jobs:
         poetry-version: "1.8.5"
         python-version: "3.x"
 
+    - name: Load poetry path
+      run: |
+        echo "$(poetry env info -p)/bin" >> "${GITHUB_PATH}"
+
     - uses: engineerd/setup-kind@v0.6.2
       with:
         config: tests/integration/fixtures/files/clusters/kind.yml

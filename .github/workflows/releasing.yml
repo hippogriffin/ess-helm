@@ -27,6 +27,10 @@ jobs:
         poetry-version: "1.8.5"
         python-version: "3.x"
 
+    - name: Load poetry path
+      run: |
+        echo "$(poetry env info -p)/bin" >> "${GITHUB_PATH}"
+
     - uses: azure/setup-helm@v4.2.0
 
     - name: Set version

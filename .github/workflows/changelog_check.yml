@@ -20,6 +20,10 @@ jobs:
           python-version: "3.x"
           poetry-version: "1.8.5"
 
+      - name: Load poetry path
+        run: |
+          echo "$(poetry env info -p)/bin" >> "${GITHUB_PATH}"
+
       - name: Run towncrier
         run: |
           # Fix/workaround for "detected dubious ownership in repository"

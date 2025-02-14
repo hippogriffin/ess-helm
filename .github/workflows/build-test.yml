@@ -29,6 +29,10 @@ jobs:
         python-version: "3.x"
         poetry-version: "1.8.5"
 
+    - name: Load poetry path
+      run: |
+        echo "$(poetry env info -p)/bin" >> "${GITHUB_PATH}"
+
     - name: Build and check for changes
       run: |
         git config --global --add safe.directory "$GITHUB_WORKSPACE"
@@ -69,6 +73,10 @@ jobs:
       with:
         poetry-version: "1.8.5"
         python-version: "3.x"
+
+    - name: Load poetry path
+      run: |
+        echo "$(poetry env info -p)/bin" >> "${GITHUB_PATH}"
 
     - name: Set up Kubeconform
       uses: bmuschko/setup-kubeconform@v1
