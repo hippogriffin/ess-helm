@@ -59,6 +59,7 @@ data:
             add_header X-Robots-Tag "noindex, nofollow, noarchive, noimageindex";
 
             location / {
+                # Serving /app/config.json
                 root   /usr/share/nginx/html;
                 index  index.html index.htm;
 
