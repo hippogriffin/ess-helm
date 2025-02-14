@@ -31,6 +31,7 @@ SPDX-License-Identifier: AGPL-3.0-only OR LicenseRef-Element-Commercial
 {{- define "element-io.ess-library.init-secret-path" -}}
 {{- $root := .root -}}
 {{- with required "element-io.ess-library.init-secret-path" .context -}}
+{{- $secretPath := .secretPath -}}
 {{- $secretProperty := required "element-io.ess-library.init-secret-path context missing secretProperty" .secretProperty -}}
 {{- $initSecretKey := required "element-io.ess-library.init-secret-path context missing initSecretKey" .initSecretKey -}}
 {{- $defaultSecretName := required "element-io.ess-library.init-secret-path context missing defaultSecretName" .defaultSecretName -}}
@@ -38,6 +39,8 @@ SPDX-License-Identifier: AGPL-3.0-only OR LicenseRef-Element-Commercial
 {{- if not $secretProperty -}}
   {{- if $root.Values.initSecrets.enabled -}}
   {{- printf "%s/%s" (printf "%s-generated" $root.Release.Name) $initSecretKey -}}
+  {{- else -}}
+  {{- fail (printf "initSecrets is disabled, but secret %s is empty." $secretPath) -}}
   {{- end -}}
 {{- else -}}
   {{- include "element-io.ess-library.provided-secret-path" (dict "root" $root "context" (dict "secretProperty" $secretProperty "defaultSecretName" $defaultSecretName "defaultSecretKey" $defaultSecretKey)) -}}

@@ -73,7 +73,7 @@ jobs:
     - name: Run chart-testing (lint)
       run: |
         git config --global --add safe.directory "$GITHUB_WORKSPACE"
-        ct lint --config ct.yaml
+        bash scripts/ct-lint.sh --config ct.yaml
 
     - name: Ensure we don't use the helm $ root token in .tpl files
       shell: bash

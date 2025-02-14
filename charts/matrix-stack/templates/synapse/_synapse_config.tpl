@@ -22,6 +22,7 @@ signing_key_path: /secrets/{{
   include "element-io.ess-library.init-secret-path" (
     dict "root" $root "context" (
       dict "secretProperty" .signingKey
+           "secretPath" ".synapse.signingKey"
            "initSecretKey" "SYNAPSE_SIGNING_KEY"
            "defaultSecretName" (printf "%s-synapse" $root.Release.Name)
            "defaultSecretKey" "SIGNING_KEY"
@@ -33,6 +34,7 @@ macaroon_secret_key_path:  /secrets/{{
   include "element-io.ess-library.init-secret-path" (
     dict "root" $root "context" (
       dict "secretProperty" .macaroon
+           "secretPath" ".synapse.macaroon"
            "initSecretKey" "SYNAPSE_MACAROON"
            "defaultSecretName" (printf "%s-synapse" $root.Release.Name)
            "defaultSecretKey" "MACAROON"
@@ -42,6 +44,7 @@ registration_shared_secret_path: /secrets/{{
   include "element-io.ess-library.init-secret-path" (
     dict "root" $root "context" (
       dict "secretProperty" .registrationSharedSecret
+           "secretPath" ".synapse.registrationSharedSecret"
            "initSecretKey" "SYNAPSE_REGISTRATION_SHARED_SECRET"
            "defaultSecretName" (printf "%s-synapse" $root.Release.Name)
            "defaultSecretKey" "REGISTRATION_SHARED_SECRET"
