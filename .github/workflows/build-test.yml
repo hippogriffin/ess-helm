@@ -70,6 +70,9 @@ jobs:
         poetry-version: "1.8.5"
         python-version: "3.x"
 
+    - name: Set up Kubeconform
+      uses: bmuschko/setup-kubeconform@v1
+
     - name: Run kubeconform
       run: |
         for values in charts/matrix-stack/ci/*values.yaml; do
