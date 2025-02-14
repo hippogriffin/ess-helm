@@ -15,6 +15,9 @@ _raw_shared_components_details = {
     "haproxy": {},
     "postgres": {
         "has_ingress": False,
+        "paths_consistency_noqa": [
+            "/docker-entrypoint-initdb.d"
+        ]
     },
 }
 
@@ -64,6 +67,7 @@ def _enrich_components_to_test(details) -> dict[str, Any]:
         _component_details[component].setdefault("has_ingress", True)
         _component_details[component].setdefault("has_service_monitor", True)
         _component_details[component].setdefault("has_workloads", True)
+        _component_details[component].setdefault("paths_consistency_noqa", [])
         _component_details[component].setdefault("has_image", _component_details[component]["has_workloads"])
         _component_details[component].setdefault("sub_components", {})
         for sub_component in _component_details[component]["sub_components"]:

@@ -6,7 +6,7 @@ import re
 
 import pytest
 
-from . import component_details, secrets_values_files_to_test, values_files_to_test
+from . import component_details, secrets_values_files_to_test, shared_components_details, values_files_to_test
 from .utils import get_or_empty
 
 
@@ -185,7 +185,10 @@ async def test_secrets_consistency(templates, other_secrets, component):
                 # If for some path, the configuration cannot be made explicit
                 # we add them to the list of exceptions
                 # For example, nginx container uses /etc/nginx natively.
-                if parent_path in component_details[component]["paths_consistency_noqa"]:
+                if parent_path in component_details[component]["paths_consistency_noqa"] \
+                    or parent_path in [path
+                                       for shared in component_details[component]["shared_components"]
+                                       for path in shared_components_details[shared]["paths_consistency_noqa"]]:
                     continue
                 mount_path_found = False
 
@@ -205,7 +208,7 @@ async def test_secrets_consistency(templates, other_secrets, component):
                 # Make sure that paths which match are actually present in mounted secrets
                 for cm in mounted_config_maps:
                     for data, content in cm["data"].items():
-                        if parent_path == "/docker-entrypoint-initdb.d" or match_in_content(
+                        if match_in_content(
                             f"configmap {cm['metadata']['name']}/{data} mounted in {container['name']}",
                             mounted_keys,
                             parent_path,
