@@ -65,15 +65,6 @@ jobs:
           echo 'Error: $ is used in a .tpl files, but helm passes the local context to the special variable $ in included templates.'; exit 1 
         } || echo "OK."
 
-    - name: Install venv
-      run: |
-        # helm/chart-testing-action sets up its own venv that we have no control over
-        # We don't want to use it for this
-        unset VIRTUAL_ENV
-        # Or future actions
-        poetry_venv=$(poetry env info -p)
-        sed -i "s|^VIRTUAL_ENV=.*|VIRTUAL_ENV=$poetry_venv|" "${GITHUB_ENV}"
-
     - uses: matrix-org/setup-python-poetry@v1
       with:
         poetry-version: "1.8.5"
