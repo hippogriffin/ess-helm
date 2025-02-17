@@ -5,7 +5,7 @@
 name: Build Docker Images
 
 on:
-  pull_request_target:
+  pull_request:
   workflow_dispatch:
   push:
     branches:
@@ -23,24 +23,24 @@ permissions:
 
 jobs:
   tests:
-    runs-on: memory-m
-    container:
-      image: ghcr.io/${{ github.repository }}/ci-runner
-      credentials:
-        username: ${{ github.actor }}
-        password: ${{ secrets.GITHUB_TOKEN }}
+    runs-on: ubuntu-latest
     steps:
     - uses: actions/checkout@v4
       with:
         ref: ${{ github.event.pull_request.head.sha }}
 
-    - name: Prepare go path
-      run: echo "/usr/local/go/bin" >> "${GITHUB_PATH}"
+    - uses: actions/setup-go@v5
+      with:
+        go-version: stable
 
-    - name: Lint with golangci-lint
-      run: |
-        cd matrix-tools
-        golangci-lint run ./... -v --show-stats --no-config --modules-download-mode readonly --timeout 5m
+    - uses: golangci/golangci-lint-action@v6
+      with:
+        working-directory: matrix-tools
+        args: -v --show-stats --no-config --modules-download-mode readonly --timeout 5m
+
+    - uses: GoTestTools/gotestfmt-action@v2
+      with:
+        token: ${{ secrets.GITHUB_TOKEN }}
 
     - name: Run tests
       run: cd matrix-tools && go test -v  -json ./... 2>&1 | gotestfmt
@@ -50,7 +50,7 @@ jobs:
     name: Build matrix-tools container image
     needs:
     - tests
-    runs-on: dind-m
+    runs-on: ubuntu-latest
     steps:
       - name: Inspect Builder
         run: docker buildx inspect

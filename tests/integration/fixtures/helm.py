@@ -14,8 +14,8 @@ from lightkube.models.meta_v1 import ObjectMeta
 from lightkube.resources.core_v1 import Endpoints, Namespace, Secret, Service
 from lightkube.resources.networking_v1 import Ingress
 
-from ..lib.helpers import kubernetes_tls_secret
-from ..lib.utils import value_file_has
+from ..lib.helpers import kubernetes_docker_secret, kubernetes_tls_secret
+from ..lib.utils import DockerAuth, docker_config_json, value_file_has
 from .data import ESSData
 
 
@@ -25,6 +25,39 @@ async def helm_prerequisites(
 ):
     resources = []
     setups = []
+
+    # On CI, public runners need read access to dockerhub.io and ghcr.io repositories
+    if os.environ.get("CI"):
+        resources.append(
+            kubernetes_docker_secret(
+                f"{generated_data.release_name}-dockerhub",
+                namespace=generated_data.ess_namespace,
+                docker_config_json=docker_config_json(
+                    [
+                        DockerAuth(
+                            registry="docker.io",
+                            username=os.environ["DOCKERHUB_USERNAME"],
+                            password=os.environ["DOCKERHUB_TOKEN"],
+                        )
+                    ]
+                ),
+            ),
+        )
+        resources.append(
+            kubernetes_docker_secret(
+                f"{generated_data.release_name}-ghcr",
+                namespace=generated_data.ess_namespace,
+                docker_config_json=docker_config_json(
+                    [
+                        DockerAuth(
+                            registry="ghcr.io",
+                            username=os.environ["GHCR_USERNAME"],
+                            password=os.environ["GHCR_TOKEN"],
+                        )
+                    ]
+                ),
+            ),
+        )
 
     if value_file_has("elementWeb.enabled", True):
         resources.append(
@@ -123,6 +156,11 @@ async def matrix_stack(
 
     values["serverName"] = generated_data.server_name
     values.setdefault("matrixTools", {})
+    if os.environ.get("CI"):
+        values["imagePullSecrets"] = [
+            {"name": f"{generated_data.release_name}-dockerhub"},
+            {"name": f"{generated_data.release_name}-ghcr"},
+        ]
     values["matrixTools"].setdefault("image", {})
     values["matrixTools"]["image"] = loaded_matrix_tools
 

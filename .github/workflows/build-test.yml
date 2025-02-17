@@ -10,35 +10,23 @@ on:
     - main
   workflow_dispatch:
 
-permissions:
-  contents: read
-  packages: read
-
 jobs:
   # We build from source and commit all generated file changes so that we can see the impact in PRs
   # We want to ensure that the commit of built changes does happen, so fail if building creates changes
   # If this gets problematic we change to not committing the built schemas/values to git
   no-changes-after-building:
-    runs-on: cpu-s
-    container:
-      image: ghcr.io/${{ github.repository }}/ci-runner
-      credentials:
-        username: ${{ github.actor }}
-        password: ${{ secrets.GITHUB_TOKEN }}
+    runs-on: ubuntu-latest
     steps:
     - name: Checkout
       uses: actions/checkout@v4
 
-    - name: Define a cache for the virtual environment based on the dependencies lock file
-      uses: actions/cache@v4
+    - uses: matrix-org/setup-python-poetry@v1
       with:
-        path: ./.venv
-        key: venv-${{ hashFiles('poetry.lock') }}
+        python-version: "3.x"
+        poetry-version: "1.8.5"
 
-    - name: Install venv
+    - name: Load poetry path
       run: |
-        poetry env info
-        poetry install
         echo "$(poetry env info -p)/bin" >> "${GITHUB_PATH}"
 
     - name: Build and check for changes
@@ -57,12 +45,7 @@ jobs:
         git diff --exit-code
 
   helm-lint:
-    runs-on: cpu-s
-    container:
-      image: ghcr.io/${{ github.repository }}/ci-runner
-      credentials:
-        username: ${{ github.actor }}
-        password: ${{ secrets.GITHUB_TOKEN }}
+    runs-on: ubuntu-latest
     steps:
     - name: Checkout
       uses: actions/checkout@v4
@@ -82,25 +65,17 @@ jobs:
           echo 'Error: $ is used in a .tpl files, but helm passes the local context to the special variable $ in included templates.'; exit 1 
         } || echo "OK."
 
-
-    - name: Define a cache for the virtual environment based on the dependencies lock file
-      uses: actions/cache@v4
+    - uses: matrix-org/setup-python-poetry@v1
       with:
-        path: ./.venv
-        key: venv-${{ hashFiles('poetry.lock') }}
+        poetry-version: "1.8.5"
+        python-version: "3.x"
 
-    - name: Install venv
+    - name: Load poetry path
       run: |
-        # helm/chart-testing-action sets up its own venv that we have no control over
-        # We don't want to use it for this
-        unset VIRTUAL_ENV
-        # Or future actions
-        poetry_venv=$(poetry env info -p)
-        sed -i "s|^VIRTUAL_ENV=.*|VIRTUAL_ENV=$poetry_venv|" "${GITHUB_ENV}"
-
-        poetry env info
-        poetry install -n
         echo "$(poetry env info -p)/bin" >> "${GITHUB_PATH}"
+
+    - name: Set up Kubeconform
+      uses: bmuschko/setup-kubeconform@v1
 
     - name: Run kubeconform
       run: |

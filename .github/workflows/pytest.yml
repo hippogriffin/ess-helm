@@ -5,24 +5,25 @@
 name: Run Pytest tests
 
 on:
-  pull_request_target:
+  pull_request:
   push:
     branches:
     - main
   workflow_dispatch:
 
+permissions:
+  contents: read
+  packages: read
+
+env:
+  DOCKERHUB_USERNAME: ${{ secrets.DOCKERHUB_USERNAME }}
+  DOCKERHUB_TOKEN: ${{ secrets.DOCKERHUB_TOKEN }}
+  GHCR_USERNAME: ${{ github.actor }}
+  GHCR_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
 jobs:
   pytest:
-    # /!!!!!!!!!!!!!\
-    # ~~~~WARNING~~~~
-    # This runner is highly-privileged and we can't go FOSS Until we redesign
-    # how we do CI tests
-    runs-on: dind-privileged-m
-    container:
-      image: ghcr.io/${{ github.repository }}/ci-runner
-      credentials:
-        username: ${{ github.actor }}
-        password: ${{ secrets.GITHUB_TOKEN }}
+    runs-on: ubuntu-latest
     strategy:
       fail-fast: false
       matrix:
@@ -36,19 +37,41 @@ jobs:
       with:
         ref: ${{ github.event.pull_request.head.sha }}
 
-    - name: Define a cache for the virtual environment based on the dependencies lock file
-      uses: actions/cache@v4
+    - uses: matrix-org/setup-python-poetry@v1
       with:
-        path: ./.venv
-        key: venv-${{ hashFiles('poetry.lock') }}
+        poetry-version: "1.8.5"
+        python-version: "3.x"
 
-    - name: Install dependencies
+    - name: Load poetry path
       run: |
-        poetry install
+        echo "$(poetry env info -p)/bin" >> "${GITHUB_PATH}"
+
+    - name: Login to GHCR
+      uses: docker/login-action@v3
+      with:
+        registry: ghcr.io
+        username: ${{ github.actor }}
+        password: ${{ secrets.GITHUB_TOKEN }}
+
+    - name: Login to Dockerhub
+      uses: docker/login-action@v3
+      with:
+        registry: docker.io
+        username: ${{ secrets.DOCKERHUB_USERNAME }}
+        password: ${{ secrets.DOCKERHUB_TOKEN }}
+
+    - uses: engineerd/setup-kind@v0.6.2
+      with:
+        version: "v0.25.0"
+        name: "ess-helm"
+        skipClusterCreation: "true"
+        skipClusterLogsExport: "true"
+
+
+    - uses: azure/setup-helm@v4.2.0
 
     - name: Test with pytest
       run: |
-        cp tests/integration/fixtures/files/clusters/audit-policy.yml /dind-job-shared/audit-policy.yml
         . tests/integration/env/${{ matrix.test-component }}.rc
         PYTEST_KEEP_CLUSTER=1 poetry run pytest tests/integration
 

@@ -11,18 +11,9 @@ on:
     - main
   workflow_dispatch:
 
-permissions:
-  contents: read
-  packages: read
-
 jobs:
   shellcheck:
-    runs-on: cpu-s
-    container:
-      image: ghcr.io/${{ github.repository }}/ci-runner
-      credentials:
-        username: ${{ github.actor }}
-        password: ${{ secrets.GITHUB_TOKEN }}
+    runs-on: ubuntu-latest
     steps:
     - name: Checkout
       uses: actions/checkout@v4
@@ -31,26 +22,18 @@ jobs:
       run: shellcheck scripts/*.sh
 
   python:
-    runs-on: cpu-s
-    container:
-      image: ghcr.io/${{ github.repository }}/ci-runner
-      credentials:
-        username: ${{ github.actor }}
-        password: ${{ secrets.GITHUB_TOKEN }}
+    runs-on: ubuntu-latest
     steps:
     - name: Checkout
       uses: actions/checkout@v4
 
-    - name: Define a cache for the virtual environment based on the dependencies lock file
-      uses: actions/cache@v4
+    - uses: matrix-org/setup-python-poetry@v1
       with:
-        path: ./.venv
-        key: venv-${{ hashFiles('poetry.lock') }}
+        poetry-version: "1.8.5"
+        python-version: "3.x"
 
-    - name: Install venv
+    - name: Load poetry path
       run: |
-        poetry env info
-        poetry install
         echo "$(poetry env info -p)/bin" >> "${GITHUB_PATH}"
 
     - name: Run ruff check
