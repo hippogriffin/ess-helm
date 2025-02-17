@@ -36,6 +36,20 @@ jobs:
       run: |
         echo "$(poetry env info -p)/bin" >> "${GITHUB_PATH}"
 
+    - name: Login to GHCR
+      uses: docker/login-action@v3
+      with:
+        registry: ghcr.io
+        username: ${{ github.actor }}
+        password: ${{ secrets.GITHUB_TOKEN }}
+
+    - name: Login to Dockerhub
+      uses: docker/login-action@v3
+      with:
+        registry: docker.io
+        username: ${{ secrets.DOCKERHUB_USERNAME }}
+        password: ${{ secrets.DOCKERHUB_TOKEN }}
+
     - uses: engineerd/setup-kind@v0.6.2
       with:
         version: "v0.25.0"
