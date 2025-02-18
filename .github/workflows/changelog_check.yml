@@ -25,7 +25,10 @@ jobs:
           echo "$(poetry env info -p)/bin" >> "${GITHUB_PATH}"
 
       - name: Run towncrier
+        env:
+          GHEVENTNUMBER: ${{ github.event.number }}
         run: |
           # Fix/workaround for "detected dubious ownership in repository"
-          git config --global --add safe.directory "${GITHUB_WORKSPACE}" 
-          scripts/check_newsfragment.sh ${{ github.event.number }}
+          git config --global --add safe.directory "${GITHUB_WORKSPACE}"
+          scripts/check_newsfragment.sh "${GHEVENTNUMBER}"
+
