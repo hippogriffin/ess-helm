@@ -162,10 +162,8 @@ We have an init container to render & merge the config for several reasons:
         - {{ include "element-io.synapse.process.app" (dict "root" $ "context" $processType) }}
         - "-c"
         - /conf/homeserver.yaml
-        env:
-        - name: LD_PRELOAD
-          value: libjemalloc.so.2
 {{- with (include "element-io.synapse.env" (dict "root" $ "context" .)) }}
+        env:
           {{- . | nindent 10 }}
 {{- end }}
         ports:
