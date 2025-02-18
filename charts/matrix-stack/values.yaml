@@ -605,7 +605,7 @@ matrixAuthenticationService:
     ## PostgreSQL database name
     # database:
 
-    ## TLS settins to use for the PostgreSQL connection
+    ## TLS settings to use for the PostgreSQL connection
     # sslMode: prefer
 
     ## PostgreSQL password.
@@ -1171,7 +1171,7 @@ synapse:
     ## PostgreSQL database name
     # database:
 
-    ## TLS settins to use for the PostgreSQL connection
+    ## TLS settings to use for the PostgreSQL connection
     # sslMode: prefer
 
     ## PostgreSQL password.

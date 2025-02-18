@@ -254,7 +254,7 @@ labels: {}
   ## PostgreSQL database name
   # database:
 
-  ## TLS settins to use for the PostgreSQL connection
+  ## TLS settings to use for the PostgreSQL connection
   # sslMode: prefer
 {{ (credential("PostgreSQL password", "password", commented=True) | indent(2)) }}
 {%- endmacro %}
