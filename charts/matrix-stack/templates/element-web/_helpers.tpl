@@ -26,6 +26,14 @@ app.kubernetes.io/version: {{ .image.tag }}
 {{- if $root.Values.synapse.enabled }}
 {{- $_ := set $mHomeserver "base_url" (printf "https://%s" $root.Values.synapse.ingress.host) -}}
 {{- end }}
+{{- if $root.Values.matrixAuthenticationService.enabled }}
+{{- $embeddedPages := dict "login_for_welcome" true -}}
+{{- $ssoRedirectOptions := dict "immediate" true -}}
+{{- $settingDefaults := dict "UIFeature.passwordReset" false "UIFeature.registration" false "UIFeature.deactivate" false -}}
+{{- $_ := set $config "embedded_pages" $embeddedPages -}}
+{{- $_ := set $config "sso_redirect_options" $ssoRedirectOptions -}}
+{{- $_ := set $config "setting_defaults" $settingDefaults -}}
+{{- end }}
 {{- $defaultServerConfig := dict "m.homeserver" $mHomeserver -}}
 {{- $_ := set $config "default_server_config" $defaultServerConfig -}}
 {{- tpl (toPrettyJson (merge $config .additional)) $root -}}
