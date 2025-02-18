@@ -77,7 +77,8 @@ app.kubernetes.io/version: {{ .image.tag }}
 {{- define "element-io.synapse.env" }}
 {{- $root := .root -}}
 {{- with required "element-io.synapse.env missing context" .context -}}
-{{- $resultEnv := dict "LD_PRELOAD" "libjemalloc.so.2" -}}
+{{- $resultEnv := dict -}}
+{{- $_ := set $resultEnv "LD_PRELOAD" "libjemalloc.so.2" -}}
 {{- range $envEntry := .extraEnv -}}
 {{- $_ := set $resultEnv $envEntry.name $envEntry.value -}}
 {{- end -}}
