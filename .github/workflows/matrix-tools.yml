@@ -19,7 +19,7 @@ env:
 
 permissions:
   contents: read
-  packages: write
+  packages: read
 
 jobs:
   tests:
@@ -47,6 +47,9 @@ jobs:
 
   # Build our application docker images in parallel.
   docker-build-and-push:
+    permissions:
+      contents: read
+      packages: write
     name: Build matrix-tools container image
     needs:
     - tests
