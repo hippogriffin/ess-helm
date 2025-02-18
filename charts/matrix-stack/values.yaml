@@ -6,7 +6,7 @@
 
 ## Common configuration that impacts all components in the chart
 
-## The matrix-tools iamge, used in multiple components
+## The matrix-tools image, used in multiple components
 matrixTools:
 
   # Details of the image to be used
