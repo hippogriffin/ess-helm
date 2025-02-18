@@ -2,19 +2,20 @@
 #
 # SPDX-License-Identifier: AGPL-3.0-only OR LicenseRef-Element-Commercial
 
-FROM golang:1.23 AS buildstage
+FROM --platform=${BUILDPLATFORM} golang:1.23 AS buildstage
 
 WORKDIR /app
 COPY . /app
+
 RUN go mod download
-RUN CGO_ENABLED=0 go build -o /app/matrix-tools cmd/main.go
-RUN chmod 755 /app/matrix-tools
+
+ARG TARGETOS TARGETARCH
+RUN GOOS=$TARGETOS GOARCH=$TARGETARCH CGO_ENABLED=0 go build -o /app/matrix-tools cmd/main.go
 
 FROM gcr.io/distroless/static-debian12
-LABEL org.opencontainers.image.licenses="AGPL-3.0-only OR LicenseRef-Element-Commercial"
 WORKDIR /
 
-COPY --from=buildstage  /app/matrix-tools /
+COPY --from=buildstage --chmod=0755 /app/matrix-tools /
 EXPOSE 8443
 ENTRYPOINT ["/matrix-tools"]
 
