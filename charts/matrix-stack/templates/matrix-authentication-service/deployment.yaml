@@ -86,6 +86,7 @@ spec:
           {{- end }}
         - /config-templates/config.yaml
         env:
+        {{- include "element-io.matrix-authentication-service.env" (dict "root" $ "context" .) | nindent 8 }}
         - name: POSTGRES_PASSWORD
           value: >-
             {{
