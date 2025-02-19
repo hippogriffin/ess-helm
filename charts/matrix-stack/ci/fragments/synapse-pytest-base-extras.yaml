@@ -1,0 +1,12 @@
+# Copyright 2025 New Vector Ltd
+#
+# SPDX-License-Identifier: AGPL-3.0-only OR LicenseRef-Element-Commercial
+
+synapse:
+  ingress:
+    host: synapse.{{ $.Values.serverName }}
+    tlsSecret: "{{ $.Release.Name }}-synapse-web-tls"
+
+  redis:
+    annotations:
+      has-no-service-monitor: "true"
