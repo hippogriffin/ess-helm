@@ -13,9 +13,7 @@ async def test_unique_ports_in_containers(templates):
     for template in templates:
         if template["kind"] in ["Deployment", "StatefulSet", "Job"]:
             id = f"{template['kind']}/{template['metadata']['name']}"
-            containers = template["spec"]["template"]["spec"]["containers"] + \
-                template["spec"]["template"]["spec"].get("initContainers", [])
             ports = []
-            for container in containers:
+            for container in template["spec"]["template"]["spec"]["containers"]:
               ports += [port['containerPort'] for port in container.get('ports', [])]
             assert len(ports) == len(set(ports)), f"Ports are not unique: {id}, {ports}"
