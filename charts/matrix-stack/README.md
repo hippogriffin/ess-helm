@@ -170,7 +170,9 @@ elementWeb:
 ```
 
 If `serverName` is set this will be configured in Element Web. If Synapse is enabled
-this will be configured in Element Web as well.
+this will be configured in Element Web as well. The Element RageShakes endpoint is
+configured so that bug reports can be submitted. The Element Map Tiler endpoint is
+also configured so that location sharing shows maps; please reconfigure as appropriate.
 
 Additional Element Web configuration can be provided as arbitrary sub-properties with
 ```yaml
