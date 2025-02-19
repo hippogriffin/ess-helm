@@ -75,9 +75,6 @@ spec:
             command: ["psql", "-w", "-U", "postgres", "-d", "postgres", "-c", "SELECT 1"]
           initialDelaySeconds: 45
           timeoutSeconds: 2
-        ports:
-        - containerPort: 5432
-          name: postgres
         volumeMounts:
 {{- range $secret := include "element-io.postgres.configSecrets" (dict "root" $ "context" .) | fromJsonArray }}
         - mountPath: /secrets/{{ tpl $secret $ }}
