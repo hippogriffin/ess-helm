@@ -6,5 +6,5 @@
 # It is a mixin to be used with other values file to enable
 # usage of the test cluster
 
-ingress:
-  tlsSecret: ess-selfsigned
+certManager:
+  clusterIssuer: ess-selfsigned
