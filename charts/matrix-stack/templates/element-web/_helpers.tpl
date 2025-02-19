@@ -36,6 +36,7 @@ app.kubernetes.io/version: {{ .image.tag }}
 {{- end }}
 {{- $defaultServerConfig := dict "m.homeserver" $mHomeserver -}}
 {{- $_ := set $config "default_server_config" $defaultServerConfig -}}
+{{- $_ := set $config "bug_report_endpoint_url" "https://element.io/bugreports/submit" -}}
 {{- tpl (toPrettyJson (merge $config .additional)) $root -}}
 {{- end }}
 {{- end }}
