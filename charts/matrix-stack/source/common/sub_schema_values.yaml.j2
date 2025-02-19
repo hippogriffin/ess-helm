@@ -11,7 +11,7 @@ SPDX-License-Identifier: AGPL-3.0-only OR LicenseRef-Element-Commercial
 {% macro ess() %}
 ## Common configuration that impacts all components in the chart
 
-## The matrix-tools iamge, used in multiple components
+## The matrix-tools image, used in multiple components
 matrixTools:
 {{ image(registry="ghcr.io", repository="element-hq/ess-helm/matrix-tools", tag="0.3.0") | indent(2) }}
 
@@ -254,7 +254,7 @@ labels: {}
   ## PostgreSQL database name
   # database:
 
-  ## TLS settins to use for the PostgreSQL connection
+  ## TLS settings to use for the PostgreSQL connection
   # sslMode: prefer
 {{ (credential("PostgreSQL password", "password", commented=True) | indent(2)) }}
 {%- endmacro %}
