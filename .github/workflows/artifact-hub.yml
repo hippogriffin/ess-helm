@@ -18,10 +18,10 @@ jobs:
       packages: write
     runs-on: ubuntu-latest
     steps:
+    # This will push the OCI artifact only on merges
+    # As the checkout will push the PR Target commit hash
     - name: Checkout
       uses: actions/checkout@v4
-      with:
-        ref: ${{ github.event.pull_request.head.sha }}
 
     - uses: oras-project/setup-oras@v1
 
@@ -33,8 +33,10 @@ jobs:
           oras login ghcr.io -u $ORAS_USERNAME -p $ORAS_PASSWORD
 
     - name: Push artifact-hub
+      env:
+        GITHUB_REPOSITORY: ${{ github.repository }}
       run: |
         oras push \
-          oci://ghcr.io/${{ github.repository }}:artifacthub.io \
+          ghcr.io/${GITHUB_REPOSITORY}/matrix-stack:artifacthub.io \
           --config /dev/null:application/vnd.cncf.artifacthub.config.v1+yaml \
-          artifacthub-repo.yml:application/vnd.cncf.artifacthub.repository-metadata.layer.v1.yaml
+          artifacthub-repo.yaml:application/vnd.cncf.artifacthub.repository-metadata.layer.v1.yaml
