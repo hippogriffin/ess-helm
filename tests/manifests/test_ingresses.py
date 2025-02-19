@@ -254,7 +254,7 @@ async def test_ingress_certManager_clusterissuer(make_templates, values):
                 f"Ingress {template['name']} does not have cert-manager annotation"
             )
             assert template["metadata"]["annotations"]["cert-manager.io/cluster-issuer"] == "cluster-issuer-name"
-            assert template["spec"]["tls"][0]["secretName"].endswith("-certmanager-tls"), (
+            assert template["spec"]["tls"][0]["secretName"] == f"{template["metadata"]["name"]}-certmanager-tls", (
                 f"Ingress {template['name']} does not have correct secret name for cert-manager tls"
             )
 
@@ -270,7 +270,7 @@ async def test_ingress_certManager_issuer(make_templates, values):
                 f"Ingress {template['name']} does not have cert-manager annotation"
             )
             assert template["metadata"]["annotations"]["cert-manager.io/issuer"] == "issuer-name"
-            assert template["spec"]["tls"][0]["secretName"].endswith("-certmanager-tls"), (
+            assert template["spec"]["tls"][0]["secretName"] == f"{template["metadata"]["name"]}-certmanager-tls", (
                 f"Ingress {template['name']} does not have correct secret name for cert-manager tls"
             )
 
