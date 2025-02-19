@@ -4,8 +4,8 @@
 
 repositoryID: f900b890-eb67-4328-9100-336301f7cefe
 owners:
-  - name: gaelg
-    email: gaelg@element.io
+  - name: Element Server Products Team
+    email: onprem-support@element.io
 ignore:
   - name: matrix-stack
     version: "[0-9]+\\.[0-9]+\\.[0-9]+\\..+"
