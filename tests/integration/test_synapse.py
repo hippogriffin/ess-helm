@@ -74,7 +74,9 @@ async def test_synapse_media_upload_fetch_authenticated(
     )
 
     media_pod_suffix = (
-        "synapse-media-repository-0" if value_file_has("synapse.workers.media-repository.enabled", True) else "synapse-main-0"
+        "synapse-media-repository-0"
+        if value_file_has("synapse.workers.media-repository.enabled", True)
+        else "synapse-main-0"
     )
     media_pod = f"{generated_data.release_name}-{media_pod_suffix}"
 
