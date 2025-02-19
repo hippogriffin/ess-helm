@@ -19,6 +19,18 @@
         ]
       }
     },
+    "certManager": {
+      "type": "object",
+      "properties": {
+        "clusterIssuer": {
+          "type": "string"
+        },
+        "issuer": {
+          "type": "string"
+        }
+      },
+      "additionalProperties": false
+    },
     "matrixTools": {
       "type": "object",
       "properties": {

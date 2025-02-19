@@ -243,3 +243,34 @@ async def test_ingress_services(templates):
                         f"Port number {backend_service['port']['number']} "
                         f"not found in service {backend_service['name']}"
                     )
+
+@pytest.mark.parametrize("values_file", values_files_with_ingresses)
+@pytest.mark.asyncio_cooperative
+async def test_ingress_certmanager_clusterissuer(make_templates, values):
+    values.setdefault("certManager", {})["clusterIssuer"] = "cluster-issuer-name"
+    for template in await make_templates(values):
+        if template['kind'] == 'Ingress':
+            assert "cert-manager.io/cluster-issuer" in template["metadata"]["annotations"], (
+                f"Ingress {template['name']} does not have cert-manager annotation"
+            )
+            assert template["metadata"]["annotations"]["cert-manager.io/cluster-issuer"] == "cluster-issuer-name"
+            assert template["spec"]["tls"][0]["secretName"].endswith("-certmanager-tls"), (
+                f"Ingress {template['name']} does not have correct secret name for cert-manager tls"
+            )
+
+
+
+@pytest.mark.parametrize("values_file", values_files_with_ingresses)
+@pytest.mark.asyncio_cooperative
+async def test_ingress_certmanager_issuer(make_templates, values):
+    values.setdefault("certManager", {})["issuer"] = "issuer-name"
+    for template in await make_templates(values):
+        if template['kind'] == 'Ingress':
+            assert "cert-manager.io/issuer" in template["metadata"]["annotations"], (
+                f"Ingress {template['name']} does not have cert-manager annotation"
+            )
+            assert template["metadata"]["annotations"]["cert-manager.io/issuer"] == "issuer-name"
+            assert template["spec"]["tls"][0]["secretName"].endswith("-certmanager-tls"), (
+                f"Ingress {template['name']} does not have correct secret name for cert-manager tls"
+            )
+

@@ -15,7 +15,7 @@ metadata:
   name: {{ $.Release.Name }}-well-known
   namespace: {{ $.Release.Namespace }}
 spec:
-{{- include "element-io.ess-library.ingress.tlsSecret" (dict "root" $ "context" (dict "hosts" (list (.ingress.host | default $.Values.serverName)) "tlsSecret" .ingress.tlsSecret)) | nindent 2 }}
+{{- include "element-io.ess-library.ingress.tlsSecret" (dict "root" $ "context" (dict "hosts" (list (.ingress.host | default $.Values.serverName)) "tlsSecret" .ingress.tlsSecret "ingressName" "well-known")) | nindent 2 }}
 {{- include "element-io.ess-library.ingress.className" (dict "root" $ "context" .ingress.className) | nindent 2 }}
   rules:
   - host: "{{ tpl ($.Values.wellKnownDelegation.ingress.host | default $.Values.serverName) $ }}"

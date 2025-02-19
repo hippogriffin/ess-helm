@@ -14,7 +14,7 @@ metadata:
   name: {{ $.Release.Name }}-element-web
   namespace: {{ $.Release.Namespace }}
 spec:
-{{- include "element-io.ess-library.ingress.tlsSecret" (dict "root" $ "context" (dict "hosts" (list (required "elementWeb.ingress.host is required" .ingress.host)) "tlsSecret" .ingress.tlsSecret)) | nindent 2 }}
+{{- include "element-io.ess-library.ingress.tlsSecret" (dict "root" $ "context" (dict "hosts" (list (required "elementWeb.ingress.host is required" .ingress.host)) "tlsSecret" .ingress.tlsSecret "ingressName" "element-web")) | nindent 2 }}
 {{- include "element-io.ess-library.ingress.className" (dict "root" $ "context" .ingress.className) | nindent 2 }}
   rules:
   - host: {{ (tpl .ingress.host $) | quote }}
