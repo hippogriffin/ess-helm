@@ -246,7 +246,7 @@ async def test_ingress_services(templates):
 
 @pytest.mark.parametrize("values_file", values_files_with_ingresses)
 @pytest.mark.asyncio_cooperative
-async def test_ingress_certmanager_clusterissuer(make_templates, values):
+async def test_ingress_certManager_clusterissuer(make_templates, values):
     values.setdefault("certManager", {})["clusterIssuer"] = "cluster-issuer-name"
     for template in await make_templates(values):
         if template['kind'] == 'Ingress':
@@ -262,7 +262,7 @@ async def test_ingress_certmanager_clusterissuer(make_templates, values):
 
 @pytest.mark.parametrize("values_file", values_files_with_ingresses)
 @pytest.mark.asyncio_cooperative
-async def test_ingress_certmanager_issuer(make_templates, values):
+async def test_ingress_certManager_issuer(make_templates, values):
     values.setdefault("certManager", {})["issuer"] = "issuer-name"
     for template in await make_templates(values):
         if template['kind'] == 'Ingress':
@@ -274,3 +274,18 @@ async def test_ingress_certmanager_issuer(make_templates, values):
                 f"Ingress {template['name']} does not have correct secret name for cert-manager tls"
             )
 
+
+@pytest.mark.parametrize("values_file", values_files_with_ingresses)
+@pytest.mark.asyncio_cooperative
+async def test_component_ingress_tlsSecret_beats_certManager(component, values, make_templates):
+    values[component].setdefault("ingress", {})["tlsSecret"] = "component"
+    values.setdefault("certManager", {})["issuer"] = "issuer-name"
+
+    for template in await make_templates(values):
+        if template["kind"] == "Ingress":
+            assert "tls" in template["spec"]
+            assert len(template["spec"]["tls"]) == 1
+            assert len(template["spec"]["tls"][0]["hosts"]) == 1
+            assert template["spec"]["tls"][0]["hosts"][0] == template["spec"]["rules"][0]["host"]
+            assert template["spec"]["tls"][0]["secretName"] == "component"
+            assert not template["metadata"].get("annotations")

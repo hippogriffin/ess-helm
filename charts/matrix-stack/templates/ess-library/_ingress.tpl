@@ -10,6 +10,8 @@ SPDX-License-Identifier: AGPL-3.0-only OR LicenseRef-Element-Commercial
 {{- fail "element-io.ess-library.ingress.annotations missing context" -}}
 {{- end }}
 {{- $annotations := dict -}}
+{{- $tlsSecret := coalesce .context.tlsSecret $root.Values.ingress.tlsSecret -}}
+{{- if and (not $tlsSecret) $root.Values.certManager -}}
 {{- with $root.Values.certManager -}}
 {{- with .clusterIssuer -}}
 {{- $annotations = merge $annotations (dict "cert-manager.io/cluster-issuer" .) -}}
@@ -18,8 +20,9 @@ SPDX-License-Identifier: AGPL-3.0-only OR LicenseRef-Element-Commercial
 {{- $annotations = merge $annotations (dict "cert-manager.io/issuer" .) -}}
 {{- end -}}
 {{- end -}}
+{{- end -}}
 {{- $annotations = mustMergeOverwrite $annotations ($root.Values.ingress.annotations | deepCopy) -}}
-{{- $annotations = mustMergeOverwrite $annotations (.context | deepCopy) -}}
+{{- $annotations = mustMergeOverwrite $annotations (.context.annotations | deepCopy) -}}
 {{- with $annotations -}}
 annotations:
   {{- toYaml . | nindent 2 }}
