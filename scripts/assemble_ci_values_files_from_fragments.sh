@@ -6,13 +6,13 @@
 
 set -euo pipefail
 
-[ "$#" -ne 0 ] && echo "Usage: assemble_ci_values_files_from_fragments.sh" && exit 1
+[ "$#" -ne 0 ] && echo "Usage: assemble_ci_values_files_from_fragments.sh" 1>&2 && exit 1
 
 scripts_dir=$( cd -- "$( dirname -- "${BASH_SOURCE[0]}" )" &> /dev/null && pwd )
 values_file_root=$( cd "$scripts_dir/../charts/matrix-stack/ci" &> /dev/null && pwd )
 
 
-[ ! -d "$values_file_root" ] && echo "$values_file_root must be a directory that exists" && exit 1
+[ ! -d "$values_file_root" ] && echo "$values_file_root must be a directory that exists" 1>&2 && exit 1
 
 for values_file in "$values_file_root"/*-values.yaml; do
   if ! source_fragments=$(grep -E '#\s+source_fragments:' "$values_file" | sed 's/.*:\s*//'); then
@@ -23,7 +23,7 @@ for values_file in "$values_file_root"/*-values.yaml; do
   yq_command='.'
   for fragment_name in ${source_fragments}; do
     fragment_filename="$values_file_root/fragments/$fragment_name"
-    [ ! -f "$fragment_filename" ] && echo "$fragment_filename must be a file that exists" && exit 1
+    [ ! -f "$fragment_filename" ] && echo "$fragment_filename must be a file that exists" 1>&2 && exit 1
     yq_command="($yq_command *= load(\"$fragment_filename\"))"
   done
 
