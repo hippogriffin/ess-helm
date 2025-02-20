@@ -78,7 +78,6 @@ app.kubernetes.io/version: {{ .image.tag }}
 {{- $root := .root -}}
 {{- with required "element-io.synapse.env missing context" .context -}}
 {{- $resultEnv := dict -}}
-{{- $_ := set $resultEnv "LD_PRELOAD" "libjemalloc.so.2" -}}
 {{- range $envEntry := .extraEnv -}}
 {{- $_ := set $resultEnv $envEntry.name $envEntry.value -}}
 {{- end -}}
@@ -86,6 +85,14 @@ app.kubernetes.io/version: {{ .image.tag }}
 - name: {{ $key | quote }}
   value: {{ $value | quote }}
 {{- end -}}
+{{- end -}}
+{{- end -}}
+
+{{- define "element-io.synapse.pythonEnv" }}
+{{- $root := .root -}}
+{{- with required "element-io.synapse.pythonEnv missing context" .context -}}
+- name: "LD_PRELOAD"
+  value: "libjemalloc.so.2"
 {{- end -}}
 {{- end -}}
 
