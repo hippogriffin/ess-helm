@@ -176,25 +176,6 @@ async def matrix_stack(
     )
     await asyncio.gather(revision, *helm_prerequisites)
 
-    counter = 0
-    while True:
-        try:
-            revision = await helm_client.get_current_revision(
-                generated_data.release_name,
-                namespace=generated_data.ess_namespace,
-            )
-            if revision.status == pyhelm3.ReleaseRevisionStatus.DEPLOYED:
-                break
-            elif revision.status != pyhelm3.ReleaseRevisionStatus.PENDING_INSTALL:
-                raise Exception("Helm Release seems to have failed deploying")
-        except pyhelm3.errors.ReleaseNotFoundError:
-            continue
-
-        counter += 1
-        await asyncio.sleep(1)
-        if counter > 180:
-            raise Exception("Helm Release did not become DEPLOYED after 180s")
-
 
 @pytest.fixture(scope="session")
 def ingress_ready(cluster, kube_client: AsyncClient, matrix_stack, generated_data: ESSData):

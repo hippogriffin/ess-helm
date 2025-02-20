@@ -102,6 +102,19 @@ spec:
         - containerPort: 8405
           name: haproxy-metrics
           protocol: TCP
+{{- if $.Values.synapse.enabled }}
+        - containerPort: 8406
+          name: synapse-ready
+          protocol: TCP
+{{- end }}
+{{- if $.Values.synapse.enabled }}
+        startupProbe:
+          httpGet:
+            path: /synapse_ready
+            port: 8406
+          initialDelaySeconds: 10
+          timeoutSeconds: 5
+{{- end }}
         livenessProbe:
           httpGet:
             path: /haproxy_test
