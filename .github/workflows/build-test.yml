@@ -98,4 +98,4 @@ jobs:
         done
 
     - name: Run our manifest tests
-      run: poetry run pytest tests/manifests
+      run: poetry run pytest -v tests/manifests
