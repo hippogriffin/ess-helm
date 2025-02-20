@@ -7,6 +7,12 @@ SPDX-License-Identifier: AGPL-3.0-only OR LicenseRef-Element-Commercial
 {{- $root := .root -}}
 {{- with required "haproxy.cfg.tpl missing context" .context -}}
 
+frontend startup
+   bind *:8406
+   acl synapse_dead nbsrv(synapse-main) lt 1
+   monitor-uri   /synapse_ready
+   monitor fail  if synapse_dead
+
 frontend synapse-http-in
   bind *:8008
 
@@ -155,6 +161,9 @@ backend synapse-{{ $workerType }}
 {{- $workerTypeName := include "element-io.synapse.process.workerTypeName" (dict "root" $root "context" $workerType) }}
   # Use DNS SRV service discovery on the headless service
   server-template {{ $workerTypeName }} {{ $maxInstances }} _synapse-http._tcp.{{ $root.Release.Name }}-synapse-{{ $workerTypeName }}.{{ $root.Release.Namespace }}.svc.cluster.local resolvers kubedns init-addr none
+{{- end }}
+{{- if include "element-io.synapse.process.canFallbackToMain" (dict "root" $root "context" $workerType) }}
+  server-template main 1 _synapse-http._tcp.{{ $root.Release.Name }}-synapse-main.{{ $root.Release.Namespace }}.svc.cluster.local resolvers kubedns init-addr none backup
 {{- end }}
 {{- end }}
 
