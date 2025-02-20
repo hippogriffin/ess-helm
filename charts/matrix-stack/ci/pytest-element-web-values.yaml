@@ -6,18 +6,24 @@
 # DO NOT EDIT DIRECTLY. Edit the fragment files to add / modify / remove values
 
 elementWeb:
-  additional:
-    "default_server_config":
-      "m.homeserver":
-        "base_url": "https://synapse.{{ $.Values.serverName }}"
-    "element_call":
-      "url": "https://call.{{ $.Values.serverName }}"
-      "use_exclusively": true
-    "features":
-      "feature_element_call_video_rooms": true
-      "feature_group_calls": true
-      "feature_new_room_decoration_ui": true
-      "feature_video_rooms": true
+  additional: |
+    {
+      "default_server_config": {
+        "m.homeserver": {
+          "base_url": "https://synapse.{{ $.Values.serverName }}"
+        }
+      },
+      "element_call": {
+        "url": "https://call.{{ $.Values.serverName }}",
+        "use_exclusively": true
+      },
+      "features": {
+        "feature_video_rooms": true,
+        "feature_group_calls": true,
+        "feature_new_room_decoration_ui": true,
+        "feature_element_call_video_rooms": true
+      }
+    }
   annotations:
     has-no-service-monitor: "true"
   ingress:

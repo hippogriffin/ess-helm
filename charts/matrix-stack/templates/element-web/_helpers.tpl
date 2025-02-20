@@ -38,6 +38,6 @@ app.kubernetes.io/version: {{ .image.tag }}
 {{- $_ := set $config "default_server_config" $defaultServerConfig -}}
 {{- $_ := set $config "bug_report_endpoint_url" "https://element.io/bugreports/submit" -}}
 {{- $_ := set $config "map_style_url" "https://api.maptiler.com/maps/streets/style.json?key=fU3vlMsMn4Jb6dnEIFsx" -}}
-{{- tpl (toPrettyJson (merge $config .additional)) $root -}}
+{{- tpl (toPrettyJson (merge $config (.additional | fromJson))) $root -}}
 {{- end }}
 {{- end }}
