@@ -45,8 +45,8 @@ isSingle
 {{- define "element-io.synapse.process.canFallbackToMain" -}}
 {{- $root := .root -}}
 {{- with required "element-io.synapse.process.canFallbackToMain missing context" .context -}}
-{{ $hasPersistenceCookie := (list "media-repository" "sso-login") }}
-{{- if not (has . $hasPersistenceCookie) -}}
+{{ $cantFallBackToMain := (list "media-repository" "sso-login") }}
+{{- if not (has . $cantFallBackToMain) -}}
 canFallback
 {{- end -}}
 {{- end -}}
