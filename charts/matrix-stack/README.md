@@ -174,14 +174,18 @@ this will be configured in Element Web as well. The Element RageShakes endpoint 
 configured so that bug reports can be submitted. The Element Map Tiler endpoint is
 also configured so that location sharing shows maps; please reconfigure as appropriate.
 
-Additional Element Web configuration can be provided as arbitrary sub-properties with
+Additional Element Web configuration can be provided as a JSON String with
 ```yaml
 elementWeb:
-  additional:
-    default_theme: dark
-    default_server_config:
-      m.identity_server:
-        base_url: https://vector.im
+  additional: |
+    {
+      "default_theme": "dark",
+      "default_server_config": {
+        "m.identity_server": {
+          "base_url": "https://vector.im"
+        }
+      }
+    }
 ```
 Full details on available configuration options can be found at
 https://github.com/element-hq/element-web/blob/develop/docs/config.md.

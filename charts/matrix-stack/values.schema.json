@@ -498,7 +498,7 @@
           "type": "boolean"
         },
         "additional": {
-          "type": "object",
+          "type": "string",
           "additionalProperties": true
         },
         "replicas": {

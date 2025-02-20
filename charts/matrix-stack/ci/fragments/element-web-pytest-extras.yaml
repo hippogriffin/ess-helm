@@ -14,7 +14,7 @@ elementWeb:
   annotations:
     has-no-service-monitor: "true"
 
-  additional:
+  additional: |
     {
       "default_server_config": {
         "m.homeserver": {
