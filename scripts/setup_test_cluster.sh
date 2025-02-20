@@ -121,23 +121,4 @@ metadata:
     pod-security.kubernetes.io/warn: restricted
     pod-security.kubernetes.io/warn-version: ${server_version}
 EOF
-  cat <<EOF | kubectl --context $kind_context_name --namespace "$namespace" apply -f -
-apiVersion: cert-manager.io/v1
-kind: Certificate
-metadata:
-  name: ess-selfsigned
-  namespace: ${namespace}
-spec:
-  commonName: "${namespace}.localhost"
-  secretName: ess-selfsigned
-  privateKey:
-    algorithm: RSA
-  issuerRef:
-    name: ess-selfsigned
-    kind: ClusterIssuer
-    group: cert-manager.io
-  dnsNames:
-  - "${namespace}.localhost"
-  - "*.${namespace}.localhost"
-EOF
 done

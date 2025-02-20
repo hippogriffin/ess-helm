@@ -36,6 +36,13 @@ matrixTools:
     ## - name: dockerhub
     pullSecrets: []
 
+## CertManager Issuer to configure by default automatically on all ingresses
+## If configured, the chart will automatically generate the tlsSecret name for all ingresses
+certManager: {}
+  ## Choose one of clusterIssuer or issuer
+  # clusterIssuer:
+  # issuer:
+
 ## The server name of the Matrix Stack. This gets embedded in user IDs & room IDs
 ## It can not change after the initial deployment.
 # serverName: ess.localhost

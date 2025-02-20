@@ -12,6 +12,17 @@
     "labels": {
       "$ref": "file://common/labels.json"
     },
+    "certManager": {
+      "type": "object",
+      "properties": {
+        "clusterIssuer": {
+          "type": "string"
+        },
+        "issuer": {
+          "type": "string"
+        }
+      }
+    },
     "matrixTools": {
       "type": "object",
       "properties": {
