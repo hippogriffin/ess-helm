@@ -165,7 +165,6 @@ We have an init container to render & merge the config for several reasons:
         env:
           {{- include "element-io.synapse.pythonEnv" (dict "root" $ "context" .) | nindent 10 }}
           {{- include "element-io.synapse.env" (dict "root" $ "context" .) | nindent 10 }}
-{{- end }}
         ports:
 {{- if (include "element-io.synapse.process.hasHttp" (dict "root" $ "context" $processType)) }}
         - containerPort: 8008
