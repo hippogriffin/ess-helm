@@ -9,11 +9,8 @@ from pathlib import Path
 from ssl import SSLContext
 
 import aiohttp
-from aiohttp_retry import JitterRetry, RetryClient
 
 from .utils import KubeCtl, aiohttp_post_json, aiottp_get_json
-
-retry_options = JitterRetry(attempts=12, statuses=[429], retry_all_server_errors=False)
 
 
 async def get_nonce(synapse_fqdn: str, ssl_context) -> str:
@@ -82,8 +79,7 @@ async def upload_media(synapse_fqdn: str, user_access_token: str, file_path: Pat
     with open(file_path, "rb") as f:
         async with (
             aiohttp.ClientSession(connector=aiohttp.TCPConnector(ssl=ssl_context)) as session,
-            RetryClient(session, retry_options=retry_options, raise_for_status=True) as retry,
-            retry.post(
+            session.post(
                 "https://127.0.0.1/_matrix/media/v3/upload",
                 server_hostname=synapse_fqdn,
                 headers=headers,
@@ -110,8 +106,7 @@ async def download_media(
     sha256_hash = hashlib.sha256()
     async with (
         aiohttp.ClientSession(connector=aiohttp.TCPConnector(ssl=ssl_context)) as session,
-        RetryClient(session, retry_options=retry_options, raise_for_status=True) as retry,
-        retry.get(
+        session.get(
             f"https://127.0.0.1/_matrix/client/v1/media/download/{server_name}/{content_id}",
             headers=headers,
             server_hostname=synapse_fqdn,
