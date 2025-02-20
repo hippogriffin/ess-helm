@@ -498,8 +498,7 @@
           "type": "boolean"
         },
         "additional": {
-          "type": "string",
-          "additionalProperties": true
+          "type": "string"
         },
         "replicas": {
           "minimum": 1,
