@@ -10,6 +10,12 @@ SPDX-License-Identifier: AGPL-3.0-only OR LicenseRef-Element-Commercial
 frontend startup
    bind *:8406
    acl synapse_dead nbsrv(synapse-main) lt 1
+{{- range $workerType, $_ := (include "element-io.synapse.enabledWorkers" (dict "root" $root)) | fromJson }}
+{{- if not (include "element-io.synapse.process.canFallbackToMain" (dict "root" $root "context" $workerType)) }}
+  acl synapse_dead nbsrv(synapse-{{ $workerType }}) lt 1
+{{- end }}
+{{- end }}
+
    monitor-uri   /synapse_ready
    monitor fail  if synapse_dead
 
