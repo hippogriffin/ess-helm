@@ -112,8 +112,8 @@ spec:
           httpGet:
             path: /synapse_ready
             port: 8406
-          initialDelaySeconds: 10
-          timeoutSeconds: 5
+          periodSeconds: 2
+          failureThreshold: 150
 {{- end }}
         livenessProbe:
           httpGet:
