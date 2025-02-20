@@ -139,7 +139,7 @@ retention:
             )
         )
 
-    return [*setups, *[kube_client.create(resource) for resource in resources]]
+    return asyncio.gather(*setups, *[kube_client.create(resource) for resource in resources])
 
 
 @pytest.fixture(autouse=True, scope="session")
@@ -166,7 +166,7 @@ async def matrix_stack(
 
     chart = await helm_client.get_chart("charts/matrix-stack")
     # Install or upgrade a release
-    revision = helm_client.install_or_upgrade_release(
+    revision = await helm_client.install_or_upgrade_release(
         generated_data.release_name,
         chart,
         values,
@@ -174,7 +174,7 @@ async def matrix_stack(
         atomic="CI" not in os.environ,
         wait=True,
     )
-    await asyncio.gather(revision, *helm_prerequisites)
+    assert revision.status == pyhelm3.ReleaseRevisionStatus.DEPLOYED
 
 
 @pytest.fixture(scope="session")
