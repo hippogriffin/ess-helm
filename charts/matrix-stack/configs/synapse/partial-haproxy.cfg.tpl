@@ -90,13 +90,22 @@ frontend synapse-http-in
 
 backend synapse-main
   default-server maxconn 250
+
+  option httpchk
+  http-check connect port 8080
+  http-check send meth GET uri /health
+
   # Use DNS SRV service discovery on the headless service
-  server-template main 1 _synapse-http._tcp.{{ $root.Release.Name }}-synapse-main.{{ $root.Release.Namespace }}.svc.cluster.local resolvers kubedns init-addr none
+  server-template main 1 _synapse-http._tcp.{{ $root.Release.Name }}-synapse-main.{{ $root.Release.Namespace }}.svc.cluster.local resolvers kubedns init-addr none check
 
 {{- range $workerType, $workerDetails := (include "element-io.synapse.enabledWorkers" (dict "root" $root)) | fromJson }}
 {{- if include "element-io.synapse.process.hasHttp" (dict "root" $root "context" $workerType) }}
 
 backend synapse-{{ $workerType }}
+  option httpchk
+  http-check connect port 8080
+  http-check send meth GET uri /health
+
 {{- if eq $workerType "event-creator" }}
   # We want to balance based on the room, so try and pull it out of the path
   http-request set-header X-Matrix-Room %[path]
@@ -160,10 +169,10 @@ backend synapse-{{ $workerType }}
 {{- $maxInstances := ternary 1 20 (not (empty (include "element-io.synapse.process.isSingle" (dict "root" $root "context" $workerType)))) }}
 {{- $workerTypeName := include "element-io.synapse.process.workerTypeName" (dict "root" $root "context" $workerType) }}
   # Use DNS SRV service discovery on the headless service
-  server-template {{ $workerTypeName }} {{ $maxInstances }} _synapse-http._tcp.{{ $root.Release.Name }}-synapse-{{ $workerTypeName }}.{{ $root.Release.Namespace }}.svc.cluster.local resolvers kubedns init-addr none
+  server-template {{ $workerTypeName }} {{ $maxInstances }} _synapse-http._tcp.{{ $root.Release.Name }}-synapse-{{ $workerTypeName }}.{{ $root.Release.Namespace }}.svc.cluster.local resolvers kubedns init-addr none check
 {{- end }}
 {{- if include "element-io.synapse.process.canFallbackToMain" (dict "root" $root "context" $workerType) }}
-  server-template main 1 _synapse-http._tcp.{{ $root.Release.Name }}-synapse-main.{{ $root.Release.Namespace }}.svc.cluster.local resolvers kubedns init-addr none backup
+  server-template main 1 _synapse-http._tcp.{{ $root.Release.Name }}-synapse-main.{{ $root.Release.Namespace }}.svc.cluster.local resolvers kubedns init-addr none check backup
 {{- end }}
 {{- end }}
 
