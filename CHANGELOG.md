@@ -6,6 +6,21 @@ SPDX-License-Identifier: AGPL-3.0-only OR LicenseRef-Element-Commercial
 
 <!-- towncrier release notes start -->
 
+# ESS Community Helm Chart 0.6.1 (2025-02-21)
+
+### Added
+
+- Support the push-rules stream writer worker in Synapse. (#228)
+
+### Changed
+
+- Update Synapse worker paths support for 1.124.0. (#228)
+
+### Fixed
+
+- Fix HAProxy not starting with some combinations of Synapse workers. Regression in 0.6.0. (#228)
+
+
 # ESS Community Helm Chart 0.6.0 (2025-02-21)
 
 ### Added
