@@ -11,7 +11,7 @@ import pytest
 import yaml
 from lightkube import AsyncClient
 from lightkube.models.meta_v1 import ObjectMeta
-from lightkube.resources.core_v1 import Endpoints, Namespace, Secret, Service
+from lightkube.resources.core_v1 import Namespace, Secret, Service
 from lightkube.resources.networking_v1 import Ingress
 
 from ..lib.helpers import kubernetes_docker_secret, kubernetes_tls_secret
@@ -200,19 +200,6 @@ def ingress_ready(cluster, kube_client: AsyncClient, matrix_stack, generated_dat
                     namespace=generated_data.ess_namespace,
                     waitfor="jsonpath='{.subsets[].addresses}'",
                 )
-
-                endpoints_ready = False
-                while not endpoints_ready:
-                    endpoint = await kube_client.get(
-                        Endpoints, name=service.metadata.name, namespace=generated_data.ess_namespace
-                    )
-
-                    for subset in endpoint.subsets:
-                        if not subset or subset.notReadyAddresses or not subset.addresses or not subset.ports:
-                            await asyncio.sleep(0.1)
-                            break
-                    else:
-                        endpoints_ready = True
 
     return _ingress_ready
 

@@ -4,6 +4,7 @@
 
 import asyncio
 import os
+import time
 
 import pytest
 from lightkube import AsyncClient
@@ -58,17 +59,36 @@ async def test_services_have_endpoints(
     kube_client: AsyncClient,
     generated_data: ESSData,
 ):
+    async def _wait_for_endpoint_ready(name):
+        # We wait maximum 3 minutes for the endpoints to be ready
+        start_time = time.time()
+        while time.time() - start_time < 180:
+            await asyncio.to_thread(
+                cluster.wait,
+                name=f"endpoints/{name}",
+                namespace=generated_data.ess_namespace,
+                waitfor="jsonpath='{.subsets[].addresses}'",
+            )
+            endpoint = await kube_client.get(Endpoints, name=name, namespace=generated_data.ess_namespace)
+
+            for subset in endpoint.subsets:
+                if not subset or subset.notReadyAddresses or not subset.addresses or not subset.ports:
+                    await asyncio.sleep(0.1)
+                    break
+            else:
+                break
+        return endpoint
+
+    endpoints_to_wait = []
+    services = {}
     async for service in kube_client.list(
         Service, namespace=generated_data.ess_namespace, labels={"app.kubernetes.io/part-of": op.in_(["matrix-stack"])}
     ):
         assert service.metadata is not None, f"Encountered a service without metadata : {service}"
-        await asyncio.to_thread(
-            cluster.wait,
-            name=f"endpoints/{service.metadata.name}",
-            namespace=generated_data.ess_namespace,
-            waitfor="jsonpath='{.subsets[].addresses}'",
-        )
-        endpoint = await kube_client.get(Endpoints, name=service.metadata.name, namespace=generated_data.ess_namespace)
+        endpoints_to_wait.append(_wait_for_endpoint_ready(service.metadata.name))
+        services[service.metadata.name] = service
+
+    for endpoint in await asyncio.gather(*endpoints_to_wait):
         assert endpoint.metadata is not None, f"Encountered an endpoint without metadata : {endpoint}"
         assert endpoint.subsets, f"Endpoint {endpoint.metadata.name} has no subsets"
 
@@ -81,8 +101,8 @@ async def test_services_have_endpoints(
 
         port_names = [port.name for port in ports if port.name]
         port_numbers = [port.port for port in ports]
-        assert service.spec is not None, f"Service {service.metadata.name} has no spec"
-        for port in service.spec.ports:
+        assert services[endpoint.metadata.name].spec is not None, f"Service {service.metadata.name} has no spec"
+        for port in services[endpoint.metadata.name].spec.ports:
             if port.name:
                 assert port.name in port_names
             else:
