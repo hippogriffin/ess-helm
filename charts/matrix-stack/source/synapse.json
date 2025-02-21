@@ -146,6 +146,9 @@
         "presence-writer": {
           "$ref": "file://synapse/single_worker.json"
         },
+        "push-rules": {
+          "$ref": "file://synapse/single_worker.json"
+        },
         "pusher": {
           "$ref": "file://synapse/scalable_worker.json"
         },

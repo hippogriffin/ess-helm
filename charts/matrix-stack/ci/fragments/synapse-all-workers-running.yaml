@@ -27,6 +27,8 @@ synapse:
       enabled: true
     presence-writer:
       enabled: true
+    push-rules:
+      enabled: true
     pusher:
       enabled: true
       instances: 2

@@ -7,10 +7,21 @@ SPDX-License-Identifier: AGPL-3.0-only OR LicenseRef-Element-Commercial
 {{- define "element-io.synapse.process.hasHttp" -}}
 {{- $root := .root -}}
 {{- with required "element-io.synapse.process.hasHttp missing context" .context -}}
-{{ $hasHttp := (list "main" "client-reader" "encryption" "event-creator"
-                     "federation-inbound" "federation-reader" "initial-synchrotron"
-                     "media-repository" "presence-writer" "receipts-account"
-                     "sliding-sync" "sso-login" "synchrotron" "typing-persister"
+{{ $hasHttp := (list "main"
+                     "client-reader"
+                     "encryption"
+                     "event-creator"
+                     "federation-inbound"
+                     "federation-reader"
+                     "initial-synchrotron"
+                     "media-repository"
+                     "presence-writer"
+                     "push-rules"
+                     "receipts-account"
+                     "sliding-sync"
+                     "sso-login"
+                     "synchrotron"
+                     "typing-persister"
                      "user-dir") }}
 {{- if has . $hasHttp -}}
 hasHttp
@@ -21,8 +32,12 @@ hasHttp
 {{- define "element-io.synapse.process.hasReplication" -}}
 {{- $root := .root -}}
 {{- with required "element-io.synapse.process.hasReplication missing context" .context -}}
-{{- $hasReplication := (list "main" "encryption" "event-persister"
-                             "presence-writer" "receipts-account"
+{{- $hasReplication := (list "main"
+                             "encryption"
+                             "event-persister"
+                             "push-rules"
+                             "presence-writer"
+                             "receipts-account"
                              "typing-persister") }}
 {{- if has . $hasReplication -}}
 hasReplication
@@ -33,9 +48,17 @@ hasReplication
 {{- define "element-io.synapse.process.isSingle" -}}
 {{- $root := .root -}}
 {{- with required "element-io.synapse.process.isSingle missing context" .context -}}
-{{ $isSingle := (list "main" "appservice" "background" "encryption"
-                      "media-repository" "presence-writer" "receipts-account"
-                      "sso-login" "typing-persister" "user-dir") }}
+{{ $isSingle := (list "main"
+                      "appservice"
+                      "background"
+                      "encryption"
+                      "media-repository"
+                      "presence-writer"
+                      "push-rules"
+                      "receipts-account"
+                      "sso-login"
+                      "typing-persister"
+                      "user-dir") }}
 {{- if has . $isSingle -}}
 isSingle
 {{- end -}}
@@ -96,6 +119,8 @@ responsibleForMedia
 {{ list "events" | toJson }}
 {{- else if eq . "presence-writer" }}
 {{ list "presence" | toJson }}
+{{- else if eq . "push-rules" }}
+{{ list "push_rules" | toJson }}
 {{- else if eq . "receipts-account" }}
 {{ list "account_data" "receipts" | toJson }}
 {{- else if eq . "typing-persister" }}
@@ -177,7 +202,7 @@ responsibleForMedia
   "^/_matrix/client/v1/rooms/.*/hierarchy$"
   "^/_matrix/client/(v1|unstable)/rooms/.*/relations/"
   "^/_matrix/client/v1/rooms/.*/threads$"
-  "^/_matrix/client/unstable/im.nheko.summary/rooms/.*/summary$"
+  "^/_matrix/client/unstable/im.nheko.summary/summary/.*$"
   "^/_matrix/client/(r0|v3|unstable)/account/3pid$"
   "^/_matrix/client/(r0|v3|unstable)/account/whoami$"
   "^/_matrix/client/(r0|v3|unstable)/devices$"
@@ -302,6 +327,13 @@ responsibleForMedia
 {{ $workerPaths = append $workerPaths
   "^/_matrix/client/(api/v1|r0|v3|unstable)/presence/"
 }}
+{{- end }}
+
+{{- if eq .workerType "push-rules" }}
+{{ $workerPaths = append $workerPaths (list
+  "^/_matrix/client/(api/v1|r0|v3|unstable)/pushrules/"
+  "^/_matrix/client/unstable/org.matrix.msc4140/delayed_events"
+) }}
 {{- end }}
 
 {{- if eq .workerType "receipts-account" }}

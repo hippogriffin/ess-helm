@@ -45,6 +45,7 @@ workers:
 {{- synapse_sub_schema_values.scalable_worker('initial-synchrotron') | indent(2) }}
 {{- synapse_sub_schema_values.single_worker('media-repository') | indent(2) }}
 {{- synapse_sub_schema_values.single_worker('presence-writer') | indent(2) }}
+{{- synapse_sub_schema_values.single_worker('push-rules') | indent(2) }}
 {{- synapse_sub_schema_values.scalable_worker('pusher') | indent(2) }}
 {{- synapse_sub_schema_values.single_worker('receipts-account') | indent(2) }}
 {{- synapse_sub_schema_values.scalable_worker('sliding-sync') | indent(2) }}
