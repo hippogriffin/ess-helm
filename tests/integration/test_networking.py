@@ -60,15 +60,15 @@ async def test_services_have_endpoints(
     generated_data: ESSData,
 ):
     async def _wait_for_endpoint_ready(name):
-        # We wait maximum 3 minutes for the endpoints to be ready
+        await asyncio.to_thread(
+            cluster.wait,
+            name=f"endpoints/{name}",
+            namespace=generated_data.ess_namespace,
+            waitfor="jsonpath='{.subsets[].addresses}'",
+        )
+        # We wait maximum 30 seconds for the endpoints to be ready
         start_time = time.time()
-        while time.time() - start_time < 180:
-            await asyncio.to_thread(
-                cluster.wait,
-                name=f"endpoints/{name}",
-                namespace=generated_data.ess_namespace,
-                waitfor="jsonpath='{.subsets[].addresses}'",
-            )
+        while time.time() - start_time < 30:
             endpoint = await kube_client.get(Endpoints, name=name, namespace=generated_data.ess_namespace)
 
             for subset in endpoint.subsets:
