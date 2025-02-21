@@ -202,7 +202,7 @@ responsibleForMedia
   "^/_matrix/client/v1/rooms/.*/hierarchy$"
   "^/_matrix/client/(v1|unstable)/rooms/.*/relations/"
   "^/_matrix/client/v1/rooms/.*/threads$"
-  "^/_matrix/client/unstable/im.nheko.summary/rooms/.*/summary$"
+  "^/_matrix/client/unstable/im.nheko.summary/summary/.*$"
   "^/_matrix/client/(r0|v3|unstable)/account/3pid$"
   "^/_matrix/client/(r0|v3|unstable)/account/whoami$"
   "^/_matrix/client/(r0|v3|unstable)/devices$"
@@ -330,9 +330,10 @@ responsibleForMedia
 {{- end }}
 
 {{- if eq .workerType "push-rules" }}
-{{ $workerPaths = append $workerPaths
+{{ $workerPaths = append $workerPaths (list
   "^/_matrix/client/(api/v1|r0|v3|unstable)/pushrules/"
-}}
+  "^/_matrix/client/unstable/org.matrix.msc4140/delayed_events"
+) }}
 {{- end }}
 
 {{- if eq .workerType "receipts-account" }}
