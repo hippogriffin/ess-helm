@@ -1369,6 +1369,13 @@ synapse:
       ## Resources for this worker.
       ## If omitted the global Synapse resources are used
       # resources: {}
+    push-rules:
+      ## Set to true to deploy a single instance of this worker
+      enabled: false
+
+      ## Resources for this worker.
+      ## If omitted the global Synapse resources are used
+      # resources: {}
     pusher:
       ## Set to true to deploy instances of this worker
       enabled: false
