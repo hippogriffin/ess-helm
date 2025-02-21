@@ -73,7 +73,7 @@ jobs:
     - name: Test with pytest
       run: |
         . tests/integration/env/${{ matrix.test-component }}.rc
-        PYTEST_KEEP_CLUSTER=1 poetry run pytest -v tests/integration
+        PYTEST_KEEP_CLUSTER=1 poetry run pytest -vv tests/integration
 
     - name: Export logs
       if: ${{ failure() }}
