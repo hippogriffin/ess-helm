@@ -17,8 +17,10 @@ frontend well-known-in
 {{- with $root.Values.elementWeb }}
 {{- $elementWebHttps := include "element-io.ess-library.ingress.tlsSecret" (dict "root" $root "context" (dict "hosts" (list (required "elementWeb.ingress.host is required" .ingress.host)) "tlsSecret" .ingress.tlsSecret "ingressName" "element-web")) }}
   http-request redirect  code 301  location http{{ if $elementWebHttps }}s{{ end }}://{{ .ingress.host }} unless well-known
-{{- end -}}
-{{- end -}}
+{{- end }}
+{{- else if .baseDomainRedirectURL }}
+  http-request redirect  code 301  location {{ .baseDomainRedirectURL }} unless well-known
+{{- end }}
 
   acl well-known path /.well-known/matrix/server
   acl well-known path /.well-known/matrix/client

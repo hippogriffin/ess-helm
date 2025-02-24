@@ -21,6 +21,15 @@ spec:
   - host: "{{ tpl ($.Values.wellKnownDelegation.ingress.host | default $.Values.serverName) $ }}"
     http:
       paths:
+{{- if or $.Values.elementWeb.enabled .baseDomainRedirectURL }}
+      - path: /
+        pathType: Prefix
+        backend:
+          service:
+            name: "{{ $.Release.Name }}-well-known"
+            port:
+              number: 80
+{{- else }}
       - path: /.well-known/matrix
         pathType: Prefix
         backend:
@@ -35,5 +44,6 @@ spec:
             name: "{{ $.Release.Name }}-well-known"
             port:
               number: 80
+{{- end -}}
 {{- end -}}
 {{- end -}}

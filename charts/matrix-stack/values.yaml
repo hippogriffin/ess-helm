@@ -1805,6 +1805,11 @@ wellKnownDelegation:
     ## How the Service behind this Ingress is constructed
     service: {}
 
+  ## If ElementWeb is deployed, the base domain will redirect to it by default
+  ## You can override with another URL here.
+  ## If ElementWeb is not deployed and this is not defined, no base domain URL redirect will be set.
+  baseDomainRedirectURL: ""
+
   ## Additional configuration to provide to all WellKnown static file
   ## Configuration should be provided as JSON strings
   additional:
