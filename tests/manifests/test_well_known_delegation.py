@@ -3,6 +3,7 @@
 # SPDX-License-Identifier: AGPL-3.0-only OR LicenseRef-Element-Commercial
 
 import json
+import re
 
 import pytest
 
@@ -82,3 +83,18 @@ async def test_synapse_and_mas_injected_in_client_and_server_well_known(release_
         expected_client=(msc_2965_authentication | synapse_base_url),
         expected_server=synapse_federation,
     )
+
+
+@pytest.mark.parametrize("values_file", ["well-known-element-web-values.yaml"])
+@pytest.mark.asyncio_cooperative
+async def test_has_redirect_to_element_web(release_name, values, make_templates):
+    for template in await make_templates(values):
+        if template["kind"] == "ConfigMap" and template["metadata"]["name"] == f"{release_name}-haproxy":
+            haproxy_cfg = template["data"]["haproxy.cfg"]
+            assert (
+                re.search(
+                    rf"http-request redirect\s+code\s+301\s+location\s+http://{values['elementWeb']['ingress']['host']}\sunless\swell-known",
+                    haproxy_cfg,
+                )
+                is not None
+            )

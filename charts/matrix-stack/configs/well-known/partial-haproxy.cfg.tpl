@@ -13,11 +13,21 @@ frontend well-known-in
   # same as http log, with %Th (handshake time)
   log-format "%ci:%cp [%tr] %ft %b/%s %Th/%TR/%Tw/%Tc/%Tr/%Ta %ST %B %CC %CS %tsc %ac/%fc/%bc/%sc/%rc %sq/%bq %hr %hs %{+Q}r"
 
-
   acl well-known path /.well-known/matrix/server
   acl well-known path /.well-known/matrix/client
   acl well-known path /.well-known/matrix/support
   acl well-known path /.well-known/element/element.json
+
+{{ if .baseDomainRedirect.enabled }}
+{{- if $root.Values.elementWeb.enabled }}
+{{- with $root.Values.elementWeb }}
+{{- $elementWebHttps := include "element-io.ess-library.ingress.tlsSecret" (dict "root" $root "context" (dict "hosts" (list (required "elementWeb.ingress.host is required" .ingress.host)) "tlsSecret" .ingress.tlsSecret "ingressName" "element-web")) }}
+  http-request redirect  code 301  location http{{ if $elementWebHttps }}s{{ end }}://{{ .ingress.host }} unless well-known
+{{- end }}
+{{- else if .baseDomainRedirect.url }}
+  http-request redirect  code 301  location {{ .baseDomainRedirect.url }} unless well-known
+{{- end }}
+{{- end }}
 
   use_backend well-known-static if well-known
 
