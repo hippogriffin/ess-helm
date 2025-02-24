@@ -10,7 +10,7 @@ SPDX-License-Identifier: AGPL-3.0-only OR LicenseRef-Element-Commercial
 {{- $root := .root -}}
 {{- with required "element-io.ess-library.postgres-secret-name requires context" .context -}}
 {{- if .postgres -}}
-{{ (tpl .postgres.host $root) }}:{{ .postgres.port }}
+{{ (tpl .postgres.host $root) }}:{{ .postgres.port | default 5432 }}
 {{- else if $root.Values.postgres.enabled -}}
 {{ $root.Release.Name }}-postgres.{{ $root.Release.Namespace }}.svc.cluster.local:5432
 {{- else }}
