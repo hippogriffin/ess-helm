@@ -11,3 +11,5 @@ serverName: "{{ $.Values.global.baseDomain }}"
 wellKnownDelegation:
   ingress:
     tlsSecret: "{{ $.Release.Name }}-well-known-web-tls"
+  baseDomainRedirect:
+   url: "https://redirect.localhost/path"

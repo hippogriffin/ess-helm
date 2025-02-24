@@ -1,0 +1,21 @@
+# Copyright 2024-2025 New Vector Ltd
+#
+# SPDX-License-Identifier: AGPL-3.0-only OR LicenseRef-Element-Commercial
+#
+# source_fragments: well-known-minimal.yaml element-web-minimal.yaml init-secrets-minimal.yaml postgres-minimal.yaml
+# DO NOT EDIT DIRECTLY. Edit the fragment files to add / modify / remove values
+
+elementWeb:
+  ingress:
+    host: element.ess.localhost
+initSecrets:
+  enabled: true
+matrixAuthenticationService:
+  enabled: false
+postgres:
+  enabled: true
+serverName: ess.localhost
+synapse:
+  enabled: false
+wellKnownDelegation:
+  enabled: true
