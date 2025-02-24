@@ -9,7 +9,7 @@ import pytest
 
 from .fixtures import ESSData
 from .lib.synapse import assert_downloaded_content, download_media, upload_media
-from .lib.utils import KubeCtl, aiohttp_post_json, aiottp_get_json, value_file_has
+from .lib.utils import KubeCtl, aiohttp_client, aiohttp_post_json, aiottp_get_json, value_file_has
 
 
 @pytest.mark.skipif(value_file_has("synapse.enabled", False), reason="Synapse not deployed")
@@ -25,6 +25,9 @@ async def test_synapse_can_access_client_api(
         f"https://synapse.{generated_data.server_name}/_matrix/client/versions", ssl_context
     )
     assert "unstable_features" in json_content
+
+    supports_qr_code_login = value_file_has("matrixAuthenticationService.enabled", True)
+    assert supports_qr_code_login == json_content["unstable_features"]["org.matrix.msc4108"]
 
 
 @pytest.mark.skipif(value_file_has("synapse.enabled", False), reason="Synapse not deployed")
@@ -88,3 +91,26 @@ async def test_synapse_media_upload_fetch_authenticated(
         content_upload_json["content_uri"].replace(f"mxc://{generated_data.server_name}/", ""),
         content_download_sha256,
     )
+
+
+@pytest.mark.skipif(value_file_has("synapse.enabled", False), reason="MAS not deployed")
+@pytest.mark.asyncio_cooperative
+async def test_rendezvous_cors_headers_are_only_set_with_mas(ingress_ready, generated_data: ESSData, ssl_context):
+    await ingress_ready("synapse")
+    async with (
+        aiohttp_client(ssl_context) as client,
+        client.options(
+            f"https://synapse.{generated_data.server_name}/_matrix/client/unstable/org.matrix.msc4108/rendezvous",
+        ) as response,
+    ):
+        assert "Access-Control-Allow-Origin" in response.headers
+        assert response.headers["Access-Control-Allow-Origin"] == "*"
+
+        assert "Access-Control-Allow-Headers" in response.headers
+        supports_qr_code_login = value_file_has("matrixAuthenticationService.enabled", True)
+        assert ("If-Match" in response.headers["Access-Control-Allow-Headers"]) == supports_qr_code_login
+
+        assert "Access-Control-Expose-Headers" in response.headers
+        assert "Synapse-Trace-Id" in response.headers["Access-Control-Expose-Headers"]
+        assert "Server" in response.headers["Access-Control-Expose-Headers"]
+        assert ("ETag" in response.headers["Access-Control-Expose-Headers"]) == supports_qr_code_login

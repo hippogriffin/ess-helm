@@ -57,7 +57,7 @@ def get_volume_from_mount(template, volume_mount):
 def match_in_content(container_name, mounted_keys, mount_path, matches_in):
     found_mount = False
     for match_in in matches_in:
-        for match in re.findall(rf"{mount_path}/([^\s\n\")`;,]+(?!.*noqa))", match_in):
+        for match in re.findall(rf"(?:^|\s|\"){mount_path}/([^\s\n\")`;,]+(?!.*noqa))", match_in):
             assert f"{mount_path}/{match}" in mounted_keys, (
                 f"{mount_path}/{match} used in {container_name} but it is not found "
                 f"from any mounted secret or configmap"

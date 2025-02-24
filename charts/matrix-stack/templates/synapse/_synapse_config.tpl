@@ -114,6 +114,8 @@ experimental_features:
     admin_token: ${MAS_SHARED_SECRET}
     introspection_endpoint: "http://{{ $root.Release.Name }}-matrix-authentication-service.{{ $root.Release.Namespace }}.svc.cluster.local:8080/oauth2/introspect"
 
+  # QR Code Login. Requires MAS
+  msc4108_enabled: true
 password_config:
   localdb_enabled: false
   enabled: false

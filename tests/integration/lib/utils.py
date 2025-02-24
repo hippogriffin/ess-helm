@@ -6,6 +6,8 @@ import asyncio
 import base64
 import json
 import os
+from collections.abc import AsyncGenerator
+from contextlib import asynccontextmanager
 from dataclasses import dataclass
 from pathlib import Path
 from ssl import SSLContext
@@ -57,6 +59,15 @@ def b64encode(value: str):
     return base64.b64encode(value.encode("utf-8")).decode("utf-8")
 
 
+@asynccontextmanager
+async def aiohttp_client(ssl_context: SSLContext) -> AsyncGenerator[RetryClient]:
+    async with (
+        aiohttp.ClientSession(connector=aiohttp.TCPConnector(ssl=ssl_context)) as session,
+        RetryClient(session, retry_options=retry_options, raise_for_status=True) as client,
+    ):
+        yield client
+
+
 async def aiottp_get_json(url: str, ssl_context: SSLContext) -> Any:
     """Do an async HTTP GET against a url, retry exponentially on 429s. It expects a JSON response.
 
@@ -70,9 +81,8 @@ async def aiottp_get_json(url: str, ssl_context: SSLContext) -> Any:
     host = urlparse(url).hostname
 
     async with (
-        aiohttp.ClientSession(connector=aiohttp.TCPConnector(ssl=ssl_context)) as session,
-        RetryClient(session, retry_options=retry_options, raise_for_status=True) as retry,
-        retry.get(
+        aiohttp_client(ssl_context) as client,
+        client.get(
             url.replace(host, "127.0.0.1"),
             headers={"Host": host},
             server_hostname=host,
@@ -99,9 +109,8 @@ async def aiohttp_post_json(url: str, data: dict, headers: dict, ssl_context: SS
     host = urlparse(url).hostname
 
     async with (
-        aiohttp.ClientSession(connector=aiohttp.TCPConnector(ssl=ssl_context)) as session,
-        RetryClient(session, retry_options=retry_options, raise_for_status=True) as retry,
-        retry.post(
+        aiohttp_client(ssl_context) as client,
+        client.post(
             url.replace(host, "127.0.0.1"), headers=headers | {"Host": host}, server_hostname=host, json=data
         ) as response,
     ):

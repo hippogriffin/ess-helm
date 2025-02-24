@@ -73,7 +73,12 @@ frontend synapse-http-in
   http-request set-var(req.backend) path,map_reg(/synapse/path_map_file_get,main) if has_get_map METH_GET
   http-request set-var(req.backend) path,map_reg(/synapse/path_map_file,main) unless { var(req.backend) -m found }
 
-  use_backend return_204 if { method OPTIONS }
+{{- if $root.Values.matrixAuthenticationService.enabled }}
+  acl rendezvous path_beg /_matrix/client/unstable/org.matrix.msc4108/rendezvous
+  acl rendezvous path_beg /_synapse/client/rendezvous
+  use_backend return_204_rendezvous if { method OPTIONS } rendezvous
+{{- end }}
+  use_backend return_204_synapse if { method OPTIONS }
 
 {{- range .ingress.additionalPaths -}}
 {{- if eq .availability "internally_and_externally" }}
@@ -194,4 +199,14 @@ backend synapse-be_{{ $additionalPathId }}
 {{- end }}
 {{- end }}
 
+{{- end }}
+
+# a backend which responds to everything with a 204 mirroring https://github.com/element-hq/synapse/blob/v1.124.0/synapse/http/server.py#L901-L932
+backend return_204_synapse
+  http-request return status 204 hdr "Access-Control-Allow-Origin" "*" hdr "Access-Control-Allow-Methods" "GET, HEAD, POST, PUT, DELETE, OPTIONS" hdr "Access-Control-Allow-Headers" "Origin, X-Requested-With, Content-Type, Accept, Authorization, Date" hdr "Access-Control-Expose-Headers" "Synapse-Trace-Id, Server"
+
+{{- if $root.Values.matrixAuthenticationService.enabled }}
+
+backend return_204_rendezvous
+  http-request return status 204 hdr "Access-Control-Allow-Origin" "*" hdr "Access-Control-Allow-Methods" "GET, HEAD, POST, PUT, DELETE, OPTIONS" hdr "Access-Control-Allow-Headers" "Origin, Content-Type, Accept, Content-Type, If-Match, If-None-Match" hdr "Access-Control-Expose-Headers" "Synapse-Trace-Id, Server, ETag"
 {{- end -}}
