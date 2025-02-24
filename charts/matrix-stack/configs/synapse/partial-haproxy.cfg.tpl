@@ -78,7 +78,7 @@ frontend synapse-http-in
   acl rendezvous path_beg /_synapse/client/rendezvous
   use_backend return_204_rendezvous if { method OPTIONS } rendezvous
 {{- end }}
-  use_backend return_204 if { method OPTIONS }
+  use_backend return_204_synapse if { method OPTIONS }
 
 {{- range .ingress.additionalPaths -}}
 {{- if eq .availability "internally_and_externally" }}
@@ -199,7 +199,11 @@ backend synapse-be_{{ $additionalPathId }}
 {{- end }}
 {{- end }}
 
-{{- end -}}
+{{- end }}
+
+# a backend which responds to everything with a 204 mirroring https://github.com/element-hq/synapse/blob/v1.124.0/synapse/http/server.py#L901-L932
+backend return_204_synapse
+  http-request return status 204 hdr "Access-Control-Allow-Origin" "*" hdr "Access-Control-Allow-Methods" "GET, HEAD, POST, PUT, DELETE, OPTIONS" hdr "Access-Control-Allow-Headers" "Origin, X-Requested-With, Content-Type, Accept, Authorization, Date" hdr "Access-Control-Expose-Headers" "Synapse-Trace-Id, Server"
 
 {{- if $root.Values.matrixAuthenticationService.enabled }}
 
