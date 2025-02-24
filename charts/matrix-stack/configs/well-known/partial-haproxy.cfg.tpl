@@ -13,6 +13,11 @@ frontend well-known-in
   # same as http log, with %Th (handshake time)
   log-format "%ci:%cp [%tr] %ft %b/%s %Th/%TR/%Tw/%Tc/%Tr/%Ta %ST %B %CC %CS %tsc %ac/%fc/%bc/%sc/%rc %sq/%bq %hr %hs %{+Q}r"
 
+  acl well-known path /.well-known/matrix/server
+  acl well-known path /.well-known/matrix/client
+  acl well-known path /.well-known/matrix/support
+  acl well-known path /.well-known/element/element.json
+
 {{ if .baseDomainRedirect.enabled }}
 {{- if $root.Values.elementWeb.enabled }}
 {{- with $root.Values.elementWeb }}
@@ -23,11 +28,6 @@ frontend well-known-in
   http-request redirect  code 301  location {{ .baseDomainRedirect.url }} unless well-known
 {{- end }}
 {{- end }}
-
-  acl well-known path /.well-known/matrix/server
-  acl well-known path /.well-known/matrix/client
-  acl well-known path /.well-known/matrix/support
-  acl well-known path /.well-known/element/element.json
 
   use_backend well-known-static if well-known
 
