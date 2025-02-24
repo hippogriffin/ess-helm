@@ -6,7 +6,7 @@ SPDX-License-Identifier: AGPL-3.0-only OR LicenseRef-Element-Commercial
 enabled: true
 
 postgresExporter:
-  {{- sub_schema_values.image(registry='docker.io', repository='prometheuscommunity/postgres-exporter', tag='v0.16.0') | indent(2) }}
+  {{- sub_schema_values.image(registry='docker.io', repository='prometheuscommunity/postgres-exporter', tag='v0.17.0') | indent(2) }}
   {{- sub_schema_values.resources(requests_memory='10Mi', requests_cpu='10m', limits_memory='500Mi')| indent(2) }}
   {{- sub_schema_values.containersSecurityContext()| indent(2) }}
 
