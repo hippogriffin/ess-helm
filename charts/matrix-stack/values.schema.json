@@ -5307,8 +5307,17 @@
             ]
           }
         },
-        "baseDomainRedirectURL": {
-          "type": "string"
+        "baseDomainRedirect": {
+          "type": "object",
+          "properties": {
+            "enabled": {
+              "type": "boolean"
+            },
+            "url": {
+              "type": "string"
+            }
+          },
+          "additionalProperties": false
         },
         "additional": {
           "type": "object",

@@ -21,7 +21,7 @@ spec:
   - host: "{{ tpl ($.Values.wellKnownDelegation.ingress.host | default $.Values.serverName) $ }}"
     http:
       paths:
-{{- if or $.Values.elementWeb.enabled .baseDomainRedirectURL }}
+{{- if and .baseDomainRedirect.enabled (or $.Values.elementWeb.enabled .baseDomainRedirect.url) }}
       - path: /
         pathType: Prefix
         backend:

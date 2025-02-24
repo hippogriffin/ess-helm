@@ -12,8 +12,16 @@
     "labels": {
       "$ref": "file://common/labels.json"
     },
-    "baseDomainRedirectURL": {
-      "type": "string"
+    "baseDomainRedirect": {
+      "type": "object",
+      "properties": {
+        "enabled": {
+          "type": "boolean"
+        },
+        "url": {
+          "type": "string"
+        }
+      }
     },
     "additional": {
       "type": "object",
