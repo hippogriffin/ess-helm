@@ -1170,8 +1170,11 @@ postgres:
 
 synapse:
   enabled: true
+
   ## A hook job will make sure that Synapse config is valid before continuing
-  enableCheckConfigHook: true
+  checkConfigHook:
+    enabled: true
+    annotations: {}
   ## Details of the Postgres Database to use
   postgres: {}
     ## PostgreSQL database host

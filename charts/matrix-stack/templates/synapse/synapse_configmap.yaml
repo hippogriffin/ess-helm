@@ -13,7 +13,7 @@ metadata:
     {{- include "element-io.synapse.labels" (dict "root" $ "context" .) | nindent 4 }}
   name: {{ $.Release.Name }}-synapse
   namespace: {{ $.Release.Namespace }}
-{{- if .enableCheckConfigHook }}
+{{- if .checkConfigHook.enabled }}
   annotations:
     "helm.sh/hook": pre-install,pre-upgrade
     "helm.sh/hook-delete-policy": before-hook-creation

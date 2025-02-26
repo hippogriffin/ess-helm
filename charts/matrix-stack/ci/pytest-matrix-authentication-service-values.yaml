@@ -33,6 +33,9 @@ postgres:
     runAsGroup: 0
 serverName: ess.localhost
 synapse:
+  checkConfigHook:
+    annotations:
+      has-no-service-monitor: "true"
   ingress:
     host: synapse.{{ $.Values.serverName }}
     tlsSecret: '{{ $.Release.Name }}-synapse-web-tls'

@@ -6,8 +6,16 @@
     "enabled": {
       "type": "boolean"
     },
-    "enableCheckConfigHook": {
-      "type": "boolean"
+    "checkConfigHook": {
+      "type": "object",
+      "properties":{
+        "enabled": {
+          "type": "boolean"
+        },
+        "annotations": {
+          "$ref": "file://common/workloadAnnotations.json"
+        }
+      }
     },
     "postgres": {
       "$ref": "file://common/postgres-libpq.json"

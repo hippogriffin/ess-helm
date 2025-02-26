@@ -5,7 +5,7 @@ SPDX-License-Identifier: AGPL-3.0-only OR LicenseRef-Element-Commercial
 */ -}}
 
 {{- with .Values.synapse -}}
-{{- if and .enabled .enableCheckConfigHook -}}
+{{- if and .enabled .checkConfigHook.enabled -}}
 {{- $enabledWorkers := (include "element-io.synapse.enabledWorkers" (dict "root" $)) | fromJson }}
 apiVersion: batch/v1
 kind: Job
@@ -15,7 +15,7 @@ metadata:
   annotations:
     "helm.sh/hook": pre-install,pre-upgrade
     "helm.sh/hook-delete-policy": before-hook-creation
-{{- with .annotations }}
+{{- with .checkConfigHook.annotations }}
     {{- toYaml . | nindent 4 }}
 {{- end }}
   labels:
