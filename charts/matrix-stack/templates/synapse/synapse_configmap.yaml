@@ -13,6 +13,11 @@ metadata:
     {{- include "element-io.synapse.labels" (dict "root" $ "context" .) | nindent 4 }}
   name: {{ $.Release.Name }}-synapse
   namespace: {{ $.Release.Namespace }}
+{{- if .enableCheckConfigHook }}
+  annotations:
+    "helm.sh/hook": pre-install,pre-upgrade
+    "helm.sh/hook-delete-policy": before-hook-creation
+{{- end }}
 data:
   01-homeserver-underrides.yaml: |
     {{- (tpl (include "element-io.synapse.config.shared-underrides" (dict "root" $ "context" .)) $) | nindent 4  }}

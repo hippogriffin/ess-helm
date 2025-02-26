@@ -6,6 +6,9 @@
     "enabled": {
       "type": "boolean"
     },
+    "enableCheckConfigHook": {
+      "type": "boolean"
+    },
     "postgres": {
       "$ref": "file://common/postgres-libpq.json"
     },

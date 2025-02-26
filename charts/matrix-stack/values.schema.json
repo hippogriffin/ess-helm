@@ -2521,6 +2521,9 @@
         "enabled": {
           "type": "boolean"
         },
+        "enableCheckConfigHook": {
+          "type": "boolean"
+        },
         "postgres": {
           "type": "object",
           "properties": {
