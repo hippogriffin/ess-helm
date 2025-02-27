@@ -62,7 +62,7 @@ async def test_uses_serviceaccount_named_as_values_if_specified(component, value
         workload.setdefault("serviceAccount", {}).setdefault("name", f"{component}-pytest")
         workload.setdefault("labels", {}).setdefault("expected.name", f"{component}-pytest")
 
-    iterate_component_workload_parts(component, values, service_account_name)
+    iterate_component_workload_parts(component, values, service_account_name, force=True)
 
     workloads_by_id = {}
     serviceaccount_names = []
@@ -117,7 +117,9 @@ async def test_does_not_create_serviceaccounts_if_configured_not_to(component, v
 
                 serviceaccount_name = template["spec"]["template"]["spec"]["serviceAccountName"]
                 if template["metadata"]["labels"].get("serviceAccount", "some") == "none":
-                    assert serviceaccount_name not in serviceaccount_names
+                    assert serviceaccount_name not in serviceaccount_names, (
+                        f"{id} specified an existing ServiceAccount: {serviceaccount_name}"
+                    )
                 else:
                     covered_serviceaccount_names.add(serviceaccount_name)
 
