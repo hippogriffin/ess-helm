@@ -7,7 +7,7 @@ SPDX-License-Identifier: AGPL-3.0-only OR LicenseRef-Element-Commercial
 {{- with .Values.synapse -}}
 {{- if and .enabled .checkConfigHook.enabled -}}
 {{- $enabledWorkers := (include "element-io.synapse.enabledWorkers" (dict "root" $)) | fromJson }}
-{{- $processType := "main" }}
+{{- $processType := "check-config-hook" }}
 {{- $perProcessRoot := merge (dict "processType" $processType "isHook" true) ($.Values.synapse | deepCopy) (.checkConfigHook | deepCopy)}}
 apiVersion: batch/v1
 kind: Job
