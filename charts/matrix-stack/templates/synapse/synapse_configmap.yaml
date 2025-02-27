@@ -6,62 +6,13 @@ SPDX-License-Identifier: AGPL-3.0-only OR LicenseRef-Element-Commercial
 
 {{- with .Values.synapse -}}
 {{- if .enabled -}}
-apiVersion: v1
+apiVersion: v1o
 kind: ConfigMap
 metadata:
   labels:
     {{- include "element-io.synapse.labels" (dict "root" $ "context" .) | nindent 4 }}
-  name: {{ $.Release.Name }}-synapse
+  name: {{ include "element-io.synapse.configmap-name" (dict "root" $ "context" (dict "isHook" false)) }}
   namespace: {{ $.Release.Namespace }}
-{{- if .checkConfigHook.enabled }}
-  annotations:
-    "helm.sh/hook": pre-install,pre-upgrade
-    "helm.sh/hook-delete-policy": before-hook-creation
-{{- end }}
-data:
-  01-homeserver-underrides.yaml: |
-    {{- (tpl (include "element-io.synapse.config.shared-underrides" (dict "root" $ "context" .)) $) | nindent 4  }}
-{{- /*02 files are user provided in Helm values and end up in the Secret*/}}
-{{- /*03 files are user provided as secrets rather than directly in Helm*/}}
-  04-homeserver-overrides.yaml: |
-    {{- (tpl (include "element-io.synapse.config.shared-overrides" (dict "root" $ "context" .)) $) | nindent 4 }}
-  05-main.yaml: |
-    {{- (tpl (include "element-io.synapse.config.processSpecific" (dict "root" $ "context" (dict "processType" "main"))) $) | nindent 4 }}
-{{- range $workerType, $workerDetails := (include "element-io.synapse.enabledWorkers" (dict "root" $)) | fromJson }}
-  05-{{ $workerType }}.yaml: |
-    {{- (tpl (include "element-io.synapse.config.processSpecific" (dict "root" $ "context" (dict "processType" $workerType))) $) | nindent 4 }}
-{{- end }}
-  log_config.yaml: |
-    # Copyright 2024 New Vector Ltd
-    #
-    # SPDX-License-Identifier: AGPL-3.0-only OR LicenseRef-Element-Commercial
-    version: 1
-
-    formatters:
-      precise:
-        format: '%(asctime)s - %(name)s - %(lineno)d - %(levelname)s - %(request)s - %(message)s'
-
-    handlers:
-      console:
-        class: logging.StreamHandler
-        formatter: precise
-
-    loggers:
-    {{- /*
-    Increasing synapse.storage.SQL past INFO will log access tokens. Putting in the values default will mean it gets
-    nuked if an override is set and then if the root level is increased to debug, the access tokens will be logged.
-    Putting here means it is an explicit customer choice to override it.
-    */}}
-    {{- range $logger, $level := merge dict .logging.levelOverrides (dict "synapse.storage.SQL" "INFO") }}
-      {{ $logger }}:
-        level: "{{ $level }}"
-    {{- end }}
-
-    root:
-      level: "{{ .logging.rootLevel }}"
-      handlers:
-      - console
-
-    disable_existing_loggers: false
+{{- include "element-io.synapse.configmap-data"  (dict "root" $ "context" (dict "isHook" false)) -}}
 {{- end -}}
 {{- end -}}

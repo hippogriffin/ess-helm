@@ -1174,7 +1174,20 @@ synapse:
   ## A hook job will make sure that Synapse config is valid before continuing
   checkConfigHook:
     enabled: true
-    annotations: {}
+    ## Labels to add to all manifest for this component
+    labels: {}
+    ## Defines the annotations to add to the workload
+    # annotations: {}
+    ## Controls configuration of the ServiceAccount for this component
+    serviceAccount:
+      ## Whether a ServiceAccount should be created by the chart or not
+      create: true
+
+      ## What name to give the ServiceAccount. If not provided the chart will provide the name automatically
+      name: ""
+
+      ## Annotations to add to the service account
+      annotations: {}
   ## Details of the Postgres Database to use
   postgres: {}
     ## PostgreSQL database host

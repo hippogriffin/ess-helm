@@ -93,6 +93,8 @@ initial-sync
 synapse.app.homeserver
 {{- else if eq . "media-repository" -}}
 synapse.app.media_repository
+{{- else if eq . "check-config-hook" -}}
+synapse.config
 {{- else -}}
 synapse.app.generic_worker
 {{- end -}}
@@ -145,7 +147,8 @@ responsibleForMedia
 {{- define "element-io.synapse.configSecrets" -}}
 {{- $root := .root -}}
 {{- with required "element-io.synapse.configSecrets missing context" .context -}}
-{{ $configSecrets := list (printf "%s-synapse" $root.Release.Name) }}
+{{- $isHook := required "element-io.synapse.configSecrets requires context.isHook" .isHook -}}
+{{ $configSecrets := list (include "element-io.synapse.configmap-name" (dict "root" $root "context" (dict "isHook" $isHook))) }}
 {{- if and $root.Values.initSecrets.enabled (include "element-io.init-secrets.generated-secrets" (dict "root" $root)) }}
 {{ $configSecrets = append $configSecrets (printf "%s-generated" $root.Release.Name) }}
 {{- end }}

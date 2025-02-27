@@ -11,7 +11,9 @@ enabled: true
 ## A hook job will make sure that Synapse config is valid before continuing
 checkConfigHook:
   enabled: true
-  annotations: {}
+  {{- sub_schema_values.labels() | indent(2) }}
+  {{- sub_schema_values.workloadAnnotations() | indent(2) }}
+  {{- sub_schema_values.serviceAccount() | indent(2) }}
 
 {{- sub_schema_values.postgresLibPQ() }}
 ## Configures the media store for Synapse
