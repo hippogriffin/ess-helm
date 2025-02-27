@@ -23,7 +23,7 @@ metadata:
   labels:
     {{- include "element-io.synapse-check-config-hook.labels" (dict "root" $ "context" .checkConfigHook) | nindent 4 }}
 spec:
-  backoffLimit: 6
+  backoffLimit: 0
   completionMode: NonIndexed
   completions: 1
   manualSelector: false
