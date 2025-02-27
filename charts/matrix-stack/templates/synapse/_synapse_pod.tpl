@@ -72,7 +72,7 @@ We have an init container to render & merge the config for several reasons:
         {{- range $key := (.additional | keys | uniq | sortAlpha) -}}
         {{- $prop := index $root.Values.synapse.additional $key }}
         {{- if $prop.config }}
-      - /secrets/{{ $root.Release.Name }}-synapse/user-{{ $key }}
+      - /secrets/{{ (include "element-io.synapse.secret-name" (dict "root" $root "context" (dict "isHook" $isHook))) }}/user-{{ $key }}
         {{- end }}
         {{- if $prop.configSecret }}
       - /secrets/{{ tpl $prop.configSecret $root }}/{{ $prop.configSecretKey }}
