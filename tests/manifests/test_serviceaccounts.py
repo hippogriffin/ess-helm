@@ -62,7 +62,7 @@ async def test_uses_serviceaccount_named_as_values_if_specified(component, value
         workload.setdefault("serviceAccount", {}).setdefault("name", f"{component}-pytest")
         workload.setdefault("labels", {}).setdefault("expected.name", f"{component}-pytest")
 
-    iterate_component_workload_parts(component, values, service_account_name, force=True)
+    iterate_component_workload_parts(component, values, service_account_name, ignore_uses_parent_properties=True)
 
     workloads_by_id = {}
     serviceaccount_names = []
