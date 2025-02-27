@@ -8,7 +8,7 @@
     },
     "checkConfigHook": {
       "type": "object",
-      "properties":{
+      "properties": {
         "enabled": {
           "type": "boolean"
         },
