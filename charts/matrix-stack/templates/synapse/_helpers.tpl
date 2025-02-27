@@ -16,7 +16,7 @@ k8s.element.io/synapse-instance: {{ $root.Release.Name }}-synapse
 {{- end }}
 {{- end }}
 
-{{- define "element-io.synapse-hook.labels" -}}
+{{- define "element-io.synapse-check-config-hook.labels" -}}
 {{- $root := .root -}}
 {{- with required "element-io.synapse.labels missing context" .context -}}
 {{ include "element-io.ess-library.labels.common" (dict "root" $root "context" .labels) }}
