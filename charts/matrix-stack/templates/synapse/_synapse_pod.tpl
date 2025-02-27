@@ -33,6 +33,9 @@ template:
       {{- toYaml . | nindent 6 }}
 {{- end }}
   spec:
+{{- if $isHook }}
+    restartPolicy: Never
+{{- end }}
 {{- include "element-io.ess-library.pods.commonSpec" (dict "root" $root "context" (dict "componentValues" . "key" ($isHook | ternary "synapse-check-config-hook" "synapse") "deployment" false "usesMatrixTools" true)) | nindent 4 }}
 {{- with .hostAliases }}
     hostAliases:
