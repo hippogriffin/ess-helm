@@ -8,14 +8,8 @@
 elementWeb:
   ingress:
     host: element.ess.localhost
-initSecrets:
-  enabled: true
 matrixAuthenticationService:
   enabled: false
-postgres:
-  enabled: true
 serverName: ess.localhost
 synapse:
   enabled: false
-wellKnownDelegation:
-  enabled: true

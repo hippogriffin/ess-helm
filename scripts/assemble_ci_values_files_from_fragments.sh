@@ -36,11 +36,13 @@ for values_file in "$values_file_root"/*-values.yaml; do
   # Remove any fields with null values so we have a way of removing things
   yq_command+=" | del(... | select(. == null))"
   # We could remove enabled: true for all default enabled components by setting enabled: null in their minimal values file,
-  # however for wellKnownDelegation and initSecrets there's no other config and so being explicit is better.
-  # Instead we remove enabled: true for Element Web, MAS, Synapse
   yq_command+=" | del(.elementWeb.enabled | select(.))"
+  yq_command+=" | del(.initSecrets.enabled | select(.))"
+  yq_command+=" | del(.postgres.enabled | select(.))"
   yq_command+=" | del(.matrixAuthenticationService.enabled | select(.))"
   yq_command+=" | del(.synapse.enabled | select(.))"
+  yq_command+=" | del(.wellKnownDelegation.enabled | select(.))"
+  yq_command+=' | del(.. | select(tag == "!!map" and length == 0))'
 
   echo "Generating $values_file from $source_fragments";
   echo "" > "$values_file"

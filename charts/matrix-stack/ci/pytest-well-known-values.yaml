@@ -18,6 +18,5 @@ synapse:
 wellKnownDelegation:
   baseDomainRedirect:
     url: "https://redirect.localhost/path"
-  enabled: true
   ingress:
     tlsSecret: "{{ $.Release.Name }}-well-known-web-tls"

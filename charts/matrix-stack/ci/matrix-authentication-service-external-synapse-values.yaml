@@ -7,8 +7,6 @@
 
 elementWeb:
   enabled: false
-initSecrets:
-  enabled: true
 matrixAuthenticationService:
   additional:
     0000-matrix-server:
@@ -23,8 +21,6 @@ matrixAuthenticationService:
           endpoint: https://syn.external.localhost
   ingress:
     host: mas.ess.localhost
-postgres:
-  enabled: true
 synapse:
   enabled: false
 wellKnownDelegation:

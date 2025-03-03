@@ -7,13 +7,9 @@
 
 elementWeb:
   enabled: false
-initSecrets:
-  enabled: true
 matrixAuthenticationService:
   ingress:
     host: mas.ess.localhost
-postgres:
-  enabled: true
 synapse:
   enabled: false
 wellKnownDelegation:

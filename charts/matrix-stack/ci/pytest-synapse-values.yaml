@@ -10,11 +10,8 @@ elementWeb:
 initSecrets:
   annotations:
     has-no-service-monitor: "true"
-  enabled: true
 matrixAuthenticationService:
   enabled: false
-postgres:
-  enabled: true
 serverName: ess.localhost
 synapse:
   additional:

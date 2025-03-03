@@ -10,7 +10,6 @@ elementWeb:
 initSecrets:
   annotations:
     has-no-service-monitor: "true"
-  enabled: true
 matrixAuthenticationService:
   additional:
     000-pytest-admin:
@@ -22,8 +21,6 @@ matrixAuthenticationService:
   ingress:
     host: mas.{{ $.Values.serverName }}
     tlsSecret: "{{ $.Release.Name }}-mas-web-tls"
-postgres:
-  enabled: true
 serverName: ess.localhost
 synapse:
   ingress:

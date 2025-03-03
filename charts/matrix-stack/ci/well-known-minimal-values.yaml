@@ -12,5 +12,3 @@ matrixAuthenticationService:
 serverName: ess.localhost
 synapse:
   enabled: false
-wellKnownDelegation:
-  enabled: true
