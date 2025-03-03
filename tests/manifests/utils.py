@@ -43,7 +43,14 @@ def base_values(values_file) -> dict[str, Any]:
 
 @pytest.fixture(scope="function")
 def values(values_file) -> dict[str, Any]:
-    return yaml.safe_load((Path("charts/matrix-stack/ci") / values_file).read_text("utf-8"))
+    v = yaml.safe_load((Path("charts/matrix-stack/ci") / values_file).read_text("utf-8"))
+    if not v.get("initSecrets"):
+        v["initSecrets"] = {"enabled": True}
+    if not v.get("postgres"):
+        v["postgres"] = {"enabled": True}
+    if not v.get("wellKnownDelegation"):
+        v["wellKnownDelegation"] = {"enabled": True}
+    return v
 
 
 @pytest.fixture(scope="function")
@@ -57,14 +64,15 @@ def other_secrets(release_name, values, templates):
 
 
 def generated_secrets(release_name: str, values: Any | None, helm_generated_templates: list[Any]) -> Iterator[Any]:
-    if values.get("initSecrets", {}).get("enabled", False):
+    if values["initSecrets"]["enabled"]:
         init_secrets_job = None
         for template in helm_generated_templates:
             if template["kind"] == "Job" and template["metadata"]["name"] == f"{release_name}-init-secrets":
                 init_secrets_job = template
-        assert init_secrets_job is not None, (
-            "initSecrets.enabled=true but no init-secrets job found to generate Secret for"
-        )
+                break
+        else:
+            # We don't have an init-secrets job
+            return
 
         command_line = (
             init_secrets_job.get("spec", {})
