@@ -43,6 +43,7 @@ for values_file in "$values_file_root"/*-values.yaml; do
   yq_command+=" | del(.synapse.enabled | select(.))"
   yq_command+=" | del(.wellKnownDelegation.enabled | select(.))"
   yq_command+=' | del(.. | select(tag == "!!map" and length == 0))'
+  yq_command+=" | select((. | [\"initSecrets\", \"postgres\", \"wellKnownDelegation\"] - keys) | length > 0) head_comment=([\"initSecrets\", \"postgres\", \"wellKnownDelegation\"] - keys | join(\", \"))  + \" don't have any required properties to be set and defaults to enabled\""
 
   echo "Generating $values_file from $source_fragments";
   echo "" > "$values_file"
@@ -56,5 +57,5 @@ for values_file in "$values_file_root"/*-values.yaml; do
 # DO NOT EDIT DIRECTLY. Edit the fragment files to add / modify / remove values
 
 EOF
-  yq "$yq_command" "$values_file_root/nothing-enabled-values.yaml" >> "$values_file"
+  yq -P "$yq_command" "$values_file_root/nothing-enabled-values.yaml" >> "$values_file"
 done

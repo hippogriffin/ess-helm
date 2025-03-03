@@ -5,6 +5,7 @@
 # source_fragments: synapse-minimal.yaml synapse-all-workers-running.yaml init-secrets-minimal.yaml postgres-minimal.yaml
 # DO NOT EDIT DIRECTLY. Edit the fragment files to add / modify / remove values
 
+# initSecrets, postgres don't have any required properties to be set and defaults to enabled
 elementWeb:
   enabled: false
 matrixAuthenticationService:

@@ -5,6 +5,7 @@
 # source_fragments: well-known-minimal.yaml haproxy-checkov.yaml
 # DO NOT EDIT DIRECTLY. Edit the fragment files to add / modify / remove values
 
+# initSecrets, postgres, wellKnownDelegation don't have any required properties to be set and defaults to enabled
 elementWeb:
   enabled: false
 haproxy:
