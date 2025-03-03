@@ -235,7 +235,7 @@ elementWeb:
   additional: "{}"
 
   # Number of Element Web replicas to start up
-  replicas: 2
+  replicas: 1
   # Details of the image to be used
   image:
     ## The host and (optional) port of the container image registry for this component.
@@ -408,7 +408,7 @@ elementWeb:
   topologySpreadConstraints: []
 
 haproxy:
-  replicas: 2
+  replicas: 1
   # Details of the image to be used
   image:
     ## The host and (optional) port of the container image registry for this component.
