@@ -16,7 +16,7 @@ synapse:
       enabled: true
     event-persister:
       enabled: true
-      instances: 2
+      replicas: 2
     federation-reader:
       enabled: true
     federation-sender:
@@ -31,7 +31,7 @@ synapse:
       enabled: true
     pusher:
       enabled: true
-      instances: 2
+      replicas: 2
     receipts-account:
       enabled: true
     sliding-sync:

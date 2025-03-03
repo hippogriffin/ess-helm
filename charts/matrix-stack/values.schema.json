@@ -3292,13 +3292,13 @@
             },
             "client-reader": {
               "required": [
-                "instances"
+                "replicas"
               ],
               "properties": {
                 "enabled": {
                   "type": "boolean"
                 },
-                "instances": {
+                "replicas": {
                   "type": "integer",
                   "minimum": 1
                 },
@@ -3485,13 +3485,13 @@
             },
             "event-creator": {
               "required": [
-                "instances"
+                "replicas"
               ],
               "properties": {
                 "enabled": {
                   "type": "boolean"
                 },
-                "instances": {
+                "replicas": {
                   "type": "integer",
                   "minimum": 1
                 },
@@ -3635,13 +3635,13 @@
             },
             "event-persister": {
               "required": [
-                "instances"
+                "replicas"
               ],
               "properties": {
                 "enabled": {
                   "type": "boolean"
                 },
-                "instances": {
+                "replicas": {
                   "type": "integer",
                   "minimum": 1
                 },
@@ -3785,13 +3785,13 @@
             },
             "federation-reader": {
               "required": [
-                "instances"
+                "replicas"
               ],
               "properties": {
                 "enabled": {
                   "type": "boolean"
                 },
-                "instances": {
+                "replicas": {
                   "type": "integer",
                   "minimum": 1
                 },
@@ -3935,13 +3935,13 @@
             },
             "federation-sender": {
               "required": [
-                "instances"
+                "replicas"
               ],
               "properties": {
                 "enabled": {
                   "type": "boolean"
                 },
-                "instances": {
+                "replicas": {
                   "type": "integer",
                   "minimum": 1
                 },
@@ -4085,13 +4085,13 @@
             },
             "initial-synchrotron": {
               "required": [
-                "instances"
+                "replicas"
               ],
               "properties": {
                 "enabled": {
                   "type": "boolean"
                 },
-                "instances": {
+                "replicas": {
                   "type": "integer",
                   "minimum": 1
                 },
@@ -4364,13 +4364,13 @@
             },
             "pusher": {
               "required": [
-                "instances"
+                "replicas"
               ],
               "properties": {
                 "enabled": {
                   "type": "boolean"
                 },
-                "instances": {
+                "replicas": {
                   "type": "integer",
                   "minimum": 1
                 },
@@ -4557,13 +4557,13 @@
             },
             "sliding-sync": {
               "required": [
-                "instances"
+                "replicas"
               ],
               "properties": {
                 "enabled": {
                   "type": "boolean"
                 },
-                "instances": {
+                "replicas": {
                   "type": "integer",
                   "minimum": 1
                 },
@@ -4750,13 +4750,13 @@
             },
             "synchrotron": {
               "required": [
-                "instances"
+                "replicas"
               ],
               "properties": {
                 "enabled": {
                   "type": "boolean"
                 },
-                "instances": {
+                "replicas": {
                   "type": "integer",
                   "minimum": 1
                 },

@@ -1,12 +1,12 @@
 {
   "required": [
-    "instances"
+    "replicas"
   ],
   "properties": {
     "enabled": {
       "type": "boolean"
     },
-    "instances": {
+    "replicas": {
       "type": "integer",
       "minimum": 1
     },
