@@ -33,7 +33,7 @@ jobs:
       run: |
         echo "$(poetry env info -p)/bin" >> "${GITHUB_PATH}"
 
-    - uses: azure/setup-helm@v4.2.0
+    - uses: azure/setup-helm@v4.3.0
 
     - name: Set version
       run: |
