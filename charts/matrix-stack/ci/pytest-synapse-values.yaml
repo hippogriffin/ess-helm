@@ -5,16 +5,14 @@
 # source_fragments: synapse-minimal.yaml synapse-pytest-base-extras.yaml synapse-pytest-self-extras.yaml init-secrets-minimal.yaml init-secrets-pytest-extras.yaml postgres-minimal.yaml
 # DO NOT EDIT DIRECTLY. Edit the fragment files to add / modify / remove values
 
+# postgres don't have any required properties to be set and defaults to enabled
 elementWeb:
   enabled: false
 initSecrets:
   annotations:
     has-no-service-monitor: "true"
-  enabled: true
 matrixAuthenticationService:
   enabled: false
-postgres:
-  enabled: true
 serverName: ess.localhost
 synapse:
   additional:
@@ -23,14 +21,14 @@ synapse:
         push:
           jitter_dalay: 10
     01-other-user-config.yaml:
-      configSecret: "{{ $.Release.Name }}-synapse-secrets"
-      configSecretKey: "01-other-user-config.yaml"
+      configSecret: '{{ $.Release.Name }}-synapse-secrets'
+      configSecretKey: 01-other-user-config.yaml
   extraEnv:
     - name: DEBUG_RENDERING
       value: "1"
   ingress:
     host: synapse.{{ $.Values.serverName }}
-    tlsSecret: "{{ $.Release.Name }}-synapse-web-tls"
+    tlsSecret: '{{ $.Release.Name }}-synapse-web-tls'
   redis:
     annotations:
       has-no-service-monitor: "true"

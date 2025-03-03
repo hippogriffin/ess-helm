@@ -5,6 +5,7 @@
 # source_fragments: element-web-minimal.yaml element-web-checkov.yaml
 # DO NOT EDIT DIRECTLY. Edit the fragment files to add / modify / remove values
 
+# initSecrets, postgres don't have any required properties to be set and defaults to enabled
 elementWeb:
   annotations:
     checkov.io/skip1: CKV_K8S_11=We deliberately don't set CPU limits. Pod is BestEffort not Guaranteed

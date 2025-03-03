@@ -5,30 +5,28 @@
 # source_fragments: synapse-minimal.yaml synapse-pytest-base-extras.yaml matrix-authentication-service-minimal.yaml matrix-authentication-service-pytest-extras.yaml init-secrets-minimal.yaml init-secrets-pytest-extras.yaml postgres-minimal.yaml
 # DO NOT EDIT DIRECTLY. Edit the fragment files to add / modify / remove values
 
+# postgres don't have any required properties to be set and defaults to enabled
 elementWeb:
   enabled: false
 initSecrets:
   annotations:
     has-no-service-monitor: "true"
-  enabled: true
 matrixAuthenticationService:
   additional:
     000-pytest-admin:
-      configSecret: "{{ $.Release.Name }}-pytest-admin"
-      configSecretKey: "admin.yaml"
+      configSecret: '{{ $.Release.Name }}-pytest-admin'
+      configSecretKey: admin.yaml
   extraEnv:
     - name: DEBUG_RENDERING
       value: "1"
   ingress:
     host: mas.{{ $.Values.serverName }}
-    tlsSecret: "{{ $.Release.Name }}-mas-web-tls"
-postgres:
-  enabled: true
+    tlsSecret: '{{ $.Release.Name }}-mas-web-tls'
 serverName: ess.localhost
 synapse:
   ingress:
     host: synapse.{{ $.Values.serverName }}
-    tlsSecret: "{{ $.Release.Name }}-synapse-web-tls"
+    tlsSecret: '{{ $.Release.Name }}-synapse-web-tls'
   redis:
     annotations:
       has-no-service-monitor: "true"

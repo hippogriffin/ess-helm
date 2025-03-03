@@ -5,10 +5,9 @@
 # source_fragments: matrix-authentication-service-minimal.yaml matrix-authentication-service-external-synapse.yaml init-secrets-minimal.yaml postgres-minimal.yaml
 # DO NOT EDIT DIRECTLY. Edit the fragment files to add / modify / remove values
 
+# initSecrets, postgres don't have any required properties to be set and defaults to enabled
 elementWeb:
   enabled: false
-initSecrets:
-  enabled: true
 matrixAuthenticationService:
   additional:
     0000-matrix-server:
@@ -23,8 +22,6 @@ matrixAuthenticationService:
           endpoint: https://syn.external.localhost
   ingress:
     host: mas.ess.localhost
-postgres:
-  enabled: true
 synapse:
   enabled: false
 wellKnownDelegation:
