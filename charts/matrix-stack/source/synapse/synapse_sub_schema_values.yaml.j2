@@ -6,7 +6,7 @@ SPDX-License-Identifier: AGPL-3.0-only OR LicenseRef-Element-Commercial
 
 {% macro single_worker(workerType) %}
 {{ workerType }}:
-  ## Set to true to deploy a single instance of this worker
+  ## Set to true to deploy this worker
   enabled: false
 
   ## Resources for this worker.
@@ -16,11 +16,11 @@ SPDX-License-Identifier: AGPL-3.0-only OR LicenseRef-Element-Commercial
 
 {% macro scalable_worker(workerType) %}
 {{ workerType }}:
-  ## Set to true to deploy instances of this worker
+  ## Set to true to deploy this worker
   enabled: false
 
-  ## The number of instances of this worker to run
-  instances: 1
+  ## The number of replicas of this worker to run
+  replicas: 1
 
   ## Resources for this worker.
   ## If omitted the global Synapse resources are used

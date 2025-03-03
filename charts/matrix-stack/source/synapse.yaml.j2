@@ -31,8 +31,10 @@ appservices: []
 ## e.g.
 ## workers:
 ##   client-reader:
-##     instances: 2
-##   event-creator: {}
+##     enabled: true
+##     replicas: 2
+##   event-creator:
+##     enabled: true
 workers:
 {{- synapse_sub_schema_values.single_worker('appservice') | indent(2) }}
 {{- synapse_sub_schema_values.single_worker('background') | indent(2) }}

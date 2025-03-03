@@ -142,7 +142,7 @@ run_background_tasks_on: background-0
 
 send_federation: false
 federation_sender_instances:
-{{- range $index := untilStep 0 ((index .workers "federation-sender").instances | int) 1 }}
+{{- range $index := untilStep 0 ((index .workers "federation-sender").replicas | int) 1 }}
 - federation-sender-{{ $index }}
 {{- end }}
 {{- else }}
@@ -163,7 +163,7 @@ presence:
 
 start_pushers: false
 pusher_instances:
-{{- range $index := untilStep 0 ((index .workers "pusher").instances | int) 1 }}
+{{- range $index := untilStep 0 ((index .workers "pusher").replicas | int) 1 }}
 - pusher-{{ $index }}
 {{- end }}
 {{- else }}
@@ -183,7 +183,7 @@ instance_map:
     port: 9093
 {{- range $workerType, $workerDetails := $enabledWorkers }}
 {{- if include "element-io.synapse.process.hasReplication" (dict "root" $root "context" $workerType) }}
-{{- range $index := untilStep 0 ($workerDetails.instances | int | default 1) 1 }}
+{{- range $index := untilStep 0 ($workerDetails.replicas | int | default 1) 1 }}
   {{ $workerType }}-{{ $index }}:
     host: {{ $root.Release.Name }}-synapse-{{ $workerType }}-{{ $index }}.{{ $root.Release.Name }}-synapse-{{ $workerType }}.{{ $root.Release.Namespace }}.svc.cluster.local.
     port: 9093
@@ -203,7 +203,7 @@ stream_writers:
 {{- if include "element-io.synapse.process.streamWriters" (dict "root" $root "context" $workerType) | fromJsonArray }}
 {{- range $stream_writer := include "element-io.synapse.process.streamWriters" (dict "root" $root "context" $workerType) | fromJsonArray }}
   {{ $stream_writer }}:
-{{- range $index := untilStep 0 ($workerDetails.instances | int | default 1) 1 }}
+{{- range $index := untilStep 0 ($workerDetails.replicas | int | default 1) 1 }}
   - {{ $workerType }}-{{ $index }}
 {{- end }}
 {{- end }}

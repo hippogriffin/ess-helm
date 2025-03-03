@@ -28,7 +28,7 @@ metadata:
   namespace: {{ $.Release.Namespace }}
 spec:
   serviceName: {{ $.Release.Name }}-synapse-{{ $processType }}
-  replicas: {{ .instances | default 1 }}
+  replicas: {{ .replicas | default 1 }}
   selector:
     matchLabels:
       app.kubernetes.io/instance: {{ $.Release.Name }}-synapse-{{ $processType }}
