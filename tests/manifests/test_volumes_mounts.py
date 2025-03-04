@@ -23,7 +23,9 @@ async def test_volumes_mounts_exists(templates, other_secrets):
                     assert volume["secret"]["secretName"] in secrets_names
                 if "configMap" in volume:
                     assert volume["configMap"]["name"] in configmaps_names
-            for container in template["spec"]["template"]["spec"].get("containers", []) + template["spec"].get(
+            for container in template["spec"]["template"]["spec"].get("containers", []) + template["spec"]["template"][
+                "spec"
+            ].get(
                 "initContainers",
                 [],
             ):

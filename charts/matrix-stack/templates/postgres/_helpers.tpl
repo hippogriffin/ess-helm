@@ -30,7 +30,7 @@ true
 
 {{- define "element-io.postgres.anyEssPasswordHasValue" }}
 {{- $root := .root -}}
-{{- with required "element-io.postgres.configSecrets missing context" .context -}}
+{{- with required "element-io.postgres.anyEssPasswordHasValue missing context" .context -}}
 {{- range .essPasswords -}}
 {{- if .value -}}
 true
@@ -65,7 +65,7 @@ true
 
 {{- define "element-io.postgres.memoryLimitsMB" -}}
 {{- $root := .root -}}
-{{- with required "element-io.postgres.configSecrets missing context" .context -}}
+{{- with required "element-io.postgres.memoryLimitsMB missing context" .context -}}
   {{- $value := .resources.limits.memory }}
   {{- if  $value | hasSuffix "Mi" }}
     {{- printf "%d" (trimSuffix "Mi" $value) | int64 -}}

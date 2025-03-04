@@ -57,7 +57,7 @@ tolerations:
 
 {{- define "element-io.ess-library.pods.topologySpreadConstraints" -}}
 {{- $root := .root -}}
-{{- with required "element-io.ess-libary.pods.topologySpreadConstraints missing context" .context -}}
+{{- with required "element-io.ess-library.pods.topologySpreadConstraints missing context" .context -}}
 {{- $labelSelector := (dict "matchLabels" (dict "app.kubernetes.io/instance" (printf "%s-%s" $root.Release.Name .instanceSuffix))) }}
 {{- $matchLabelKeys := .deployment | ternary (list "pod-template-hash") list }}
 {{- $defaultConstraintSettings := dict "labelSelector" $labelSelector "matchLabelKeys" $matchLabelKeys "whenUnsatisfiable" "DoNotSchedule" }}

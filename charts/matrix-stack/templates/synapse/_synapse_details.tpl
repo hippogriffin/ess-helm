@@ -183,7 +183,7 @@ responsibleForMedia
 
 {{- define "element-io.synapse.process.workerPaths" -}}
 {{- $root := .root -}}
-{{- with required "element-io.synapse.workerPaths missing context" .context -}}
+{{- with required "element-io.synapse.process.workerPaths missing context" .context -}}
 {{ $workerPaths := list }}
 
 {{- if eq .workerType "client-reader" }}
@@ -333,7 +333,7 @@ responsibleForMedia
 {{- end }}
 
 {{- if eq .workerType "push-rules" }}
-{{ $workerPaths = append $workerPaths (list
+{{ $workerPaths = concat $workerPaths (list
   "^/_matrix/client/(api/v1|r0|v3|unstable)/pushrules/"
   "^/_matrix/client/unstable/org.matrix.msc4140/delayed_events"
 ) }}
