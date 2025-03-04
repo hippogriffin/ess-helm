@@ -144,6 +144,7 @@ app.kubernetes.io/version: {{ .image.tag }}
 {{- define "element-io.synapse.matrixToolsEnv" }}
 {{- $root := .root -}}
 {{- with required "element-io.synapse.matrixToolsEnv missing context" .context -}}
+{{- $isHook := required "element-io.synapse.matrixToolsEnv requires context.isHook" .isHook }}
 - name: SYNAPSE_POSTGRES_PASSWORD
   value: >-
     {{
@@ -155,7 +156,7 @@ app.kubernetes.io/version: {{ .image.tag }}
               "essPassword" "synapse"
               "initSecretKey" "POSTGRES_SYNAPSE_PASSWORD"
               "secretProperty" .postgres.password
-              "defaultSecretName" (printf "%s-synapse" $root.Release.Name)
+              "defaultSecretName" (printf "%s-synapse%s" $root.Release.Name ($isHook | ternary "-hook" ""))
               "defaultSecretKey" "POSTGRES_PASSWORD"
             )
           )
