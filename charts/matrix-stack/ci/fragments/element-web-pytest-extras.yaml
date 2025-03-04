@@ -14,6 +14,9 @@ elementWeb:
   annotations:
     has-no-service-monitor: "true"
 
+  podSecurityContext:
+    runAsGroup: 0
+
   additional: |
     {
       "default_server_config": {

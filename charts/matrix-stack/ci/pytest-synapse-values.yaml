@@ -5,14 +5,21 @@
 # source_fragments: synapse-minimal.yaml synapse-pytest-base-extras.yaml synapse-pytest-self-extras.yaml init-secrets-minimal.yaml init-secrets-pytest-extras.yaml postgres-minimal.yaml
 # DO NOT EDIT DIRECTLY. Edit the fragment files to add / modify / remove values
 
-# postgres don't have any required properties to be set and defaults to enabled
 elementWeb:
   enabled: false
+haproxy:
+  podSecurityContext:
+    runAsGroup: 0
 initSecrets:
   annotations:
     has-no-service-monitor: "true"
+  podSecurityContext:
+    runAsGroup: 0
 matrixAuthenticationService:
   enabled: false
+postgres:
+  podSecurityContext:
+    runAsGroup: 0
 serverName: ess.localhost
 synapse:
   additional:
@@ -29,9 +36,13 @@ synapse:
   ingress:
     host: synapse.{{ $.Values.serverName }}
     tlsSecret: '{{ $.Release.Name }}-synapse-web-tls'
+  podSecurityContext:
+    runAsGroup: 0
   redis:
     annotations:
       has-no-service-monitor: "true"
+    podSecurityContext:
+      runAsGroup: 0
   workers:
     # A non-HTTP worker & a stream writer
     event-persister:
