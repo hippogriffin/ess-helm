@@ -41,3 +41,17 @@ app.kubernetes.io/version: {{ .image.tag }}
 {{- tpl (toPrettyJson (merge $config (.additional | fromJson))) $root -}}
 {{- end }}
 {{- end }}
+
+{{- define "element-io.element-web.env" -}}
+{{- $root := .root -}}
+{{- with required "element-io.element-web.env missing context" .context -}}
+{{- $resultEnv := dict -}}
+{{- range $envEntry := .extraEnv -}}
+{{- $_ := set $resultEnv $envEntry.name $envEntry.value -}}
+{{- end -}}
+{{- range $key, $value := $resultEnv }}
+- name: {{ $key | quote }}
+  value: {{ $value | quote }}
+{{- end -}}
+{{- end -}}
+{{- end -}}
