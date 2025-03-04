@@ -7,6 +7,9 @@ matrixAuthenticationService:
   - name: DEBUG_RENDERING
     value: "1"
 
+  podSecurityContext:
+    runAsGroup: 0
+
   ingress:
     tlsSecret: "{{ $.Release.Name }}-mas-web-tls"
     host: mas.{{ $.Values.serverName }}
@@ -15,3 +18,7 @@ matrixAuthenticationService:
     000-pytest-admin:
       configSecret: "{{ $.Release.Name }}-pytest-admin"
       configSecretKey: "admin.yaml"
+
+postgres:
+  podSecurityContext:
+    runAsGroup: 0

@@ -63,6 +63,8 @@ spec:
         imagePullPolicy: {{ .pullPolicy | default "Always" }}
 {{- end }}
 {{- end }}
+        env:
+        {{- include "element-io.element-web.env" (dict "root" $ "context" .) | nindent 10 }}
 {{- with .containersSecurityContext }}
         securityContext:
           {{- toYaml . | nindent 10 }}

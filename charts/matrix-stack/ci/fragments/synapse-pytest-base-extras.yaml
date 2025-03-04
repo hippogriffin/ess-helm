@@ -10,3 +10,17 @@ synapse:
   redis:
     annotations:
       has-no-service-monitor: "true"
+
+    podSecurityContext:
+      runAsGroup: 0
+
+  podSecurityContext:
+    runAsGroup: 0
+
+haproxy:
+  podSecurityContext:
+    runAsGroup: 0
+
+postgres:
+  podSecurityContext:
+    runAsGroup: 0

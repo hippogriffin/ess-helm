@@ -30,6 +30,8 @@ elementWeb:
   ingress:
     host: element.{{ $.Values.serverName }}
     tlsSecret: '{{ $.Release.Name }}-element-web-tls'
+  podSecurityContext:
+    runAsGroup: 0
   replicas: 1
 matrixAuthenticationService:
   enabled: false
