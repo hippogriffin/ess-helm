@@ -117,6 +117,19 @@ def get_keys_from_container_using_rendered_config(template, templates, other_sec
     return mounted_keys
 
 
+def assert_exists_according_to_hook_weight(template, hook_weight):
+    # We skip any template which hook weight is higher than the current template using it
+    if hook_weight:
+        assert "helm.sh/hook-weight" in template["metadata"]["annotations"], (
+            f"template {template['metadata']['name']} has no hook weight"
+        )
+        assert int(template["metadata"]["annotations"]["helm.sh/hook-weight"]) < hook_weight, (
+            f"template {template['metadata']['name']} has a "
+            f"higher hook weight ({template['metadata']['annotations']['helm.sh/hook-weight']}) "
+            f"than the current one {hook_weight}"
+        )
+
+
 @pytest.mark.parametrize("values_file", values_files_to_test + secrets_values_files_to_test)
 @pytest.mark.asyncio_cooperative
 async def test_secrets_consistency(templates, other_secrets, component):
@@ -137,6 +150,10 @@ async def test_secrets_consistency(templates, other_secrets, component):
             "spec"
         ].get("initContainers", [])
 
+        weight = None
+        if "pre-install,pre-upgrade" in template["metadata"].get("annotations", {}).get("helm.sh/hook", ""):
+            weight = int(template["metadata"]["annotations"].get("helm.sh/hook-weight", 0))
+
         for container in containers:
             # Determine which secrets are mounted by this container
             mounted_keys = []
@@ -150,6 +167,7 @@ async def test_secrets_consistency(templates, other_secrets, component):
                 if "secret" in current_volume:
                     # Extract the paths where this volume's secrets are mounted
                     secret = get_secret(templates, other_secrets, current_volume["secret"]["secretName"])
+                    assert_exists_according_to_hook_weight(secret, weight)
                     parent, keys = get_mounts_part(secret, volume_mount)
                     mount_paths.append(volume_mount["mountPath"])
                     mount_parents.append(parent)
@@ -157,6 +175,7 @@ async def test_secrets_consistency(templates, other_secrets, component):
                 elif "configMap" in current_volume:
                     # Parse config map content
                     configmap = get_configmap(templates, current_volume["configMap"]["name"])
+                    assert_exists_according_to_hook_weight(configmap, weight)
                     mounted_config_maps.append(configmap)
                     parent, keys = get_mounts_part(configmap, volume_mount)
                     mount_paths.append(volume_mount["mountPath"])
