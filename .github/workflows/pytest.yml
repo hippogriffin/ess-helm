@@ -68,7 +68,7 @@ jobs:
         skipClusterLogsExport: "true"
 
 
-    - uses: azure/setup-helm@v4.2.0
+    - uses: azure/setup-helm@v4.3.0
 
     - name: Test with pytest
       run: |
