@@ -95,7 +95,14 @@ def generated_secrets(release_name: str, values: Any | None, helm_generated_temp
         for secret_name, secret_keys in generated_secrets_to_keys.items():
             yield {
                 "kind": "Secret",
-                "metadata": {"name": secret_name, "labels": requested_labels},
+                "metadata": {"name": secret_name, "labels": requested_labels,
+                "annotations": {
+                    # We simulate the fact that it exists after initSecret
+                    # using the hook weight.
+                    # Actually it does not have any
+                    # but this is necessary for tests/manifests/test_configs_and_mounts_consistency.py
+                    "helm.sh/hook-weight": "-9"
+                }},
                 "data": {
                     secret_key: "".join(random.choices(string.ascii_lowercase, k=10)) for secret_key in secret_keys
                 },
@@ -125,6 +132,13 @@ def external_secrets(release_name, values):
             "kind": "Secret",
             "metadata": {
                 "name": secret_name,
+                "annotations": {
+                    # We simulate the fact that it exists before the chart deployment
+                    # using the hook weight.
+                    # Actually it does not have any
+                    # but this is necessary for tests/manifests/test_configs_and_mounts_consistency.py
+                    "helm.sh/hook-weight": "-100"
+                },
             },
             "data": {secret_key: "".join(random.choices(string.ascii_lowercase, k=10)) for secret_key in secret_keys},
         }
