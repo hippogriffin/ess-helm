@@ -111,7 +111,9 @@ def get_keys_from_container_using_rendered_config(template, templates, other_sec
                     configmap = get_configmap(templates, current_volume["configMap"]["name"])
                     _, keys = get_mounts_part(configmap, volume_mount)
                     mounted_keys += keys
-    assert len(mounted_keys) > 0
+    assert len(mounted_keys) > 0, (
+        f"No secret or config map is mounted in the template {template['kind']}/{template['metadata']['name']}"
+    )
     return mounted_keys
 
 
