@@ -61,7 +61,7 @@ We have an init container to render & merge the config for several reasons:
 {{- end }}
 {{- with .containersSecurityContext }}
       securityContext:
-        {{- toYaml . | nindent 10 }}
+        {{- toYaml . | nindent 8 }}
 {{- end }}
       command:
       - "/matrix-tools"
@@ -85,11 +85,11 @@ We have an init container to render & merge the config for several reasons:
       - /config-templates/05-{{ $processType }}.yaml
 {{- end }}
       env:
-        {{- include "element-io.synapse.matrixToolsEnv" (dict "root" $root "context" .) | nindent 10 }}
-        {{- include "element-io.synapse.env" (dict "root" $root "context" .) | nindent 10 }}
+        {{- include "element-io.synapse.matrixToolsEnv" (dict "root" $root "context" .) | nindent 8 }}
+        {{- include "element-io.synapse.env" (dict "root" $root "context" .) | nindent 8 }}
 {{- with .resources }}
       resources:
-        {{- toYaml . | nindent 10 }}
+        {{- toYaml . | nindent 8 }}
 {{- end }}
       volumeMounts:
       - mountPath: /config-templates
@@ -116,7 +116,7 @@ We have an init container to render & merge the config for several reasons:
 {{- end }}
 {{- with .containersSecurityContext }}
       securityContext:
-        {{- toYaml . | nindent 10 }}
+        {{- toYaml . | nindent 8 }}
 {{- end }}
       command:
       - "/matrix-tools"
@@ -125,7 +125,7 @@ We have an init container to render & merge the config for several reasons:
       - {{ include "element-io.ess-library.postgres-host-port" (dict "root" $root "context" (dict "postgres" .postgres)) | quote }}
 {{- with .resources }}
       resources:
-        {{- toYaml . | nindent 10 }}
+        {{- toYaml . | nindent 8 }}
 {{- end }}
 {{- end }}
     containers:
@@ -141,7 +141,7 @@ We have an init container to render & merge the config for several reasons:
 {{- end }}
 {{- with .containersSecurityContext }}
       securityContext:
-        {{- toYaml . | nindent 10 }}
+        {{- toYaml . | nindent 8 }}
 {{- end }}
       command:
       - "python3"
@@ -150,8 +150,8 @@ We have an init container to render & merge the config for several reasons:
       - "-c"
       - /conf/homeserver.yaml
       env:
-        {{- include "element-io.synapse.pythonEnv" (dict "root" $root "context" .) | nindent 10 }}
-        {{- include "element-io.synapse.env" (dict "root" $root "context" .) | nindent 10 }}
+        {{- include "element-io.synapse.pythonEnv" (dict "root" $root "context" .) | nindent 8 }}
+        {{- include "element-io.synapse.env" (dict "root" $root "context" .) | nindent 8 }}
 {{- if not $isHook }}
       ports:
 {{- if (include "element-io.synapse.process.hasHttp" (dict "root" $root "context" $processType)) }}
@@ -196,7 +196,7 @@ We have an init container to render & merge the config for several reasons:
 {{- end }}
 {{- with .resources }}
       resources:
-        {{- toYaml . | nindent 10 }}
+        {{- toYaml . | nindent 8 }}
 {{- end }}
       volumeMounts:
 {{- range $secret := include "element-io.synapse.configSecrets" (dict "root" $root "context" .) | fromJsonArray }}
