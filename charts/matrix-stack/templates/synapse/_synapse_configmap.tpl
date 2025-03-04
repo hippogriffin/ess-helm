@@ -6,8 +6,8 @@ SPDX-License-Identifier: AGPL-3.0-only OR LicenseRef-Element-Commercial
 
 {{- define "element-io.synapse.configmap-name" }}
 {{- $root := .root }}
-{{- with required "element-io.synapse.configmap-data requires context" .context }}
-{{- $isHook := required "element-io.synapse.configmap-data requires context.isHook" .isHook }}
+{{- with required "element-io.synapse.configmap-name requires context" .context }}
+{{- $isHook := required "element-io.synapse.configmap-name requires context.isHook" .isHook }}
 {{- if $isHook }}
 {{- $root.Release.Name }}-synapse-hook
 {{- else }}

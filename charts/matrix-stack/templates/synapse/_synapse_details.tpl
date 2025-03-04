@@ -183,7 +183,7 @@ responsibleForMedia
 
 {{- define "element-io.synapse.process.workerPaths" -}}
 {{- $root := .root -}}
-{{- with required "element-io.synapse.workerPaths missing context" .context -}}
+{{- with required "element-io.synapse.process.workerPaths missing context" .context -}}
 {{ $workerPaths := list }}
 
 {{- if eq .workerType "client-reader" }}
