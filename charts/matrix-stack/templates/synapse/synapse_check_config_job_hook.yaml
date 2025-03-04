@@ -1,0 +1,40 @@
+{{- /*
+Copyright 2025 New Vector Ltd
+
+SPDX-License-Identifier: AGPL-3.0-only OR LicenseRef-Element-Commercial
+*/ -}}
+
+{{- with .Values.synapse -}}
+{{- if and .enabled .checkConfigHook.enabled -}}
+{{- $enabledWorkers := (include "element-io.synapse.enabledWorkers" (dict "root" $)) | fromJson }}
+{{- $processType := "check-config-hook" }}
+{{- $perProcessRoot := merge (dict "processType" $processType "isHook" true) ($.Values.synapse | deepCopy) (.checkConfigHook | deepCopy)}}
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: {{ $.Release.Name }}-synapse-check-config-hook
+  namespace: {{ $.Release.Namespace }}
+  annotations:
+    "helm.sh/hook": pre-install,pre-upgrade
+{{- /*
+Hook Weights are
+- -10 : The initSecret hook generating secrets used by the check config job
+- -5 : The synapse secret & configMap for the hook, so that they are created before the job
+- 0 : The job itself, so that it is run after the secrets and configs are created &
+*/}}
+    "helm.sh/hook-weight": "0"
+{{- with .checkConfigHook.annotations }}
+    {{- toYaml . | nindent 4 }}
+{{- end }}
+  labels:
+    {{- include "element-io.synapse-check-config-hook.labels" (dict "root" $ "context" .checkConfigHook) | nindent 4 }}
+spec:
+  backoffLimit: 0
+  completionMode: NonIndexed
+  completions: 1
+  manualSelector: false
+  parallelism: 1
+  podReplacementPolicy: TerminatingOrFailed
+  {{- include "element-io.synapse.pod-template" (dict "root" $ "context" (merge $perProcessRoot (dict "isHook" true))) | nindent 2 }}
+{{- end }}
+{{- end }}

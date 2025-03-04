@@ -16,6 +16,18 @@ k8s.element.io/synapse-instance: {{ $root.Release.Name }}-synapse
 {{- end }}
 {{- end }}
 
+{{- define "element-io.synapse-check-config-hook.labels" -}}
+{{- $root := .root -}}
+{{- with required "element-io.synapse.labels missing context" .context -}}
+{{ include "element-io.ess-library.labels.common" (dict "root" $root "context" .labels) }}
+app.kubernetes.io/component: matrix-server
+app.kubernetes.io/name: synapse-check-config-hook
+app.kubernetes.io/instance: {{ $root.Release.Name }}-synapse-check-config-hook
+app.kubernetes.io/version: {{ $root.Values.synapse.image.tag }}
+k8s.element.io/synapse-instance: {{ $root.Release.Name }}-synapse-check-config-hook
+{{- end }}
+{{- end }}
+
 {{- define "element-io.synapse-ingress.labels" -}}
 {{- $root := .root -}}
 {{- with required "element-io.synapse-ingress.labels missing context" .context -}}
@@ -34,10 +46,14 @@ app.kubernetes.io/version: {{ .image.tag }}
 {{- with required "element-io.synapse.process.labels missing context" .context -}}
 {{ include "element-io.ess-library.labels.common" (dict "root" $root "context" .labels) }}
 app.kubernetes.io/component: matrix-server
-app.kubernetes.io/name: synapse-{{ .ProcessType }}
-app.kubernetes.io/instance: {{ $root.Release.Name }}-synapse-{{ .ProcessType }}
+app.kubernetes.io/name: synapse-{{ .processType }}
+app.kubernetes.io/instance: {{ $root.Release.Name }}-synapse-{{ .processType }}
 app.kubernetes.io/version: {{ .image.tag }}
+{{ if required "element-io.synapse.process.labels missing context.isHook" .isHook }}
+k8s.element.io/synapse-instance: {{ $root.Release.Name }}-synapse-check-config-hook
+{{ else }}
 k8s.element.io/synapse-instance: {{ $root.Release.Name }}-synapse
+{{- end }}
 {{- end }}
 {{- end }}
 

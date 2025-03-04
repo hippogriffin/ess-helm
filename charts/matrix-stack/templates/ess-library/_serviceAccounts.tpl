@@ -15,12 +15,13 @@ SPDX-License-Identifier: AGPL-3.0-only OR LicenseRef-Element-Commercial
 {{- $root := .root -}}
 {{- with required "element-io.ess-library.serviceAccount missing context" .context -}}
 {{- $key := required "element-io.ess-library.serviceAccount missing context.key" .key -}}
+{{- $extraAnnotations := .extraAnnotations | default dict -}}
 {{- with required "element-io.ess-library.serviceAccount missing context.componentValues" .componentValues -}}
 {{- if .serviceAccount.create }}
 apiVersion: v1
 kind: ServiceAccount
 metadata:
-  {{- with .serviceAccount.annotations }}
+  {{- with (merge dict .serviceAccount.annotations $extraAnnotations) }}
   annotations:
     {{- toYaml . | nindent 4 }}
   {{- end }}

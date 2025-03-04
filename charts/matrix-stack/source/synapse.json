@@ -6,6 +6,23 @@
     "enabled": {
       "type": "boolean"
     },
+    "checkConfigHook": {
+      "type": "object",
+      "properties": {
+        "enabled": {
+          "type": "boolean"
+        },
+        "annotations": {
+          "$ref": "file://common/workloadAnnotations.json"
+        },
+        "labels": {
+          "$ref": "file://common/labels.json"
+        },
+        "serviceAccount": {
+          "$ref": "file://common/serviceAccount.json"
+        }
+      }
+    },
     "postgres": {
       "$ref": "file://common/postgres-libpq.json"
     },

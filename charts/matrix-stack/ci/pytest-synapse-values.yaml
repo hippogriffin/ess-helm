@@ -30,6 +30,9 @@ synapse:
     01-other-user-config.yaml:
       configSecret: '{{ $.Release.Name }}-synapse-secrets'
       configSecretKey: 01-other-user-config.yaml
+  checkConfigHook:
+    annotations:
+      has-no-service-monitor: "true"
   extraEnv:
     - name: DEBUG_RENDERING
       value: "1"

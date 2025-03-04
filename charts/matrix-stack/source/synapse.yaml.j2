@@ -7,6 +7,14 @@ SPDX-License-Identifier: AGPL-3.0-only OR LicenseRef-Element-Commercial
 {% import 'sub_schema_values.yaml.j2' as sub_schema_values -%}
 {% import 'synapse_sub_schema_values.yaml.j2' as synapse_sub_schema_values -%}
 enabled: true
+
+## A hook job will make sure that Synapse config is valid before continuing
+checkConfigHook:
+  enabled: true
+  {{- sub_schema_values.labels() | indent(2) }}
+  {{- sub_schema_values.workloadAnnotations() | indent(2) }}
+  {{- sub_schema_values.serviceAccount() | indent(2) }}
+
 {{- sub_schema_values.postgresLibPQ() }}
 ## Configures the media store for Synapse
 media:

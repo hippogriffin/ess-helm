@@ -34,6 +34,7 @@ _raw_component_details = {
             "redis": {
                 "has_service_monitor": False,
             },
+            "checkConfigHook": {"has_service_monitor": False, "uses_parent_properties": True},
         },
         "shared_components": ["initSecrets", "haproxy", "postgres"],
     },
@@ -65,6 +66,7 @@ def _enrich_components_to_test(details) -> dict[str, Any]:
         _component_details[component].setdefault("sub_components", {})
         for sub_component in _component_details[component]["sub_components"]:
             _component_details[component]["sub_components"][sub_component].setdefault("has_service_monitor", True)
+            _component_details[component]["sub_components"][sub_component].setdefault("uses_parent_properties", False)
 
         _component_details[component].setdefault("secret_values_files", [])
         if "initSecrets" in _component_details[component].setdefault("shared_components", []):

@@ -167,22 +167,26 @@ def make_templates(chart: pyhelm3.Chart, release_name: str):
     return _make_templates
 
 
-def iterate_component_parts(component, values, setter, if_condition):
+def iterate_component_parts(component, values, setter, if_condition, ignore_uses_parent_properties):
     if component_details[component][if_condition]:
         setter(values[component], values)
         for sub_component in component_details[component]["sub_components"]:
-            setter(values[component].setdefault(sub_component, {}), values)
+            if (
+                ignore_uses_parent_properties
+                or not component_details[component]["sub_components"][sub_component]["uses_parent_properties"]
+            ):
+                setter(values[component].setdefault(sub_component, {}), values)
     for shared_component in component_details[component].get("shared_components", []):
         if shared_components_details[shared_component][if_condition]:
             setter(values.setdefault(shared_component, {}), values)
 
 
-def iterate_component_workload_parts(component, values, setter):
-    iterate_component_parts(component, values, setter, "has_workloads")
+def iterate_component_workload_parts(component, values, setter, ignore_uses_parent_properties=False):
+    iterate_component_parts(component, values, setter, "has_workloads", ignore_uses_parent_properties)
 
 
 def iterate_component_image_parts(component, values, setter):
-    iterate_component_parts(component, values, setter, "has_image")
+    iterate_component_parts(component, values, setter, "has_image", False)
 
 
 def get_or_empty(d, key):
