@@ -36,6 +36,7 @@ async def test_ports_in_containers_are_named(templates):
             assert len(port_names) == len(set(port_names)), f"Port names are not unique: {id}, {port_names}"
 
 
+@pytest.mark.parametrize("values_file", values_files_to_test)
 @pytest.mark.asyncio_cooperative
 async def test_no_ports_in_jobs(templates):
     for template in templates:
