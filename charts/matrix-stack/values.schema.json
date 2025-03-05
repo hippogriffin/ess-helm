@@ -2626,6 +2626,10 @@
                 }
               },
               "additionalProperties": false
+            },
+            "maxUploadSize": {
+              "type": "string",
+              "pattern": "^[0-9]+[MK]$"
             }
           },
           "additionalProperties": false

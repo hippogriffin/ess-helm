@@ -20,6 +20,10 @@ checkConfigHook:
 media:
 {{- sub_schema_values.persistentVolumeClaim("storage") | indent(2) }}
 
+  ## The maximum size (in bytes ending in M or K) that Synapse will accept for media uploads
+  ## You may need to adjust your ingress controller to also allow uploads of this size
+  maxUploadSize: 100M
+
 {{- sub_schema_values.credential("Key used to sign events and federation requests.\n## This needs to be the full signing key starting `ed25519 ...`", "signingKey", initIfAbsent=True) }}
 {{- sub_schema_values.credential("Shared Secret to registering users without having any users provisioned", "registrationSharedSecret", initIfAbsent=True) }}
 {{- sub_schema_values.credential("Secret used to sign Synapse issued tokens", "macaroon", initIfAbsent=True) }}
