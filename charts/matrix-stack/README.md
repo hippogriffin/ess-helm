@@ -177,15 +177,16 @@ also configured so that location sharing shows maps; please reconfigure as appro
 Additional Element Web configuration can be provided as a JSON String with
 ```yaml
 elementWeb:
-  additional: |
-    {
-      "default_theme": "dark",
-      "default_server_config": {
-        "m.identity_server": {
-          "base_url": "https://vector.im"
+  additional:
+    extra-config.json: |
+      {
+        "default_theme": "dark",
+        "default_server_config": {
+          "m.identity_server": {
+            "base_url": "https://vector.im"
+          }
         }
       }
-    }
 ```
 Full details on available configuration options can be found at
 https://github.com/element-hq/element-web/blob/develop/docs/config.md.

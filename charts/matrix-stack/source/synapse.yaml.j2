@@ -29,7 +29,7 @@ media:
 {{- sub_schema_values.credential("Secret used to sign Synapse issued tokens", "macaroon", initIfAbsent=True) }}
 
 ## Additional configuration to provide to all Synapse processes.
-## Each key under additional is an additioanal config to merge into synapse homeserver.yaml
+## Each key under additional is an additional config to merge into synapse homeserver.yaml
 ## Full details on available configuration options can be found at https://element-hq.github.io/synapse/latest/usage/configuration/config_documentation.html
 {{- sub_schema_values.additionalConfig() }}
 
