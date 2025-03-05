@@ -113,8 +113,7 @@ app.kubernetes.io/version: {{ .image.tag }}
           include "element-io.ess-library.init-secret-path" (
               dict "root" $root
               "context" (dict
-                "secretProperty" .encryptionSecret
-                "secretPath" ".matrixAuthenticationService.encryptionSecret"
+                "secretPath" "matrixAuthenticationService.encryptionSecret"
                 "initSecretKey" "MAS_ENCRYPTION_SECRET"
                 "defaultSecretName" (printf "%s-matrix-authentication-service" $root.Release.Name)
                 "defaultSecretKey" "ENCRYPTION_SECRET"
@@ -133,8 +132,7 @@ app.kubernetes.io/version: {{ .image.tag }}
           include "element-io.ess-library.init-secret-path" (
               dict "root" $root
               "context" (dict
-                "secretProperty" .synapseSharedSecret
-                "secretPath" ".matrixAuthenticationService.synapseSharedSecret"
+                "secretPath" "matrixAuthenticationService.synapseSharedSecret"
                 "initSecretKey" "MAS_SYNAPSE_SHARED_SECRET"
                 "defaultSecretName" (printf "%s-matrix-authentication-service" $root.Release.Name)
                 "defaultSecretKey" "SYNAPSE_SHARED_SECRET"
@@ -149,8 +147,7 @@ app.kubernetes.io/version: {{ .image.tag }}
           include "element-io.ess-library.init-secret-path" (
               dict "root" $root
               "context" (dict
-                "secretProperty" .synapseOIDCClientSecret
-                "secretPath" ".matrixAuthenticationService.synapseOIDCClientSecret"
+                "secretPath" "matrixAuthenticationService.synapseOIDCClientSecret"
                 "initSecretKey" "MAS_SYNAPSE_OIDC_CLIENT_SECRET"
                 "defaultSecretName" (printf "%s-matrix-authentication-service" $root.Release.Name)
                 "defaultSecretKey" "SYNAPSE_OIDC_CLIENT_SECRET"

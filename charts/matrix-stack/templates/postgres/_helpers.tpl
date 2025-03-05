@@ -103,11 +103,10 @@ true
 {{- $overrideEnv := dict "POSTGRES_PASSWORD_FILE" (printf "/secrets/%s"
                             (include "element-io.ess-library.init-secret-path" (
                               dict "root" $root "context" (
-                                dict "secretProperty" .adminPassword
-                                      "secretPath" ".postgres.adminPassword"
-                                      "initSecretKey" "POSTGRES_ADMIN_PASSWORD"
-                                      "defaultSecretName" (printf "%s-postgres" $root.Release.Name)
-                                      "defaultSecretKey" "ADMIN_PASSWORD"
+                                dict "secretPath" "postgres.adminPassword"
+                                     "initSecretKey" "POSTGRES_ADMIN_PASSWORD"
+                                     "defaultSecretName" (printf "%s-postgres" $root.Release.Name)
+                                     "defaultSecretKey" "ADMIN_PASSWORD"
                                 )
                               )
                             )

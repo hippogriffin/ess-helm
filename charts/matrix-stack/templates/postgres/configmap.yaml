@@ -20,11 +20,10 @@ data:
     export POSTGRES_PASSWORD=`cat /secrets/{{
         include "element-io.ess-library.init-secret-path" (
       dict "root" $ "context" (
-        dict "secretProperty" .adminPassword
-              "secretPath" ".postgres.adminPassword"
-              "initSecretKey" "POSTGRES_ADMIN_PASSWORD"
-              "defaultSecretName" (printf "%s-postgres" $.Release.Name)
-              "defaultSecretKey" "ADMIN_PASSWORD"
+        dict "secretPath" "postgres.adminPassword"
+             "initSecretKey" "POSTGRES_ADMIN_PASSWORD"
+             "defaultSecretName" (printf "%s-postgres" $.Release.Name)
+             "defaultSecretKey" "ADMIN_PASSWORD"
         )
     ) }}`;
 {{- range $key := (.essPasswords | keys | uniq | sortAlpha) -}}
@@ -33,11 +32,10 @@ data:
     export ESS_PASSWORD=`cat /secrets/{{
   include "element-io.ess-library.init-secret-path" (
     dict "root" $ "context" (
-      dict "secretProperty" $prop
-            "secretPath" (printf ".postgres.essPasswords.%s" $key)
-            "initSecretKey" (printf "POSTGRES_%s_PASSWORD" ($key | upper))
-            "defaultSecretName" (printf "%s-postgres" $.Release.Name)
-            "defaultSecretKey" (printf "ESS_PASSWORD_%s" ($key | upper))
+      dict "secretPath" (printf "postgres.essPasswords.%s" $key)
+           "initSecretKey" (printf "POSTGRES_%s_PASSWORD" ($key | upper))
+           "defaultSecretName" (printf "%s-postgres" $.Release.Name)
+           "defaultSecretKey" (printf "ESS_PASSWORD_%s" ($key | upper))
       )
     ) }}`;
     (

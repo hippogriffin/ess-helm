@@ -88,7 +88,7 @@ secrets:
                 include "element-io.ess-library.init-secret-path" (
                       dict "root" $root
                       "context" (dict
-                        "secretProperty" .rsa
+                        "secretPath" "matrixAuthenticationService.privateKeys.rsa"
                         "initSecretKey" "MAS_RSA_PRIVATE_KEY"
                         "defaultSecretName" (printf "%s-matrix-authentication-service" $root.Release.Name)
                         "defaultSecretKey" "RSA_PRIVATE_KEY"
@@ -99,7 +99,7 @@ secrets:
                 include "element-io.ess-library.init-secret-path" (
                       dict "root" $root
                       "context" (dict
-                        "secretProperty" .ecdsaPrime256v1
+                        "secretPath" "matrixAuthenticationService.privateKeys.ecdsaPrime256v1"
                         "initSecretKey" "MAS_ECDSA_PRIME256V1_PRIVATE_KEY"
                         "defaultSecretName" (printf "%s-matrix-authentication-service" $root.Release.Name)
                         "defaultSecretKey" "ECDSA_PRIME256V1_PRIVATE_KEY"
@@ -111,6 +111,7 @@ secrets:
                 include "element-io.ess-library.provided-secret-path" (
                         dict "root" $root
                         "context" (dict
+                          "secretPath" ".matrixAuthenticationService.privateKeys.ecdsaSecp256k1"
                           "secretProperty" .
                           "defaultSecretName" (printf "%s-matrix-authentication-service" $root.Release.Name)
                           "defaultSecretKey" "ECDSA_SECP256K1_PRIVATE_KEY"
@@ -123,6 +124,7 @@ secrets:
                 include "element-io.ess-library.provided-secret-path" (
                         dict "root" $root
                         "context" (dict
+                          "secretPath" ".matrixAuthenticationService.privateKeys.ecdsaSecp384r1"
                           "secretProperty" .
                           "defaultSecretName" (printf "%s-matrix-authentication-service" $root.Release.Name)
                           "defaultSecretKey" "ECDSA_SECP384R1_PRIVATE_KEY"
