@@ -28,7 +28,7 @@ data:
 {{- end }}
 {{- end }}
 {{- end }}
-{{- include "element-io.ess-library.check-credential" (dict "root" $root "context" (dict "secretPath" "synapse.macaroon" "secretProperty" .macaroon "initIfAbsent" true)) -}}
+{{- include "element-io.ess-library.check-credential" (dict "root" $root "context" (dict "secretPath" "synapse.macaroon" "initIfAbsent" true)) -}}
 {{- with .macaroon.value }}
   MACAROON: {{ . | b64enc }}
 {{- end }}
@@ -37,11 +37,11 @@ data:
   POSTGRES_PASSWORD: {{ . | b64enc }}
 {{- end }}
 {{- end }}
-{{- include "element-io.ess-library.check-credential" (dict "root" $root "context" (dict "secretPath" "synapse.registrationSharedSecret" "secretProperty" .registrationSharedSecret "initIfAbsent" true)) -}}
+{{- include "element-io.ess-library.check-credential" (dict "root" $root "context" (dict "secretPath" "synapse.registrationSharedSecret" "initIfAbsent" true)) -}}
 {{- with .registrationSharedSecret.value }}
   REGISTRATION_SHARED_SECRET: {{ . | b64enc }}
 {{- end }}
-{{- include "element-io.ess-library.check-credential" (dict "root" $root "context" (dict "secretPath" "synapse.signingKey" "secretProperty" .signingKey "initIfAbsent" true)) -}}
+{{- include "element-io.ess-library.check-credential" (dict "root" $root "context" (dict "secretPath" "synapse.signingKey" "initIfAbsent" true)) -}}
 {{- with .signingKey.value }}
   SIGNING_KEY: {{ .| b64enc }}
 {{- end }}
