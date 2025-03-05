@@ -148,7 +148,7 @@ responsibleForMedia
 {{- $root := .root -}}
 {{- with required "element-io.synapse.configSecrets missing context" .context -}}
 {{- $isHook := required "element-io.synapse.configSecrets requires context.isHook" .isHook -}}
-{{ $configSecrets := list (include "element-io.synapse.configmap-name" (dict "root" $root "context" (dict "isHook" $isHook))) }}
+{{ $configSecrets := list (include "element-io.synapse.secret-name" (dict "root" $root "context" (dict "isHook" $isHook))) }}
 {{- if and $root.Values.initSecrets.enabled (include "element-io.init-secrets.generated-secrets" (dict "root" $root)) }}
 {{ $configSecrets = append $configSecrets (printf "%s-generated" $root.Release.Name) }}
 {{- end }}
@@ -156,7 +156,8 @@ responsibleForMedia
                                             (dict "root" $root "context" (dict
                                                                 "essPassword" "synapse"
                                                                 "postgresProperty" .postgres
-                                                                "defaultSecretName" (printf "%s-synapse" $root.Release.Name)
+                                                                "defaultSecretName" (include "element-io.synapse.secret-name" (dict "root" $root "context" (dict "isHook" .isHook)))
+                                                                "isHook" .isHook
                                                                 )
                                             )
                                         ) -}}
