@@ -41,10 +41,10 @@ app.kubernetes.io/version: {{ .image.tag }}
 {{- with .additional }}
 {{- range $key := (. | keys | uniq | sortAlpha) }}
 {{- $prop := index $root.Values.elementWeb.additional $key }}
-{{- $_ := (merge $config ($prop | fromJson)) -}}
+{{- $_ := (merge $config ((tpl $prop $root) | fromJson)) -}}
 {{- end }}
 {{- end }}
-{{- tpl (toPrettyJson $config) $root -}}
+{{- toPrettyJson $config -}}
 {{- end }}
 {{- end }}
 
