@@ -79,3 +79,85 @@ app.kubernetes.io/version: {{ .image.tag }}
 {{- end -}}
 {{- end -}}
 {{- end -}}
+
+{{- /* The filesystem structure is `/secrets`/<< secret name>>/<< secret key >>.
+        The non-defaulted values are handling the case where the credential is provided by an existing Secret
+        The default values are handling the case where the credential is provided plain in the Helm chart and we add it to our Secret with a well-known key.
+
+        These could be done as env vars with valueFrom.secretKeyRef, but that triggers CKV_K8S_35.
+        Environment variables values found in the config file as ${VARNAME} are parsed through go template engine before being replaced in the target file.
+*/}}
+{{- define "element-io.matrix-authentication-service.matrixToolsEnv" }}
+{{- $root := .root -}}
+{{- with required "element-io.matrix-authentication-service.matrixToolsEnv missing context" .context -}}
+- name: POSTGRES_PASSWORD
+  value: >-
+    {{
+      printf "{{ readfile \"/secrets/%s\" | urlencode }}" (
+          include "element-io.ess-library.postgres-secret-path" (
+              dict "root" $root
+              "context" (dict
+                "essPassword" "matrixAuthenticationService"
+                "initSecretKey" "POSTGRES_MATRIXAUTHENTICATIONSERVICE_PASSWORD"
+                "secretProperty" .postgres.password
+                "defaultSecretName" (printf "%s-matrix-authentication-service" $root.Release.Name)
+                "defaultSecretKey" "POSTGRES_PASSWORD"
+              )
+          )
+        )
+    }}
+- name: ENCRYPTION_SECRET
+  value: >-
+    {{
+      printf "{{ readfile \"/secrets/%s\" | quote }}" (
+          include "element-io.ess-library.init-secret-path" (
+              dict "root" $root
+              "context" (dict
+                "secretProperty" .encryptionSecret
+                "secretPath" ".matrixAuthenticationService.encryptionSecret"
+                "initSecretKey" "MAS_ENCRYPTION_SECRET"
+                "defaultSecretName" (printf "%s-matrix-authentication-service" $root.Release.Name)
+                "defaultSecretKey" "ENCRYPTION_SECRET"
+              )
+          )
+        )
+    }}
+{{- /*
+  This is the secrets shared between Synapse & MAS
+*/ -}}
+{{- if $root.Values.synapse.enabled }}
+- name: SYNAPSE_SHARED_SECRET
+  value: >-
+    {{
+      printf "{{ readfile \"/secrets/%s\" | quote }}" (
+          include "element-io.ess-library.init-secret-path" (
+              dict "root" $root
+              "context" (dict
+                "secretProperty" .synapseSharedSecret
+                "secretPath" ".matrixAuthenticationService.synapseSharedSecret"
+                "initSecretKey" "MAS_SYNAPSE_SHARED_SECRET"
+                "defaultSecretName" (printf "%s-matrix-authentication-service" $root.Release.Name)
+                "defaultSecretKey" "SYNAPSE_SHARED_SECRET"
+              )
+          )
+        )
+    }}
+- name: SYNAPSE_OIDC_CLIENT_SECRET
+  value: >-
+    {{
+      printf "{{ readfile \"/secrets/%s\" | quote }}" (
+          include "element-io.ess-library.init-secret-path" (
+              dict "root" $root
+              "context" (dict
+                "secretProperty" .synapseOIDCClientSecret
+                "secretPath" ".matrixAuthenticationService.synapseOIDCClientSecret"
+                "initSecretKey" "MAS_SYNAPSE_OIDC_CLIENT_SECRET"
+                "defaultSecretName" (printf "%s-matrix-authentication-service" $root.Release.Name)
+                "defaultSecretKey" "SYNAPSE_OIDC_CLIENT_SECRET"
+              )
+          )
+        )
+    }}
+{{- end }}
+{{- end }}
+{{- end }}

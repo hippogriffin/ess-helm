@@ -86,73 +86,8 @@ spec:
           {{- end }}
         - /config-templates/config.yaml
         env:
+        {{- include "element-io.matrix-authentication-service.matrixToolsEnv" (dict "root" $ "context" .) | nindent 8 }}
         {{- include "element-io.matrix-authentication-service.env" (dict "root" $ "context" .) | nindent 8 }}
-        - name: POSTGRES_PASSWORD
-          value: >-
-            {{
-              printf "{{ readfile \"/secrets/%s\" | urlencode }}" (
-                 include "element-io.ess-library.postgres-secret-path" (
-                     dict "root" $
-                     "context" (dict
-                       "essPassword" "matrixAuthenticationService"
-                       "initSecretKey" "POSTGRES_MATRIXAUTHENTICATIONSERVICE_PASSWORD"
-                       "secretProperty" .postgres.password
-                       "defaultSecretName" (printf "%s-matrix-authentication-service" $.Release.Name)
-                       "defaultSecretKey" "POSTGRES_PASSWORD"
-                     )
-                  )
-                )
-            }}
-        - name: ENCRYPTION_SECRET
-          value: >-
-            {{
-              printf "{{ readfile \"/secrets/%s\" | quote }}" (
-                 include "element-io.ess-library.init-secret-path" (
-                     dict "root" $
-                     "context" (dict
-                       "secretProperty" .encryptionSecret
-                       "secretPath" ".matrixAuthenticationService.encryptionSecret"
-                       "initSecretKey" "MAS_ENCRYPTION_SECRET"
-                       "defaultSecretName" (printf "%s-matrix-authentication-service" $.Release.Name)
-                       "defaultSecretKey" "ENCRYPTION_SECRET"
-                     )
-                  )
-                )
-            }}
-{{- if $.Values.synapse.enabled }}
-        - name: SYNAPSE_SHARED_SECRET
-          value: >-
-            {{
-              printf "{{ readfile \"/secrets/%s\" | quote }}" (
-                 include "element-io.ess-library.init-secret-path" (
-                     dict "root" $
-                     "context" (dict
-                       "secretProperty" .synapseSharedSecret
-                       "secretPath" ".matrixAuthenticationService.synapseSharedSecret"
-                       "initSecretKey" "MAS_SYNAPSE_SHARED_SECRET"
-                       "defaultSecretName" (printf "%s-matrix-authentication-service" $.Release.Name)
-                       "defaultSecretKey" "SYNAPSE_SHARED_SECRET"
-                     )
-                  )
-                )
-            }}
-        - name: SYNAPSE_OIDC_CLIENT_SECRET
-          value: >-
-            {{
-              printf "{{ readfile \"/secrets/%s\" | quote }}" (
-                 include "element-io.ess-library.init-secret-path" (
-                     dict "root" $
-                     "context" (dict
-                       "secretProperty" .synapseOIDCClientSecret
-                       "secretPath" ".matrixAuthenticationService.synapseOIDCClientSecret"
-                       "initSecretKey" "MAS_SYNAPSE_OIDC_CLIENT_SECRET"
-                       "defaultSecretName" (printf "%s-matrix-authentication-service" $.Release.Name)
-                       "defaultSecretKey" "SYNAPSE_OIDC_CLIENT_SECRET"
-                     )
-                  )
-                )
-            }}
-{{- end }}
 {{- with .resources }}
         resources:
           {{- toYaml . | nindent 10 }}
