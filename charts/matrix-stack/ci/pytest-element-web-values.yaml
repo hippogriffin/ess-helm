@@ -7,24 +7,25 @@
 
 # initSecrets, postgres don't have any required properties to be set and defaults to enabled
 elementWeb:
-  additional: |
-    {
-      "default_server_config": {
-        "m.homeserver": {
-          "base_url": "https://synapse.{{ $.Values.serverName }}"
+  additional:
+    user-config.json: |
+      {
+        "default_server_config": {
+          "m.homeserver": {
+            "base_url": "https://synapse.{{ $.Values.serverName }}"
+          }
+        },
+        "element_call": {
+          "url": "https://call.{{ $.Values.serverName }}",
+          "use_exclusively": true
+        },
+        "features": {
+          "feature_video_rooms": true,
+          "feature_group_calls": true,
+          "feature_new_room_decoration_ui": true,
+          "feature_element_call_video_rooms": true
         }
-      },
-      "element_call": {
-        "url": "https://call.{{ $.Values.serverName }}",
-        "use_exclusively": true
-      },
-      "features": {
-        "feature_video_rooms": true,
-        "feature_group_calls": true,
-        "feature_new_room_decoration_ui": true,
-        "feature_element_call_video_rooms": true
       }
-    }
   annotations:
     has-no-service-monitor: "true"
   ingress:
