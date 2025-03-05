@@ -155,7 +155,7 @@ app.kubernetes.io/version: {{ .image.tag }}
             "context" (dict
               "essPassword" "synapse"
               "initSecretKey" "POSTGRES_SYNAPSE_PASSWORD"
-              "secretProperty" .postgres.password
+              "componentPasswordPath" "synapse.postgres.password"
               "defaultSecretName" (include "element-io.synapse.secret-name" (dict "root" $root "context" (dict "isHook" .isHook)))
               "defaultSecretKey" "POSTGRES_PASSWORD"
             )

@@ -99,7 +99,7 @@ app.kubernetes.io/version: {{ .image.tag }}
               "context" (dict
                 "essPassword" "matrixAuthenticationService"
                 "initSecretKey" "POSTGRES_MATRIXAUTHENTICATIONSERVICE_PASSWORD"
-                "secretProperty" .postgres.password
+                "componentPasswordPath" "matrixAuthenticationService.postgres.password"
                 "defaultSecretName" (printf "%s-matrix-authentication-service" $root.Release.Name)
                 "defaultSecretKey" "POSTGRES_PASSWORD"
               )

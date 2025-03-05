@@ -4,6 +4,21 @@ Copyright 2024-2025 New Vector Ltd
 SPDX-License-Identifier: AGPL-3.0-only OR LicenseRef-Element-Commercial
 */ -}}
 
+{{- /* Returns the value (or nill) encoded as JSON at the given dot seperated path in the values file */ -}}
+{{- define "element-io.ess-library.value-from-values-path" -}}
+{{- $root := .root -}}
+{{- with required "element-io.ess-library.value-from-values-path missing context" .context -}}
+{{- $path := . -}}
+{{- $navigatedToPart := merge (dict) (mustDeepCopy $root.Values) -}}
+{{- range (mustRegexSplit "\\." $path -1) -}}
+{{- if $navigatedToPart -}}
+{{- $navigatedToPart = dig . nil $navigatedToPart -}}
+{{- end -}}
+{{- end -}}
+{{ $navigatedToPart | toJson }}
+{{- end -}}
+{{- end -}}
+
 {{- define "element-io.ess-library.check-credential" -}}
 {{- $root := .root -}}
 {{- with required "element-io.ess-library.check-credential missing context" .context -}}
@@ -67,15 +82,18 @@ SPDX-License-Identifier: AGPL-3.0-only OR LicenseRef-Element-Commercial
 {{- define "element-io.ess-library.postgres-secret-path" -}}
 {{- $root := .root -}}
 {{- with required "element-io.ess-library.postgres-secret-path" .context -}}
-{{- $secretProperty := .secretProperty -}}
+{{- $componentPasswordPath := required "element-io.ess-library.postgres-secret-path context missing componentPasswordPath" .componentPasswordPath -}}
 {{- $essPassword := required "element-io.ess-library.postgres-secret-path context missing essPassword" .essPassword -}}
 {{- $initSecretKey := required "element-io.ess-library.postgres-secret-path context missing initSecretKey" .initSecretKey -}}
 {{- $defaultSecretName := required "element-io.ess-library.postgres-secret-path context missing defaultSecretName" .defaultSecretName -}}
 {{- $defaultSecretKey := required "element-io.ess-library.postgres-secret-path context missing defaultSecretKey" .defaultSecretKey -}}
+{{- $secretProperty := include "element-io.ess-library.value-from-values-path" (dict "root" $root "context" $componentPasswordPath) | fromJson -}}
 {{- if not $secretProperty -}}
   {{- if (not (index $root.Values.postgres.essPasswords $essPassword)) }}
     {{- if $root.Values.initSecrets.enabled -}}
     {{- printf "%s/%s" (printf "%s-generated" $root.Release.Name) $initSecretKey -}}
+    {{- else -}}
+    {{- fail (printf "initSecrets is disabled, but the Secret configuration at %s is not present" $componentPasswordPath) -}}
     {{- end -}}
   {{- else -}}
     {{- include "element-io.ess-library.provided-secret-path" (dict
@@ -131,4 +149,3 @@ SPDX-License-Identifier: AGPL-3.0-only OR LicenseRef-Element-Commercial
 {{- end -}}
 {{- end -}}
 {{- end -}}
-
