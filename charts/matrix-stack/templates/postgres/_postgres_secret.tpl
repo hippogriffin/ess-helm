@@ -20,10 +20,14 @@ SPDX-License-Identifier: AGPL-3.0-only OR LicenseRef-Element-Commercial
 {{- $root := .root }}
 {{- with required "element-io.postgres.secret-data requires context" .context }}
 data:
-{{- with .adminPassword.value }}
+{{- with .adminPassword }}
+{{- include "element-io.ess-library.check-credential" (dict "root" $root "context" (dict "secretPath" "postgres.adminPassword" "initIfAbsent" false)) }}
+{{- with .value }}
   ADMIN_PASSWORD: {{ . | b64enc }}
 {{- end }}
+{{- end }}
 {{- range $key := (.essPasswords | keys | uniq | sortAlpha) }}
+{{- include "element-io.ess-library.check-credential" (dict "root" $root "context" (dict "secretPath" (printf "postgres.essPasswords.%s" $key) "initIfAbsent" true)) }}
 {{- $prop := index $root.Values.postgres.essPasswords $key }}
 {{- with $prop.value }}
   ESS_PASSWORD_{{ $key | upper }}: {{ .| b64enc }}

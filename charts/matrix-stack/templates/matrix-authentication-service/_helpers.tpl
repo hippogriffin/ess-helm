@@ -32,7 +32,7 @@ app.kubernetes.io/version: {{ .image.tag }}
 {{- $configSecrets = append $configSecrets (include "element-io.ess-library.postgres-secret-name"
                                             (dict "root" $root "context" (dict
                                                                 "essPassword" "matrixAuthenticationService"
-                                                                "postgresProperty" .postgres
+                                                                "componentPasswordPath" "matrixAuthenticationService.postgres.password"
                                                                 "defaultSecretName" (printf "%s-matrix-authentication-service" $root.Release.Name)
                                                                 "isHook" false
                                                                 )
@@ -99,7 +99,7 @@ app.kubernetes.io/version: {{ .image.tag }}
               "context" (dict
                 "essPassword" "matrixAuthenticationService"
                 "initSecretKey" "POSTGRES_MATRIXAUTHENTICATIONSERVICE_PASSWORD"
-                "secretProperty" .postgres.password
+                "componentPasswordPath" "matrixAuthenticationService.postgres.password"
                 "defaultSecretName" (printf "%s-matrix-authentication-service" $root.Release.Name)
                 "defaultSecretKey" "POSTGRES_PASSWORD"
               )
@@ -113,8 +113,7 @@ app.kubernetes.io/version: {{ .image.tag }}
           include "element-io.ess-library.init-secret-path" (
               dict "root" $root
               "context" (dict
-                "secretProperty" .encryptionSecret
-                "secretPath" ".matrixAuthenticationService.encryptionSecret"
+                "secretPath" "matrixAuthenticationService.encryptionSecret"
                 "initSecretKey" "MAS_ENCRYPTION_SECRET"
                 "defaultSecretName" (printf "%s-matrix-authentication-service" $root.Release.Name)
                 "defaultSecretKey" "ENCRYPTION_SECRET"
@@ -133,8 +132,7 @@ app.kubernetes.io/version: {{ .image.tag }}
           include "element-io.ess-library.init-secret-path" (
               dict "root" $root
               "context" (dict
-                "secretProperty" .synapseSharedSecret
-                "secretPath" ".matrixAuthenticationService.synapseSharedSecret"
+                "secretPath" "matrixAuthenticationService.synapseSharedSecret"
                 "initSecretKey" "MAS_SYNAPSE_SHARED_SECRET"
                 "defaultSecretName" (printf "%s-matrix-authentication-service" $root.Release.Name)
                 "defaultSecretKey" "SYNAPSE_SHARED_SECRET"
@@ -149,8 +147,7 @@ app.kubernetes.io/version: {{ .image.tag }}
           include "element-io.ess-library.init-secret-path" (
               dict "root" $root
               "context" (dict
-                "secretProperty" .synapseOIDCClientSecret
-                "secretPath" ".matrixAuthenticationService.synapseOIDCClientSecret"
+                "secretPath" "matrixAuthenticationService.synapseOIDCClientSecret"
                 "initSecretKey" "MAS_SYNAPSE_OIDC_CLIENT_SECRET"
                 "defaultSecretName" (printf "%s-matrix-authentication-service" $root.Release.Name)
                 "defaultSecretKey" "SYNAPSE_OIDC_CLIENT_SECRET"
