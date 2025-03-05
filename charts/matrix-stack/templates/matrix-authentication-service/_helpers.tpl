@@ -34,6 +34,7 @@ app.kubernetes.io/version: {{ .image.tag }}
                                                                 "essPassword" "matrixAuthenticationService"
                                                                 "postgresProperty" .postgres
                                                                 "defaultSecretName" (printf "%s-matrix-authentication-service" $root.Release.Name)
+                                                                "isHook" false
                                                                 )
                                             )
                                         ) -}}

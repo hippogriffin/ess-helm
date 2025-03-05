@@ -109,6 +109,7 @@ SPDX-License-Identifier: AGPL-3.0-only OR LicenseRef-Element-Commercial
 {{- $essPassword := required "element-io.ess-library.postgres-secret-name context missing essPassword" .essPassword -}}
 {{- $postgresProperty := required "element-io.ess-library.postgres-secret-name context missing postgresProperty" .postgresProperty -}}
 {{- $defaultSecretName := required "element-io.ess-library.postgres-secret-name context missing defaultSecretName" .defaultSecretName -}}
+{{- $isHook := required "element-io.ess-library.postgres-secret-name context missing isHook" .isHook -}}
 {{- if $postgresProperty -}}
     {{- if $postgresProperty.password.value -}}
     {{- $defaultSecretName -}}
@@ -117,7 +118,7 @@ SPDX-License-Identifier: AGPL-3.0-only OR LicenseRef-Element-Commercial
     {{- end -}}
 {{- else if (index $root.Values.postgres.essPasswords $essPassword) }}
     {{- if (index $root.Values.postgres.essPasswords $essPassword).value -}}
-    {{- printf "%s-postgres" $root.Release.Name -}}
+    {{- include "element-io.postgres.secret-name" (dict "root" $root "context"  (dict "isHook" .isHook)) }}
     {{- else -}}
     {{- tpl (index $root.Values.postgres.essPasswords $essPassword).secret $root -}}
     {{- end -}}
