@@ -125,14 +125,15 @@ SPDX-License-Identifier: AGPL-3.0-only OR LicenseRef-Element-Commercial
 {{- $root := .root -}}
 {{- with required "element-io.ess-library.postgres-secret-name" .context -}}
 {{- $essPassword := required "element-io.ess-library.postgres-secret-name context missing essPassword" .essPassword -}}
-{{- $postgresProperty := required "element-io.ess-library.postgres-secret-name context missing postgresProperty" .postgresProperty -}}
+{{- $componentPasswordPath := required "element-io.ess-library.postgres-secret-name context missing componentPasswordPath" .componentPasswordPath -}}
 {{- $defaultSecretName := required "element-io.ess-library.postgres-secret-name context missing defaultSecretName" .defaultSecretName -}}
 {{- $isHook := required "element-io.ess-library.postgres-secret-name context missing isHook" .isHook -}}
-{{- if $postgresProperty -}}
-    {{- if $postgresProperty.password.value -}}
+{{- $secretProperty := include "element-io.ess-library.value-from-values-path" (dict "root" $root "context" $componentPasswordPath) | fromJson -}}
+{{- if $secretProperty -}}
+    {{- if $secretProperty.value -}}
     {{- $defaultSecretName -}}
     {{- else -}}
-    {{- tpl $postgresProperty.password.secret $root -}}
+    {{- tpl $secretProperty.secret $root -}}
     {{- end -}}
 {{- else if (index $root.Values.postgres.essPasswords $essPassword) }}
     {{- if (index $root.Values.postgres.essPasswords $essPassword).value -}}
@@ -144,7 +145,7 @@ SPDX-License-Identifier: AGPL-3.0-only OR LicenseRef-Element-Commercial
   {{- if $root.Values.initSecrets.enabled -}}
   {{- printf "%s-generated" $root.Release.Name -}}
   {{- else -}}
-  {{- fail "No postgres password set and initSecrets not set" -}}
+  {{- fail (printf "initSecrets is disabled, but the Secret configuration at %s is not present" $componentPasswordPath) -}}
   {{- end -}}
 {{- end -}}
 {{- end -}}

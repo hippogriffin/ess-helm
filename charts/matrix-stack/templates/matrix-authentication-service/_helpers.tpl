@@ -32,7 +32,7 @@ app.kubernetes.io/version: {{ .image.tag }}
 {{- $configSecrets = append $configSecrets (include "element-io.ess-library.postgres-secret-name"
                                             (dict "root" $root "context" (dict
                                                                 "essPassword" "matrixAuthenticationService"
-                                                                "postgresProperty" .postgres
+                                                                "componentPasswordPath" "matrixAuthenticationService.postgres.password"
                                                                 "defaultSecretName" (printf "%s-matrix-authentication-service" $root.Release.Name)
                                                                 "isHook" false
                                                                 )

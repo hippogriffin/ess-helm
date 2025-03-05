@@ -155,7 +155,7 @@ responsibleForMedia
 {{- $configSecrets = append $configSecrets (include "element-io.ess-library.postgres-secret-name"
                                             (dict "root" $root "context" (dict
                                                                 "essPassword" "synapse"
-                                                                "postgresProperty" .postgres
+                                                                "componentPasswordPath" "synapse.postgres.password"
                                                                 "defaultSecretName" (include "element-io.synapse.secret-name" (dict "root" $root "context" (dict "isHook" .isHook)))
                                                                 "isHook" .isHook
                                                                 )
