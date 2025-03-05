@@ -5,7 +5,7 @@ SPDX-License-Identifier: AGPL-3.0-only OR LicenseRef-Element-Commercial
 */ -}}
 
 {{- $root := .root }}
-{{- with required "config.yaml missing context" .context }}
+{{- with required "matrix-authentication-service/config.yaml.tpl missing context" .context }}
 
 http:
   public_base: "https://{{ tpl .ingress.host $root }}"
