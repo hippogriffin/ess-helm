@@ -156,9 +156,6 @@ media_store_path: "/media/media_store"
 media_instance_running_background_jobs: "media-repository-0"
 {{- end }}
 
-presence:
-  enabled: {{ dig "presence-writer" "enabled" false .workers }}
-
 {{- if dig "pusher" "enabled" false .workers }}
 
 start_pushers: false
