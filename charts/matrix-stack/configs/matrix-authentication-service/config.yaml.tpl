@@ -111,8 +111,7 @@ secrets:
                 include "element-io.ess-library.provided-secret-path" (
                         dict "root" $root
                         "context" (dict
-                          "secretPath" ".matrixAuthenticationService.privateKeys.ecdsaSecp256k1"
-                          "secretProperty" .
+                          "secretPath" "matrixAuthenticationService.privateKeys.ecdsaSecp256k1"
                           "defaultSecretName" (printf "%s-matrix-authentication-service" $root.Release.Name)
                           "defaultSecretKey" "ECDSA_SECP256K1_PRIVATE_KEY"
                         )
@@ -124,8 +123,7 @@ secrets:
                 include "element-io.ess-library.provided-secret-path" (
                         dict "root" $root
                         "context" (dict
-                          "secretPath" ".matrixAuthenticationService.privateKeys.ecdsaSecp384r1"
-                          "secretProperty" .
+                          "secretPath" "matrixAuthenticationService.privateKeys.ecdsaSecp384r1"
                           "defaultSecretName" (printf "%s-matrix-authentication-service" $root.Release.Name)
                           "defaultSecretKey" "ECDSA_SECP384R1_PRIVATE_KEY"
                         )
