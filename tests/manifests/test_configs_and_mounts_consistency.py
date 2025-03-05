@@ -124,7 +124,7 @@ def assert_exists_according_to_hook_weight(template, hook_weight, used_by):
             f"template {template['metadata']['name']} used by {used_by} has no hook weight"
         )
         assert int(template["metadata"]["annotations"]["helm.sh/hook-weight"]) < hook_weight, (
-            f"template {template['metadata']['name']} has a "
+            f"template {template['metadata']['name']} has the same or "
             f"higher hook weight ({template['metadata']['annotations']['helm.sh/hook-weight']}) "
             f"than the current one used by {used_by} ({hook_weight})"
         )
