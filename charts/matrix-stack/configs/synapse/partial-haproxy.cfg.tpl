@@ -5,7 +5,7 @@ SPDX-License-Identifier: AGPL-3.0-only OR LicenseRef-Element-Commercial
 */ -}}
 
 {{- $root := .root -}}
-{{- with required "haproxy.cfg.tpl missing context" .context -}}
+{{- with required "synapse/partial-haproxy.cfg.tpl missing context" .context -}}
 
 frontend startup
    bind *:8406

@@ -5,7 +5,7 @@ SPDX-License-Identifier: AGPL-3.0-only OR LicenseRef-Element-Commercial
 */ -}}
 
 {{- $root := .root -}}
-{{- with required "haproxy.cfg.tpl missing context" .context -}}
+{{- with required "haproxy/haproxy.cfg.tpl missing context" .context -}}
 
 global
   maxconn 40000
