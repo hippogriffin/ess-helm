@@ -6,6 +6,18 @@ SPDX-License-Identifier: AGPL-3.0-only OR LicenseRef-Element-Commercial
 
 <!-- towncrier release notes start -->
 
+# ESS Community Helm Chart 0.7.1 (2025-03-07)
+
+### Fixed
+
+- Docs: Fix Architecture diagram wrong link between HAProxy & MAS. (#259)
+- Fix secret names when using in-helm values. (#262)
+
+### Internal
+
+- ct-lint.sh : Run the check about $ forbidden in .tpl files. (#261)
+
+
 # ESS Community Helm Chart 0.7.0 (2025-03-07)
 
 ### Added
