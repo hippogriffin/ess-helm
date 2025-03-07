@@ -6,6 +6,44 @@ SPDX-License-Identifier: AGPL-3.0-only OR LicenseRef-Element-Commercial
 
 <!-- towncrier release notes start -->
 
+# ESS Community Helm Chart 0.7.0 (2025-03-07)
+
+### Added
+
+- Redirect on the serverName domain to the chat app unless it is a well-known path. (#231)
+- Support QR code login when MAS is enabled. (#232)
+- Synapse: Add a config check as Helm hook. (#238)
+- Document deployment Architecture in `docs/ARCHITECTURE.md`. (#239)
+- Support passing extra environment variables to Element Web. (#247)
+- Allow configuration of Synapse's `max_upload_size` via Helm values. (#251)
+
+### Changed
+
+- Upgrade to Postgres Exporter 0.17.0 for better Postgres 17 compatibility. (#230)
+- Be consistent about replicas for components. (#241)
+- Rename instances to replicas for Synapse workers to be consistent with other components. (#242)
+- Ensure all managed `Secrets` set their `type`. (#243)
+- Ensure all ports have names. (#244)
+- Update CI values files so they can be used as examples for the new users. (#245)
+- Don't gate enabling presence in Synapse on having a presence writer worker, use the Synapse defaults and allow easy configuration. (#252)
+- ElementWeb additional config now expect multiple subproperties. (#254)
+- Improve credential validation. (#255)
+
+### Fixed
+
+- Fix an issue where postgres port could be missing when waiting for db. (#233)
+- Fixed recent Element Web versions failing to start when running with GID of 0. (#247)
+- Fix Secret name in the config check job for the Postgres password when provided in the Helm values file. (#248)
+- Fix incorrect missing context error messages from some configuration files. (#250)
+
+### Internal
+
+- Allow to call tpl in well-known .ingress.host elementWeb redirect. (#240)
+- Run integration pytests with GID 0 to detect some read-only filesystem issues. (#247)
+- Add test to verify that hook-weights are properly configured. (#249)
+- Extract Matrix Authentication Service env vars for rendering into a helper. (#253)
+
+
 # ESS Community Helm Chart 0.6.1 (2025-02-21)
 
 ### Added
