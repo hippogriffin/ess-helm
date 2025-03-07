@@ -247,10 +247,10 @@ helm registry login -u <github username> ghcr.io
 ```
 
 
-Finally, install ess, making sure to use the dev version by adding \--version 0.6.2-dev and including the ghcr.yaml values file:
+Finally, install ess, making sure to use the dev version by including the ghcr.yaml values file:
 
 ```
-helm upgrade --install --namespace "ess" ess oci://ghcr.io/element-hq/ess-helm/matrix-stack --version 0.6.2-dev -f ~/ess-config-values/hostnames.yaml -f ~/ess-config-values/ghcr.yaml <values files to pass> --wait
+helm upgrade --install --namespace "ess" ess oci://ghcr.io/element-hq/ess-helm/matrix-stack -f ~/ess-config-values/hostnames.yaml -f ~/ess-config-values/ghcr.yaml <values files to pass> --wait
 ```
 
 #### Standard Installation
