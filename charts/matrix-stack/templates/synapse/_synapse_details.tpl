@@ -156,7 +156,7 @@ responsibleForMedia
                                             (dict "root" $root "context" (dict
                                                                 "essPassword" "synapse"
                                                                 "componentPasswordPath" "synapse.postgres.password"
-                                                                "defaultSecretName" (include "element-io.synapse.secret-name" (dict "root" $root "context" (dict "isHook" .isHook)))
+                                                                "defaultSecretName" (include "element-io.synapse.secret-name" (dict "root" $root "context" (dict "isHook" $isHook)))
                                                                 "isHook" .isHook
                                                                 )
                                             )

@@ -6,8 +6,8 @@ SPDX-License-Identifier: AGPL-3.0-only OR LicenseRef-Element-Commercial
 
 {{- define "element-io.synapse.secret-name" }}
 {{- $root := .root }}
-{{- with required "element-io.synapse.secret-data requires context" .context }}
-{{- $isHook := required "element-io.synapse.secret-data requires context.isHook" .isHook }}
+{{- with required "element-io.synapse.secret-name requires context" .context }}
+{{- $isHook := required "element-io.synapse.secret-name requires context.isHook" .isHook }}
 {{- if $isHook }}
 {{- $root.Release.Name }}-synapse-hook
 {{- else }}

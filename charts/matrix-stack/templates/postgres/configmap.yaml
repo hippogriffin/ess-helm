@@ -22,7 +22,7 @@ data:
       dict "root" $ "context" (
         dict "secretPath" "postgres.adminPassword"
              "initSecretKey" "POSTGRES_ADMIN_PASSWORD"
-             "defaultSecretName" (printf "%s-postgres" $.Release.Name)
+             "defaultSecretName" (include "element-io.postgres.secret-name" (dict "root" $ "context"  (dict "isHook" false)))
              "defaultSecretKey" "ADMIN_PASSWORD"
         )
     ) }}`;
@@ -34,7 +34,7 @@ data:
     dict "root" $ "context" (
       dict "secretPath" (printf "postgres.essPasswords.%s" $key)
            "initSecretKey" (printf "POSTGRES_%s_PASSWORD" ($key | upper))
-           "defaultSecretName" (printf "%s-postgres" $.Release.Name)
+           "defaultSecretName" (include "element-io.postgres.secret-name" (dict "root" $ "context"  (dict "isHook" false)))
            "defaultSecretKey" (printf "ESS_PASSWORD_%s" ($key | upper))
       )
     ) }}`;

@@ -16,6 +16,7 @@ require_auth_for_profile_requests: true
 {{- define "element-io.synapse.config.shared-overrides" -}}
 {{- $root := .root -}}
 {{- with required "element-io.synapse.config.shared-overrides missing context" .context -}}
+{{- $isHook := required "element-io.synapse.config.shared-overrides requires context.isHook" .isHook -}}
 public_baseurl: https://{{ .ingress.host }}
 server_name: {{ required "Synapse requires serverName set" $root.Values.serverName }}
 signing_key_path: /secrets/{{
@@ -23,7 +24,7 @@ signing_key_path: /secrets/{{
     dict "root" $root "context" (
       dict "secretPath" "synapse.signingKey"
            "initSecretKey" "SYNAPSE_SIGNING_KEY"
-           "defaultSecretName" (printf "%s-synapse" $root.Release.Name)
+           "defaultSecretName" (include "element-io.synapse.secret-name" (dict "root" $root "context" (dict "isHook" $isHook)))
            "defaultSecretKey" "SIGNING_KEY"
       )
     ) }}
@@ -34,7 +35,7 @@ macaroon_secret_key_path:  /secrets/{{
     dict "root" $root "context" (
       dict "secretPath" "synapse.macaroon"
            "initSecretKey" "SYNAPSE_MACAROON"
-           "defaultSecretName" (printf "%s-synapse" $root.Release.Name)
+           "defaultSecretName" (include "element-io.synapse.secret-name" (dict "root" $root "context" (dict "isHook" $isHook)))
            "defaultSecretKey" "MACAROON"
       )
     ) }}
@@ -43,7 +44,7 @@ registration_shared_secret_path: /secrets/{{
     dict "root" $root "context" (
       dict "secretPath" "synapse.registrationSharedSecret"
            "initSecretKey" "SYNAPSE_REGISTRATION_SHARED_SECRET"
-           "defaultSecretName" (printf "%s-synapse" $root.Release.Name)
+           "defaultSecretName" (include "element-io.synapse.secret-name" (dict "root" $root "context" (dict "isHook" $isHook)))
            "defaultSecretKey" "REGISTRATION_SHARED_SECRET"
       )
     ) }}
