@@ -23,7 +23,7 @@ signing_key_path: /secrets/{{
     dict "root" $root "context" (
       dict "secretPath" "synapse.signingKey"
            "initSecretKey" "SYNAPSE_SIGNING_KEY"
-           "defaultSecretName" (printf "%s-synapse" $root.Release.Name)
+           "defaultSecretName" (include "element-io.synapse.secret-name" (dict "root" $root "context" (dict "isHook" $isHook)))
            "defaultSecretKey" "SIGNING_KEY"
       )
     ) }}
@@ -34,7 +34,7 @@ macaroon_secret_key_path:  /secrets/{{
     dict "root" $root "context" (
       dict "secretPath" "synapse.macaroon"
            "initSecretKey" "SYNAPSE_MACAROON"
-           "defaultSecretName" (printf "%s-synapse" $root.Release.Name)
+           "defaultSecretName" (include "element-io.synapse.secret-name" (dict "root" $root "context" (dict "isHook" $isHook)))
            "defaultSecretKey" "MACAROON"
       )
     ) }}
@@ -43,7 +43,7 @@ registration_shared_secret_path: /secrets/{{
     dict "root" $root "context" (
       dict "secretPath" "synapse.registrationSharedSecret"
            "initSecretKey" "SYNAPSE_REGISTRATION_SHARED_SECRET"
-           "defaultSecretName" (printf "%s-synapse" $root.Release.Name)
+           "defaultSecretName" (include "element-io.synapse.secret-name" (dict "root" $root "context" (dict "isHook" $isHook)))
            "defaultSecretKey" "REGISTRATION_SHARED_SECRET"
       )
     ) }}
