@@ -10,6 +10,10 @@ temp_output_file=$(mktemp)
 
 error=1
 
+find . -type f -name '*.tpl' -exec grep -E '\{\{[^}]*\$[^a-zA-Z0-9_][^}]*\}\}' {} + && {
+  echo 'Error: $ is used in a .tpl files, but helm passes the local context to the special variable $ in included templates.'; exit 1 
+} || echo "OK."
+
 # Call the ct lint command and stream the output to stdout
 if ct lint "$@" 2>&1 | tee "$temp_output_file"
 then
