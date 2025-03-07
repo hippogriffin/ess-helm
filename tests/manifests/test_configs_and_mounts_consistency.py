@@ -54,7 +54,7 @@ def get_volume_from_mount(template, volume_mount):
     )
 
 
-def match_in_content(container_name, mounted_keys, mount_path, matches_in):
+def find_mount_paths_and_assert_key_is_consistent(container_name, mounted_keys, mount_path, matches_in):
     found_mount = False
     for match_in in matches_in:
         for match in re.findall(rf"(?:^|\s|\"){mount_path}/([^\s\n\")`;,]+(?!.*noqa))", match_in):
@@ -64,6 +64,14 @@ def match_in_content(container_name, mounted_keys, mount_path, matches_in):
             )
             found_mount = True
     return found_mount
+
+
+def find_keys_mounts_in_content(mounted_key, matches_in):
+    for match_in in matches_in:
+        for match in re.findall(rf"(?:^|\s|\"){re.escape(mounted_key)}(?:[^\s\n\")`;,]*)", match_in):
+            if match:
+                return True
+    return False
 
 
 def get_key_from_render_config(template):
@@ -201,6 +209,40 @@ async def test_secrets_consistency(templates, other_secrets, template_to_deploya
             if container["name"] == "render-config":
                 mounted_keys += get_keys_from_container_using_rendered_config(template, templates, other_secrets)
 
+            # We look for all mountKeys
+            # refers <some key> to an existing configuration somewhere
+            for mounted_key in mounted_keys:
+                # If for some path, the configuration cannot be made explicit
+                # we add them to the list of exceptions
+                # For example, nginx container uses /etc/nginx natively.
+                if mounted_key in deployable_details.paths_consistency_noqa:
+                    continue
+                mount_path_found = False
+                # Parse container commands to find paths which would match a mounted key
+                if find_keys_mounts_in_content(
+                    mounted_key,
+                    [e.get("value", "") for e in container.get("env", [])]
+                    + container.get("command", [])
+                    + container.get("args", []),
+                ):
+                    mount_path_found = True
+                else:
+                    # Parse container configmaps to find paths which would match a mounted secret
+                    # Make sure that paths which match are actually present in mounted secrets
+                    for cm in mounted_config_maps:
+                        for _, content in cm["data"].items():
+                            if find_keys_mounts_in_content(
+                                mounted_key,
+                                [content],
+                            ):
+                                mount_path_found = True
+                if not mount_path_found and not uses_rendered_config:
+                    raise AssertionError(
+                        f"{mounted_key} mounted in container {container['name']} "
+                        f"but no config {','.join([cm['metadata']['name'] for cm in mounted_config_maps])} "
+                        f"or env variable, or command is using it"
+                    )
+
             # We look for all secrets mountPath parents directories in configs and commands
             # And using a regex, make sure that patterns `<parent mount path>/<some key>`
             # refers <some key> to an existing mounted secret key
@@ -214,7 +256,7 @@ async def test_secrets_consistency(templates, other_secrets, template_to_deploya
 
                 # Parse container commands to find paths which would match a mounted secret
                 # Make sure that paths which match are actually present in mounted secrets
-                if match_in_content(
+                if find_mount_paths_and_assert_key_is_consistent(
                     f"container {container['name']}",
                     mounted_keys,
                     parent_path,
@@ -228,7 +270,7 @@ async def test_secrets_consistency(templates, other_secrets, template_to_deploya
                 # Make sure that paths which match are actually present in mounted secrets
                 for cm in mounted_config_maps:
                     for data, content in cm["data"].items():
-                        if match_in_content(
+                        if find_mount_paths_and_assert_key_is_consistent(
                             f"configmap {cm['metadata']['name']}/{data} mounted in {container['name']}",
                             mounted_keys,
                             parent_path,

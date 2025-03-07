@@ -15,7 +15,7 @@ app.kubernetes.io/version: {{ $root.Values.matrixTools.image.tag }}
 {{- end }}
 {{- end }}
 
-{{- define "element-io.init-secrets.generated-secrets" -}}
+{{- define "element-io.init-secrets.postgres-generated-secrets" -}}
 {{- $root := .root -}}
 {{- with $root.Values.postgres }}
 {{- if (include "element-io.postgres.enabled" (dict "root" $root)) -}}
@@ -34,6 +34,12 @@ app.kubernetes.io/version: {{ $root.Values.matrixTools.image.tag }}
 {{- end }}
 {{- end }}
 {{- end }}
+{{- end }}
+
+
+{{- define "element-io.init-secrets.generated-secrets" -}}
+{{- $root := .root -}}
+{{- include "element-io.init-secrets.postgres-generated-secrets" (dict "root" $root) -}}
 {{- with $root.Values.synapse }}
 {{- if .enabled -}}
 {{- if not .macaroon }}
