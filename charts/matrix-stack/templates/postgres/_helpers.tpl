@@ -105,7 +105,7 @@ true
                               dict "root" $root "context" (
                                 dict "secretPath" "postgres.adminPassword"
                                      "initSecretKey" "POSTGRES_ADMIN_PASSWORD"
-                                     "defaultSecretName" (printf "%s-postgres" $root.Release.Name)
+                                     "defaultSecretName" (include "element-io.postgres.secret-name" (dict "root" $root "context"  (dict "isHook" false)))
                                      "defaultSecretKey" "ADMIN_PASSWORD"
                                 )
                               )

@@ -26,7 +26,7 @@ data:
 {{- /*02 files are user provided in Helm values and end up in the Secret*/}}
 {{- /*03 files are user provided as secrets rather than directly in Helm*/}}
   04-homeserver-overrides.yaml: |
-    {{- (tpl (include "element-io.synapse.config.shared-overrides" (dict "root" $root "context" $root.Values.synapse)) $root) | nindent 4 }}
+    {{- (tpl (include "element-io.synapse.config.shared-overrides" (dict "root" $root "context" (merge dict $root.Values.synapse (dict "isHook" $isHook)))) $root) | nindent 4 }}
   05-main.yaml: |
     {{- (tpl (include "element-io.synapse.config.processSpecific" (dict "root" $root "context" (dict "processType" "main"))) $root) | nindent 4 }}
 {{- if not $isHook }}

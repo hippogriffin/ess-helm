@@ -102,6 +102,7 @@ app.kubernetes.io/version: {{ .image.tag }}
                 "componentPasswordPath" "matrixAuthenticationService.postgres.password"
                 "defaultSecretName" (printf "%s-matrix-authentication-service" $root.Release.Name)
                 "defaultSecretKey" "POSTGRES_PASSWORD"
+                "isHook" false
               )
           )
         )

@@ -95,6 +95,7 @@ SPDX-License-Identifier: AGPL-3.0-only OR LicenseRef-Element-Commercial
 {{- $initSecretKey := required "element-io.ess-library.postgres-secret-path context missing initSecretKey" .initSecretKey -}}
 {{- $defaultSecretName := required "element-io.ess-library.postgres-secret-path context missing defaultSecretName" .defaultSecretName -}}
 {{- $defaultSecretKey := required "element-io.ess-library.postgres-secret-path context missing defaultSecretKey" .defaultSecretKey -}}
+{{- $isHook := required "element-io.ess-library.postgres-secret-path context missing isHook" .isHook -}}
 {{- $secretProperty := include "element-io.ess-library.value-from-values-path" (dict "root" $root "context" $componentPasswordPath) | fromJson -}}
 {{- if not $secretProperty -}}
   {{- if (not (index $root.Values.postgres.essPasswords $essPassword)) }}
@@ -108,7 +109,7 @@ SPDX-License-Identifier: AGPL-3.0-only OR LicenseRef-Element-Commercial
                   "root" $root
                   "context" (dict
                     "secretPath" (printf "postgres.essPasswords.%s" $essPassword)
-                    "defaultSecretName" (printf "%s-postgres" $root.Release.Name)
+                    "defaultSecretName" (include "element-io.postgres.secret-name" (dict "root" $root "context"  (dict "isHook" .isHook)))
                     "defaultSecretKey" (printf "ESS_PASSWORD_%s" ($essPassword | upper))
                   )
                 )
