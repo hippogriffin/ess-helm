@@ -225,20 +225,7 @@ Run the setup using the following helm command. This command supports combining 
 - If using Lets Encrypt or Certificate Files : `-f ~/ess-config-values/tls.yaml`
 - If using your own PostgreSQL server : `-f ~/ess-config-values/postgresql.yaml`
 
-#### Dev Installation (Temporary)
-
-Create a ghcr.io secret:
-
-```
-kubectl create secret -n ess docker-registry ghcr --docker-username=user --docker-password=<github token> --docker-server=ghcr.io
-```
-
-Create a values file called ghcr.yaml in your ess configuration values directory for GHCR credentials: 
-
-```
-imagePullSecrets:
-  - name: ghcr
-```
+#### Dev setup (Temporary)
 
 Login helm against ghcr.io:
 
@@ -246,14 +233,9 @@ Login helm against ghcr.io:
 helm registry login -u <github username> ghcr.io
 ```
 
+And continue with standard setup.
 
-Finally, install ess, making sure to use the dev version by including the ghcr.yaml values file:
-
-```
-helm upgrade --install --namespace "ess" ess oci://ghcr.io/element-hq/ess-helm/matrix-stack -f ~/ess-config-values/hostnames.yaml -f ~/ess-config-values/ghcr.yaml <values files to pass> --wait
-```
-
-#### Standard Installation
+#### Standard setup
 
 ```
 helm upgrade --install --namespace "ess" ess oci://ghcr.io/element-hq/ess-helm/matrix-stack -f ~/ess-config-values/hostnames.yaml <values files to pass> --wait
