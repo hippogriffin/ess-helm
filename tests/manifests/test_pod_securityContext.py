@@ -5,7 +5,7 @@
 import pytest
 
 from . import values_files_to_test
-from .utils import iterate_component_workload_parts
+from .utils import iterate_deployables_workload_parts
 
 
 @pytest.mark.parametrize("values_file", values_files_to_test)
@@ -38,11 +38,11 @@ async def test_sets_nonRoot_uids_gids_in_pod_securityContext_by_default(template
 
 @pytest.mark.parametrize("values_file", values_files_to_test)
 @pytest.mark.asyncio_cooperative
-async def test_can_nuke_pod_securityContext_ids(component, values, make_templates):
-    iterate_component_workload_parts(
-        component,
+async def test_can_nuke_pod_securityContext_ids(deployables_details, values, make_templates):
+    iterate_deployables_workload_parts(
+        deployables_details,
         values,
-        lambda workload, values: workload.setdefault(
+        lambda values_fragment, deployable_details: values_fragment.setdefault(
             "podSecurityContext", {"runAsUser": None, "runAsGroup": None, "fsGroup": None}
         ),
     )
@@ -85,9 +85,13 @@ async def test_sets_seccompProfile_in_pod_securityContext_by_default(templates):
 
 @pytest.mark.parametrize("values_file", values_files_to_test)
 @pytest.mark.asyncio_cooperative
-async def test_can_nuke_pod_securityContext_seccompProfile(component, values, make_templates):
-    iterate_component_workload_parts(
-        component, values, lambda workload, values: workload.setdefault("podSecurityContext", {"seccompProfile": None})
+async def test_can_nuke_pod_securityContext_seccompProfile(deployables_details, values, make_templates):
+    iterate_deployables_workload_parts(
+        deployables_details,
+        values,
+        lambda values_fragment, deployable_details: values_fragment.setdefault(
+            "podSecurityContext", {"seccompProfile": None}
+        ),
     )
 
     for template in await make_templates(values):

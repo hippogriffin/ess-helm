@@ -6,25 +6,23 @@ from pathlib import Path
 
 import pytest
 
-from . import component_details, secrets_values_files_to_test, shared_components_details, values_files_to_test
+from . import all_components_details, secret_values_files_to_test, values_files_to_test
 
 
 def test_all_components_covered():
-    expected_folders = [details["hyphened_name"] for details in component_details.values()]
+    expected_folders = [details.name for details in all_components_details]
 
     templates_folder = Path(__file__).parent.parent.parent / Path("charts/matrix-stack/templates")
     for contents in templates_folder.iterdir():
         if not contents.is_dir():
             continue
-        if contents.name in ("ess-library",) + tuple(
-            k if not v["hyphened_name"] else v["hyphened_name"] for k, v in shared_components_details.items()
-        ):
+        if contents.name in ("ess-library",):
             continue
 
         assert contents.name in expected_folders
 
 
-@pytest.mark.parametrize("values_file", values_files_to_test + secrets_values_files_to_test)
+@pytest.mark.parametrize("values_file", values_files_to_test + secret_values_files_to_test)
 @pytest.mark.asyncio_cooperative
 def test_component_has_values_file(values_file):
     ci_folder = Path(__file__).parent.parent.parent / Path("charts/matrix-stack/ci")

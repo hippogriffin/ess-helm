@@ -5,7 +5,7 @@
 import pytest
 
 from . import values_files_to_test
-from .utils import iterate_component_workload_parts
+from .utils import iterate_deployables_workload_parts
 
 specific_toleration = {
     "key": "component",
@@ -36,9 +36,13 @@ async def test_no_tolerations_by_default(templates):
 
 @pytest.mark.parametrize("values_file", values_files_to_test)
 @pytest.mark.asyncio_cooperative
-async def test_all_components_and_sub_components_render_tolerations(component, values, make_templates):
-    iterate_component_workload_parts(
-        component, values, lambda workload, values: workload.setdefault("tolerations", []).append(specific_toleration)
+async def test_all_components_and_sub_components_render_tolerations(deployables_details, values, make_templates):
+    iterate_deployables_workload_parts(
+        deployables_details,
+        values,
+        lambda values_fragment, deployable_details: values_fragment.setdefault("tolerations", []).append(
+            specific_toleration
+        ),
     )
 
     for template in await make_templates(values):
@@ -68,9 +72,13 @@ async def test_global_tolerations_render(values, make_templates):
 
 @pytest.mark.parametrize("values_file", values_files_to_test)
 @pytest.mark.asyncio_cooperative
-async def test_merges_global_and_specific_tolerations(component, values, make_templates):
-    iterate_component_workload_parts(
-        component, values, lambda workload, values: workload.setdefault("tolerations", []).append(specific_toleration)
+async def test_merges_global_and_specific_tolerations(deployables_details, values, make_templates):
+    iterate_deployables_workload_parts(
+        deployables_details,
+        values,
+        lambda values_fragment, deployable_details: values_fragment.setdefault("tolerations", []).append(
+            specific_toleration
+        ),
     )
 
     # Add twice for uniqueness check. There's no 'overwriting' as if it isn't the same toleration, it gets kept

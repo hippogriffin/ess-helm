@@ -6,8 +6,8 @@ import copy
 
 import pytest
 
-from . import component_details, values_files_to_test
-from .utils import iterate_component_workload_parts
+from . import values_files_to_test
+from .utils import iterate_deployables_workload_parts
 
 
 @pytest.mark.parametrize("values_file", values_files_to_test)
@@ -57,12 +57,14 @@ async def test_uses_serviceaccount_named_as_per_pod_controller_by_default(templa
 
 @pytest.mark.parametrize("values_file", values_files_to_test)
 @pytest.mark.asyncio_cooperative
-async def test_uses_serviceaccount_named_as_values_if_specified(component, values, make_templates):
-    def service_account_name(workload, values):
-        workload.setdefault("serviceAccount", {}).setdefault("name", f"{component}-pytest")
-        workload.setdefault("labels", {}).setdefault("expected.name", f"{component}-pytest")
+async def test_uses_serviceaccount_named_as_values_if_specified(deployables_details, values, make_templates):
+    def service_account_name(values_fragment, deployable_details):
+        values_fragment.setdefault("serviceAccount", {}).setdefault("name", f"{deployable_details.name}-pytest")
+        values_fragment.setdefault("labels", {}).setdefault("expected.name", f"{deployable_details.name}-pytest")
 
-    iterate_component_workload_parts(component, values, service_account_name, ignore_uses_parent_properties=True)
+    iterate_deployables_workload_parts(
+        deployables_details, values, service_account_name, ignore_uses_parent_properties=True
+    )
 
     workloads_by_id = {}
     serviceaccount_names = []
@@ -87,42 +89,41 @@ async def test_uses_serviceaccount_named_as_values_if_specified(component, value
 
 @pytest.mark.parametrize("values_file", values_files_to_test)
 @pytest.mark.asyncio_cooperative
-async def test_does_not_create_serviceaccounts_if_configured_not_to(component, values, make_templates):
-    def disable_service_account(workload, values):
-        values.setdefault(workload, {}).setdefault("serviceAccount", {}).setdefault("create", False)
-        values.setdefault(workload, {}).setdefault("labels", {}).setdefault("serviceAccount", "none")
+async def test_does_not_create_serviceaccounts_if_configured_not_to(deployables_details, values, make_templates):
+    def disable_service_account(values_fragment):
+        values_fragment.setdefault("serviceAccount", {}).setdefault("create", False)
+        values_fragment.setdefault("labels", {}).setdefault("serviceAccount", "none")
 
-    if component_details[component]["has_workloads"]:
-        for sub_component in [""] + list(component_details[component]["sub_components"].keys()):
-            sub_component_values = copy.deepcopy(values)
-            if sub_component == "":
-                disable_service_account(component, sub_component_values)
-            else:
-                disable_service_account(sub_component, sub_component_values[component])
+    for deployable_details in deployables_details:
+        if not deployable_details.has_workloads:
+            continue
 
-            workloads_by_id = {}
-            serviceaccount_names = set()
-            covered_serviceaccount_names = set()
-            for template in await make_templates(sub_component_values):
-                if template["kind"] in ["Deployment", "StatefulSet", "Job"]:
-                    id_suffix = f" (for {sub_component})" if sub_component != "" else ""
-                    workloads_by_id[f"{template['kind']}/{template['metadata']['name']}{id_suffix}"] = template
-                elif template["kind"] == "ServiceAccount":
-                    serviceaccount_names.add(template["metadata"]["name"])
+        values_to_modify = copy.deepcopy(values)
+        disable_service_account(deployable_details.get_helm_values_fragment(values))
 
-            for id, template in workloads_by_id.items():
-                assert "serviceAccountName" in template["spec"]["template"]["spec"], (
-                    f"{id} does not set an explicit ServiceAccount"
-                )
+        workloads_by_id = {}
+        serviceaccount_names = set()
+        covered_serviceaccount_names = set()
+        for template in await make_templates(values_to_modify):
+            if template["kind"] in ["Deployment", "StatefulSet", "Job"]:
+                id_suffix = f" (for {deployable_details.name})"
+                workloads_by_id[f"{template['kind']}/{template['metadata']['name']}{id_suffix}"] = template
+            elif template["kind"] == "ServiceAccount":
+                serviceaccount_names.add(template["metadata"]["name"])
 
-                serviceaccount_name = template["spec"]["template"]["spec"]["serviceAccountName"]
-                if template["metadata"]["labels"].get("serviceAccount", "some") == "none":
-                    assert serviceaccount_name not in serviceaccount_names, (
-                        f"{id} specified an existing ServiceAccount: {serviceaccount_name}"
-                    )
-                else:
-                    covered_serviceaccount_names.add(serviceaccount_name)
-
-            assert serviceaccount_names == covered_serviceaccount_names, (
-                f"{id} created ServiceAccounts that it shouldn't have"
+        for id, template in workloads_by_id.items():
+            assert "serviceAccountName" in template["spec"]["template"]["spec"], (
+                f"{id} does not set an explicit ServiceAccount"
             )
+
+            serviceaccount_name = template["spec"]["template"]["spec"]["serviceAccountName"]
+            if template["metadata"]["labels"].get("serviceAccount", "some") == "none":
+                assert serviceaccount_name not in serviceaccount_names, (
+                    f"{id} specified an existing ServiceAccount: {serviceaccount_name}"
+                )
+            else:
+                covered_serviceaccount_names.add(serviceaccount_name)
+
+        assert serviceaccount_names == covered_serviceaccount_names, (
+            f"{id} created ServiceAccounts that it shouldn't have"
+        )
