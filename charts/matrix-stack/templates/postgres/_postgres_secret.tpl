@@ -19,6 +19,7 @@ SPDX-License-Identifier: AGPL-3.0-only OR LicenseRef-Element-Commercial
 {{- define "element-io.postgres.secret-data" }}
 {{- $root := .root }}
 {{- with required "element-io.postgres.secret-data requires context" .context }}
+type: Opaque
 data:
 {{- with .adminPassword }}
 {{- include "element-io.ess-library.check-credential" (dict "root" $root "context" (dict "secretPath" "postgres.adminPassword" "initIfAbsent" false)) }}
