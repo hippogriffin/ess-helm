@@ -233,7 +233,14 @@ _single_component_values_files_to_base_components_names: dict[str, list[str]] = 
     for values_file in (details.values_files + details.secret_values_files)
 }
 
-_multi_component_values_files_to_base_components_names: dict[str, list[str]] = {}
+_multi_component_values_files_to_base_components_names: dict[str, list[str]] = {
+    "example-default-enabled-components-values.yaml": [
+        "element-web",
+        "matrix-authentication-service",
+        "synapse",
+        "well-known",
+    ],
+}
 
 
 values_files_to_deployables_details = {
