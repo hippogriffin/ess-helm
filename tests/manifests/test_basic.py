@@ -4,7 +4,7 @@
 
 import pytest
 
-from . import component_details, shared_components_details, values_files_to_test
+from . import values_files_to_test
 
 
 @pytest.mark.parametrize("values_file", ["nothing-enabled-values.yaml"])
@@ -31,14 +31,13 @@ async def test_postgres_on_its_own_renders_nothing(values, make_templates):
 
 @pytest.mark.parametrize("values_file", values_files_to_test)
 @pytest.mark.asyncio_cooperative
-async def test_values_file_renders_only_itself(release_name, component, templates):
+async def test_values_file_renders_only_itself(release_name, deployables_details, templates):
     assert len(templates) > 0
 
-    allowed_starts_with = [
-        f"{release_name}-{component_details[component]['hyphened_name']}",
-    ]
-    for shared_component in component_details[component].get("shared_components", []):
-        allowed_starts_with.append(f"{release_name}-{shared_components_details[shared_component]['hyphened_name']}")
+    allowed_starts_with = []
+    for deployable_details in deployables_details:
+        allowed_starts_with.append(f"{release_name}-{deployable_details.name}")
+
     for template in templates:
         assert any(template["metadata"]["name"].startswith(allowed_start) for allowed_start in allowed_starts_with), (
             f"{[template['metadata']['name']]} does not start with one of {allowed_starts_with}"

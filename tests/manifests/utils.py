@@ -1,4 +1,4 @@
-# Copyright 2024 New Vector Ltd
+# Copyright 2024-2025 New Vector Ltd
 #
 # SPDX-License-Identifier: AGPL-3.0-only OR LicenseRef-Element-Commercial
 
@@ -7,13 +7,13 @@ import random
 import string
 from collections.abc import Iterator
 from pathlib import Path
-from typing import Any
+from typing import Any, Callable
 
 import pyhelm3
 import pytest
 import yaml
 
-from . import component_details, shared_components_details, values_files_to_components
+from . import DeployableDetails, values_files_to_deployables_details
 
 
 @pytest.fixture(scope="session")
@@ -32,8 +32,8 @@ async def chart(helm_client: pyhelm3.Client):
 
 
 @pytest.fixture(scope="function")
-def component(values_file):
-    return values_files_to_components[values_file]
+def deployables_details(values_file) -> tuple[DeployableDetails]:
+    return values_files_to_deployables_details[values_file]
 
 
 @pytest.fixture(scope="session")
@@ -184,26 +184,94 @@ def make_templates(chart: pyhelm3.Chart, release_name: str):
     return _make_templates
 
 
-def iterate_component_parts(component, values, setter, if_condition, ignore_uses_parent_properties):
-    if component_details[component][if_condition]:
-        setter(values[component], values)
-        for sub_component in component_details[component]["sub_components"]:
-            if (
-                ignore_uses_parent_properties
-                or not component_details[component]["sub_components"][sub_component]["uses_parent_properties"]
-            ):
-                setter(values[component].setdefault(sub_component, {}), values)
-    for shared_component in component_details[component].get("shared_components", []):
-        if shared_components_details[shared_component][if_condition]:
-            setter(values.setdefault(shared_component, {}), values)
+def iterate_deployables_parts(
+    deployables_details: tuple[DeployableDetails],
+    values: dict[str, Any],
+    visitor: Callable[[dict[str, Any], DeployableDetails], None],
+    if_condition: Callable[[DeployableDetails], bool],
+    ignore_uses_parent_properties: bool = False,
+):
+    for deployable_details in deployables_details:
+        if deployable_details.should_visit_with_values(if_condition, ignore_uses_parent_properties):
+            visitor(deployable_details.get_helm_values_fragment(values), deployable_details)
 
 
-def iterate_component_workload_parts(component, values, setter, ignore_uses_parent_properties=False):
-    iterate_component_parts(component, values, setter, "has_workloads", ignore_uses_parent_properties)
+def iterate_deployables_workload_parts(
+    deployables_details: tuple[DeployableDetails],
+    values: dict[str, Any],
+    visitor: Callable[[dict[str, Any], DeployableDetails], None],
+    ignore_uses_parent_properties: bool = False,
+):
+    iterate_deployables_parts(
+        deployables_details,
+        values,
+        visitor,
+        lambda deployable_details: deployable_details.has_workloads,
+        ignore_uses_parent_properties,
+    )
 
 
-def iterate_component_image_parts(component, values, setter):
-    iterate_component_parts(component, values, setter, "has_image", False)
+def iterate_deployables_image_parts(
+    deployables_details: tuple[DeployableDetails],
+    values: dict[str, Any],
+    visitor: Callable[[dict[str, Any], DeployableDetails], None],
+):
+    iterate_deployables_parts(
+        deployables_details, values, visitor, lambda deployable_details: deployable_details.has_image
+    )
+
+
+def iterate_deployables_ingress_parts(
+    deployables_details: tuple[DeployableDetails],
+    values: dict[str, Any],
+    visitor: Callable[[dict[str, Any], DeployableDetails], None],
+):
+    iterate_deployables_parts(
+        deployables_details, values, visitor, lambda deployable_details: deployable_details.has_ingress
+    )
+
+
+def iterate_deployables_service_monitor_parts(
+    deployables_details: tuple[DeployableDetails],
+    values: dict[str, Any],
+    visitor: Callable[[dict[str, Any], DeployableDetails], None],
+):
+    iterate_deployables_parts(
+        deployables_details, values, visitor, lambda deployable_details: deployable_details.has_service_monitor
+    )
+
+
+@pytest.fixture
+def template_to_deployable_details(deployables_details: tuple[DeployableDetails]):
+    def _template_to_deployable_details(template: dict[str, Any]) -> DeployableDetails:
+        # As per test_labels this doesn't have the release_name prefixed to it
+        manifest_name: str = template["metadata"]["labels"]["app.kubernetes.io/name"]
+
+        match = None
+        for deployable_details in deployables_details:
+            # We name the various DeployableDetails to match the name the chart should use for
+            # the manifest name and thus the app.kubernetes.io/name label above. e.g. A manifest
+            # belonging to Synapse should be named `<release-name>-synapse(-<optional extra>)`.
+            #
+            # When we find a matching (sub-)component we ensure that there has been no other
+            # match (with the exception of matching both a sub-component and its parent) as
+            # otherwise we have no way of identifying the associated DeployableDeploys and
+            # thus which parts of the values files need manipulating for this deployable.
+            if deployable_details.owns_manifest_named(manifest_name):
+                assert match is None, (
+                    f"{template_id(template)} could belong to at least 2 (sub-)components: "
+                    f"{match.name} and {deployable_details.name}"
+                )
+                match = deployable_details
+
+        assert match is not None, f"{template_id(template)} can't be linked to any (sub-)component"
+        return match
+
+    return _template_to_deployable_details
+
+
+def template_id(template: dict[str, Any]) -> str:
+    return f"{template['kind']}/{template['metadata']['name']}"
 
 
 def get_or_empty(d, key):

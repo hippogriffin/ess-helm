@@ -1,109 +1,263 @@
-# Copyright 2024 New Vector Ltd
+# Copyright 2024-2025 New Vector Ltd
 #
 # SPDX-License-Identifier: AGPL-3.0-only OR LicenseRef-Element-Commercial
 
-import copy
-from typing import Any
+import abc
+from dataclasses import InitVar, dataclass, field
+from typing import Any, Callable, Self
 
-_raw_shared_components_details = {
-    "initSecrets": {
-        "hyphened_name": "init-secrets",
-        "has_image": False,
-        "has_service_monitor": False,
-        "has_ingress": False,
-    },
-    "haproxy": {},
-    "postgres": {"has_ingress": False, "paths_consistency_noqa": ["/docker-entrypoint-initdb.d"]},
-}
+# We introduce 3 DataClasses to store details of the deployables this chart manages
+# * ComponentDetails - details of a top-level deployable. This includes both the headlines
+#   components like Synapse, Element Web, etc and components that have their own independent
+#   properties at the root of the chart, like HAProxy & Postgres. These latter components might
+#   only be deployed if specific other top-level components are enabled however they are able to
+#   standalone. The shared components should be marked with `is_shared_component` which lets the
+#   manifest test setup know they don't have their own independent values files
+#
+# * SubComponentDetails - details of a dependent deployable. These are details of a deployable
+#   that belongs to / is only ever deployed as part of a top-level component. For example
+#   Synapse's Redis can never be deployed out of the context of Synapse.
+#
+# * DeployableDetails - a common base class for ComponentDetails and SubComponentDetails. All
+#   of the interesting properties (has_ingress, etc) we care to use to vary test assertions live
+#   here. The distinction between ComonentDetails and SubComponent details should be reserved for
+#   how the values files need to be manipulated.
 
-_raw_component_details = {
-    "elementWeb": {
-        "hyphened_name": "element-web",
-        "has_service_monitor": False,
-        "paths_consistency_noqa": ["/etc/nginx"],
-    },
-    "matrixAuthenticationService": {
-        "hyphened_name": "matrix-authentication-service",
-        "shared_components": ["initSecrets", "postgres"],
-    },
-    "synapse": {
-        "additional_values_files": [
+
+# We need to be able to put this and its subclasses into Sets, which means this must be hashable
+# We can't be hashable if we have lists, dicts or anything else that isn't hashable. Dataclasses
+# are hashable if we set frozen=true, however we can't do that with anything do with __post_init__
+# or even a custom __init__ method without object.__setattr__ hacks. We mark all fields bar name
+# as hash=False and do unsafe_hash which should be safe enough. The alternative is custom factory
+# methods that do the equivalent of __post_init__
+@dataclass(unsafe_hash=True)
+class DeployableDetails(abc.ABC):
+    name: str = field(hash=True)
+    helm_key: str | None = field(default=None, hash=False)
+
+    has_db: bool = field(default=False, hash=False)
+    has_image: bool | None = field(default=None, hash=False)
+    has_ingress: bool = field(default=True, hash=False)
+    has_workloads: bool = field(default=True, hash=False)
+    has_service_monitor: bool = field(default=True, hash=False)
+
+    paths_consistency_noqa: tuple[str] = field(default=(), hash=False)
+
+    def __post_init__(self):
+        if self.helm_key is None:
+            self.helm_key = self.name
+        if self.has_image is None:
+            self.has_image = self.has_workloads
+
+    @abc.abstractmethod
+    def get_helm_values_fragment(self, values: dict[str, Any]) -> dict[str, Any]:
+        pass
+
+    @abc.abstractmethod
+    def owns_manifest_named(seflf, manifest_name: str) -> bool:
+        pass
+
+    @abc.abstractmethod
+    def should_visit_with_values(
+        self, if_condition: Callable[[Self], bool], ignore_uses_parent_properties: bool = False
+    ):
+        pass
+
+
+@dataclass(unsafe_hash=True)
+class SubComponentDetails(DeployableDetails):
+    uses_parent_properties: bool = field(default=False, hash=False)
+    parent_helm_key: str = field(default=None, hash=False)
+
+    def get_helm_values_fragment(self, values: dict[str, Any]) -> dict[str, Any]:
+        return values.setdefault(self.parent_helm_key, {}).setdefault(self.helm_key, {})
+
+    def owns_manifest_named(self, manifest_name: str) -> bool:
+        return manifest_name.startswith(self.name)
+
+    def should_visit_with_values(
+        self, if_condition: Callable[[Self], bool], ignore_uses_parent_properties: bool = False
+    ):
+        return (ignore_uses_parent_properties or not self.uses_parent_properties) and if_condition(self)
+
+
+@dataclass(unsafe_hash=True)
+class ComponentDetails(DeployableDetails):
+    sub_components: tuple[SubComponentDetails] = field(default=(), hash=False)
+
+    active_component_names: tuple[str] = field(init=False, hash=False)
+    values_files: tuple[str] = field(init=False, hash=False)
+    secret_values_files: tuple[str] = field(init=False, hash=False)
+
+    # Not available after construction
+    is_shared_component: InitVar[bool] = field(default=False, hash=False)
+    shared_component_names: InitVar[tuple[str]] = field(default=(), hash=False)
+    additional_values_files: InitVar[tuple[str]] = field(default=(), hash=False)
+
+    def __post_init__(
+        self,
+        is_shared_component: bool,
+        shared_component_names: tuple[str],
+        additional_values_files: tuple[str],
+    ):
+        super().__post_init__()
+
+        # Shared components don't have a <component>-minimal-values.yaml
+        if is_shared_component:
+            self.active_component_names = (self.name,)
+            self.values_files = ()
+            self.secret_values_files = ()
+            return
+
+        assert self.has_db == ("postgres" in shared_component_names)
+
+        self.active_component_names = tuple([self.name] + list(shared_component_names))
+        self.values_files = tuple([f"{self.name}-minimal-values.yaml"] + list(additional_values_files))
+
+        secret_values_files = []
+        if "init-secrets" in shared_component_names:
+            secret_values_files += [
+                f"{self.name}-secrets-in-helm-values.yaml",
+                f"{self.name}-secrets-externally-values.yaml",
+            ]
+        if "postgres" in shared_component_names:
+            secret_values_files += [
+                f"{self.name}-postgres-secrets-in-helm-values.yaml",
+                f"{self.name}-postgres-secrets-externally-values.yaml",
+            ]
+        self.secret_values_files = tuple(secret_values_files)
+
+        for sub_component in self.sub_components:
+            sub_component.parent_helm_key = self.helm_key
+
+    def get_helm_values_fragment(self, values: dict[str, Any]) -> dict[str, Any]:
+        return values.setdefault(self.helm_key, {})
+
+    def owns_manifest_named(self, manifest_name: str) -> bool:
+        # We look at sub-components first as while they could have totally distinct names
+        # from their parent component, they could have have specific suffixes. If a
+        # sub-component owns this manifest it will claim it itself and the top-level
+        # component here doesn't own it.
+        for sub_component in self.sub_components:
+            if sub_component.owns_manifest_named(manifest_name):
+                return False
+
+        return manifest_name.startswith(self.name)
+
+    def should_visit_with_values(
+        self, if_condition: Callable[[Self], bool], ignore_uses_parent_properties: bool = False
+    ):
+        return if_condition(self)
+
+
+all_components_details = [
+    ComponentDetails(
+        name="init-secrets",
+        helm_key="initSecrets",
+        has_image=False,
+        has_ingress=False,
+        has_service_monitor=False,
+        is_shared_component=True,
+    ),
+    ComponentDetails(name="haproxy", has_ingress=False, is_shared_component=True),
+    ComponentDetails(
+        name="postgres",
+        has_ingress=False,
+        paths_consistency_noqa=("/docker-entrypoint-initdb.d",),
+        is_shared_component=True,
+    ),
+    ComponentDetails(
+        name="element-web",
+        helm_key="elementWeb",
+        has_service_monitor=False,
+        paths_consistency_noqa=("/etc/nginx",),
+    ),
+    ComponentDetails(
+        name="matrix-authentication-service",
+        helm_key="matrixAuthenticationService",
+        has_db=True,
+        shared_component_names=(
+            "init-secrets",
+            "postgres",
+        ),
+    ),
+    ComponentDetails(
+        name="synapse",
+        has_db=True,
+        additional_values_files=[
             "synapse-worker-example-values.yaml",
         ],
-        "sub_components": {
-            "redis": {
-                "has_service_monitor": False,
-            },
-            "checkConfigHook": {"has_service_monitor": False, "uses_parent_properties": True},
-        },
-        "shared_components": ["initSecrets", "haproxy", "postgres"],
-    },
-    "wellKnownDelegation": {
-        "hyphened_name": "well-known",
-        "has_service_monitor": False,
-        "has_image": False,
-        "has_workloads": False,
-        "shared_components": ["haproxy"],
-    },
-}
-
-
-def _enrich_components_to_test(details) -> dict[str, Any]:
-    _component_details = copy.deepcopy(details)
-    for component in details:
-        _component_details[component].setdefault("hyphened_name", component)
-
-        values_files = _component_details[component].setdefault("additional_values_files", [])
-        values_files.append(f"{_component_details[component]['hyphened_name']}-minimal-values.yaml")
-        _component_details[component]["values_files"] = values_files
-        del _component_details[component]["additional_values_files"]
-
-        _component_details[component].setdefault("has_ingress", True)
-        _component_details[component].setdefault("has_service_monitor", True)
-        _component_details[component].setdefault("has_workloads", True)
-        _component_details[component].setdefault("paths_consistency_noqa", [])
-        _component_details[component].setdefault("has_image", _component_details[component]["has_workloads"])
-        _component_details[component].setdefault("sub_components", {})
-        for sub_component in _component_details[component]["sub_components"]:
-            _component_details[component]["sub_components"][sub_component].setdefault("has_service_monitor", True)
-            _component_details[component]["sub_components"][sub_component].setdefault("uses_parent_properties", False)
-
-        _component_details[component].setdefault("secret_values_files", [])
-        if "initSecrets" in _component_details[component].setdefault("shared_components", []):
-            _component_details[component]["secret_values_files"].append(
-                f"{_component_details[component]['hyphened_name']}-secrets-in-helm-values.yaml"
-            )
-            _component_details[component]["secret_values_files"].append(
-                f"{_component_details[component]['hyphened_name']}-secrets-externally-values.yaml"
-            )
-        if "postgres" in _component_details[component].setdefault("shared_components", []):
-            _component_details[component]["secret_values_files"].append(
-                f"{_component_details[component]['hyphened_name']}-postgres-secrets-in-helm-values.yaml"
-            )
-            _component_details[component]["secret_values_files"].append(
-                f"{_component_details[component]['hyphened_name']}-postgres-secrets-externally-values.yaml"
-            )
-    return _component_details
-
-
-component_details = _enrich_components_to_test(_raw_component_details)
-shared_components_details = _enrich_components_to_test(_raw_shared_components_details)
-
-values_files_to_components = {
-    values_file: component
-    for component, details in component_details.items()
-    for values_file in (details["values_files"] + details["secret_values_files"])
-}
-
-values_files_to_test = [
-    values_file for details in component_details.values() for values_file in (details["values_files"])
+        sub_components=[
+            SubComponentDetails(
+                name="synapse-redis",
+                helm_key="redis",
+                has_ingress=False,
+                has_service_monitor=False,
+            ),
+            SubComponentDetails(
+                name="synapse-check-config-hook",
+                helm_key="checkConfigHook",
+                has_ingress=False,
+                has_service_monitor=False,
+                uses_parent_properties=True,
+            ),
+        ],
+        shared_component_names=["init-secrets", "haproxy", "postgres"],
+    ),
+    ComponentDetails(
+        name="well-known",
+        helm_key="wellKnownDelegation",
+        has_service_monitor=False,
+        has_workloads=False,
+        shared_component_names=["haproxy"],
+    ),
 ]
+
+
+def _get_deployables_details_from_base_components_names(base_components_names: list[str]) -> tuple[DeployableDetails]:
+    component_names_to_details = {
+        component_details.name: component_details for component_details in all_components_details
+    }
+    deployables_details_in_use = set[DeployableDetails]()
+    for base_component_name in base_components_names:
+        for component_name in component_names_to_details[base_component_name].active_component_names:
+            component_details = component_names_to_details[component_name]
+            deployables_details_in_use.add(component_details)
+            deployables_details_in_use.update(component_details.sub_components)
+    return tuple(deployables_details_in_use)
+
+
+_single_component_values_files_to_base_components_names: dict[str, list[str]] = {
+    values_file: [details.name]
+    for details in all_components_details
+    for values_file in (details.values_files + details.secret_values_files)
+}
+
+_multi_component_values_files_to_base_components_names: dict[str, list[str]] = {
+    "example-default-enabled-components-values.yaml": [
+        "element-web",
+        "matrix-authentication-service",
+        "synapse",
+        "well-known",
+    ],
+}
+
+
+values_files_to_deployables_details = {
+    values_file: _get_deployables_details_from_base_components_names(base_components_names)
+    for values_file, base_components_names in (
+        _single_component_values_files_to_base_components_names | _multi_component_values_files_to_base_components_names
+    ).items()
+}
+
+values_files_to_test = list(values_files_to_deployables_details.keys())
 values_files_with_ingresses = [
     values_file
-    for values_file, component in values_files_to_components.items()
-    if component_details[component]["has_ingress"]
+    for values_file, deployables_details in values_files_to_deployables_details.items()
+    if any([deployable_details.has_ingress for deployable_details in deployables_details])
 ]
 
-secrets_values_files_to_test = [
-    values_file for details in component_details.values() for values_file in details["secret_values_files"]
-]
+_extra_secret_values_files_to_test = []
+secret_values_files_to_test = [
+    values_file for details in all_components_details for values_file in details.secret_values_files
+] + _extra_secret_values_files_to_test

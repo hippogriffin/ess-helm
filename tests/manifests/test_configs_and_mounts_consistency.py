@@ -6,7 +6,7 @@ import re
 
 import pytest
 
-from . import component_details, secrets_values_files_to_test, shared_components_details, values_files_to_test
+from . import secret_values_files_to_test, values_files_to_test
 from .utils import get_or_empty
 
 
@@ -130,9 +130,9 @@ def assert_exists_according_to_hook_weight(template, hook_weight, used_by):
         )
 
 
-@pytest.mark.parametrize("values_file", values_files_to_test + secrets_values_files_to_test)
+@pytest.mark.parametrize("values_file", values_files_to_test + secret_values_files_to_test)
 @pytest.mark.asyncio_cooperative
-async def test_secrets_consistency(templates, other_secrets, component):
+async def test_secrets_consistency(templates, other_secrets, template_to_deployable_details):
     """
     Test to ensure that all configmaps and secrets are properly mounted and consistent across the cluster.
 
@@ -145,6 +145,7 @@ async def test_secrets_consistency(templates, other_secrets, component):
     """
     workloads = [t for t in templates if t["kind"] in ("Deployment", "StatefulSet", "Job")]
     for template in workloads:
+        deployable_details = template_to_deployable_details(template)
         # Gather all containers and initContainers from the template spec
         containers = template["spec"]["template"]["spec"].get("containers", []) + template["spec"]["template"][
             "spec"
@@ -207,11 +208,7 @@ async def test_secrets_consistency(templates, other_secrets, component):
                 # If for some path, the configuration cannot be made explicit
                 # we add them to the list of exceptions
                 # For example, nginx container uses /etc/nginx natively.
-                if parent_path in component_details[component]["paths_consistency_noqa"] or parent_path in [
-                    path
-                    for shared in component_details[component]["shared_components"]
-                    for path in shared_components_details[shared]["paths_consistency_noqa"]
-                ]:
+                if parent_path in deployable_details.paths_consistency_noqa:
                     continue
                 mount_path_found = False
 

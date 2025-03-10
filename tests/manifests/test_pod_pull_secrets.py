@@ -5,7 +5,7 @@
 import pytest
 
 from . import values_files_to_test
-from .utils import iterate_component_image_parts
+from .utils import iterate_deployables_image_parts
 
 
 @pytest.mark.parametrize("values_file", values_files_to_test)
@@ -28,15 +28,17 @@ async def test_sets_global_pull_secrets(values, make_templates):
 
 @pytest.mark.parametrize("values_file", values_files_to_test)
 @pytest.mark.asyncio_cooperative
-async def test_local_pull_secrets(component, values, base_values, make_templates):
+async def test_local_pull_secrets(deployables_details, values, base_values, make_templates):
     values["imagePullSecrets"] = [
         {"name": "global-secret"},
     ]
     values.setdefault("matrixTools", {}).setdefault("image", {})["pullSecrets"] = [{"name": "matrix-tools-secret"}]
-    iterate_component_image_parts(
-        component,
+    iterate_deployables_image_parts(
+        deployables_details,
         values,
-        lambda workload, values: workload.setdefault("image", {"pullSecrets": [{"name": "local-secret"}]}),
+        lambda values_fragment, deployable_details: values_fragment.setdefault(
+            "image", {"pullSecrets": [{"name": "local-secret"}]}
+        ),
     )
 
     for template in await make_templates(values):
