@@ -2,6 +2,7 @@
 #
 # SPDX-License-Identifier: AGPL-3.0-only OR LicenseRef-Element-Commercial
 
+import copy
 import json
 import random
 import string
@@ -14,6 +15,9 @@ import pytest
 import yaml
 
 from . import DeployableDetails, values_files_to_deployables_details
+
+template_cache = {}
+values_cache = {}
 
 
 @pytest.fixture(scope="session")
@@ -37,25 +41,28 @@ def deployables_details(values_file) -> tuple[DeployableDetails]:
 
 
 @pytest.fixture(scope="session")
-def base_values(values_file) -> dict[str, Any]:
+def base_values() -> dict[str, Any]:
     return yaml.safe_load(Path("charts/matrix-stack/values.yaml").read_text("utf-8"))
 
 
 @pytest.fixture(scope="function")
 def values(values_file) -> dict[str, Any]:
-    v = yaml.safe_load((Path("charts/matrix-stack/ci") / values_file).read_text("utf-8"))
-    if not v.get("initSecrets"):
-        v["initSecrets"] = {"enabled": True}
-    if not v.get("postgres"):
-        v["postgres"] = {"enabled": True}
-    if not v.get("wellKnownDelegation"):
-        v["wellKnownDelegation"] = {"enabled": True}
-    return v
+    if values_file not in values_cache:
+        v = yaml.safe_load((Path("charts/matrix-stack/ci") / values_file).read_text("utf-8"))
+        if not v.get("initSecrets"):
+            v["initSecrets"] = {"enabled": True}
+        if not v.get("postgres"):
+            v["postgres"] = {"enabled": True}
+        if not v.get("wellKnownDelegation"):
+            v["wellKnownDelegation"] = {"enabled": True}
+
+        values_cache[values_file] = v
+    return copy.deepcopy(values_cache[values_file])
 
 
 @pytest.fixture(scope="function")
 async def templates(chart: pyhelm3.Chart, release_name: str, values: dict[str, Any]):
-    return list([template for template in await helm_template(chart, release_name, values) if template is not None])
+    return await helm_template(chart, release_name, values)
 
 
 @pytest.fixture(scope="function")
@@ -171,15 +178,23 @@ async def helm_template(chart: pyhelm3.Chart, release_name: str, values: Any | N
         "--values",
         "-",
     ]
-    return yaml.load_all(
-        await pyhelm3.Command().run(command, json.dumps(values or {}).encode()), Loader=yaml.SafeLoader
-    )
+    values_json = json.dumps(values or {}).encode()
+    if values_json not in template_cache:
+        templates = list(
+            [
+                template
+                for template in yaml.load_all(await pyhelm3.Command().run(command, values_json), Loader=yaml.SafeLoader)
+                if template is not None
+            ]
+        )
+        template_cache[values_json] = templates
+    return template_cache[values_json]
 
 
 @pytest.fixture
 def make_templates(chart: pyhelm3.Chart, release_name: str):
     async def _make_templates(values):
-        return list([template for template in await helm_template(chart, release_name, values) if template is not None])
+        return await helm_template(chart, release_name, values)
 
     return _make_templates
 

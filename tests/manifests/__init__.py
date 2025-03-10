@@ -250,14 +250,17 @@ values_files_to_deployables_details = {
     ).items()
 }
 
-values_files_to_test = list(values_files_to_deployables_details.keys())
-values_files_with_ingresses = [
-    values_file
-    for values_file, deployables_details in values_files_to_deployables_details.items()
-    if any([deployable_details.has_ingress for deployable_details in deployables_details])
-]
-
 _extra_secret_values_files_to_test = []
 secret_values_files_to_test = [
     values_file for details in all_components_details for values_file in details.secret_values_files
 ] + _extra_secret_values_files_to_test
+
+values_files_to_test = [
+    values_file for values_file in values_files_to_deployables_details if values_file not in secret_values_files_to_test
+]
+values_files_with_ingresses = [
+    values_file
+    for values_file, deployables_details in values_files_to_deployables_details.items()
+    if any([deployable_details.has_ingress for deployable_details in deployables_details])
+    and values_file not in secret_values_files_to_test
+]
