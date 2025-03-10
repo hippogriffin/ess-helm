@@ -76,6 +76,17 @@ spec:
           initialDelaySeconds: 45
           timeoutSeconds: 2
         volumeMounts:
+{{- with (include "element-io.init-secrets.postgres-generated-secrets" (dict "root" $)) | fromYamlArray }}
+  {{- range . -}}
+    {{- $secretArg := . | splitList ":" }}
+    {{- if (index $secretArg 1) | contains "POSTGRES" }}
+        - mountPath: /secrets/{{ index $secretArg 0 }}/{{ index $secretArg 1 }}
+          name: "secret-{{ index $secretArg 0 }}"
+          subPath: "{{ index $secretArg 1 }}"
+          readOnly: true
+    {{- end }}
+  {{- end }}
+{{- end }}
 {{- range $secret := include "element-io.postgres.configSecrets" (dict "root" $ "context" .) | fromJsonArray }}
         - mountPath: /secrets/{{ tpl $secret $ }}
           name: "secret-{{ tpl $secret $ }}"
@@ -140,6 +151,17 @@ spec:
         - containerPort: 5432
           name: postgres
         volumeMounts:
+{{- with (include "element-io.init-secrets.postgres-generated-secrets" (dict "root" $)) | fromYamlArray }}
+  {{- range . -}}
+    {{- $secretArg := . | splitList ":" }}
+    {{- if (index $secretArg 1) | contains "POSTGRES" }}
+        - mountPath: /secrets/{{ index $secretArg 0 }}/{{ index $secretArg 1 }}
+          name: "secret-{{ index $secretArg 0 }}"
+          subPath: "{{ index $secretArg 1 }}"
+          readOnly: true
+    {{- end }}
+  {{- end }}
+{{- end }}
 {{- range $secret := include "element-io.postgres.configSecrets" (dict "root" $ "context" .) | fromJsonArray }}
         - mountPath: /secrets/{{ tpl $secret $ }}
           name: "secret-{{ tpl $secret $ }}"
@@ -203,6 +225,11 @@ spec:
         name: temp
       - emptyDir: {}
         name: var-run
+{{- if and $.Values.initSecrets.enabled (include "element-io.init-secrets.postgres-generated-secrets" (dict "root" $)) }}
+      - secret:
+          secretName: {{ $.Release.Name }}-generated
+        name: secret-{{ $.Release.Name }}-generated
+{{- end }}
 {{- range $secret := include "element-io.postgres.configSecrets" (dict "root" $ "context" .) | fromJsonArray }}
       - secret:
           secretName: {{ tpl $secret $ }}

@@ -163,14 +163,14 @@ all_components_details = [
     ComponentDetails(
         name="postgres",
         has_ingress=False,
-        paths_consistency_noqa=("/docker-entrypoint-initdb.d",),
+        paths_consistency_noqa=("/docker-entrypoint-initdb.d/init-ess-dbs.sh"),
         is_shared_component=True,
     ),
     ComponentDetails(
         name="element-web",
         helm_key="elementWeb",
         has_service_monitor=False,
-        paths_consistency_noqa=("/etc/nginx",),
+        paths_consistency_noqa=("/etc/nginx/nginx.conf"),
     ),
     ComponentDetails(
         name="matrix-authentication-service",
