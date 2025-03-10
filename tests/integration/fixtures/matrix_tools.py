@@ -13,7 +13,7 @@ from python_on_whales import Image, docker
 async def build_matrix_tools():
     # Until the image is made publicly available
     # In local runs we always have to build it
-    if not os.environ.get("CI") or os.environ.get("BUILD_MATRIX_TOOLS"):
+    if os.environ.get("BUILD_MATRIX_TOOLS"):
         project_folder = Path(__file__).parent.parent.parent.parent.resolve()
         docker.buildx.bake(
             files=str(project_folder / "docker-bake.hcl"),
@@ -27,7 +27,7 @@ async def build_matrix_tools():
 async def loaded_matrix_tools(registry, build_matrix_tools: Image):
     # Until the image is made publicly available
     # In local runs we always have to build it
-    if not os.environ.get("CI") or os.environ.get("BUILD_MATRIX_TOOLS"):
+    if os.environ.get("BUILD_MATRIX_TOOLS"):
         docker.push("localhost:5000/matrix-tools:pytest")
         matrix_tools = docker.image.inspect("localhost:5000/matrix-tools:pytest")
         return {

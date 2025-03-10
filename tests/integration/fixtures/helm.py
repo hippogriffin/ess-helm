@@ -26,7 +26,7 @@ async def helm_prerequisites(
     resources = []
     setups = []
 
-    # On CI, public runners need read access to dockerhub.io and ghcr.io repositories
+    # On CI, public runners need read access to dockerhub.io
     if os.environ.get("CI"):
         resources.append(
             kubernetes_docker_secret(
@@ -38,21 +38,6 @@ async def helm_prerequisites(
                             registry="docker.io",
                             username=os.environ["DOCKERHUB_USERNAME"],
                             password=os.environ["DOCKERHUB_TOKEN"],
-                        )
-                    ]
-                ),
-            ),
-        )
-        resources.append(
-            kubernetes_docker_secret(
-                f"{generated_data.release_name}-ghcr",
-                namespace=generated_data.ess_namespace,
-                docker_config_json=docker_config_json(
-                    [
-                        DockerAuth(
-                            registry="ghcr.io",
-                            username=os.environ["GHCR_USERNAME"],
-                            password=os.environ["GHCR_TOKEN"],
                         )
                     ]
                 ),
@@ -159,7 +144,6 @@ async def matrix_stack(
     if os.environ.get("CI"):
         values["imagePullSecrets"] = [
             {"name": f"{generated_data.release_name}-dockerhub"},
-            {"name": f"{generated_data.release_name}-ghcr"},
         ]
     values["matrixTools"].setdefault("image", {})
     values["matrixTools"]["image"] = loaded_matrix_tools
