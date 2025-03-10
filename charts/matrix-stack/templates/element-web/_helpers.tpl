@@ -28,7 +28,7 @@ app.kubernetes.io/version: {{ .image.tag }}
 {{- end }}
 {{- if $root.Values.matrixAuthenticationService.enabled }}
 {{- $embeddedPages := dict "login_for_welcome" true -}}
-{{- $ssoRedirectOptions := dict "immediate" true -}}
+{{- $ssoRedirectOptions := dict "immediate" false -}}
 {{- $settingDefaults := dict "UIFeature.passwordReset" false "UIFeature.registration" false "UIFeature.deactivate" false -}}
 {{- $_ := set $config "embedded_pages" $embeddedPages -}}
 {{- $_ := set $config "sso_redirect_options" $ssoRedirectOptions -}}
