@@ -170,7 +170,7 @@ all_components_details = [
         name="element-web",
         helm_key="elementWeb",
         has_service_monitor=False,
-        paths_consistency_noqa=("/etc/nginx/nginx.conf"),
+        paths_consistency_noqa=("/etc/nginx/nginx.conf", "/etc/nginx/mime.types"),
     ),
     ComponentDetails(
         name="matrix-authentication-service",
