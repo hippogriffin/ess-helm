@@ -62,7 +62,7 @@ jobs:
 
     - uses: engineerd/setup-kind@v0.6.2
       with:
-        version: "v0.25.0"
+        version: "v0.27.0"
         name: "ess-helm"
         skipClusterCreation: "true"
         skipClusterLogsExport: "true"
