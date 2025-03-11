@@ -105,6 +105,7 @@ def get_mounts_part(secret_or_cm, volume_mount):
 
 def get_keys_from_container_using_rendered_config(template, templates, other_secrets):
     mounted_keys = []
+    mounted_keys_to_parents = {}
     for container in template["spec"]["template"]["spec"]["containers"]:
         if "rendered-config" in [v["name"] for v in container["volumeMounts"]]:
             for volume_mount in container["volumeMounts"]:
@@ -112,17 +113,19 @@ def get_keys_from_container_using_rendered_config(template, templates, other_sec
                 if "secret" in current_volume:
                     # Extract the paths where this volume's secrets are mounted
                     secret = get_secret(templates, other_secrets, current_volume["secret"]["secretName"])
-                    _, keys = get_mounts_part(secret, volume_mount)
+                    parent, keys = get_mounts_part(secret, volume_mount)
                     mounted_keys += keys
+                    mounted_keys_to_parents.update({k: parent for k in keys})
                 elif "configMap" in current_volume:
                     # Parse config map content
                     configmap = get_configmap(templates, current_volume["configMap"]["name"])
-                    _, keys = get_mounts_part(configmap, volume_mount)
+                    parent, keys = get_mounts_part(configmap, volume_mount)
                     mounted_keys += keys
+                    mounted_keys_to_parents.update({k: parent for k in keys})
     assert len(mounted_keys) > 0, (
         f"No secret or config map is mounted in the template {template['kind']}/{template['metadata']['name']}"
     )
-    return mounted_keys
+    return mounted_keys, mounted_keys_to_parents
 
 
 def assert_exists_according_to_hook_weight(template, hook_weight, used_by):
@@ -166,9 +169,9 @@ async def test_secrets_consistency(templates, other_secrets, template_to_deploya
         for container in containers:
             # Determine which secrets are mounted by this container
             mounted_keys = []
+            mounted_keys_to_parents = {}
             mounted_config_maps = []
             mount_paths = []
-            mount_parents = []
             uses_rendered_config = False
 
             for volume_mount in container.get("volumeMounts", []):
@@ -179,8 +182,8 @@ async def test_secrets_consistency(templates, other_secrets, template_to_deploya
                     assert_exists_according_to_hook_weight(secret, weight, template["metadata"]["name"])
                     parent, keys = get_mounts_part(secret, volume_mount)
                     mount_paths.append(volume_mount["mountPath"])
-                    mount_parents.append(parent)
                     mounted_keys += keys
+                    mounted_keys_to_parents.update({k: parent for k in keys})
                 elif "configMap" in current_volume:
                     # Parse config map content
                     configmap = get_configmap(templates, current_volume["configMap"]["name"])
@@ -188,14 +191,15 @@ async def test_secrets_consistency(templates, other_secrets, template_to_deploya
                     mounted_config_maps.append(configmap)
                     parent, keys = get_mounts_part(configmap, volume_mount)
                     mount_paths.append(volume_mount["mountPath"])
-                    mount_parents.append(parent)
                     mounted_keys += keys
+                    mounted_keys_to_parents.update({k: parent for k in keys})
                 elif "emptyDir" in current_volume and current_volume["name"] == "rendered-config":
                     # We can't verify rendered-config, it's generated at runtime
                     uses_rendered_config = True
                     mount_paths.append(volume_mount["mountPath"])
-                    mount_parents.append(volume_mount["mountPath"])
-                    mounted_keys.append(f"{volume_mount['mountPath']}/{get_key_from_render_config(template)}")
+                    key = f"{volume_mount['mountPath']}/{get_key_from_render_config(template)}"
+                    mounted_keys.append(key)
+                    mounted_keys_to_parents[key] = volume_mount["mountPath"]
 
             assert len(mounted_keys) == len(set(mounted_keys)), (
                 f"Mounted key paths are not unique in {template['metadata']['name']}: {mounted_keys}"
@@ -207,7 +211,11 @@ async def test_secrets_consistency(templates, other_secrets, template_to_deploya
             # If we are checking render-config,
             # we need to look up mounted_keys in the container using the rendered-config
             if container["name"] == "render-config":
-                mounted_keys += get_keys_from_container_using_rendered_config(template, templates, other_secrets)
+                rendered_mounted_keys, rendered_mounted_keys_to_parents = get_keys_from_container_using_rendered_config(
+                    template, templates, other_secrets
+                )
+                mounted_keys += rendered_mounted_keys
+                mounted_keys_to_parents.update(rendered_mounted_keys_to_parents)
 
             # We look for all mountKeys
             # refers <some key> to an existing configuration somewhere
@@ -243,15 +251,9 @@ async def test_secrets_consistency(templates, other_secrets, template_to_deploya
                         f"or env variable, or command is using it"
                     )
 
-            # We look for all secrets mountPath parents directories in configs and commands
-            # And using a regex, make sure that patterns `<parent mount path>/<some key>`
-            # refers <some key> to an existing mounted secret key
-            for parent_path in mount_parents:
-                # If for some path, the configuration cannot be made explicit
-                # we add them to the list of exceptions
-                # For example, nginx container uses /etc/nginx natively.
-                if parent_path in deployable_details.paths_consistency_noqa:
-                    continue
+                # We look for all secrets mountPath parents directories in configs and commands
+                # And using a regex, make sure that patterns `<parent mount path>/<some key>`
+                # refers <some key> to an existing mounted secret key
                 mount_path_found = False
 
                 # Parse container commands to find paths which would match a mounted secret
@@ -259,7 +261,7 @@ async def test_secrets_consistency(templates, other_secrets, template_to_deploya
                 if find_mount_paths_and_assert_key_is_consistent(
                     f"container {container['name']}",
                     mounted_keys,
-                    parent_path,
+                    mounted_keys_to_parents[mounted_key],
                     [e.get("value", "") for e in container.get("env", [])]
                     + container.get("command", [])
                     + container.get("args", []),
@@ -273,13 +275,13 @@ async def test_secrets_consistency(templates, other_secrets, template_to_deploya
                         if find_mount_paths_and_assert_key_is_consistent(
                             f"configmap {cm['metadata']['name']}/{data} mounted in {container['name']}",
                             mounted_keys,
-                            parent_path,
+                            mounted_keys_to_parents[mounted_key],
                             [content],
                         ):
                             mount_path_found = True
                 if not mount_path_found and not uses_rendered_config:
                     raise AssertionError(
-                        f"{parent_path} used in container {container['name']} "
+                        f"{mounted_keys_to_parents[mounted_key]} used in container {container['name']} "
                         f"but no config {','.join([cm['metadata']['name'] for cm in mounted_config_maps])} "
                         f"or env variable, or command is using it"
                     )
