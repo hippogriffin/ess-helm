@@ -39,15 +39,13 @@ jobs:
       run: |
         if [ "$GITHUB_REF_TYPE" = "tag" ]; then
           scripts/set_chart_version.sh "$GITHUB_REF_NAME"
-        elif [ "$GITHUB_REF_NAME" != "main" ]; then
-          # https://github.com/orgs/community/discussions/26325
-          if [ "$GITHUB_EVENT_NAME" = "pull_request_target" ] || [ "$GITHUB_EVENT_NAME" = "pull_request" ]; then
+        elif [ "$GITHUB_EVENT_NAME" = "pull_request" ] || [ "$GITHUB_EVENT_NAME" = "pull_request_target" ]; then
             actual_pr_head_commit=$(cat $GITHUB_EVENT_PATH | yq --input-format json -r .pull_request.head.sha)
             version=$(yq '.version' charts/matrix-stack/Chart.yaml | sed "s/-dev/-sha$actual_pr_head_commit/")
-          else
+            scripts/set_chart_version.sh "$version"
+        elif [ "$GITHUB_EVENT_NAME" != "main" ]; then
             version=$(yq '.version' charts/matrix-stack/Chart.yaml | sed "s/-dev/-sha$GITHUB_SHA/")
-          fi
-          scripts/set_chart_version.sh "$version"
+            scripts/set_chart_version.sh "$version"
         else
           echo "Did not set chart version on event $GITHUB_EVENT_NAME: $GITHUB_REF_TYPE/$GITHUB_REF_NAME"
         fi
