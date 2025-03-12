@@ -41,7 +41,7 @@ jobs:
           scripts/set_chart_version.sh "$GITHUB_REF_NAME"
         elif [ "$GITHUB_REF_NAME" != "main" ]; then
           # https://github.com/orgs/community/discussions/26325
-          if [ "$GITHUB_EVENT_NAME" = "pull_request" ]; then
+          if [ "$GITHUB_EVENT_NAME" = "pull_request_target" ]; then
             actual_pr_head_commit=$(cat $GITHUB_EVENT_PATH | yq --input-format json -r .pull_request.head.sha)
             version=$(yq '.version' charts/matrix-stack/Chart.yaml | sed "s/-dev/-sha$actual_pr_head_commit/")
           else
