@@ -12,8 +12,6 @@ version="$1"
 scripts_dir=$( cd -- "$( dirname -- "${BASH_SOURCE[0]}" )" &> /dev/null && pwd )
 chart_root=$( cd "$scripts_dir/../charts" &> /dev/null && pwd )
 
-echo "Setting chart version to $version"
-
 function set_chart_version() {
   chart_dir="$1"
 
