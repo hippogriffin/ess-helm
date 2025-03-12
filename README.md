@@ -237,8 +237,10 @@ And continue with standard setup.
 
 #### Standard setup
 
+**Each optional additional values file used needs to be prefixed with `-f `**
+
 ```
-helm upgrade --install --namespace "ess" ess oci://ghcr.io/element-hq/ess-helm/matrix-stack -f ~/ess-config-values/hostnames.yaml <values files to pass> --wait
+helm upgrade --install --namespace "ess" ess oci://ghcr.io/element-hq/ess-helm/matrix-stack -f ~/ess-config-values/hostnames.yaml <optional additional values files to pass> --wait
 ```
 
 Wait for the helm command to finish up. ESS is now installed!
