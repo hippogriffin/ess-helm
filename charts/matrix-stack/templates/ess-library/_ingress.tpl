@@ -29,6 +29,19 @@ annotations:
 {{- end -}}
 {{- end -}}
 
+{{- define "element-io.ess-library.ingress.tls" -}}
+{{- $root := .root -}}
+{{- with required "element-io.ess-library.ingress.tlsSecret missing context" .context -}}
+{{- $ingress := required "element-io.ess-library.ingress.tls missing ingress" .ingress -}}
+{{- $host := .host | default $ingress.host -}}
+{{- $ingressName := required "element-io.ess-library.ingress.tls missing ingressName" .ingressName -}}
+{{- with (include "element-io.ess-library.ingress.tlsSecret" (dict "root" $root "context" (dict "hosts" (list $host) "tlsSecret" $ingress.tlsSecret "ingressName" $ingressName))) }}
+tls:
+{{ . | nindent 2 }}
+{{- end -}}
+{{- end -}}
+{{- end -}}
+
 {{- define "element-io.ess-library.ingress.tlsSecret" -}}
 {{- $root := .root -}}
 {{- with required "element-io.ess-library.ingress.tlsSecret missing context" .context -}}
@@ -36,7 +49,6 @@ annotations:
 {{- $hosts := .hosts -}}
 {{- $tlsSecret := coalesce .tlsSecret $root.Values.ingress.tlsSecret -}}
 {{- if or $tlsSecret $root.Values.certManager -}}
-tls:
 - hosts:
 {{- range $host := $hosts }}
   - {{ (tpl $host $root) | quote }}
