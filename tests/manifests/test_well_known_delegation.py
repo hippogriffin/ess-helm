@@ -4,8 +4,12 @@
 
 import json
 import re
+from typing import Any
 
 import pytest
+
+from . import DeployableDetails
+from .utils import iterate_deployables_ingress_parts
 
 msc_2965_authentication = {
     "org.matrix.msc2965.authentication": {
@@ -98,3 +102,42 @@ async def test_has_redirect_to_element_web(release_name, values, make_templates)
                 )
                 is not None
             )
+
+
+@pytest.mark.parametrize("values_file", ["well-known-minimal-values.yaml"])
+@pytest.mark.asyncio_cooperative
+async def test_dot_path_global_ingressType(values, make_templates):
+    for template in await make_templates(values):
+        if template["kind"] == "Ingress":
+            for path in template["spec"]["rules"][0]["http"]["paths"]:
+                if path["path"].startswith("/.well-known"):
+                    assert path["pathType"] == "Prefix"
+
+    values.setdefault("ingress", {})["controllerType"] = "ingress-nginx"
+
+    for template in await make_templates(values):
+        if template["kind"] == "Ingress":
+            for path in template["spec"]["rules"][0]["http"]["paths"]:
+                if path["path"].startswith("/.well-known"):
+                    assert path["pathType"] == "ImplementationSpecific"
+
+
+@pytest.mark.parametrize("values_file", ["well-known-minimal-values.yaml"])
+@pytest.mark.asyncio_cooperative
+async def test_dot_path_component_ingressType(deployables_details, values, make_templates):
+    def set_ingress_type(values_fragment: dict[str, Any], deployable_details: DeployableDetails):
+        values_fragment.setdefault("ingress", {})["controllerType"] = "ingress-nginx"
+
+    for template in await make_templates(values):
+        if template["kind"] == "Ingress":
+            for path in template["spec"]["rules"][0]["http"]["paths"]:
+                if path["path"].startswith("/.well-known"):
+                    assert path["pathType"] == "Prefix"
+
+    iterate_deployables_ingress_parts(deployables_details, values, set_ingress_type)
+
+    for template in await make_templates(values):
+        if template["kind"] == "Ingress":
+            for path in template["spec"]["rules"][0]["http"]["paths"]:
+                if path["path"].startswith("/.well-known"):
+                    assert path["pathType"] == "ImplementationSpecific"

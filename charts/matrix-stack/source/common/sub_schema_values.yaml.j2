@@ -165,6 +165,9 @@ imagePullSecrets: []
 {%- else %}
   service: {}
 {%- endif %}
+  ## If set, some tweaks will be applied automatically to ingresses based on the controller type here.
+  ## This can be set to `ingress-nginx`.
+  # controllerType:
 {%- endmacro %}
 
 {% macro labels(global=false, key='labels') %}

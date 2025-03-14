@@ -19,6 +19,12 @@
     "tlsSecret": {
       "type": "string"
     },
+    "controllerType": {
+      "type": "string",
+      "enum": [
+        "ingress-nginx"
+      ]
+    },
     "service": {
       "type": "object",
       "properties": {

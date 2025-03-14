@@ -9,7 +9,7 @@ SPDX-License-Identifier: AGPL-3.0-only OR LicenseRef-Element-Commercial
 apiVersion: networking.k8s.io/v1
 kind: Ingress
 metadata:
-{{- include "element-io.ess-library.ingress.annotations" (dict "root" $ "context" .ingress) | nindent 2 }}
+{{- include "element-io.ess-library.ingress.annotations" (dict "root" $ "context" (dict "ingress" .ingress)) | nindent 2 }}
   labels:
     {{- include "element-io.matrix-authentication-service.labels" (dict "root" $ "context" .) | nindent 4 }}
   name: {{ $.Release.Name }}-matrix-authentication-service

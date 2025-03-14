@@ -6,11 +6,10 @@ SPDX-License-Identifier: AGPL-3.0-only OR LicenseRef-Element-Commercial
 
 {{- define "element-io.ess-library.ingress.annotations" -}}
 {{- $root := .root -}}
-{{- if not (hasKey . "context") -}}
-{{- fail "element-io.ess-library.ingress.annotations missing context" -}}
-{{- end }}
-{{- $annotations := dict -}}
-{{- $tlsSecret := coalesce .context.tlsSecret $root.Values.ingress.tlsSecret -}}
+{{- with required "element-io.ess-library.ingress.annotations missing context" .context -}}
+{{- $annotations := .extraAnnotations | default dict -}}
+{{- with required "element-io.ess-library.ingress.annotations context missing ingress" .ingress }}
+{{- $tlsSecret := coalesce .tlsSecret $root.Values.ingress.tlsSecret -}}
 {{- if and (not $tlsSecret) $root.Values.certManager -}}
 {{- with $root.Values.certManager -}}
 {{- with .clusterIssuer -}}
@@ -22,10 +21,12 @@ SPDX-License-Identifier: AGPL-3.0-only OR LicenseRef-Element-Commercial
 {{- end -}}
 {{- end -}}
 {{- $annotations = mustMergeOverwrite $annotations ($root.Values.ingress.annotations | deepCopy) -}}
-{{- $annotations = mustMergeOverwrite $annotations (.context.annotations | deepCopy) -}}
+{{- $annotations = mustMergeOverwrite $annotations (.annotations | deepCopy) -}}
 {{- with $annotations -}}
 annotations:
   {{- toYaml . | nindent 2 }}
+{{- end -}}
+{{- end -}}
 {{- end -}}
 {{- end -}}
 
@@ -65,5 +66,27 @@ tls:
 {{- end }}
 {{- with coalesce .context $root.Values.ingress.className -}}
 ingressClassName: {{ . | quote }}
+{{- end -}}
+{{- end -}}
+
+{{- define "element-io.ess-library.ingress-controller-type" -}}
+{{- $root := .root -}}
+{{- if not (hasKey . "context") -}}
+{{- fail "element-io.ess-library.ingress-controller-type missing context" -}}
+{{- end -}}
+{{- with coalesce .context $root.Values.ingress.controllerType -}}
+{{- . -}}
+{{- end -}}
+{{- end -}}
+
+{{- define "element-io.ess-library.ingress.ingress-nginx-dot-path-type" -}}
+{{- $root := .root -}}
+{{- if not (hasKey . "context") -}}
+{{- fail "element-io.ess-library.ingress.ingress-nginx-dot-path-type missing context" -}}
+{{- end -}}
+{{- if eq (include "element-io.ess-library.ingress-controller-type" (dict "root" $root "context" .context)) "ingress-nginx" -}}
+ImplementationSpecific
+{{- else -}}
+Prefix
 {{- end -}}
 {{- end -}}

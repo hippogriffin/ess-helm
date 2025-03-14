@@ -13,6 +13,8 @@ global:
 haproxy:
   podSecurityContext:
     runAsGroup: 0
+ingress:
+  controllerType: ingress-nginx
 matrixAuthenticationService:
   enabled: false
 # To check that templating works against the ingress
