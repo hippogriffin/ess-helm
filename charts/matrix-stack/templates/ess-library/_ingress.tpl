@@ -6,11 +6,10 @@ SPDX-License-Identifier: AGPL-3.0-only OR LicenseRef-Element-Commercial
 
 {{- define "element-io.ess-library.ingress.annotations" -}}
 {{- $root := .root -}}
-{{- if not (hasKey . "context") -}}
-{{- fail "element-io.ess-library.ingress.annotations missing context" -}}
-{{- end }}
-{{- $annotations := dict -}}
-{{- $tlsSecret := coalesce .context.tlsSecret $root.Values.ingress.tlsSecret -}}
+{{- with required "element-io.ess-library.ingress.annotations missing context" .context -}}
+{{- $annotations := .extraAnnotations | default dict -}}
+{{- with required "element-io.ess-library.ingress.annotations context missing ingress" .ingress }}
+{{- $tlsSecret := coalesce .tlsSecret $root.Values.ingress.tlsSecret -}}
 {{- if and (not $tlsSecret) $root.Values.certManager -}}
 {{- with $root.Values.certManager -}}
 {{- with .clusterIssuer -}}
@@ -22,10 +21,12 @@ SPDX-License-Identifier: AGPL-3.0-only OR LicenseRef-Element-Commercial
 {{- end -}}
 {{- end -}}
 {{- $annotations = mustMergeOverwrite $annotations ($root.Values.ingress.annotations | deepCopy) -}}
-{{- $annotations = mustMergeOverwrite $annotations (.context.annotations | deepCopy) -}}
+{{- $annotations = mustMergeOverwrite $annotations (.annotations | deepCopy) -}}
 {{- with $annotations -}}
 annotations:
   {{- toYaml . | nindent 2 }}
+{{- end -}}
+{{- end -}}
 {{- end -}}
 {{- end -}}
 
@@ -68,13 +69,13 @@ ingressClassName: {{ . | quote }}
 {{- end -}}
 {{- end -}}
 
-{{- define "element-io.ess-library.ingress.type" -}}
+{{- define "element-io.ess-library.ingress-type" -}}
 {{- $root := .root -}}
 {{- if not (hasKey . "context") -}}
-{{- fail "element-io.ess-library.ingress.type missing context" -}}
-{{- end }}
-{{- with coalesce .context.type $root.Values.ingress.type -}}
-{{ . }}
+{{- fail "element-io.ess-library.ingress-type missing context" -}}
+{{- end -}}
+{{- with coalesce .context $root.Values.ingress.type -}}
+{{- . -}}
 {{- end -}}
 {{- end -}}
 
@@ -82,12 +83,12 @@ ingressClassName: {{ . | quote }}
 {{- $root := .root -}}
 {{- if not (hasKey . "context") -}}
 {{- fail "element-io.ess-library.ingress.kubernetes-nginx-dot-paths-types missing context" -}}
-{{- end }}
-{{- with include "element-io.ess-library.ingress.type" (dict "root" $root "context" .) -}}
+{{- end -}}
+{{- with include "element-io.ess-library.ingress-type" (dict "root" $root "context" .) -}}
 {{- if eq . "kubernetes-nginx" }}
 ImplementationSpecific
-{{- else }}
+{{- else -}}
 Prefix
-{{- end }}
+{{- end -}}
 {{- end -}}
 {{- end -}}
