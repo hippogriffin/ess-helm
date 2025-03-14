@@ -37,18 +37,7 @@ spec:
         {{- include "element-io.init-secrets.labels" (dict "root" $ "context" .) | nindent 8 }}
     spec:
       restartPolicy: OnFailure
-      automountServiceAccountToken: true
-      serviceAccountName: {{ include "element-io.ess-library.serviceAccountName" (dict "root" $ "context" (dict "serviceAccount" .serviceAccount "key" "init-secrets")) }}
-{{- include "element-io.ess-library.pods.pullSecrets" (dict "root" $ "context" (dict "pullSecrets" $.Values.matrixTools.image.pullSecrets "usesMatrixTools" true)) | nindent 6 }}
-{{- with .podSecurityContext }}
-      securityContext:
-        {{- toYaml . | nindent 8 }}
-{{- end }}
-{{- with .nodeSelector }}
-      nodeSelector:
-        {{- toYaml . | nindent 8 }}
-{{- end }}
-      {{ include "element-io.ess-library.pods.tolerations" (dict "root" $ "context" .tolerations) | nindent 6 }}
+{{- include "element-io.ess-library.pods.commonSpec" (dict "root" $ "context" (dict "componentValues" . "key" "init-secrets" "deployment" false "usesMatrixTools" true "mountServiceAccountToken" true)) | nindent 6 }}
       containers:
       - name: init-secrets
 {{- with $.Values.matrixTools.image -}}
