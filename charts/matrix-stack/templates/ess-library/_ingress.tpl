@@ -79,12 +79,12 @@ ingressClassName: {{ . | quote }}
 {{- end -}}
 {{- end -}}
 
-{{- define "element-io.ess-library.ingress.kubernetes-nginx-dot-path-type" -}}
+{{- define "element-io.ess-library.ingress.ingress-nginx-dot-path-type" -}}
 {{- $root := .root -}}
 {{- if not (hasKey . "context") -}}
-{{- fail "element-io.ess-library.ingress.kubernetes-nginx-dot-path-type missing context" -}}
+{{- fail "element-io.ess-library.ingress.ingress-nginx-dot-path-type missing context" -}}
 {{- end -}}
-{{- if eq (include "element-io.ess-library.ingress-controller-type" (dict "root" $root "context" .context)) "kubernetes-nginx" -}}
+{{- if eq (include "element-io.ess-library.ingress-controller-type" (dict "root" $root "context" .context)) "ingress-nginx" -}}
 ImplementationSpecific
 {{- else -}}
 Prefix

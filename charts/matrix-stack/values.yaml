@@ -65,7 +65,7 @@ ingress:
   service:
     type: ClusterIP
   ## If set, some tweaks will be applied automatically to ingresses based on the controller type here.
-  ## This can be set to `kubernetes-nginx`.
+  ## This can be set to `ingress-nginx`.
   # controllerType:
 
 ## A list of Secrets in this namespace to use as pull Secrets.
@@ -283,7 +283,7 @@ elementWeb:
     ## How the Service behind this Ingress is constructed
     service: {}
     ## If set, some tweaks will be applied automatically to ingresses based on the controller type here.
-    ## This can be set to `kubernetes-nginx`.
+    ## This can be set to `ingress-nginx`.
     # controllerType:
   ## Labels to add to all manifest for this component
   labels: {}
@@ -763,7 +763,7 @@ matrixAuthenticationService:
     ## How the Service behind this Ingress is constructed
     service: {}
     ## If set, some tweaks will be applied automatically to ingresses based on the controller type here.
-    ## This can be set to `kubernetes-nginx`.
+    ## This can be set to `ingress-nginx`.
     # controllerType:
 
 
@@ -1528,7 +1528,7 @@ synapse:
     ## How the Service behind this Ingress is constructed
     service: {}
     ## If set, some tweaks will be applied automatically to ingresses based on the controller type here.
-    ## This can be set to `kubernetes-nginx`.
+    ## This can be set to `ingress-nginx`.
     # controllerType:
   ## Labels to add to all manifest for this component
   labels: {}
@@ -1848,7 +1848,7 @@ wellKnownDelegation:
     ## How the Service behind this Ingress is constructed
     service: {}
     ## If set, some tweaks will be applied automatically to ingresses based on the controller type here.
-    ## This can be set to `kubernetes-nginx`.
+    ## This can be set to `ingress-nginx`.
     # controllerType:
 
   ## If ElementWeb is deployed, the base domain will redirect to it's ingress host by default

@@ -108,7 +108,7 @@
         "controllerType": {
           "type": "string",
           "enum": [
-            "kubernetes-nginx"
+            "ingress-nginx"
           ]
         },
         "service": {
@@ -578,7 +578,7 @@
             "controllerType": {
               "type": "string",
               "enum": [
-                "kubernetes-nginx"
+                "ingress-nginx"
               ]
             },
             "service": {
@@ -1539,7 +1539,7 @@
             "controllerType": {
               "type": "string",
               "enum": [
-                "kubernetes-nginx"
+                "ingress-nginx"
               ]
             },
             "service": {
@@ -2800,7 +2800,7 @@
             "controllerType": {
               "type": "string",
               "enum": [
-                "kubernetes-nginx"
+                "ingress-nginx"
               ]
             },
             "service": {
@@ -5376,7 +5376,7 @@
             "controllerType": {
               "type": "string",
               "enum": [
-                "kubernetes-nginx"
+                "ingress-nginx"
               ]
             },
             "service": {

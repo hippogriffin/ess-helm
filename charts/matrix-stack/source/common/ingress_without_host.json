@@ -16,7 +16,7 @@
     "controllerType": {
       "type": "string",
       "enum": [
-        "kubernetes-nginx"
+        "ingress-nginx"
       ]
     },
     "service": {
