@@ -67,3 +67,27 @@ tls:
 ingressClassName: {{ . | quote }}
 {{- end -}}
 {{- end -}}
+
+{{- define "element-io.ess-library.ingress.type" -}}
+{{- $root := .root -}}
+{{- if not (hasKey . "context") -}}
+{{- fail "element-io.ess-library.ingress.type missing context" -}}
+{{- end }}
+{{- with coalesce .context.type $root.Values.ingress.type -}}
+{{ . }}
+{{- end -}}
+{{- end -}}
+
+{{- define "element-io.ess-library.ingress.kubernetes-nginx-dot-paths-types" -}}
+{{- $root := .root -}}
+{{- if not (hasKey . "context") -}}
+{{- fail "element-io.ess-library.ingress.kubernetes-nginx-dot-paths-types missing context" -}}
+{{- end }}
+{{- with include "element-io.ess-library.ingress.type" (dict "root" $root "context" .) -}}
+{{- if eq . "kubernetes-nginx" }}
+ImplementationSpecific
+{{- else }}
+Prefix
+{{- end }}
+{{- end -}}
+{{- end -}}
