@@ -8,7 +8,7 @@ from typing import Any
 import pytest
 
 from . import DeployableDetails, values_files_to_test
-from .utils import iterate_deployables_parts
+from .utils import iterate_deployables_parts, template_id
 
 
 def selector_match(labels: dict[str, str], selector: dict[str, str]) -> bool:
@@ -120,3 +120,12 @@ async def test_service_monitored_as_appropriate(
         deployable_details.get_helm_values_fragment(values)["serviceMonitors"]["enabled"] = False
 
     assert seen_covered_workloads.symmetric_difference(workloads_to_cover) == set()
+
+
+@pytest.mark.parametrize("values_file", values_files_to_test)
+@pytest.mark.asyncio_cooperative
+async def test_no_servicemonitors_created_if_no_servicemonitor_crds(values, make_templates):
+    for template in await make_templates(values, has_service_monitor_crd=False):
+        assert template["kind"] != "ServiceMonitor", (
+            f"{template_id(template)} exists but the ServiceMonitor CRD isn't present"
+        )

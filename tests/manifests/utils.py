@@ -154,47 +154,50 @@ def external_secrets(release_name, values):
         }
 
 
-async def helm_template(chart: pyhelm3.Chart, release_name: str, values: Any | None) -> Iterator[Any]:
+async def helm_template(
+    chart: pyhelm3.Chart, release_name: str, values: Any | None, has_service_monitor_crd=True
+) -> Iterator[Any]:
     """Generate template with ServiceMonitor API Versions enabled
 
     The native pyhelm3 template command does expose the --api-versions flag,
     so we implement it here.
-
-    Args:
-        chart (pyhelm3.Chart): The chart
-        release_name (str): The release name
-        values (Any, optional): The values to use
-
-    Returns:
-        Iterator[Any]: Iterating on manifests.
     """
+    additional_apis = []
+    if has_service_monitor_crd:
+        additional_apis.append("monitoring.coreos.com/v1/ServiceMonitor")
+
+    additional_apis_args = [arg for additional_api in additional_apis for arg in ["-a", additional_api]]
     command = [
         "template",
         release_name,
         chart.ref,
-        "-a",
-        "monitoring.coreos.com/v1/ServiceMonitor",
         # We send the values in on stdin
         "--values",
         "-",
-    ]
-    values_json = json.dumps(values or {}).encode()
-    if values_json not in template_cache:
+    ] + additional_apis_args
+
+    template_cache_key = json.dumps(
+        {"values": values, "additional_apis": additional_apis, "release_name": release_name}
+    )
+
+    if template_cache_key not in template_cache:
         templates = list(
             [
                 template
-                for template in yaml.load_all(await pyhelm3.Command().run(command, values_json), Loader=yaml.SafeLoader)
+                for template in yaml.load_all(
+                    await pyhelm3.Command().run(command, json.dumps(values or {}).encode()), Loader=yaml.SafeLoader
+                )
                 if template is not None
             ]
         )
-        template_cache[values_json] = templates
-    return template_cache[values_json]
+        template_cache[template_cache_key] = templates
+    return template_cache[template_cache_key]
 
 
 @pytest.fixture
 def make_templates(chart: pyhelm3.Chart, release_name: str):
-    async def _make_templates(values):
-        return await helm_template(chart, release_name, values)
+    async def _make_templates(values, has_service_monitor_crd=True):
+        return await helm_template(chart, release_name, values, has_service_monitor_crd)
 
     return _make_templates
 
