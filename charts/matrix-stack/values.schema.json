@@ -2797,6 +2797,12 @@
             "tlsSecret": {
               "type": "string"
             },
+            "type": {
+              "type": "string",
+              "enum": [
+                "kubernetes-nginx"
+              ]
+            },
             "service": {
               "type": "object",
               "properties": {

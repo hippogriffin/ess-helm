@@ -2,7 +2,12 @@
 #
 # SPDX-License-Identifier: AGPL-3.0-only OR LicenseRef-Element-Commercial
 
+from typing import Any
+
 import pytest
+
+from . import DeployableDetails
+from .utils import iterate_deployables_ingress_parts
 
 
 @pytest.mark.parametrize("values_file", ["synapse-minimal-values.yaml"])
@@ -33,3 +38,34 @@ async def test_appservice_configmaps_are_templated(release_name, values, make_te
                     break
             else:
                 raise AssertionError("The appservice configMap isn't mounted at the expected location")
+
+
+@pytest.mark.parametrize("values_file", ["synapse-minimal-values.yaml"])
+@pytest.mark.asyncio_cooperative
+async def test_max_upload_size_annotation_global_ingressType(values, make_templates):
+    for template in await make_templates(values):
+        if template["kind"] == "Ingress":
+            assert "nginx.ingress.kubernetes.io/proxy-body-size" not in template["metadata"].get("annotations", {})
+
+    values.setdefault("ingress", {})["type"] = "kubernetes-nginx"
+
+    for template in await make_templates(values):
+        if template["kind"] == "Ingress":
+            assert "nginx.ingress.kubernetes.io/proxy-body-size" in template["metadata"].get("annotations", {})
+
+
+@pytest.mark.parametrize("values_file", ["synapse-minimal-values.yaml"])
+@pytest.mark.asyncio_cooperative
+async def test_max_upload_size_annotation_component_ingressType(values, deployables_details, make_templates):
+    def set_ingress_type(values_fragment: dict[str, Any], deployable_details: DeployableDetails):
+        values_fragment.setdefault("ingress", {})["type"] = "kubernetes-nginx"
+
+    for template in await make_templates(values):
+        if template["kind"] == "Ingress":
+            assert "nginx.ingress.kubernetes.io/proxy-body-size" not in template["metadata"].get("annotations", {})
+
+    iterate_deployables_ingress_parts(deployables_details, values, set_ingress_type)
+
+    for template in await make_templates(values):
+        if template["kind"] == "Ingress":
+            assert "nginx.ingress.kubernetes.io/proxy-body-size" in template["metadata"].get("annotations", {})

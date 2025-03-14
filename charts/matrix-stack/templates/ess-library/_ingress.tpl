@@ -84,11 +84,9 @@ ingressClassName: {{ . | quote }}
 {{- if not (hasKey . "context") -}}
 {{- fail "element-io.ess-library.ingress.kubernetes-nginx-dot-paths-types missing context" -}}
 {{- end -}}
-{{- with include "element-io.ess-library.ingress-type" (dict "root" $root "context" .) -}}
-{{- if eq . "kubernetes-nginx" }}
+{{- if eq (include "element-io.ess-library.ingress-type" (dict "root" $root "context" .context)) "kubernetes-nginx" -}}
 ImplementationSpecific
 {{- else -}}
 Prefix
-{{- end -}}
 {{- end -}}
 {{- end -}}
