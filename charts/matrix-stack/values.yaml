@@ -64,9 +64,9 @@ ingress:
   ## How the Services behind all Ingresses is constructed by default
   service:
     type: ClusterIP
-  ## If set, some tweaks will be applied automatically to ingresses based on the type here.
+  ## If set, some tweaks will be applied automatically to ingresses based on the controller type here.
   ## This can be set to `kubernetes-nginx`.
-  # type:
+  # controllerType:
 
 ## A list of Secrets in this namespace to use as pull Secrets.
 ## Ignored if a given component specifies its own pull Secrets.
@@ -282,9 +282,9 @@ elementWeb:
 
     ## How the Service behind this Ingress is constructed
     service: {}
-    ## If set, some tweaks will be applied automatically to ingresses based on the type here.
+    ## If set, some tweaks will be applied automatically to ingresses based on the controller type here.
     ## This can be set to `kubernetes-nginx`.
-    # type:
+    # controllerType:
   ## Labels to add to all manifest for this component
   labels: {}
   ## Defines the annotations to add to the workload
@@ -762,9 +762,9 @@ matrixAuthenticationService:
 
     ## How the Service behind this Ingress is constructed
     service: {}
-    ## If set, some tweaks will be applied automatically to ingresses based on the type here.
+    ## If set, some tweaks will be applied automatically to ingresses based on the controller type here.
     ## This can be set to `kubernetes-nginx`.
-    # type:
+    # controllerType:
 
 
   ## Labels to add to all manifest for this component
@@ -1527,9 +1527,9 @@ synapse:
 
     ## How the Service behind this Ingress is constructed
     service: {}
-    ## If set, some tweaks will be applied automatically to ingresses based on the type here.
+    ## If set, some tweaks will be applied automatically to ingresses based on the controller type here.
     ## This can be set to `kubernetes-nginx`.
-    # type:
+    # controllerType:
   ## Labels to add to all manifest for this component
   labels: {}
   ## Defines the annotations to add to the workload
@@ -1847,9 +1847,9 @@ wellKnownDelegation:
 
     ## How the Service behind this Ingress is constructed
     service: {}
-    ## If set, some tweaks will be applied automatically to ingresses based on the type here.
+    ## If set, some tweaks will be applied automatically to ingresses based on the controller type here.
     ## This can be set to `kubernetes-nginx`.
-    # type:
+    # controllerType:
 
   ## If ElementWeb is deployed, the base domain will redirect to it's ingress host by default
   ## If ElementWeb is not deployed or this is disabled, no base domain URL redirect will be set.

@@ -10,7 +10,7 @@ apiVersion: networking.k8s.io/v1
 kind: Ingress
 metadata:
 {{- $extraAnnotations := dict }}
-{{- if eq (include "element-io.ess-library.ingress-type" (dict "root" $ "context" .ingress.type)) "kubernetes-nginx" }}
+{{- if eq (include "element-io.ess-library.ingress-controller-type" (dict "root" $ "context" .ingress.controllerType)) "kubernetes-nginx" }}
 {{- $_ := set $extraAnnotations "nginx.ingress.kubernetes.io/proxy-body-size" .media.maxUploadSize }}
 {{- end }}
 {{- include "element-io.ess-library.ingress.annotations" (dict "root" $ "context" (dict "ingress" .ingress "extraAnnotations" $extraAnnotations)) | nindent 2 }}

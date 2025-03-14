@@ -47,7 +47,7 @@ async def test_max_upload_size_annotation_global_ingressType(values, make_templa
         if template["kind"] == "Ingress":
             assert "nginx.ingress.kubernetes.io/proxy-body-size" not in template["metadata"].get("annotations", {})
 
-    values.setdefault("ingress", {})["type"] = "kubernetes-nginx"
+    values.setdefault("ingress", {})["controllerType"] = "kubernetes-nginx"
 
     for template in await make_templates(values):
         if template["kind"] == "Ingress":
@@ -58,7 +58,7 @@ async def test_max_upload_size_annotation_global_ingressType(values, make_templa
 @pytest.mark.asyncio_cooperative
 async def test_max_upload_size_annotation_component_ingressType(values, deployables_details, make_templates):
     def set_ingress_type(values_fragment: dict[str, Any], deployable_details: DeployableDetails):
-        values_fragment.setdefault("ingress", {})["type"] = "kubernetes-nginx"
+        values_fragment.setdefault("ingress", {})["controllerType"] = "kubernetes-nginx"
 
     for template in await make_templates(values):
         if template["kind"] == "Ingress":

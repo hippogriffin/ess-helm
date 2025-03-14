@@ -113,7 +113,7 @@ async def test_dot_path_global_ingressType(values, make_templates):
                 if path["path"].startswith("/.well-known"):
                     assert path["pathType"] == "Prefix"
 
-    values.setdefault("ingress", {})["type"] = "kubernetes-nginx"
+    values.setdefault("ingress", {})["controllerType"] = "kubernetes-nginx"
 
     for template in await make_templates(values):
         if template["kind"] == "Ingress":
@@ -126,7 +126,7 @@ async def test_dot_path_global_ingressType(values, make_templates):
 @pytest.mark.asyncio_cooperative
 async def test_dot_path_component_ingressType(deployables_details, values, make_templates):
     def set_ingress_type(values_fragment: dict[str, Any], deployable_details: DeployableDetails):
-        values_fragment.setdefault("ingress", {})["type"] = "kubernetes-nginx"
+        values_fragment.setdefault("ingress", {})["controllerType"] = "kubernetes-nginx"
 
     for template in await make_templates(values):
         if template["kind"] == "Ingress":

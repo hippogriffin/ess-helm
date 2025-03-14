@@ -9,7 +9,7 @@ global:
 serverName: "{{ $.Values.global.baseDomain }}"
 
 ingress:
-  type: kubernetes-nginx
+  controllerType: kubernetes-nginx
 
 wellKnownDelegation:
   ingress:

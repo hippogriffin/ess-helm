@@ -19,7 +19,7 @@
     "tlsSecret": {
       "type": "string"
     },
-    "type": {
+    "controllerType": {
       "type": "string",
       "enum": [
         "kubernetes-nginx"
