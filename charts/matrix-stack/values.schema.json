@@ -105,6 +105,12 @@
         "tlsSecret": {
           "type": "string"
         },
+        "type": {
+          "type": "string",
+          "enum": [
+            "kubernetes-nginx"
+          ]
+        },
         "service": {
           "type": "object",
           "required": [
@@ -568,6 +574,12 @@
             },
             "tlsSecret": {
               "type": "string"
+            },
+            "type": {
+              "type": "string",
+              "enum": [
+                "kubernetes-nginx"
+              ]
             },
             "service": {
               "type": "object",
@@ -1523,6 +1535,12 @@
             },
             "tlsSecret": {
               "type": "string"
+            },
+            "type": {
+              "type": "string",
+              "enum": [
+                "kubernetes-nginx"
+              ]
             },
             "service": {
               "type": "object",
@@ -5348,6 +5366,12 @@
             },
             "tlsSecret": {
               "type": "string"
+            },
+            "type": {
+              "type": "string",
+              "enum": [
+                "kubernetes-nginx"
+              ]
             },
             "service": {
               "type": "object",

@@ -165,6 +165,9 @@ imagePullSecrets: []
 {%- else %}
   service: {}
 {%- endif %}
+  ## If set, some tweaks will be applied automatically to ingresses based on the type here.
+  ## This can be set to `kubernetes-nginx`.
+  # type:
 {%- endmacro %}
 
 {% macro labels(global=false, key='labels') %}
