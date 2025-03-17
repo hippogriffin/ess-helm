@@ -46,7 +46,7 @@ ESS Community Edition configures the following components automatically. It is p
 - Element Web: The official Matrix Web Client provided by Element.
 - PostgreSQL: A packaged PostgreSQL server. It allows you to quickly set up the stack with Postgres provided. For a better long-term experience, please consider using your own PostgreSQL server installed with your system packages.
 
-The documentation below assumes you are installing on a dedicated server. If you already have a reverse proxy configured (for instance if you share the machine with other services) see the [dedicated section](#set-up-element-server-suite-on-a-server--with-an-existing-reverse-proxy) to configure ESS behind this reverse proxy.
+The documentation below assumes you are installing on a dedicated server. If you already have a reverse proxy configured (for instance if you share the machine with other services) see the [dedicated section](#set-up-element-server-suite-with-k3s-on-a-server-with-an-existing-reverse-proxy) to configure ESS behind this reverse proxy.
 
 ## Quick Start
 
@@ -80,7 +80,7 @@ You need to create 4 DNS entries to set up Element Server Suite Community Editio
 
 This guide suggests using K3S as the Kubernetes Node hosting ESS. Other options are possible, you can have your own Kubernetes cluster already, or use other clusters like [microk8s](https://microk8s.io/). Any Kubernetes distribution is compatible with Element Community Edition, so choose one according to your needs.
 
-This will install K3S on the node, and configure its Traefik proxy automatically. If you want to configure K3S behind an existing reverse proxy on the same node, please see the [dedicated section](#set-up-element-server-suite-on-a-server--with-an-existing-reverse-proxy).
+This will install K3S on the node, and configure its Traefik proxy automatically. If you want to configure K3S behind an existing reverse proxy on the same node, please see the [dedicated section](#set-up-element-server-suite-with-k3s-on-a-server-with-an-existing-reverse-proxy).
 
 Run the following command to install K3S:
 
@@ -174,7 +174,7 @@ If your wildcard certificate covers both the server-name and the hosts of your s
 Import your certificate file in your namespace using [kubectl](https://kubernetes.io/docs/reference/kubectl/generated/kubectl_create/kubectl_create_secret_tls/):
 
 ```
-kubectl create secret tls ess-certificate --cert=path/to/cert/file --key=path/to/key/file
+kubectl create secret tls ess-certificate -n ess --cert=path/to/cert/file --key=path/to/key/file
 ```
 
 In your ess configuration values directory, copy the file `charts/matrix-stack/ci/fragments/quick-setup-wildcard-cert.yaml` to `tls.yaml`. Adjust the TLS Secret name accordingly if needed.
@@ -183,10 +183,10 @@ In your ess configuration values directory, copy the file `charts/matrix-stack/c
 
 If you have a distinct certificate for each of your DNS names, you will need to import each certificate in your namespace using [kubectl](https://kubernetes.io/docs/reference/kubectl/generated/kubectl_create/kubectl_create_secret_tls/):
 ```
-kubectl create secret tls ess-chat-certificate  --cert=path/to/cert/file --key=path/to/key/file
-kubectl create secret tls ess-matrix-certificate  --cert=path/to/cert/file --key=path/to/key/file
-kubectl create secret tls ess-auth-certificate  --cert=path/to/cert/file --key=path/to/key/file
-kubectl create secret tls ess-well-known-certificate  --cert=path/to/cert/file --key=path/to/key/file
+kubectl create secret tls ess-chat-certificate -n ess --cert=path/to/cert/file --key=path/to/key/file
+kubectl create secret tls ess-matrix-certificate -n ess --cert=path/to/cert/file --key=path/to/key/file
+kubectl create secret tls ess-auth-certificate -n ess --cert=path/to/cert/file --key=path/to/key/file
+kubectl create secret tls ess-well-known-certificate -n ess --cert=path/to/cert/file --key=path/to/key/file
 ```
 
 In your ess configuration values directory, copy the file `charts/matrix-stack/ci/fragments/quick-setup-certificates.yaml` to `tls.yaml`. Adjust the TLS Secret name accordingly if needed.
