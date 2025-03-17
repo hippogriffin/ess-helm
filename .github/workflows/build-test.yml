@@ -78,7 +78,14 @@ jobs:
       run: |
         for values in charts/matrix-stack/ci/*values.yaml; do
           echo "Testing matrix-stack with $values";
-          helm template -f "$values" charts/matrix-stack | kubeconform -summary
+          helm template \
+              -a monitoring.coreos.com/v1/ServiceMonitor \
+              -f "$values" charts/matrix-stack \
+            | kubeconform \
+              -schema-location default \
+              -schema-location 'https://raw.githubusercontent.com/datreeio/CRDs-catalog/main/{{.Group}}/{{.ResourceKind}}_{{.ResourceAPIVersion}}.json' \
+              -strict \
+              -summary
         done
 
     - name: Run checkov
