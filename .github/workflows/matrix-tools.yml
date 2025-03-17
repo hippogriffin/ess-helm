@@ -73,7 +73,7 @@ jobs:
       if: github.ref_type == 'tag' # Only for GitHub releases
       run: |
         echo "Converting $GITHUB_REF to tags"
-        echo "VERSION=${GITHUB_REF#refs\/tags\/matrix-tools-}" >> $GITHUB_ENV
+        echo "VERSION=${GITHUB_REF#refs\/tags\/matrix-tools-}" >> "$GITHUB_ENV"
 
     - name: Docker meta
       id: meta
