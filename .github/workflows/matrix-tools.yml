@@ -28,7 +28,7 @@ jobs:
       with:
         ref: ${{ github.event.pull_request.head.sha }}
 
-    - uses: actions/setup-go@f111f3307d8850f501ac008e886eec1fd1932a34  # v5
+    - uses: actions/setup-go@f111f3307d8850f501ac008e886eec1fd1932a34  # v5
       with:
         go-version: stable
 
@@ -37,7 +37,7 @@ jobs:
         working-directory: matrix-tools
         args: -v --show-stats --no-config --modules-download-mode readonly --timeout 5m
 
-    - uses: GoTestTools/gotestfmt-action@8b4478c7019be847373babde9300210e7de34bfb  # v2
+    - uses: GoTestTools/gotestfmt-action@8b4478c7019be847373babde9300210e7de34bfb  # v2
       with:
         token: ${{ secrets.GITHUB_TOKEN }}
 
@@ -73,7 +73,7 @@ jobs:
       if: github.ref_type == 'tag' # Only for GitHub releases
       run: |
         echo "Converting $GITHUB_REF to tags"
-        echo "VERSION=${GITHUB_REF#refs\/tags\/matrix-tools-}" >> $GITHUB_ENV
+        echo "VERSION=${GITHUB_REF#refs\/tags\/matrix-tools-}" >> "$GITHUB_ENV"
 
     - name: Docker meta
       id: meta
@@ -92,7 +92,7 @@ jobs:
           org.opencontainers.image.licenses=AGPL-3.0-only OR LicenseRef-Element-Commercial
 
     - name: Build and Push Image
-      uses: docker/bake-action@4ba453fbc2db7735392b93edf935aaf9b1e8f747  # v6
+      uses: docker/bake-action@4ba453fbc2db7735392b93edf935aaf9b1e8f747  # v6
       with:
         push: "${{ github.ref_type == 'tag' }}"
         files: |
