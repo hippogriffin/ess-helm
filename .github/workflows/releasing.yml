@@ -111,7 +111,7 @@ jobs:
     - name: Calculate versions
       id: versions
       run: |
-        this_version=$(ls charts/matrix-stack/matrix-stack-*.tgz | sed 's/.*matrix-stack-//;s/.tgz//')
+        this_version=$(find charts/matrix-stack -name 'matrix-stack-*.tgz' | sed 's/.*matrix-stack-//;s/.tgz//')
         next_version=$(echo "$this_version" | sed 's/-dev//' | awk -F'[ .]' '{print $1"."$2"."$3+1"-dev"}')
         scripts/set_chart_version.sh "$next_version"
 
