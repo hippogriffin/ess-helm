@@ -247,14 +247,14 @@ tests-mypy = ["mypy (>=1.11.1) ; platform_python_implementation == \"CPython\" a
 
 [[package]]
 name = "bc-detect-secrets"
-version = "1.5.36"
+version = "1.5.37"
 description = "Tool for detecting secrets in the codebase"
 optional = false
 python-versions = ">=3.8"
 groups = ["dev"]
 files = [
-    {file = "bc_detect_secrets-1.5.36-py3-none-any.whl", hash = "sha256:145eef7c26d3defa87364269bc38e5028abf06a8bbdda543e2fb75f70360238a"},
-    {file = "bc_detect_secrets-1.5.36.tar.gz", hash = "sha256:2e1c86e3c22427131d82edd76aa430a205b3258ae810ae44e15844ab5c4c0626"},
+    {file = "bc_detect_secrets-1.5.37-py3-none-any.whl", hash = "sha256:9c4639c7f8e8db0d92e8f118ec99443ffe8ec9747c93735cfe3a5680820c96f6"},
+    {file = "bc_detect_secrets-1.5.37.tar.gz", hash = "sha256:6ad6e7b5caf8b10424dca23a5c4c436ea6f259d485217752b1ba175e58e178f8"},
 ]
 
 [package.dependencies]
@@ -650,14 +650,14 @@ files = [
 
 [[package]]
 name = "checkov"
-version = "3.2.377"
+version = "3.2.386"
 description = "Infrastructure as code static analysis"
 optional = false
 python-versions = ">=3.8"
 groups = ["dev"]
 files = [
-    {file = "checkov-3.2.377-py3-none-any.whl", hash = "sha256:52c80061468c06110548400951f3a60835b002f0b9108f6b0d2e3c495e6a7491"},
-    {file = "checkov-3.2.377.tar.gz", hash = "sha256:c474da763da5b8ce09f099818a8a50d6acb6d3f40876dfc308f57f1fede3b3cc"},
+    {file = "checkov-3.2.386-py3-none-any.whl", hash = "sha256:bdb61571fa1818e39a80581dad63783168632c70b394a64f6ee204df1c3eb4b4"},
+    {file = "checkov-3.2.386.tar.gz", hash = "sha256:939c98ff67a2c16748496bdcd6188a6102eb43a19f9406d898a5341137013ec8"},
 ]
 
 [package.dependencies]
@@ -665,7 +665,7 @@ aiodns = ">=3.0.0,<4.0.0"
 aiohttp = ">=3.8.0,<4.0.0"
 aiomultiprocess = ">=0.9.0,<0.10.0"
 argcomplete = ">=3.0.0,<4.0.0"
-bc-detect-secrets = "1.5.36"
+bc-detect-secrets = "1.5.37"
 bc-jsonpath-ng = "1.6.1"
 bc-python-hcl2 = "0.4.2"
 boto3 = "1.35.49"
@@ -3520,4 +3520,4 @@ type = ["pytest-mypy"]
 [metadata]
 lock-version = "2.1"
 python-versions = ">=3.12,<4.0"
-content-hash = "a377e8d8547b2b3d09a60c3af07c86bec8a08c07754e1ef41db9528fd41b0fc8"
+content-hash = "8ca1811defdcb66b489b81e109f4b6d22381bcd807bc5addd3565c45a4514834"
