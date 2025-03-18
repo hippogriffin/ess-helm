@@ -6,6 +6,42 @@ SPDX-License-Identifier: AGPL-3.0-only OR LicenseRef-Element-Commercial
 
 <!-- towncrier release notes start -->
 
+# ESS Community Helm Chart 0.7.2 (2025-03-18)
+
+### Added
+
+- Added documentation for a quick bootstrap setup. (#210)
+- Add `ingress.controllerType` field to apply automatic behaviours depending on ingress controller. Supports `ingress-nginx` only for now. (#281)
+
+### Changed
+
+- Disable immediate redirect to Matrix Authentication Service in Element Web. (#266)
+- matrix-tools is now a public image. (#267)
+- Update the init-secrets job to use the common Pod spec helper so that its behaviour is consistent with all other components. (#283)
+- Bump matrix-tools to 0.3.1. (#300)
+
+### Fixed
+
+- Avoid to mount unused generated secrets in internal postgres container. (#260)
+- Fix the wrong labels being applied to the Synapse Config Check Hook Job. (#270)
+- Fixing missing type from the Postgres Secret. (#271)
+- README: Fix broken internal links and missing `ess` namespace argument. (#286)
+
+### Internal
+
+- Support running manifest tests with multiple components. (#272)
+- Speed up the manifest test runs. (#273)
+- Manifests tests: handle noqa at the mount key level. (#274)
+- CI: Update kind to 0.27.0. (#275)
+- Enhance helm helper for ingress tls section. (#280)
+- Test that ServiceMonitors aren't created when the ServiceMonitor CRD isn't present in cluster. (#282)
+- CI: Use hash-pinning for third-parties github actions. (#284)
+- Make kubeconform aware of ServiceMonitor CRDs. (#285)
+- Run kubeconform in strict mode to catch additional unexpected properties. (#285)
+- Add linting of our GitHub actions. (#288)
+- Remove orphan GitHub actions runner image. (#289)
+
+
 # ESS Community Helm Chart 0.7.1 (2025-03-07)
 
 ### Fixed
