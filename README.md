@@ -9,86 +9,150 @@ SPDX-License-Identifier: AGPL-3.0-only
 <img alt="GitHub License" src="https://img.shields.io/github/license/element-hq/ess-helm">
 <img alt="GitHub Issues or Pull Requests" src="https://img.shields.io/github/v/release/element-hq/ess-helm">
 <img alt="GitHub Issues or Pull Requests" src="https://img.shields.io/github/issues/element-hq/ess-helm">
-<picture>
-  <source media="(prefers-color-scheme: dark)" srcset="./docs/assets/images/Element-Server-Suite-dark.png">
-  <source media="(prefers-color-scheme: light)" srcset="./docs/assets/images/Element-Server-Suite-light.png">
-  <img alt="ESS">
-</picture>
-<img>
 </p>
-<h1 align="center">The Element Matrix Server Suite for Community </h1>
-
-<p align="center">
-<b>Deploy Element Matrix Chat, with minimal configuration but maximal configurability.</b>
-</p>
-
-## Overview
-
-Element Server Suite Community Edition allows you to deploy an official Element Matrix Stack using the same helm-charts we use for our own production deployments. It allows you to very quickly configure a matrix stack supporting all the latest Matrix Features:
-
-- Element X
-- Next Gen Matrix Authentication
-- Synapse Workers to scale your deployment
 
 <p align="center">
 <picture>
-  <source media="(prefers-color-scheme: dark)" srcset="./docs/assets/images/ESS-Community-dark.png">
-  <source media="(prefers-color-scheme: light)" srcset="./docs/assets/images/ESS-Community-light.png">
-  <img alt="ESS Community Diagram">
+  <source media="(prefers-color-scheme: dark)" srcset="./docs/assets/images/Element-Server-Suite-Community--dark.png">
+  <source media="(prefers-color-scheme: light)" srcset="./docs/assets/images/Element-Server-Suite-Community--light.png">
+  <img alt="Element Server Suite Community" width="544">
 </picture>
 </p>
 
-ESS Community Edition configures the following components automatically. It is possible to enable/disable each on a per-component basis. They can also be customized using dedicated values:
+<h1 align="center">Element Server Suite Community Edition</h1>
 
+<p align="center">
+<b>The official Matrix stack from Element for non-commercial use</b>
+</p>
+
+Element Server Suite Community Edition (ESS Community) allows you to deploy a Matrix stack using the provided Helm charts and a Kubernetes distribution of your choice, even if you don't have Kubernetes knowledge. It is provided for non-commercial community use cases with quality in mind and aims to be as easy to use as possible. ESS Community allows you to very quickly deploy a solid Matrix stack fully supporting Matrix 2.0 and gives you the flexibility to make it your own. Below you will find a quick setup guide that gives you everything needed to set up a basic system with as few steps as possible.
+
+# Editions
+There are three editions of **Element Server Suite**:
+
+
+## ESS Community
+ESS Community is a cutting-edge Matrix distribution including all the latest features of the Matrix server Synapse and other components. It is freely available under the AGPLv3 license and tailored to small-/mid-scale, non-commercial community use cases. It's designed to easily and quickly set up a Matrix deployment. It comprises the basic components needed to get you running and is a great way to get started.
+
+## ESS Pro
+[ESS Pro](https://element.io/server-suite) is the commercial backend distribution from Element. It includes everything in ESS Community plus additional features and services that are tailored to professional environments with more than 100 users up to massive scale in the millions. It is designed to support enterprise requirements in terms of advanced IAM, compliance, scalability, high availability, high density and multi-tenancy. ESS Pro makes use of Synapse Pro to provide infrastructure cost savings and improved user experience under high load. It uses Element’s Secure Border Gateway (SBG) as an application layer firewall to manage federation and to ensure that deployments stay compliant at any time. ESS Pro includes L3 support, Long-term Support (LTS), Advanced Security Advisory and prepares you for the Cyber Resilience Act (CRA).
+
+## ESS TI-M
+ESS TI-M is a special version of ESS Pro focused on the requirements of TI-Messenger Pro and ePA as specified by the German National Digital Health Agency Gematik. It complies with a specific Matrix version and does not make use of experimental features.
+
+# Contents
+
+- [Architecture and components](#architecture-and-components)
+- [Feedback and questions](#feedback-and-questions)
+- [Getting started](#getting-started)
+   - [Resource requirements](#resource-requirements)
+   - [Prerequisites](#prerequisites)
+- [Quick setup](#installation)
+  - [Preparing the environment](#preparing-the-environment)
+    - [DNS](#dns)
+    - [K3S - Kubernetes single node setup](#k3s---kubernetes-single-node-setup)
+    - [Certificates](#certificates)
+        - [Let's Encrypt](#lets-encrypt)
+        - [Certificate File](#certificate-file)
+          - [Wildcard certificate](#wildcard-certificate)
+          - [Individual certificates](#individual-certificates)
+        - [Using an existing reverse proxy](#using-an-existing-reverse-proxy)
+    - [Configuring the database](#configuring-the-database)
+  - [Installation](#installation)
+    - [Setting up the stack](#setting-up-the-stack)
+    - [Creating an initial user](#creating-an-initial-user)
+    - [Verifying the setup](#verifying-the-setup)
+- [Advanced setup](#advanced-setup)
+- [Uninstalling](#uninstalling)
+
+# Architecture and components
+
+<p align="center">
+<picture>
+  <source media="(prefers-color-scheme: dark)" srcset="./docs/assets/images/ESS-Community-architecture--dark.png">
+  <source media="(prefers-color-scheme: light)" srcset="./docs/assets/images/ESS-Community-architecture--light.png">
+  <img alt="ESS Community Diagram" width="676">
+</picture>
+</p>
+
+ESS Community comes with the following components out-of-the box:
+
+- [Synapse](https://github.com/element-hq/synapse): The Matrix server
+- [Matrix Authentication Service](https://github.com/element-hq/matrix-authentication-service): Manages users and handles user authentication.
+- [Element Web](https://github.com/element-hq/element-web): The Matrix Web Client provided by Element.
+- PostgreSQL: An optional packaged PostgreSQL server that allows you to quickly set up the stack out-of-the-box. For a better long-term experience, please consider using a dedicated PostgreSQL server. See the [advanced setup docs](./docs/advanced.md) for more information.
 - HAProxy: Provides the routing to Synapse processes.
-- Synapse: Provides the Matrix homeserver, allowing you to communicate with the full Matrix network.
-- Matrix Authentication Service: Handles the authentication of your users, compatible with Element X.
-- Element Web: The official Matrix Web Client provided by Element.
-- PostgreSQL: A packaged PostgreSQL server. It allows you to quickly set up the stack with Postgres provided. For a better long-term experience, please consider using your own PostgreSQL server installed with your system packages.
+- .well-known delegation: Required for federation and Matrix clients.
 
-The documentation below assumes you are installing on a dedicated server. If you already have a reverse proxy configured (for instance if you share the machine with other services) see the [dedicated section](#set-up-element-server-suite-with-k3s-on-a-server-with-an-existing-reverse-proxy) to configure ESS behind this reverse proxy.
+It is possible to enable/disable each on a per-component basis. They can also be customized using dedicated values.
 
-## Quick Start
+For more details about the architecture, please refer to the [Architecture Documentation](docs/architecture.md).
 
-**This readme is primarily aimed as a simple walkthrough to setup Element Server Suite - Community Edition.
-Users experienced with Helm can refer directly to the chart README at [charts/matrix-stack/README.md](charts/matrix-stack/README.md)**.
+# Feedback and questions
+Element does not provide support for ESS Community but we want to know about your experience and get any suggestions for improvements that you might have. Any contribution helps to further improve the stack and its documentation.
 
-## Resources requirements
+If you have feedback or questions about it, you can
+- Create a ticket in the [issue tracker](https://github.com/element-hq/ess-helm/issues)
+- Join our [ESS Community Matrix room](https://matrix.to/#/#ess-community:element.io)
 
-The quick-setup relies on k3s. It requires at least 2 CPU cores and 2 GB of memory available.
+If you want to suggest changes to the distribution or contribute them yourself, please come and chat to us first in #ess-community:element.io to coordinate.
+
+---
+
+# Getting started
+
+This readme is primarily aimed as a simple walkthrough to setup ESS Community.
+Users experienced with Helm and Kubernetes can refer directly to the chart README at [charts/matrix-stack/README.md](charts/matrix-stack/README.md).
+
+## Resource requirements
+
+The quick setup relies on K3s. It requires at least 2 CPU cores and 2 GB of memory available.
 
 ## Prerequisites
 
-You need to choose what your user's server name is going to be. The server name makes up the latter part of a user's Matrix ID. In the following example Matrix ID, `server-name.tld` is the server name, and should point to your Element Community Edition installation
+You first need to choose what your server name is going to be. The server name makes up the latter part of a user's Matrix ID. In the following example Matrix ID, `server-name.tld` is the server name, and should point to your ESS Community installation:
 
   `@alice:server-name.tld`
 
-**You will not be able to change your server name without resetting your database and losing the server.**
+**It is currently not possible to change your server name without resetting your database and having to recreate the server.**
+
+# Quick setup
+
+Setting up a basic environment involves only **6 steps**:
+
+1. [Setting up DNS entries](#dns)
+2. [Setting up K3s](#k3s---kubernetes-single-node-setup) (or use another Kubernetes distribution)
+3. [Setting up TLS/certificates](#certificates)
+4. [Installing the stack](#installation)
+5. [Creating an initial user](#creating-an-initial-user)
+6. [Verifying the setup](#verifying-the-setup)
+
+The below instructions will guide you through each of the steps.
 
 ## Preparing the environment
 
 ### DNS
 
-You need to create 4 DNS entries to set up Element Server Suite Community Edition. All of these DNS entries must point to your server.
+You need to create DNS entries to set up ESS Community. All of these DNS entries must point to your server's IP.
 
-- Server Name: This DNS entry should point to the installation ingress. It should be the `server-name.tld` you chose above.
-- Synapse: For example `matrix.<server-name.tld>`
-- Matrix Authentication Service: For example `account.<server-name.tld>`
-- Element Web: This will be the address of the chat client of your server. For example `chat.<server-name.tld>`
+- Server name: This DNS entry should point to the installation ingress. It should be the `server-name.tld` you chose above.
+- Synapse: For example, you could use `matrix.<server-name.tld>`.
+- Matrix Authentication Service: For example, you could use `account.<server-name.tld>`.
+- Element Web: This will be the address of the chat client of your server. For example, you could use `chat.<server-name.tld>`.
 
-### K3S \- Kubernetes Single Node
+### K3s - Kubernetes single node setup
 
-This guide suggests using K3S as the Kubernetes Node hosting ESS. Other options are possible, you can have your own Kubernetes cluster already, or use other clusters like [microk8s](https://microk8s.io/). Any Kubernetes distribution is compatible with Element Community Edition, so choose one according to your needs.
+This guide suggests using K3s as the Kubernetes node hosting ESS Community. Other options are possible. You can use an existing Kubernetes cluster, or use other clusters like [microk8s](https://microk8s.io/). Any Kubernetes distribution is compatible with Element Community, so choose one according to your needs.
 
-This will install K3S on the node, and configure its Traefik proxy automatically. If you want to configure K3S behind an existing reverse proxy on the same node, please see the [dedicated section](#set-up-element-server-suite-with-k3s-on-a-server-with-an-existing-reverse-proxy).
+The following will install K3s on the node, and configure its Traefik proxy automatically. If you want to configure K3s behind an existing reverse proxy on the same node, please see the [dedicated section](#using-an-existing-reverse-proxy).
 
-Run the following command to install K3S:
+1. Run the following command to install K3s:
 
 ```
 curl -sfL https://get.k3s.io | sh -
 ```
 
-Once k3s is setup,  copy it’s kubeconfig to your home directory to get access to it:
+2. Once K3s is set up, copy its kubeconfig to your home directory to get access to it:
 
 ```
 mkdir ~/.kube
@@ -97,39 +161,41 @@ sudo k3s kubectl config view --raw > "$KUBECONFIG"
 chmod 600 "$KUBECONFIG"
 ```
 
-Install Helm, the Kubernetes Package Manager. You can use your [OS repository](https://helm.sh/docs/intro/install/) or call the following command:
+3. Add `export KUBECONFIG=~/.kube/config` to `~/.bashrc` to make it persistent
+
+4. Install Helm, the Kubernetes Package Manager. You can use your [OS repository](https://helm.sh/docs/intro/install/) or call the following command:
 
 ```
 curl -fsSL https://raw.githubusercontent.com/helm/helm/main/scripts/get-helm-3 | bash
 ```
 
-Create your Kubernetes Namespace where you will deploy the Element Server Suite Community Edition:
+5. Create your Kubernetes namespace where you will deploy the Element Server Suite Community:
 
 ```
 kubectl create namespace ess
 ```
 
-Create a directory containing your Element Server Suite configuration values:
+6. Create a directory containing your Element Server Suite configuration values:
 
 ```
 mkdir ~/ess-config-values
 ```
 
-### TLS Certificates
+### Certificates
 
-We present here 3 options to set up certificates in Element Server Suite. To configure Element Server Suite behind an existing reverse proxy already serving TLS, you can skip this section.
+We present here 3 options to set up certificates in Element Server Suite. To configure Element Server Suite behind an existing reverse proxy already serving TLS, you can [jump to the end of this section](#using-an-existing-reverse-proxy).
 
-#### Lets Encrypt
+#### Let's Encrypt
 
-To use Let’s Encrypt with ESS Helm, you should use [Cert Manager](https://cert-manager.io/). This is a Kubernetes component which allows you to get certificates issued by an ACME provider. The installation follows the [official manual](https://cert-manager.io/docs/installation/helm/):
+To use Let’s Encrypt with ESS Community, you should use [Cert Manager](https://cert-manager.io/). This is a Kubernetes component which allows you to get certificates issued by an ACME provider. The installation follows the [official manual](https://cert-manager.io/docs/installation/helm/):
 
-Add Helm Jetstack Repository:
+1. Add Helm Jetstack repository:
 
 ```
 helm repo add jetstack https://charts.jetstack.io --force-update
 ```
 
-Install Cert-Manager:
+2. Install Cert-Manager:
 
 ```
 helm install \
@@ -140,7 +206,7 @@ helm install \
   --set crds.enabled=true
 ```
 
-Configure Cert-Manager to allow Element Server Suite Community Edition to request Let’s Encrypt certificates automatically. Create a “ClusterIssuer” resource in your k3s node to do so:
+3. Configure Cert-Manager to allow ESS Community to request Let’s Encrypt certificates automatically. Create a “ClusterIssuer” resource in your K3s node to do so:
 
 ```
 export USER_EMAIL=<your email>
@@ -163,7 +229,7 @@ spec:
 EOF
 ```
 
-In your ess configuration values directory, copy the file `charts/matrix-stack/ci/fragments/quick-setup-letsencrypt.yaml` to `tls.yaml`.
+4. In your ESS configuration values directory, copy the file `charts/matrix-stack/ci/fragments/quick-setup-letsencrypt.yaml` to `tls.yaml`.
 
 #### Certificate File
 
@@ -171,17 +237,17 @@ In your ess configuration values directory, copy the file `charts/matrix-stack/c
 
 If your wildcard certificate covers both the server-name and the hosts of your services, you can use it directly.
 
-Import your certificate file in your namespace using [kubectl](https://kubernetes.io/docs/reference/kubectl/generated/kubectl_create/kubectl_create_secret_tls/):
+1. Import your certificate file in your namespace using [kubectl](https://kubernetes.io/docs/reference/kubectl/generated/kubectl_create/kubectl_create_secret_tls/):
 
 ```
 kubectl create secret tls ess-certificate -n ess --cert=path/to/cert/file --key=path/to/key/file
 ```
 
-In your ess configuration values directory, copy the file `charts/matrix-stack/ci/fragments/quick-setup-wildcard-cert.yaml` to `tls.yaml`. Adjust the TLS Secret name accordingly if needed.
+2. In your ess configuration values directory, copy the file `charts/matrix-stack/ci/fragments/quick-setup-wildcard-cert.yaml` to `tls.yaml`. Adjust the TLS Secret name accordingly if needed.
 
 ##### Individual certificates
 
-If you have a distinct certificate for each of your DNS names, you will need to import each certificate in your namespace using [kubectl](https://kubernetes.io/docs/reference/kubectl/generated/kubectl_create/kubectl_create_secret_tls/):
+1. If you have a distinct certificate for each of your DNS names, you will need to import each certificate in your namespace using [kubectl](https://kubernetes.io/docs/reference/kubectl/generated/kubectl_create/kubectl_create_secret_tls/):
 ```
 kubectl create secret tls ess-chat-certificate -n ess --cert=path/to/cert/file --key=path/to/key/file
 kubectl create secret tls ess-matrix-certificate -n ess --cert=path/to/cert/file --key=path/to/key/file
@@ -189,166 +255,13 @@ kubectl create secret tls ess-auth-certificate -n ess --cert=path/to/cert/file -
 kubectl create secret tls ess-well-known-certificate -n ess --cert=path/to/cert/file --key=path/to/key/file
 ```
 
-In your ess configuration values directory, copy the file `charts/matrix-stack/ci/fragments/quick-setup-certificates.yaml` to `tls.yaml`. Adjust the TLS Secret name accordingly if needed.
+2. In your ess configuration values directory, copy the file `charts/matrix-stack/ci/fragments/quick-setup-certificates.yaml` to `tls.yaml`. Adjust the TLS Secret name accordingly if needed.
 
-### Configuring the database
-
-This is optional but recommended.
-
-You can use the database provided with ESS Community Edition, or use your own PostgreSQL Server. We recommend using a PostgreSQL server installed with your own distribution packages. For a quick set up, feel free to use the included postgres server.
-
-#### Using the internal postgres database
-
-You don't need to do anything. The chart will configure everything automatically for you.
-
-#### Using an existing postgres database
-
-You need to create 2 databases:
-
-- For Synapse [https://element-hq.github.io/synapse/v1.59/postgres.html\#set-up-database](https://element-hq.github.io/synapse/v1.59/postgres.html#set-up-database)
-
-- For MAS [https://element-hq.github.io/matrix-authentication-service/setup/database.html](https://element-hq.github.io/matrix-authentication-service/setup/database.html)
-
-
-To configure your own Postgres Database in your installation, copy the file `charts/matrix-stack/ci/fragments/quick-setup-postgresql.yaml` to `postgresql.yaml` in your ess configuration values directory and configure it accordingly.
-
-## Installation
-
-Element Server Suite installation is performed using Helm Package Manager, which requires configuration of a values file as specified in the Element Server Suite documentation.
-
-#### Quick setup
-
-For a quick setup using the default settings, copy the file from `charts/matrix-stack/ci/fragments/quick-setup-hostnames.yaml` to `hostnames.yaml` in your ess configuration values directory and edit the hostnames accordingly.
-
-Run the setup using the following helm command. This command supports combining multiple values files depending on your setup. Typically you would pass to the command line a combination of:
-
-- If using Lets Encrypt or Certificate Files : `-f ~/ess-config-values/tls.yaml`
-- If using your own PostgreSQL server : `-f ~/ess-config-values/postgresql.yaml`
-
-#### Dev setup (Temporary)
-
-Login helm against ghcr.io:
-
-```
-helm registry login -u <github username> ghcr.io
-```
-
-And continue with standard setup.
-
-#### Standard setup
-
-**Each optional additional values file used needs to be prefixed with `-f `**
-
-```
-helm upgrade --install --namespace "ess" ess oci://ghcr.io/element-hq/ess-helm/matrix-stack -f ~/ess-config-values/hostnames.yaml <optional additional values files to pass> --wait
-```
-
-Wait for the helm command to finish up. ESS is now installed!
-
-#### Create initial user
-
-Element Server Suite Community Edition does not allow user registration by default. To create your initial user, use the “mas-cli manage register-user” command in the Matrix Authentication Service pod :
-
-```
-kubectl exec -n ess -it deploy/ess-matrix-authentication-service -- mas-cli manage register-user
-
-Defaulted container "matrix-authentication-service" out of: matrix-authentication-service, render-config (init), db-wait (init), config (init)
-✔ Username · alice
-User attributes
-    	Username: alice
-   	Matrix ID: @alice:thisservername.tld
-No email address provided, user will be prompted to add one
-No password or upstream provider mapping provided, user will not be able to log in
-
-Non-interactive equivalent to create this user:
-
- mas-cli manage register-user --yes alice
-
-✔ What do you want to do next? (<Esc> to abort) · Set a password
-✔ Password · ********
-User attributes
-    	Username: alice
-   	Matrix ID: @alice:thisservername.tld
-    	Password: ********
-No email address provided, user will be prompted to add one
-
-```
-
-### Verifying the setup
-
-To verify the setup, you should:
-
-* Log into your Element Web client website and log in with the user you created above.
-* Verify that Federation works fine using [Matrix Federation Tester](https://federationtester.matrix.org/).
-* Login with an Element X mobile client with the user you created above.
-* You can use a kubernetes UI client such has [k9s (TUI-Based)](https://k9scli.io/) or [lens (Electron Based)](https://k8slens.dev/) to see your cluster status.
-
-## Configuring Element Server Suite
-
-Element Server Suite Community Edition allows you to configure a lot of values. You will find below the main settings to configure:
-
-#### Configure Element Web client
-
-Element Web configuration is written in JSON. The documentation can be found in the [Element Web repository.](https://github.com/element-hq/element-web/blob/develop/docs/config.md)
-
-To configure Element Web, create a values file with the json config to inject as a string under “additional”:
-
-```
-elementWeb:
-  additional:
-    user-config.json: |
-      {
-        "some": "settings"
-      }
-```
-
-#### Configure Synapse
-
-Synapse configuration is written in YAML. The documentation can be found [here](https://element-hq.github.io/synapse/latest/usage/configuration/config_documentation.html).
-
-```
-synapse:
-  additional:
-    user-config.yaml:
-      config: |
-        # Add your settings below, taking care of the spacing indentation
-        some: settings
-```
-
-#### Configure Matrix Authentication Service
-
-Matrix Authentication Service configuration is written in YAML. The documentation can be found [here](https://element-hq.github.io/matrix-authentication-service/reference/configuration.html).
-
-```
-matrixAuthenticationService:
-  additional:
-    user-config.yaml:
-      config: |
-        # Add your settings below, taking care of the spacing indentation
-        some: settings
-```
-
-## Advanced configuration
-
-### Values documentation
-
- The helm chart values documentation is available in:
-
-- The github repository [values files](https://github.com/element-hq/ess-helm/blob/main/charts/matrix-stack/values.yaml).
-- The chart [README](https://github.com/element-hq/ess-helm/blob/main/charts/matrix-stack/README.md).
-- [Artifacthub.io](https://artifacthub.io/packages/helm/element/matrix-stack).
-
-Configuration samples are available [in the github repository](https://github.com/element-hq/ess-helm/tree/main/charts/matrix-stack/ci).
-
-### Configure storage path when using k3s
-
-`k3s` by default deploys the storage in `/var/lib/rancher/k3s/storage/`. If you want to change the path, you will have to run the k3s setup with the parameter `--default-local-storage-path <your path>`.
-
-### Set up Element Server Suite with k3s on a server with an existing reverse proxy
+#### Using an existing reverse proxy
 
 If your server already has a reverse proxy, ports 80 and 443 will likely be taken.
 
-Use the following command to get the external-ip provisioned by kubernetes for Traefik :
+1. Use the following command to get the external-ip provisioned by Kubernetes for Traefik :
 
 ```
 kubectl get svc/traefik -n kube-system
@@ -357,7 +270,7 @@ traefik   LoadBalancer   10.43.184.49   172.20.1.60   80:32100/TCP,443:30129/TCP
 ```
 
 
-In such a case, you will need to set up K3S with custom ports. Create a file `/var/lib/rancher/k3s/server/manifests/traefik-config.yaml` with the following:
+2. In such a case, you will need to set up K3S with custom ports. Create a file `/var/lib/rancher/k3s/server/manifests/traefik-config.yaml` with the following:
 
 ```
 apiVersion: helm.cattle.io/v1
@@ -378,75 +291,97 @@ spec:
         - `<external IP returned by the command above>`
 ```
 
-k3s will apply the file content automatically. You can verify its ports using the command :
+3. K3s will apply the file content automatically. You can verify its ports using the command :
 
 ```
 kubectl get svc -n kube-system | grep traefik
 traefik          LoadBalancer   10.43.184.49    172.20.1.60   8080:32100/TCP,8443:30129/TCP   5d18h
 ```
 
-Configure your reverse proxy so that the DNS Names you configured are routed to the external IP of traefik on port 8080 (HTTP) and 8443 (HTTPS).
+4. Configure your reverse proxy so that the DNS names you configured are routed to the external IP of traefik on port 8080 (HTTP) and 8443 (HTTPS).
 
-## Maintenance
+### Configuring the database
 
-### Upgrading
+You can either use the database provided with ESS Community or you use a dedicated PostgreSQL Server. We recommend [using a PostgreSQL server](./docs/advanced.md#using-a-dedicated-postgresql-database) installed with your own distribution packages. For a quick set up, feel free to use the internal PostgreSQL database. The chart will configure it automatically for you by default.
 
-In order to upgrade your deployment, you should:
-1. Read the release notes of the new version and check if there are any breaking changes. The file [CHANGELOG.md](./CHANGELOG.md) should be your first stop.
-3. Adjust your values if necessary.
-2. Re-run the install command. It will upgrade your installation to the latest version of the chart.
+## Installation
 
+The ESS Community installation is performed using Helm package manager, which requires configuration of a values file as specified in this documentation.
 
-### Backups & restore
+### Setting up the stack
 
-#### Backups
+For a quick setup using the default settings, copy the file from `charts/matrix-stack/ci/fragments/quick-setup-hostnames.yaml` to `hostnames.yaml` in your ESS configuration values directory and edit the hostnames accordingly.
 
-You need to backup a couple of things to be able to restore your deployment:
+Run the setup using the following helm command. This command supports combining multiple values files depending on your setup. Typically you would pass to the command line a combination of:
 
-1. The database. You need to backup your database and restore it on a new deployment.
-  1. If you are using the provided Postgres database, build a dump using the command `kubectl exec --namespace ess -it sts/ess-postgres -- pg_dumpall -U postgres > dump.sql`. Adjust to your own kubernetes namespace and release name if required.
-  2. If you are using your own Postgres database, please build your backup according to your database documentation.
-2. Your values files used to deploy the chart
-3. The chart will generate some secrets if you do not provide them. To copy them to a local file, you can run the following command: `kubectl get secrets -l "app.kubernetes.io/managed-by=matrix-tools-init-secrets"  -n ess -o yaml > secrets.yaml`. Adjust to your own kubernetes namespace if required.
-4. The media files: Synapse stores media in a persistent volume that should be backed up. On a default `k3s` setup, you can find where synapse media is stored on your node using the command `kubectl get pv -n ess -o yaml | grep synapse-media`.
+- If using Lets Encrypt or Certificate Files : `-f ~/ess-config-values/tls.yaml`
+- If using your own PostgreSQL server : `-f ~/ess-config-values/postgresql.yaml`
 
-#### Restore
+**Each optional additional values file used needs to be prefixed with `-f `**
 
-1. Recreate the namespace and the backed-up secret in step 3: 
 ```
-kubectl create ns ess
-kubectl apply -f secrets.yaml
+helm upgrade --install --namespace "ess" ess oci://ghcr.io/element-hq/ess-helm/matrix-stack -f ~/ess-config-values/hostnames.yaml <optional additional values files to pass> --wait
 ```
-2. Redeploy the chart using the values backed-up in step 2.
-3. Stop Synapse and Matrix Authentication Service workloads:
+
+Wait for the helm command to finish up. ESS Community is now installed!
+
+### Creating an initial user
+
+ESS Community does not allow user registration by default. To create your initial user, use the `mas-cli manage register-user` command in the Matrix Authentication Service pod:
+
 ```
-kubectl scale sts -l "app.kubernetes.io/component=matrix-server" -n ess --replicas=0
-kubectl scale deploy -l "app.kubernetes.io/component=matrix-authentication" -n ess --replicas=0
+kubectl exec -n ess -it deploy/ess-matrix-authentication-service -- mas-cli manage register-user
 ```
-4. Restore the postgres dump. If you are using the provided Postgres database, this can be achieved using the following commands:
+
+This should give you the following output:
+
 ```
-# Drop newly created databases and roles
-kubectl exec -n ess sts/ess-postgres -- psql -U postgres -c 'DROP DATABASE matrixauthenticationservice'
-kubectl exec -n ess sts/ess-postgres -- psql -U postgres -c 'DROP DATABASE synapse'
-kubectl exec -n ess sts/ess-postgres -- psql -U postgres -c 'DROP ROLE synapse_user'
-kubectl exec -n ess sts/ess-postgres -- psql -U postgres -c 'DROP ROLE matrixauthenticationservice_user'
-kubectl cp dump.sql ess-postgres-0:/tmp -n ess
-kubectl exec -n ess sts/ess-postgres -- bash -c "psql -U postgres -d postgres < /tmp/dump.sql"
+Defaulted container "matrix-authentication-service" out of: matrix-authentication-service, render-config (init), db-wait (init), config (init)
+✔ Username · alice
+User attributes
+    	Username: alice
+   	Matrix ID: @alice:thisservername.tld
+No email address provided, user will be prompted to add one
+No password or upstream provider mapping provided, user will not be able to log in
+
+Non-interactive equivalent to create this user:
+
+ mas-cli manage register-user --yes alice
+
+✔ What do you want to do next? (<Esc> to abort) · Set a password
+✔ Password · ********
+User attributes
+    	Username: alice
+   	Matrix ID: @alice:thisservername.tld
+    	Password: ********
+No email address provided, user will be prompted to add one
 ```
-Adjust to your own kubernetes namespace and release name if required.
 
-4. Restore the synapse media files using `kubectl cp` to copy them in Synapse pod. If you are using `k3s`, you can find where the new persistent volume has been mounted with `kubectl get pv -n ess -o yaml | grep synapse-media` and copy your files in the destination path.
-5. Run the `helm upgrade --install....` command again to restore your workload's pods.
+#### Allowing users registration
 
-## Monitoring
+To allow users registration, you will need to configure MAS with SMTP.
+To do so, follow the steps in [Configuring Matrix Authentication Service](./docs/advanced.md#configuring-matrix-authentication-service) to inject additional [email configuration](https://element-hq.github.io/matrix-authentication-service/reference/configuration.html#email).
 
-The chart provides `ServiceMonitor` automatically to monitor the metrics exposed by ESS.
+### Verifying the setup
 
-If your cluster has [Prometheus Operator](https://github.com/prometheus-operator/prometheus-operator) or [Victoria Metrics Operator](https://docs.victoriametrics.com/operator/) installed, the metrics will automatically be scraped.
+To verify the setup, you can:
 
-## Uninstall
+* Log into your Element Web client website and log in with the user you created above.
+* Verify that federation works fine using [Matrix Federation Tester](https://federationtester.matrix.org/).
+* Login with an Element X mobile client with the user you created above.
+* You can use a Kubernetes UI client such has [k9s (TUI-Based)](https://k9scli.io/) or [lens (Electron Based)](https://k8slens.dev/) to see your cluster status.
 
-If you wish to remove ESS from your cluster, you can simply run the following commands to clean up the installation. Please note deleting the `ess` namespace will remove everything within it, including any resources you may have manually created within it:
+# Advanced setup
+
+For advanced setup instructions, please refer to the [Advanced setup](docs/advanced.md) guide.
+
+# Maintenance
+
+For maintenance topics like upgrading, backups and restoring from backups, please refer to the [Maintenance](docs/maintenance.md) guide.
+
+# Uninstalling
+
+If you wish to remove ESS Community from your cluster, you can simply run the following commands to clean up the installation. Please note deleting the `ess` namespace will remove everything within it, including any resources you may have manually created within it:
 
 ```
 helm uninstall ess -n ess
