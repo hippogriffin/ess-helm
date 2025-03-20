@@ -127,33 +127,6 @@ spec:
         resources:
           {{- toYaml . | nindent 10 }}
 {{- end }}
-{{- /* This init container job is kept despite https://github.com/matrix-org/matrix-authentication-service/pull/2432 so as to have --prune */}}
-      - name: config
-        args: ["config", "sync", "--prune"]
-{{- with .image -}}
-{{- if .digest }}
-        image: "{{ .registry }}/{{ .repository }}@{{ .digest }}"
-        imagePullPolicy: {{ .pullPolicy | default "IfNotPresent" }}
-{{- else }}
-        image: "{{ .registry }}/{{ .repository }}:{{ required "matrixAuthenticationService.image.tag is required if no digest" .tag }}"
-        imagePullPolicy: {{ .pullPolicy | default "Always" }}
-{{- end }}
-{{- end }}
-{{- with .containersSecurityContext }}
-        securityContext:
-          {{- toYaml . | nindent 10 }}
-{{- end }}
-        env:
-        {{- include "element-io.matrix-authentication-service.env" (dict "root" $ "context" .) | nindent 10 }}
-{{- with .resources }}
-        resources:
-          {{- toYaml . | nindent 10 }}
-{{- end }}
-        volumeMounts:
-        - mountPath: "/config.yaml"
-          name: rendered-config
-          subPath: config.yaml
-          readOnly: true
       containers:
       - name: matrix-authentication-service
         args: ["server"]
