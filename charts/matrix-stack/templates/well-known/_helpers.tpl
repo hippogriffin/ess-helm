@@ -47,6 +47,7 @@ k8s.element.io/target-instance: {{ $root.Release.Name }}-haproxy
 {{- $_ := set $config "org.matrix.msc2965.authentication" $msc2965 -}}
 {{- end -}}
 {{- end -}}
+{{- $_ := set $config "org.matrix.msc4143.rtc_foci" (list (dict "type" "livekit" "livekit_service_url" "https://livekit-jwt.call.element.io")) -}}
 {{- $additional := .additional.client | fromJson -}}
 {{- tpl (toPrettyJson (merge $config $additional)) $root -}}
 {{- end -}}
