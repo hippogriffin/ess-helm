@@ -22,7 +22,7 @@ jobs:
       with:
         ref: ${{ github.event.pull_request.head.sha }}
 
-    - uses: matrix-org/setup-python-poetry@gaelg/poetry-venv
+    - uses: matrix-org/setup-python-poetry@a82e526ebef97ec2d5000e220beb07aaadfda595  # v1
       with:
         python-version: "3.x"
         poetry-version: "1.8.5"
@@ -62,7 +62,7 @@ jobs:
         git config --global --add safe.directory "$GITHUB_WORKSPACE"
         bash scripts/ct-lint.sh --config ct.yaml
 
-    - uses: matrix-org/setup-python-poetry@gaelg/poetry-venv
+    - uses: matrix-org/setup-python-poetry@a82e526ebef97ec2d5000e220beb07aaadfda595  # v1
       with:
         poetry-version: "1.8.5"
         python-version: "3.x"
