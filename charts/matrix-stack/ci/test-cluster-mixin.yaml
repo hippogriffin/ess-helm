@@ -1,6 +1,6 @@
 # Copyright 2024 New Vector Ltd
 #
-# SPDX-License-Identifier: AGPL-3.0-only OR LicenseRef-Element-Commercial
+# SPDX-License-Identifier: AGPL-3.0-only
 
 # This value file is not complete on its own.
 # It is a mixin to be used with other values file to enable

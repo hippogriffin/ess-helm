@@ -2,7 +2,7 @@
 
 # Copyright 2025 New Vector Ltd
 #
-# SPDX-License-Identifier: AGPL-3.0-only OR LicenseRef-Element-Commercial
+# SPDX-License-Identifier: AGPL-3.0-only
 
 set -euo pipefail
 
@@ -48,7 +48,7 @@ for values_file in "$values_file_root"/*-values.yaml; do
   echo "Generating $values_file from $source_fragments";
   echo "" > "$values_file"
   # REUSE-IgnoreStart
-  reuse annotate --copyright="Copyright 2024-$(date +%Y) New Vector Ltd" --license "AGPL-3.0-only OR LicenseRef-Element-Commercial" "$values_file"
+  reuse annotate --copyright="Copyright 2024-$(date +%Y) New Vector Ltd" --license "AGPL-3.0-only" "$values_file"
   # REUSE-IgnoreEnd
 
   cat << EOF >> "$values_file"
