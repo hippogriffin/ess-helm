@@ -1,6 +1,6 @@
 # Copyright 2024-2025 New Vector Ltd
 #
-# SPDX-License-Identifier: AGPL-3.0-only OR LicenseRef-Element-Commercial
+# SPDX-License-Identifier: AGPL-3.0-only
 #
 # source_fragments: synapse-minimal.yaml synapse-ingress-additional-paths.yaml init-secrets-minimal.yaml postgres-minimal.yaml
 # DO NOT EDIT DIRECTLY. Edit the fragment files to add / modify / remove values

@@ -1,6 +1,6 @@
 # Copyright 2025 New Vector Ltd
 #
-# SPDX-License-Identifier: AGPL-3.0-only OR LicenseRef-Element-Commercial
+# SPDX-License-Identifier: AGPL-3.0-only
 
 name: Build matrix-tool Docker Images
 
@@ -87,9 +87,9 @@ jobs:
           type=raw,value=${{ env.VERSION }},enable=${{ github.ref_type == 'tag' }}
           type=sha,prefix=sha-,format=short
         labels: |
-          org.opencontainers.image.licenses=AGPL-3.0-only OR LicenseRef-Element-Commercial
+          org.opencontainers.image.licenses=AGPL-3.0-only
         annotations: |
-          org.opencontainers.image.licenses=AGPL-3.0-only OR LicenseRef-Element-Commercial
+          org.opencontainers.image.licenses=AGPL-3.0-only
 
     - name: Build and Push Image
       uses: docker/bake-action@4ba453fbc2db7735392b93edf935aaf9b1e8f747  # v6

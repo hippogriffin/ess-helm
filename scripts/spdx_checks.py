@@ -2,7 +2,7 @@
 
 # Copyright 2025 New Vector Ltd
 #
-# SPDX-License-Identifier: AGPL-3.0-only OR LicenseRef-Element-Commercial
+# SPDX-License-Identifier: AGPL-3.0-only
 
 import re
 import sys
@@ -20,11 +20,11 @@ def run_spdx_checks(input_file: Annotated[typer.FileText, typer.Argument()] = sy
     failure_messages = []
     for file in document.files:
         textual_licenses = [license.render() for license in file.license_info_in_file]
-        if len(textual_licenses) != 2:
-            failure_messages.append(f"{file.name} should have exactly 2 licenses. It has {', '.join(textual_licenses)}")
+        if len(textual_licenses) != 1:
+            failure_messages.append(f"{file.name} should have exactly 1 license. It has {', '.join(textual_licenses)}")
             continue
 
-        if set(["AGPL-3.0-only", "LicenseRef-Element-Commercial"]) != set(textual_licenses):
+        if set(["AGPL-3.0-only"]) != set(textual_licenses):
             failure_messages.append(f"{file.name} has an unexpected licenses. It has {', '.join(textual_licenses)}")
 
         # REUSE-IgnoreStart

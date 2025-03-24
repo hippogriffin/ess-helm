@@ -1,7 +1,7 @@
 {{- /*
 Copyright 2024-2025 New Vector Ltd
 
-SPDX-License-Identifier: AGPL-3.0-only OR LicenseRef-Element-Commercial
+SPDX-License-Identifier: AGPL-3.0-only
 */ -}}
 
 {{- /* Returns the value (or nill) encoded as JSON at the given dot seperated path in the values file */ -}}

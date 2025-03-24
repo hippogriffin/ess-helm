@@ -1,6 +1,6 @@
 # Copyright 2024 New Vector Ltd
 #
-# SPDX-License-Identifier: AGPL-3.0-only OR LicenseRef-Element-Commercial
+# SPDX-License-Identifier: AGPL-3.0-only
 
 from .ca import ca, ssl_context
 from .cluster import cluster, ess_namespace, helm_client, ingress, kube_client, prometheus_operator_crds, registry

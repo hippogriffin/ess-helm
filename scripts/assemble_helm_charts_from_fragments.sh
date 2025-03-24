@@ -2,7 +2,7 @@
 
 # Copyright 2024-2025 New Vector Ltd
 #
-# SPDX-License-Identifier: AGPL-3.0-only OR LicenseRef-Element-Commercial
+# SPDX-License-Identifier: AGPL-3.0-only
 
 set -euo pipefail
 
@@ -23,7 +23,7 @@ function assemble_helm_chart_from_fragments() {
   "$scripts_dir/construct_helm_schema.py" "$chart_dir/source/values.schema.json" "$chart_dir/values.schema.json"
   "$scripts_dir/construct_helm_values.py" "$chart_dir/source/values.yaml.j2" "$chart_dir/values.yaml"
   # REUSE-IgnoreStart
-  reuse annotate --copyright="Copyright 2024-$(date +%Y) New Vector Ltd" --license "AGPL-3.0-only OR LicenseRef-Element-Commercial" "$chart_dir/values.yaml"
+  reuse annotate --copyright="Copyright 2024-$(date +%Y) New Vector Ltd" --license "AGPL-3.0-only" "$chart_dir/values.yaml"
   # REUSE-IgnoreEnd
 }
 
