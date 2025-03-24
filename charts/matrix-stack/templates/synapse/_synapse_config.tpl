@@ -107,9 +107,25 @@ experimental_features:
     client_id: 0000000000000000000SYNAPSE
     client_auth_method: client_secret_basic
     # client.<client_id> in the MAS secret
-    client_secret: ${MAS_OIDC_CLIENT_SECRET}
+    client_secret_path: /secrets/{{
+      include "element-io.ess-library.init-secret-path" (
+        dict "root" $root "context" (dict
+          "secretPath" "matrixAuthenticationService.synapseOIDCClientSecret"
+          "initSecretKey" "MAS_SYNAPSE_OIDC_CLIENT_SECRET"
+          "defaultSecretName" (printf "%s-matrix-authentication-service" $root.Release.Name)
+          "defaultSecretKey" "SYNAPSE_OIDC_CLIENT_SECRET"
+        )
+      ) }}
     # serverSecret in the MAS secret
-    admin_token: ${MAS_SHARED_SECRET}
+    admin_token_path: /secrets/{{
+      include "element-io.ess-library.init-secret-path" (
+        dict "root" $root "context" (dict
+          "secretPath" "matrixAuthenticationService.synapseSharedSecret"
+          "initSecretKey" "MAS_SYNAPSE_SHARED_SECRET"
+          "defaultSecretName" (printf "%s-matrix-authentication-service" $root.Release.Name)
+          "defaultSecretKey" "SYNAPSE_SHARED_SECRET"
+          )
+      ) }}
     introspection_endpoint: "http://{{ $root.Release.Name }}-matrix-authentication-service.{{ $root.Release.Namespace }}.svc.cluster.local:8080/oauth2/introspect"
 
   # QR Code Login. Requires MAS
