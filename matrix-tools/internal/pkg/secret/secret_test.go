@@ -157,7 +157,7 @@ func TestGenerateSecret(t *testing.T) {
 					t.Errorf("Expected key to be set in the secret")
 				}
 
-				labels := secret.ObjectMeta.Labels
+				labels := secret.Labels
 				if tc.secretData == nil {
 					if !reflect.DeepEqual(labels, tc.secretLabels) {
 						t.Fatalf("The secret has been created without the labels: %v", labels)

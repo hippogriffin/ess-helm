@@ -37,7 +37,7 @@ func GenerateSecret(client kubernetes.Interface, secretLabels map[string]string,
 			return fmt.Errorf("failed to initialize secret: %w", err)
 		}
 	} else {
-		if managedBy, ok := existingSecret.ObjectMeta.Labels["app.kubernetes.io/managed-by"]; ok {
+		if managedBy, ok := existingSecret.Labels["app.kubernetes.io/managed-by"]; ok {
 			if managedBy != "matrix-tools-init-secrets" {
 				return fmt.Errorf("secret %s/%s is not managed by this matrix-tools-init-secrets", namespace, name)
 			}
@@ -45,7 +45,7 @@ func GenerateSecret(client kubernetes.Interface, secretLabels map[string]string,
 			return fmt.Errorf("secret %s/%s is not managed by this matrix-tools-init-secrets", namespace, name)
 		}
 		// Make sure the labels are set correctly
-		existingSecret.ObjectMeta.Labels = secretLabels
+		existingSecret.Labels = secretLabels
 	}
 
 	// Add or update the key in the data

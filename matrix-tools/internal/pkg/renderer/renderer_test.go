@@ -166,7 +166,9 @@ anotherKey:
 				t.Errorf("expected: %v, got: %v", tc.expected, result)
 			}
 			for k := range tc.env {
-				os.Unsetenv(k)
+				if err := os.Unsetenv(k); err != nil {
+					t.Errorf("Failed to unset environment variable %s: %v", k, err)
+				}
 			}
 		})
 	}

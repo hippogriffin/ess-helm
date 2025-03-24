@@ -7,6 +7,7 @@ package tcpwait
 import (
 	"fmt"
 	"net"
+	"os"
 	"time"
 )
 
@@ -18,7 +19,12 @@ func WaitForTCP(address string) {
 		if err != nil {
 			time.Sleep(time.Second)
 		} else {
-			defer conn.Close()
+			defer func() {
+        if err = conn.Close(); err != nil {
+					fmt.Println(err)
+					os.Exit(1)
+				}
+    }()
 			break
 		}
 	}

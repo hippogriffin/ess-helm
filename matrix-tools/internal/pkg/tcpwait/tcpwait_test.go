@@ -5,6 +5,7 @@
 package tcpwait
 
 import (
+	"fmt"
 	"net"
 	"testing"
 )
@@ -16,7 +17,11 @@ func TestTCPWait(t *testing.T) {
 	if err != nil {
 		t.Fatalf("Failed to start listener: %v", err)
 	}
-	defer listener.Close()
+	defer func() {
+		if err = listener.Close(); err != nil {
+			t.Fatalf("Failed to close listener: %v", err)
+		}
+	}()
 
 	// Get the address of the local TCP server
 	serverAddr := listener.Addr().String()
@@ -28,7 +33,11 @@ func TestTCPWait(t *testing.T) {
 			t.Errorf("Accept error: %v", err)
 			return
 		}
-		defer conn.Close()
+		defer func() {
+			if err = conn.Close(); err != nil {
+				fmt.Printf("Close error: %v", err)
+			}
+		}()
 	}()
 
 	// Call the tcpwait function with the server address and timeout
