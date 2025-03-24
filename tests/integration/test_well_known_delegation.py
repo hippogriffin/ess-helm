@@ -22,7 +22,11 @@ async def test_well_known_files_can_be_accessed(
     if value_file_has("synapse.enabled", True):
         assert "m.homeserver" in json_content
     else:
-        assert json_content == {}
+        assert json_content == {
+            "org.matrix.msc4143.rtc_foci": [
+                {"type": "livekit", "livekit_service_url": "https://livekit-jwt.call.element.io"}
+            ]
+        }
 
     json_content = await aiottp_get_json(f"https://{generated_data.server_name}/.well-known/matrix/server", ssl_context)
     if value_file_has("synapse.enabled", True):
