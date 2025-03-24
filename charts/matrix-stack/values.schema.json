@@ -2776,6 +2776,12 @@
           },
           "additionalProperties": false
         },
+        "extraArgs": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
         "ingress": {
           "type": "object",
           "properties": {

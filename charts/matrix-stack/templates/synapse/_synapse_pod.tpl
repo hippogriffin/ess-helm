@@ -149,6 +149,9 @@ We have an init container to render & merge the config for several reasons:
       - {{ include "element-io.synapse.process.app" (dict "root" $root "context" $processType) }}
       - "-c"
       - /conf/homeserver.yaml
+{{- range .extraArgs }}
+      - {{ . | quote }}
+{{- end }}
       env:
         {{- include "element-io.synapse.pythonEnv" (dict "root" $root "context" .) | nindent 8 }}
         {{- include "element-io.synapse.env" (dict "root" $root "context" .) | nindent 8 }}

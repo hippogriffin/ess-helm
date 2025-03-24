@@ -93,6 +93,9 @@ logging:
 {{- sub_schema_values.tolerations() }}
 {{- sub_schema_values.topologySpreadConstraints() }}
 
+## Extra command line arguments to provide to Synapse
+extraArgs: []
+
 redis:
 {{- sub_schema_values.image(registry='docker.io', repository='library/redis', tag='7.4-alpine') | indent(2) }}
 {{- sub_schema_values.labels() | indent(2) }}

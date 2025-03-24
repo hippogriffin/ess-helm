@@ -89,6 +89,12 @@
         }
       }
     },
+    "extraArgs": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    },
     "ingress": {
       "$ref": "file://synapse/ingress_with_additional_paths.json"
     },
