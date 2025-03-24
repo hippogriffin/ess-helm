@@ -1681,6 +1681,9 @@ synapse:
   ##   # whenUnsatisfiable: DoNotSchedule/ScheduleAnyway
   topologySpreadConstraints: []
 
+  ## Extra command line arguments to provide to Synapse
+  extraArgs: []
+
   redis:
     # Details of the image to be used
     image:

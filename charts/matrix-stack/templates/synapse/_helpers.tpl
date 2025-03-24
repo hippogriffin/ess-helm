@@ -163,38 +163,6 @@ app.kubernetes.io/version: {{ .image.tag }}
           )
         )
     }}
-{{- if $root.Values.matrixAuthenticationService.enabled }}
-- name: MAS_SHARED_SECRET
-  value: >-
-    {{
-    printf "{{ readfile \"/secrets/%s\" | quote }}" (
-        include "element-io.ess-library.init-secret-path" (
-            dict "root" $root
-            "context" (dict
-              "secretPath" "matrixAuthenticationService.synapseSharedSecret"
-              "initSecretKey" "MAS_SYNAPSE_SHARED_SECRET"
-              "defaultSecretName" (printf "%s-matrix-authentication-service" $root.Release.Name)
-              "defaultSecretKey" "SYNAPSE_SHARED_SECRET"
-            )
-        )
-      )
-    }}
-- name: MAS_OIDC_CLIENT_SECRET
-  value: >-
-    {{
-      printf "{{ readfile \"/secrets/%s\" | quote }}" (
-        include "element-io.ess-library.init-secret-path" (
-            dict "root" $root
-            "context" (dict
-              "secretPath" "matrixAuthenticationService.synapseOIDCClientSecret"
-              "initSecretKey" "MAS_SYNAPSE_OIDC_CLIENT_SECRET"
-              "defaultSecretName" (printf "%s-matrix-authentication-service" $root.Release.Name)
-              "defaultSecretKey" "SYNAPSE_OIDC_CLIENT_SECRET"
-            )
-          )
-        )
-    }}
-{{- end }}
 - name: APPLICATION_NAME
   value: >-
     {{ printf "{{ hostname | replace \"-synapse-\" \"\" }}" }}
