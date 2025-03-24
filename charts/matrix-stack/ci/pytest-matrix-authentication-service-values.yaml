@@ -36,6 +36,9 @@ synapse:
   checkConfigHook:
     annotations:
       has-no-service-monitor: "true"
+  extraArgs:
+    # Validate that any Synapse config that has a <foo>_path equivalent uses it
+    - --no-secrets-in-config
   ingress:
     host: synapse.{{ $.Values.serverName }}
     tlsSecret: '{{ $.Release.Name }}-synapse-web-tls'

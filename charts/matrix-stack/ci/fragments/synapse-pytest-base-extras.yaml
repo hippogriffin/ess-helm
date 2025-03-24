@@ -21,6 +21,10 @@ synapse:
   podSecurityContext:
     runAsGroup: 0
 
+  extraArgs:
+  # Validate that any Synapse config that has a <foo>_path equivalent uses it
+  - --no-secrets-in-config
+
 haproxy:
   podSecurityContext:
     runAsGroup: 0
