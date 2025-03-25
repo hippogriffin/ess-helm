@@ -58,7 +58,7 @@ func readfile(path string) (string, error) {
 }
 
 func replace(old, new, src string) string {
-	return strings.Replace(src, old, new, -1)
+	return strings.ReplaceAll(src, old, new)
 }
 
 func quote(src string) string {
@@ -126,7 +126,7 @@ func RenderConfig(sourceConfigs []io.Reader) (map[string]any, error) {
 			if os.Getenv("DEBUG_RENDERING") == "1" {
 				fmt.Println(string(fileContent))
 			}
-			return nil, fmt.Errorf("Post-processed YAML is invalid: %v", err)
+			return nil, fmt.Errorf("post-processed yaml is invalid: %v", err)
 		}
 
 		if err := deepMergeMaps(data, output); err != nil {
