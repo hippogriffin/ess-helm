@@ -24,7 +24,7 @@ def find_news_fragments(root_dir):
                         "kind": kind,
                     }
                 )
-    kind_order = ["added", "changed", "removed", "fixed", "security"]
+    kind_order = ["added", "changed", "deprecated", "removed", "fixed", "security"]
     # We order the list by kind and description alphabetically
     new_fragments.sort(key=lambda x: str(kind_order.index(x["kind"])) + x["description"])
     return new_fragments
