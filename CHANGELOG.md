@@ -6,6 +6,32 @@ SPDX-License-Identifier: AGPL-3.0-only
 
 <!-- towncrier release notes start -->
 
+# ESS Community Helm Chart 0.7.3 (2025-03-25)
+
+### Added
+
+- Configure well-known to use Element LiveKit by default. (#306)
+
+### Changed
+
+- Upgrade to Synapse 1.126.0. (#302)
+- Update file licenses to prepare for public release. (#304)
+- Matrix Authentication Service does not need to prune database anymore, OIDC providers are being disabled instead. (#307)
+- Make it possible to provide additional command line arguments to Synapse. (#309)
+- Have Synapse load Matrix Authentication Service shared secrets from files. (#309)
+- Update matrix-tools to 0.3.2. (#322)
+
+### Fixed
+
+- matrix-tools: Various internal fixes after upgrading linter. (#323)
+
+### Internal
+
+- Don't automatically trust matrix-org or element-hq GitHub actions. (#308)
+- Validate the chart uses path options in Synapse where possible. (#309)
+- Group minor version and patch version dependabot updates. (#319)
+
+
 # ESS Community Helm Chart 0.7.2 (2025-03-18)
 
 ### Added
