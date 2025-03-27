@@ -6,6 +6,21 @@ SPDX-License-Identifier: AGPL-3.0-only
 
 <!-- towncrier release notes start -->
 
+# ESS Community Helm Chart 0.8.0 (2025-03-27)
+
+### Changed
+
+- Upgrade Element Web to 1.11.96. (#329)
+
+### Fixed
+
+- Fixed Helm template for Synapse deployment not properly configuring appservice registration file path. (#326)
+
+### Security
+
+- Synapse: Update to v1.127.1 for CVE-2025-30355 fix. (#328)
+
+
 # ESS Community Helm Chart 0.7.3 (2025-03-25)
 
 ### Added
