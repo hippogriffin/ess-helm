@@ -146,7 +146,8 @@ app_service_config_files:
 {{- if .registrationFileConfigMap }}
  - /as/{{ .registrationFileConfigMap }}/registration.yaml
 {{- else }}
- - /secrets/{{ .secret }}/{{ .secretKey }}
+ - /secrets/{{ tpl .secret $root }}/{{ .secretKey }}
+{{- end }}
 {{- end }}
 {{- end }}
 

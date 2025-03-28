@@ -21,7 +21,11 @@ template:
       k8s.element.io/confighash: "{{ include (print $root.Template.BasePath "/synapse/synapse_secret.yaml") $root | sha1sum }}"
       k8s.element.io/logconfighash: "{{ include (print $root.Template.BasePath "/synapse/synapse_configmap.yaml") $root | sha1sum }}"
 {{- range $index, $appservice := .appservices }}
+{{- if .registrationFileConfigMap }}
       k8s.element.io/as-registration-{{ $index }}-hash: "{{ (lookup "v1" "ConfigMap" $root.Release.Namespace $appservice.registrationFileConfigMap) | toJson | sha1sum }}"
+{{- else }}
+      k8s.element.io/as-registration-{{ $index }}-hash: "{{ (lookup "v1" "Secret" $root.Release.Namespace $appservice.secret) | toJson | sha1sum }}"
+{{- end }}
 {{- end }}
       {{ include "element-io.ess-library.postgres-label" (dict "root" $root "context" (dict
                                                               "essPassword" "synapse"
@@ -208,10 +212,12 @@ We have an init container to render & merge the config for several reasons:
         readOnly: true
 {{- end }}
 {{- range $appservice := .appservices }}
-      - name: {{ tpl $appservice.registrationFileConfigMap $root }}
-        mountPath: /as/{{ tpl $appservice.registrationFileConfigMap $root }}/registration.yaml
+{{- with $appservice.registrationFileConfigMap }}
+      - name: {{ tpl . $root }}
+        mountPath: /as/{{ tpl . $root }}/registration.yaml
         readOnly: true
         subPath: registration.yaml
+{{- end -}}
 {{- end }}
       - mountPath: /conf/log_config.yaml
         name: plain-config
@@ -240,10 +246,12 @@ We have an init container to render & merge the config for several reasons:
         medium: Memory
       name: "rendered-config"
 {{- range $appservice := .appservices }}
+{{- with $appservice.registrationFileConfigMap }}
     - configMap:
         defaultMode: 420
-        name: "{{ tpl $appservice.registrationFileConfigMap $root }}"
-      name: {{ tpl $appservice.registrationFileConfigMap $root }}
+        name: "{{ tpl . $root }}"
+      name: {{ tpl . $root }}
+{{- end }}
 {{- end }}
 {{- if (include "element-io.synapse.process.responsibleForMedia" (dict "root" $root "context" (dict "processType" $processType "enabledWorkerTypes" (keys $enabledWorkers)))) }}
     - persistentVolumeClaim:

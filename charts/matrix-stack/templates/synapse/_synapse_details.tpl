@@ -178,13 +178,9 @@ responsibleForMedia
 {{- end }}
 {{- end }}
 {{- end }}
-{{- with .appservices }}
-{{- range $key := (. | keys | uniq | sortAlpha) -}}
-{{- $prop := index $root.Values.synapse.appservices $key }}
+{{- range .appservices }}
 {{- if and .secret .secretKey }}
-{{ $configSecrets = append $configSecrets (tpl $prop.secret $root) }}
- - /as/{{ .registrationFileConfigMap }}/registration.yaml
-{{- end }}
+{{ $configSecrets = append $configSecrets (tpl .secret $root) }}
 {{- end }}
 {{- end }}
 {{ $configSecrets | uniq | toJson }}

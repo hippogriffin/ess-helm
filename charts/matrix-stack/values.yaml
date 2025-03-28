@@ -1303,6 +1303,8 @@ synapse:
   ## e.g.
   ## appservices:
   ## - registrationFileConfigMap: test-appservice
+  ## - secret: test-appservice
+  ##   secretKey: registration.yaml
   appservices: []
 
   ## Additional Synapse processes managed by this chart
