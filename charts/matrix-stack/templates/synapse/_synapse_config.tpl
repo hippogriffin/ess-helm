@@ -142,11 +142,11 @@ notify_appservices_from_worker: appservice-0
 
 {{- with .appservices }}
 app_service_config_files:
-{{- range $appservice := . }}
+{{- range $idx, $appservice := . }}
 {{- if $appservice.configMap }}
- - /as/{{ tpl $appservice.configMap $root }}/{{ $appservice.configMapKey }}
+ - /as/{{ $idx }}/{{ $appservice.configMapKey }}
 {{- else }}
- - /as/{{ tpl $appservice.secret $root }}/{{ $appservice.secretKey }}
+ - /as/{{ $idx }}/{{ $appservice.secretKey }}
 {{- end }}
 {{- end }}
 {{- end }}

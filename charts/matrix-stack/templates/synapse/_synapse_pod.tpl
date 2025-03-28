@@ -214,12 +214,12 @@ We have an init container to render & merge the config for several reasons:
 {{- range $idx, $appservice := .appservices }}
       - name: as-{{ $idx }}
         readOnly: true
-{{- with $appservice.configMap }}
-        mountPath: "/as/{{ tpl . $root }}/{{ $appservice.configMapKey }}"
+{{- if $appservice.configMap }}
+        mountPath: "/as/{{ $idx }}/{{ $appservice.configMapKey }}"
         subPath: {{ $appservice.configMapKey | quote }}
 {{- end -}}
-{{- with $appservice.secret }}
-        mountPath: "/as/{{ tpl . $root }}/{{ $appservice.secretKey }}"
+{{- if $appservice.secret }}
+        mountPath: "/as/{{ $idx }}/{{ $appservice.secretKey }}"
         subPath: {{ $appservice.secretKey | quote }}
 {{- end -}}
 {{- end }}
