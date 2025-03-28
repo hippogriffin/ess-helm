@@ -142,8 +142,12 @@ notify_appservices_from_worker: appservice-0
 
 {{- with .appservices }}
 app_service_config_files:
-{{- range $appservice := . }}
- - /as/{{ .registrationFileConfigMap }}/registration.yaml
+{{- range $idx, $appservice := . }}
+{{- if $appservice.configMap }}
+ - /as/{{ $idx }}/{{ $appservice.configMapKey }}
+{{- else }}
+ - /as/{{ $idx }}/{{ $appservice.secretKey }}
+{{- end }}
 {{- end }}
 {{- end }}
 

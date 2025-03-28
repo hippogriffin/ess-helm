@@ -22,7 +22,11 @@ metadata:
     k8s.element.io/confighash: "{{ include (print $.Template.BasePath "/synapse/synapse_secret.yaml") $ | sha1sum }}"
     k8s.element.io/logconfighash: "{{ include (print $.Template.BasePath "/synapse/synapse_configmap.yaml") $ | sha1sum }}"
 {{- range $index, $appservice := .appservices }}
-    k8s.element.io/as-registration-{{ $index }}-hash: "{{ (lookup "v1" "ConfigMap" $.Release.Namespace $appservice.registrationFileConfigMap) | toJson | sha1sum }}"
+{{- if .configMap }}
+    k8s.element.io/as-registration-{{ $index }}-hash: "{{ (lookup "v1" "ConfigMap" $.Release.Namespace (tpl $appservice.configMap $)) | toJson | sha1sum }}"
+{{- else }}
+    k8s.element.io/as-registration-{{ $index }}-hash: "{{ (lookup "v1" "Secret" $.Release.Namespace (tpl $appservice.secret $)) | toJson | sha1sum }}"
+{{- end }}
 {{- end }}
   name: {{ $.Release.Name }}-synapse-{{ $processType }}
   namespace: {{ $.Release.Namespace }}

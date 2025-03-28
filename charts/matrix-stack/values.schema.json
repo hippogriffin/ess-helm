@@ -2739,8 +2739,43 @@
           "type": "array",
           "items": {
             "type": "object",
+            "oneOf": [
+              {
+                "required": [
+                  "configMap",
+                  "configMapKey"
+                ],
+                "not": {
+                  "required": [
+                    "secret",
+                    "secretKey"
+                  ]
+                }
+              },
+              {
+                "required": [
+                  "secret",
+                  "secretKey"
+                ],
+                "not": {
+                  "required": [
+                    "configMap",
+                    "configMapKey"
+                  ]
+                }
+              }
+            ],
             "properties": {
-              "registrationFileConfigMap": {
+              "configMap": {
+                "type": "string"
+              },
+              "configMapKey": {
+                "type": "string"
+              },
+              "secret": {
+                "type": "string"
+              },
+              "secretKey": {
                 "type": "string"
               }
             },

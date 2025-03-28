@@ -36,7 +36,10 @@ media:
 ## Details of Application Service registration files to give to Synapse
 ## e.g.
 ## appservices:
-## - registrationFileConfigMap: test-appservice
+## - configMap: test-appservice
+##   configMapKey: registration.yaml
+## - secret: test-appservice
+##   secretKey: registration.yaml
 appservices: []
 
 ## Additional Synapse processes managed by this chart

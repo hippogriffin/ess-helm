@@ -21,7 +21,11 @@ template:
       k8s.element.io/confighash: "{{ include (print $root.Template.BasePath "/synapse/synapse_secret.yaml") $root | sha1sum }}"
       k8s.element.io/logconfighash: "{{ include (print $root.Template.BasePath "/synapse/synapse_configmap.yaml") $root | sha1sum }}"
 {{- range $index, $appservice := .appservices }}
-      k8s.element.io/as-registration-{{ $index }}-hash: "{{ (lookup "v1" "ConfigMap" $root.Release.Namespace $appservice.registrationFileConfigMap) | toJson | sha1sum }}"
+{{- if .configMap }}
+      k8s.element.io/as-registration-{{ $index }}-hash: "{{ (lookup "v1" "ConfigMap" $root.Release.Namespace (tpl $appservice.configMap $root)) | toJson | sha1sum }}"
+{{- else }}
+      k8s.element.io/as-registration-{{ $index }}-hash: "{{ (lookup "v1" "Secret" $root.Release.Namespace (tpl $appservice.secret $root)) | toJson | sha1sum }}"
+{{- end }}
 {{- end }}
       {{ include "element-io.ess-library.postgres-label" (dict "root" $root "context" (dict
                                                               "essPassword" "synapse"
@@ -207,11 +211,17 @@ We have an init container to render & merge the config for several reasons:
         name: "secret-{{ tpl $secret $root }}"
         readOnly: true
 {{- end }}
-{{- range $appservice := .appservices }}
-      - name: {{ tpl $appservice.registrationFileConfigMap $root }}
-        mountPath: /as/{{ tpl $appservice.registrationFileConfigMap $root }}/registration.yaml
+{{- range $idx, $appservice := .appservices }}
+      - name: as-{{ $idx }}
         readOnly: true
-        subPath: registration.yaml
+{{- if $appservice.configMap }}
+        mountPath: "/as/{{ $idx }}/{{ $appservice.configMapKey }}"
+        subPath: {{ $appservice.configMapKey | quote }}
+{{- end -}}
+{{- if $appservice.secret }}
+        mountPath: "/as/{{ $idx }}/{{ $appservice.secretKey }}"
+        subPath: {{ $appservice.secretKey | quote }}
+{{- end -}}
 {{- end }}
       - mountPath: /conf/log_config.yaml
         name: plain-config
@@ -239,11 +249,17 @@ We have an init container to render & merge the config for several reasons:
     - emptyDir:
         medium: Memory
       name: "rendered-config"
-{{- range $appservice := .appservices }}
-    - configMap:
+{{- range $idx, $appservice := .appservices }}
+    - name: as-{{ $idx }}
+{{- with $appservice.configMap }}
+      configMap:
         defaultMode: 420
-        name: "{{ tpl $appservice.registrationFileConfigMap $root }}"
-      name: {{ tpl $appservice.registrationFileConfigMap $root }}
+        name: "{{ tpl . $root }}"
+{{- end }}
+{{- with $appservice.secret }}
+      secret:
+        secretName: "{{ tpl . $root }}"
+{{- end }}
 {{- end }}
 {{- if (include "element-io.synapse.process.responsibleForMedia" (dict "root" $root "context" (dict "processType" $processType "enabledWorkerTypes" (keys $enabledWorkers)))) }}
     - persistentVolumeClaim:
