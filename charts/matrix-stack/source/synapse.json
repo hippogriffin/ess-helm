@@ -57,7 +57,8 @@
         "oneOf": [
           {
             "required": [
-              "registrationFileConfigMap"
+              "configMap",
+              "configMapKey"
             ],
             "not": {
               "required": [
@@ -73,13 +74,17 @@
             ],
             "not": {
               "required": [
-                "registrationFileConfigMap"
+                "configMap",
+                "configMapKey"
               ]
             }
           }
         ],
         "properties": {
-          "registrationFileConfigMap": {
+          "configMap": {
+            "type": "string"
+          },
+          "configMapKey": {
             "type": "string"
           },
           "secret": {

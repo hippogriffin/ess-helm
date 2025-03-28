@@ -178,11 +178,6 @@ responsibleForMedia
 {{- end }}
 {{- end }}
 {{- end }}
-{{- range .appservices }}
-{{- if and .secret .secretKey }}
-{{ $configSecrets = append $configSecrets (tpl .secret $root) }}
-{{- end }}
-{{- end }}
 {{ $configSecrets | uniq | toJson }}
 {{- end }}
 {{- end }}

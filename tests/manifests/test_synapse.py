@@ -13,7 +13,9 @@ from .utils import iterate_deployables_ingress_parts
 @pytest.mark.parametrize("values_file", ["synapse-minimal-values.yaml"])
 @pytest.mark.asyncio_cooperative
 async def test_appservice_configmaps_are_templated(release_name, values, make_templates):
-    values["synapse"].setdefault("appservices", []).append({"registrationFileConfigMap": "as-{{ $.Release.Name }}"})
+    values["synapse"].setdefault("appservices", []).append(
+        {"configMap": "as-{{ $.Release.Name }}", "configMapKey": "reg.yaml"}
+    )
 
     for template in await make_templates(values):
         if template["metadata"]["name"].startswith(f"{release_name}-synapse") and template["kind"] == "StatefulSet":
@@ -21,7 +23,7 @@ async def test_appservice_configmaps_are_templated(release_name, values, make_te
                 if (
                     "configMap" in volume
                     and volume["configMap"]["name"] == f"as-{release_name}"
-                    and volume["name"] == f"as-{release_name}"
+                    and volume["name"] == "as-0"
                 ):
                     break
             else:
@@ -31,10 +33,7 @@ async def test_appservice_configmaps_are_templated(release_name, values, make_te
                 )
 
             for volumeMount in template["spec"]["template"]["spec"]["containers"][0]["volumeMounts"]:
-                if (
-                    volumeMount["name"] == f"as-{release_name}"
-                    and volumeMount["mountPath"] == f"/as/as-{release_name}/registration.yaml"
-                ):
+                if volumeMount["name"] == "as-0" and volumeMount["mountPath"] == f"/as/as-{release_name}/reg.yaml":
                     break
             else:
                 raise AssertionError("The appservice configMap isn't mounted at the expected location")
