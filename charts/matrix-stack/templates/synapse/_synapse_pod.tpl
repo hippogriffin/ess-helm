@@ -22,9 +22,9 @@ template:
       k8s.element.io/logconfighash: "{{ include (print $root.Template.BasePath "/synapse/synapse_configmap.yaml") $root | sha1sum }}"
 {{- range $index, $appservice := .appservices }}
 {{- if .registrationFileConfigMap }}
-      k8s.element.io/as-registration-{{ $index }}-hash: "{{ (lookup "v1" "ConfigMap" $root.Release.Namespace $appservice.registrationFileConfigMap) | toJson | sha1sum }}"
+      k8s.element.io/as-registration-{{ $index }}-hash: "{{ (lookup "v1" "ConfigMap" $root.Release.Namespace (tpl $appservice.registrationFileConfigMap $root)) | toJson | sha1sum }}"
 {{- else }}
-      k8s.element.io/as-registration-{{ $index }}-hash: "{{ (lookup "v1" "Secret" $root.Release.Namespace $appservice.secret) | toJson | sha1sum }}"
+      k8s.element.io/as-registration-{{ $index }}-hash: "{{ (lookup "v1" "Secret" $root.Release.Namespace (tpl $appservice.secret $root)) | toJson | sha1sum }}"
 {{- end }}
 {{- end }}
       {{ include "element-io.ess-library.postgres-label" (dict "root" $root "context" (dict
