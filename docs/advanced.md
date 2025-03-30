@@ -30,7 +30,7 @@ Configuration samples are available [in the GitHub repository](https://github.co
 
 You need to create 2 databases:
 
-- For Synapse [https://element-hq.github.io/synapse/v1.59/postgres.html\#set-up-database](https://element-hq.github.io/synapse/latest/postgres.html#set-up-database)
+- For Synapse [https://element-hq.github.io/synapse/latest/postgres.html](https://element-hq.github.io/synapse/latest/postgres.html#set-up-database)
 
 - For MAS [https://element-hq.github.io/matrix-authentication-service/setup/database.html](https://element-hq.github.io/matrix-authentication-service/setup/database.html)
 
