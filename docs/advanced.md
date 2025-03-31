@@ -22,7 +22,7 @@ SPDX-License-Identifier: AGPL-3.0-only
 
 - The GitHub repository [values files](https://github.com/element-hq/ess-helm/blob/main/charts/matrix-stack/values.yaml).
 - The chart [README](https://github.com/element-hq/ess-helm/blob/main/charts/matrix-stack/README.md).
-- [Artifacthub.io](https://artifacthub.io/packages/helm/element/matrix-stack).
+- [Artifacthub.io](https://artifacthub.io/packages/helm/element-server-suite-community/matrix-stack).
 
 Configuration samples are available [in the GitHub repository](https://github.com/element-hq/ess-helm/tree/main/charts/matrix-stack/ci).
 
