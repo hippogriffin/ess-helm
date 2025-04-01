@@ -5,7 +5,6 @@
 import re
 
 import pytest
-import yaml
 
 from . import secret_values_files_to_test, values_files_to_test
 from .utils import get_or_empty
@@ -55,25 +54,14 @@ def get_volume_from_mount(template, volume_mount):
     )
 
 
-def get_values(dict_or_list):
-    result = []
-    parsed = dict_or_list.values() if type(dict_or_list) is dict else dict_or_list
-    for v in parsed:
-        if type(v) is dict or type(v) is list:
-            result += get_values(v)
-        elif type(v) is str:
-            result.append(v)
-    return result
-
-
-def find_paths_in_contents(container, mounted_config_maps):
+def find_paths_in_contents(container, mounted_config_maps, deployable_details):
     paths_found = []
     content_to_match = [e.get("value", "") for e in container.get("env", [])]
     content_to_match += [c for c in container.get("command", [""])[1:] + container.get("args", [])]
     for cm in mounted_config_maps:
         for key, content in cm["data"].items():
-            if key.endswith(".yaml"):
-                content_to_match += get_values(yaml.safe_load(content))
+            if key not in deployable_details.skip_path_consistency_for_files:
+                content_to_match += content.split("\n")
 
     for content in content_to_match:
         assert type(content) is str, f"Content must be a string: {content}"
@@ -85,8 +73,8 @@ def find_paths_in_contents(container, mounted_config_maps):
                 # The negative lookahead prevents matching subnets like 192.168.0.0/16, fe80::/10
                 # The pattern [^\s\n\")`:%;,/]+[^\s\n\")`:%;,]+ is a regex that will find paths like /path/to/file
                 # It expects to find absolute paths only
-                # It is possible to add noqa in the content to ignore this path
-                for match in re.findall(r"((?<![0-9:])/[^\s\n\")`:%;,/]+[^\s\n\")`:%;,]+(?!.*noqa))", match_in):
+                # It is possible to add noqa in the content to ignore this path
+                for match in re.findall(r"((?<![0-9:])/[^\s\n\")`:'%;,/]+[^\s\n\")`:'%;,]+(?!.*noqa))", match_in):
                     paths_found.append(match)
 
     return paths_found
@@ -335,7 +323,7 @@ async def test_secrets_consistency(templates, other_secrets, template_to_deploya
                     )
 
             potential_paths = mounted_keys + get_pvcs_and_empty_dirs_mount_paths(template)
-            for path in find_paths_in_contents(container, mounted_config_maps):
+            for path in find_paths_in_contents(container, mounted_config_maps, deployable_details):
                 if path not in deployable_details.paths_consistency_noqa:
                     mount_path_found = False
                     for potential in potential_paths:
