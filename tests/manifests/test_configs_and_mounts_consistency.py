@@ -2,6 +2,7 @@
 #
 # SPDX-License-Identifier: AGPL-3.0-only
 
+import copy
 import re
 
 import pytest
@@ -128,6 +129,52 @@ def get_mounts_part(secret_or_cm, volume_mount):
             mounted_keys.append(f"{volume_mount['mountPath']}/{key}")
         mount_parent = volume_mount["mountPath"]
     return mount_parent, mounted_keys
+
+
+def filter_mounted_path_only(template, container, mounted_config_maps):
+    filtered_configmaps = []
+    for configmap in mounted_config_maps:
+        filtered_configmap = copy.deepcopy(configmap)
+        related_volume_mounts = [
+            v
+            for v in container["volumeMounts"]
+            if get_volume_from_mount(template, v).get("configMap", {}).get("name", "") == configmap["metadata"]["name"]
+        ]
+        for volume_mount in related_volume_mounts:
+            if "subPath" not in volume_mount:
+                break  # The whole configmap content is mounted, ignore
+        else:
+            sub_paths = [v["subPath"] for v in related_volume_mounts]
+            # Pop all configmap data keys which are not in a subpath
+            for key in configmap["data"]:
+                if key not in sub_paths:
+                    del filtered_configmap["data"][key]
+        filtered_configmaps.append(filtered_configmap)
+    return filtered_configmaps
+
+
+def get_virtual_config_map_from_render_config(template, templates):
+    """Build a virtual configmap from the render-config init-container
+    so that the test can attempt to discover the configmap content
+    in the rendered config files
+    """
+    for container in template["spec"]["template"]["spec"]["initContainers"]:
+        if container["name"] == "render-config":
+            paths_to_keys = {}
+            for volume_mount in container["volumeMounts"]:
+                current_volume = get_volume_from_mount(template, volume_mount)
+                if "configMap" in current_volume:
+                    current_config_map = get_configmap(templates, current_volume["configMap"]["name"])
+                    if volume_mount.get("subPath"):
+                        paths_to_keys[volume_mount["mountPath"] + "/" + volume_mount["subPath"]] = current_config_map[
+                            "data"
+                        ][volume_mount["subPath"]]
+                    else:
+                        for key in current_config_map["data"]:
+                            paths_to_keys[volume_mount["mountPath"] + "/" + key] = current_config_map["data"][key]
+            source_files = container["command"][4:]
+            return {"data": {p: k for p, k in paths_to_keys.items() if p in source_files}}
+    raise RuntimeError("No render-config container found")
 
 
 def get_keys_from_container_using_rendered_config(template, templates, other_secrets):
@@ -323,8 +370,11 @@ async def test_secrets_consistency(templates, other_secrets, template_to_deploya
                         f"or env variable, or command is using it"
                     )
 
+            filtered_mounted_config_maps = filter_mounted_path_only(template, container, mounted_config_maps)
+            if uses_rendered_config:
+                filtered_mounted_config_maps.append(get_virtual_config_map_from_render_config(template, templates))
             potential_paths = mounted_keys + get_pvcs_and_empty_dirs_mount_paths(template)
-            for path in find_paths_in_contents(container, mounted_config_maps, deployable_details):
+            for path in find_paths_in_contents(container, filtered_mounted_config_maps, deployable_details):
                 if path not in deployable_details.paths_consistency_noqa:
                     mount_path_found = False
                     for potential in potential_paths:
