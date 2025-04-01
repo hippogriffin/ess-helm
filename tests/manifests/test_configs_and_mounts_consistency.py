@@ -5,6 +5,7 @@
 import re
 
 import pytest
+import yaml
 
 from . import secret_values_files_to_test, values_files_to_test
 from .utils import get_or_empty
@@ -52,6 +53,39 @@ def get_volume_from_mount(template, volume_mount):
         f"No matching volume found for mount path {volume_mount['mountPath']} in "
         f"[{','.join([v['name'] for v in template['spec']['template']['spec'].get('volumes', [])])}]"
     )
+
+
+def get_values(dict_or_list):
+    result = []
+    parsed = dict_or_list.values() if type(dict_or_list) is dict else dict_or_list
+    for v in parsed:
+        if type(v) is dict or type(v) is list:
+            result += get_values(v)
+        elif type(v) is str:
+            result.append(v)
+    return result
+
+
+def find_paths_in_contents(container, mounted_config_maps):
+    paths_found = []
+    content_to_match = [e.get("value", "") for e in container.get("env", [])]
+    content_to_match += [c for c in container.get("command", [""])[1:] + container.get("args", [])]
+    for cm in mounted_config_maps:
+        for key, content in cm["data"].items():
+            if key.endswith(".yaml"):
+                content_to_match += get_values(yaml.safe_load(content))
+
+    for content in content_to_match:
+        assert type(content) is str, f"Content must be a string: {content}"
+        for match_in in content.split("\n"):
+            for exclude in ["://", "/bin/sh", "helm.sh/"]:
+                if exclude in match_in:
+                    break
+            else:
+                for match in re.findall(r"((?<![0-9:])/[^\s\n\")`:%;,/]+[^\s\n\")`:%;,]+(?!.*noqa))", match_in):
+                    paths_found.append(match)
+
+    return paths_found
 
 
 def find_mount_paths_and_assert_key_is_consistent(container_name, mounted_keys, mount_path, matches_in):
@@ -126,6 +160,16 @@ def get_keys_from_container_using_rendered_config(template, templates, other_sec
         f"No secret or config map is mounted in the template {template['kind']}/{template['metadata']['name']}"
     )
     return mounted_keys, mounted_keys_to_parents
+
+
+def get_empty_dirs_mount_paths(template):
+    mounted_keys = []
+    for container in template["spec"]["template"]["spec"]["containers"]:
+        for volume_mount in container.get("volumeMounts", []):
+            current_volume = get_volume_from_mount(template, volume_mount)
+            if "emptyDir" in current_volume:
+                mounted_keys.append(volume_mount["mountPath"])
+    return mounted_keys
 
 
 def assert_exists_according_to_hook_weight(template, hook_weight, used_by):
@@ -284,4 +328,15 @@ async def test_secrets_consistency(templates, other_secrets, template_to_deploya
                         f"{mounted_keys_to_parents[mounted_key]} used in container {container['name']} "
                         f"but no config {','.join([cm['metadata']['name'] for cm in mounted_config_maps])} "
                         f"or env variable, or command is using it"
+                    )
+
+            potential_paths = mounted_keys + get_empty_dirs_mount_paths(template)
+            for path in find_paths_in_contents(container, mounted_config_maps):
+                if path not in deployable_details.paths_consistency_noqa:
+                    mount_path_found = False
+                    for potential in potential_paths:
+                        if path.startswith(potential):
+                            mount_path_found = True
+                    assert mount_path_found, (
+                        f"{path} used in container {container['name']} but not mounted in {potential_paths}"
                     )
