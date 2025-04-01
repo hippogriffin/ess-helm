@@ -162,12 +162,12 @@ def get_keys_from_container_using_rendered_config(template, templates, other_sec
     return mounted_keys, mounted_keys_to_parents
 
 
-def get_empty_dirs_mount_paths(template):
+def get_pvcs_and_empty_dirs_mount_paths(template):
     mounted_keys = []
     for container in template["spec"]["template"]["spec"]["containers"]:
         for volume_mount in container.get("volumeMounts", []):
             current_volume = get_volume_from_mount(template, volume_mount)
-            if "emptyDir" in current_volume:
+            if "emptyDir" in current_volume or "persistentVolumeClaim" in current_volume:
                 mounted_keys.append(volume_mount["mountPath"])
     return mounted_keys
 
@@ -330,7 +330,7 @@ async def test_secrets_consistency(templates, other_secrets, template_to_deploya
                         f"or env variable, or command is using it"
                     )
 
-            potential_paths = mounted_keys + get_empty_dirs_mount_paths(template)
+            potential_paths = mounted_keys + get_pvcs_and_empty_dirs_mount_paths(template)
             for path in find_paths_in_contents(container, mounted_config_maps):
                 if path not in deployable_details.paths_consistency_noqa:
                     mount_path_found = False

@@ -163,7 +163,7 @@ all_components_details = [
     ComponentDetails(
         name="postgres",
         has_ingress=False,
-        paths_consistency_noqa=("/docker-entrypoint-initdb.d/init-ess-dbs.sh", "/var/lib/postgres/data/pgdata"),
+        paths_consistency_noqa=("/docker-entrypoint-initdb.d/init-ess-dbs.sh"),
         is_shared_component=True,
     ),
     ComponentDetails(
@@ -188,7 +188,6 @@ all_components_details = [
         additional_values_files=[
             "synapse-worker-example-values.yaml",
         ],
-        paths_consistency_noqa=["/media/media_store"],
         sub_components=[
             SubComponentDetails(
                 name="synapse-redis",
