@@ -181,7 +181,6 @@ all_components_details = [
             "/etc/nginx/mime.types",
             "/var/log/nginx/access.log",
             "/usr/share/nginx/html",
-            "/json",
             "/health",
             "/non-existant-so-that-this-works-with-read-only-root-filesystem",
         ),
