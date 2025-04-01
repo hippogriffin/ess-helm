@@ -161,6 +161,26 @@ responsibleForMedia
                                                                 )
                                             )
                                         ) -}}
+{{- if $root.Values.matrixAuthenticationService.enabled -}}
+{{- with $root.Values.matrixAuthenticationService -}}
+  {{- with .synapseSharedSecret -}}
+    {{- with .value -}}
+    {{- $configSecrets = append $configSecrets (include "element-io.matrix-authentication-service.secret-name" (dict "root" $root "context" (dict "isHook" $isHook))) -}}
+    {{- end -}}
+    {{- with .secret -}}
+    {{ $configSecrets = append $configSecrets (tpl . $root) }}
+    {{- end -}}
+  {{- end -}}
+  {{- with .synapseOIDCClientSecret -}}
+    {{- with .value -}}
+    {{- $configSecrets = append $configSecrets (include "element-io.matrix-authentication-service.secret-name" (dict "root" $root "context" (dict "isHook" $isHook))) -}}
+    {{- end -}}
+    {{- with .secret -}}
+    {{ $configSecrets = append $configSecrets (tpl . $root) }}
+    {{- end -}}
+  {{- end -}}
+{{- end -}}
+{{- end -}}
 {{- with .macaroon.secret -}}
 {{ $configSecrets = append $configSecrets (tpl . $root) }}
 {{- end -}}

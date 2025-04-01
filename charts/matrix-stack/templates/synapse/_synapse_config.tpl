@@ -112,7 +112,7 @@ experimental_features:
         dict "root" $root "context" (dict
           "secretPath" "matrixAuthenticationService.synapseOIDCClientSecret"
           "initSecretKey" "MAS_SYNAPSE_OIDC_CLIENT_SECRET"
-          "defaultSecretName" (printf "%s-matrix-authentication-service" $root.Release.Name)
+          "defaultSecretName" (include "element-io.matrix-authentication-service.secret-name" (dict "root" $root "context" (dict "isHook" $isHook)))
           "defaultSecretKey" "SYNAPSE_OIDC_CLIENT_SECRET"
         )
       ) }}
@@ -122,7 +122,7 @@ experimental_features:
         dict "root" $root "context" (dict
           "secretPath" "matrixAuthenticationService.synapseSharedSecret"
           "initSecretKey" "MAS_SYNAPSE_SHARED_SECRET"
-          "defaultSecretName" (printf "%s-matrix-authentication-service" $root.Release.Name)
+          "defaultSecretName" (include "element-io.matrix-authentication-service.secret-name" (dict "root" $root "context" (dict "isHook" $isHook)))
           "defaultSecretKey" "SYNAPSE_SHARED_SECRET"
           )
       ) }}
