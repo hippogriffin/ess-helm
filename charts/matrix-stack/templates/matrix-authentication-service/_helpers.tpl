@@ -159,3 +159,33 @@ app.kubernetes.io/version: {{ .image.tag }}
 {{- end }}
 {{- end }}
 {{- end }}
+
+
+{{- define "element-io.matrix-authentication-service.secret-name" }}
+{{- $root := .root }}
+{{- with required "element-io.matrix-authentication-service.secret-name requires context" .context }}
+{{- $isHook := required "element-io.matrix-authentication-service.secret-name requires context.isHook" .isHook }}
+{{- if $isHook }}
+{{- $root.Release.Name }}-matrix-authentication-service-hook
+{{- else }}
+{{- $root.Release.Name }}-matrix-authentication-service
+{{- end }}
+{{- end }}
+{{- end }}
+
+
+{{- define "element-io.matrix-authentication-service.synapse-secret-data" -}}
+{{- $root := .root -}}
+{{- with required "element-io.matrix-authentication-service.synapse-secret-data" .context -}}
+{{- if $root.Values.synapse.enabled }}
+{{- include "element-io.ess-library.check-credential" (dict "root" $root "context" (dict "secretPath" "matrixAuthenticationService.synapseSharedSecret" "initIfAbsent" true)) }}
+{{- with .synapseSharedSecret.value }}
+SYNAPSE_SHARED_SECRET: {{ . | b64enc }}
+{{- end }}
+{{- include "element-io.ess-library.check-credential" (dict "root" $root "context" (dict "secretPath" "matrixAuthenticationService.synapseOIDCClientSecret" "initIfAbsent" true)) }}
+{{- with .synapseOIDCClientSecret.value }}
+SYNAPSE_OIDC_CLIENT_SECRET: {{ . | b64enc }}
+{{- end }}
+{{- end -}}
+{{- end -}}
+{{- end -}}

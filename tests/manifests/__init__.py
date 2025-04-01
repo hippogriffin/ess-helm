@@ -42,6 +42,7 @@ class DeployableDetails(abc.ABC):
     has_service_monitor: bool = field(default=True, hash=False)
 
     paths_consistency_noqa: tuple[str] = field(default=(), hash=False)
+    skip_path_consistency_for_files: tuple[str] = field(default=(), hash=False)
 
     def __post_init__(self):
         if self.helm_key is None:
@@ -159,7 +160,12 @@ all_components_details = [
         has_service_monitor=False,
         is_shared_component=True,
     ),
-    ComponentDetails(name="haproxy", has_ingress=False, is_shared_component=True),
+    ComponentDetails(
+        name="haproxy",
+        has_ingress=False,
+        is_shared_component=True,
+        skip_path_consistency_for_files=["haproxy.cfg", "429.http", "path_map_file", "path_map_file_get"],
+    ),
     ComponentDetails(
         name="postgres",
         has_ingress=False,
@@ -170,16 +176,21 @@ all_components_details = [
         name="element-web",
         helm_key="elementWeb",
         has_service_monitor=False,
-        paths_consistency_noqa=("/etc/nginx/nginx.conf", "/etc/nginx/mime.types"),
+        paths_consistency_noqa=(
+            "/etc/nginx/nginx.conf",
+            "/etc/nginx/mime.types",
+            "/var/log/nginx/access.log",
+            "/usr/share/nginx/html",
+            "/json",
+            "/health",
+            "/non-existant-so-that-this-works-with-read-only-root-filesystem",
+        ),
     ),
     ComponentDetails(
         name="matrix-authentication-service",
         helm_key="matrixAuthenticationService",
         has_db=True,
-        shared_component_names=(
-            "init-secrets",
-            "postgres",
-        ),
+        shared_component_names=("init-secrets", "postgres"),
     ),
     ComponentDetails(
         name="synapse",
@@ -187,6 +198,7 @@ all_components_details = [
         additional_values_files=[
             "synapse-worker-example-values.yaml",
         ],
+        skip_path_consistency_for_files=["path_map_file", "path_map_file_get"],
         sub_components=[
             SubComponentDetails(
                 name="synapse-redis",
@@ -240,6 +252,11 @@ _multi_component_values_files_to_base_components_names: dict[str, list[str]] = {
         "synapse",
         "well-known",
     ],
+    "matrix-authentication-service-synapse-secrets-externally-values.yaml": [
+        "matrix-authentication-service",
+        "synapse",
+    ],
+    "matrix-authentication-service-synapse-secrets-in-helm-values.yaml": ["matrix-authentication-service", "synapse"],
 }
 
 
@@ -250,7 +267,10 @@ values_files_to_deployables_details = {
     ).items()
 }
 
-_extra_secret_values_files_to_test = []
+_extra_secret_values_files_to_test = [
+    "matrix-authentication-service-synapse-secrets-in-helm-values.yaml",
+    "matrix-authentication-service-synapse-secrets-externally-values.yaml",
+]
 secret_values_files_to_test = [
     values_file for details in all_components_details for values_file in details.secret_values_files
 ] + _extra_secret_values_files_to_test

@@ -54,6 +54,33 @@ def get_volume_from_mount(template, volume_mount):
     )
 
 
+def find_paths_in_contents(container, mounted_config_maps, deployable_details):
+    paths_found = []
+    content_to_match = [e.get("value", "") for e in container.get("env", [])]
+    content_to_match += [c for c in container.get("command", [""])[1:] + container.get("args", [])]
+    for cm in mounted_config_maps:
+        for key, content in cm["data"].items():
+            if key not in deployable_details.skip_path_consistency_for_files:
+                content_to_match += content.split("\n")
+
+    for content in content_to_match:
+        assert type(content) is str, f"Content must be a string: {content}"
+        for match_in in content.split("\n"):
+            for exclude in ["://", "/bin/sh", "helm.sh/"]:
+                if exclude in match_in:
+                    break
+            else:
+                # The negative lookahead prevents matching subnets like "192.168.0.0/16", "fe80::/10"
+                # And also things that do not start with / like "text/xml"
+                # The pattern [^\s\n\")`:%;,/]+[^\s\n\")`:%;,]+ is a regex that will find paths like /path/to/file
+                # It expects to find absolute paths only
+                # It is possible to add noqa in the content to ignore this path
+                for match in re.findall(r"((?<![0-9a-zA-Z:])/[^\s\n\")`:'%;,/]+[^\s\n\")`:'%;,]+(?!.*noqa))", match_in):
+                    paths_found.append(match)
+
+    return paths_found
+
+
 def find_mount_paths_and_assert_key_is_consistent(container_name, mounted_keys, mount_path, matches_in):
     found_mount = False
     for match_in in matches_in:
@@ -126,6 +153,16 @@ def get_keys_from_container_using_rendered_config(template, templates, other_sec
         f"No secret or config map is mounted in the template {template['kind']}/{template['metadata']['name']}"
     )
     return mounted_keys, mounted_keys_to_parents
+
+
+def get_pvcs_and_empty_dirs_mount_paths(template):
+    mounted_keys = []
+    for container in template["spec"]["template"]["spec"]["containers"]:
+        for volume_mount in container.get("volumeMounts", []):
+            current_volume = get_volume_from_mount(template, volume_mount)
+            if "emptyDir" in current_volume or "persistentVolumeClaim" in current_volume:
+                mounted_keys.append(volume_mount["mountPath"])
+    return mounted_keys
 
 
 def assert_exists_according_to_hook_weight(template, hook_weight, used_by):
@@ -284,4 +321,15 @@ async def test_secrets_consistency(templates, other_secrets, template_to_deploya
                         f"{mounted_keys_to_parents[mounted_key]} used in container {container['name']} "
                         f"but no config {','.join([cm['metadata']['name'] for cm in mounted_config_maps])} "
                         f"or env variable, or command is using it"
+                    )
+
+            potential_paths = mounted_keys + get_pvcs_and_empty_dirs_mount_paths(template)
+            for path in find_paths_in_contents(container, mounted_config_maps, deployable_details):
+                if path not in deployable_details.paths_consistency_noqa:
+                    mount_path_found = False
+                    for potential in potential_paths:
+                        if path.startswith(potential):
+                            mount_path_found = True
+                    assert mount_path_found, (
+                        f"{path} used in container {container['name']} but not mounted in {potential_paths}"
                     )
