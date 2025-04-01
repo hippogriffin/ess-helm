@@ -82,6 +82,10 @@ def find_paths_in_contents(container, mounted_config_maps):
                 if exclude in match_in:
                     break
             else:
+                # The negative lookahead prevents matching subnets like 192.168.0.0/16, fe80::/10
+                # The pattern [^\s\n\")`:%;,/]+[^\s\n\")`:%;,]+ is a regex that will find paths like /path/to/file
+                # It expects to find absolute paths only
+                # It is possible to add noqa in the content to ignore this path
                 for match in re.findall(r"((?<![0-9:])/[^\s\n\")`:%;,/]+[^\s\n\")`:%;,]+(?!.*noqa))", match_in):
                     paths_found.append(match)
 
