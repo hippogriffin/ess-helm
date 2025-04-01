@@ -64,7 +64,7 @@ defaults
   option redispatch
 
   compression algo gzip
-  compression type text/plain text/html text/xml application/json text/css  # noqa
+  compression type text/plain text/html text/xml application/json text/css
 
   # if we hit the maxconn on a server, and the queue timeout expires, we want
   # to avoid returning 503, since that will cause cloudflare to mark us down.
