@@ -28,10 +28,12 @@ data:
 {{- end }}
 {{- end }}
 {{- range $key := (.essPasswords | keys | uniq | sortAlpha) }}
+{{- if (index $root.Values $key).enabled }}
 {{- include "element-io.ess-library.check-credential" (dict "root" $root "context" (dict "secretPath" (printf "postgres.essPasswords.%s" $key) "initIfAbsent" true)) }}
 {{- $prop := index $root.Values.postgres.essPasswords $key }}
 {{- with $prop.value }}
   ESS_PASSWORD_{{ $key | upper }}: {{ .| b64enc }}
+{{- end }}
 {{- end }}
 {{- end }}
 {{- end }}
