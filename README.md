@@ -57,6 +57,7 @@ ESS TI-M is a special version of ESS Pro focused on the requirements of TI-Messe
           - [Wildcard certificate](#wildcard-certificate)
           - [Individual certificates](#individual-certificates)
         - [Using an existing reverse proxy](#using-an-existing-reverse-proxy)
+          - [Example configurations](#example-configurations)
     - [Configuring the database](#configuring-the-database)
   - [Installation](#installation)
     - [Setting up the stack](#setting-up-the-stack)
@@ -300,6 +301,32 @@ traefik          LoadBalancer   10.43.184.49    172.20.1.60   8080:32100/TCP,844
 ```
 
 4. Configure your reverse proxy so that the DNS names you configured are routed to the external IP of traefik on port 8080 (HTTP) and 8443 (HTTPS).
+
+##### Example configurations
+To make running ESS Community behind a reverse proxy as easy as possible, you can find below some configuration examples for popular webservers.
+
+<details><summary>Apache2</summary>
+
+Find below a minimal example of an Apache2 vhost to work as a reverse proxy with TLS termination for ESS Community. You will need to enable the respective modules in your Apache2 configuration.
+
+```
+<VirtualHost *:*>
+  ServerName <your domain/subdomain>
+  SSLEngine on
+  SSLCertificateFile /path/to/your/certfile
+  SSLCertificateKeyFile /path/to/your/keyfile
+  SSLCipherSuite ECDHE-ECDSA-AES256-GCM-SHA384:ECDHE-RSA-AES256-GCM-SHA384:ECDHE-ECDSA-CHACHA20-POLY1305:ECDHE-RSA-CHACHA20-POLY1305:ECDHE-ECDSA-AES128-GCM-SHA256:ECDHE-RSA-AES128-GCM-SHA256:ECDHE-ECDSA-AES256-SHA384:ECDHE-RSA-AES256-SHA384:ECDHE-ECDSA-AES128-SHA256:ECDHE-RSA-AES128-SHA256
+  SSLHonorCipherOrder on
+  SSLProtocol all -SSLv3 -TLSv1 -TLSv1.1
+  Header unset Strict-Transport-Security
+  Header always set Strict-Transport-Security "max-age=31536000; includeSubDomains; preload"
+        
+  ProxyPreserveHost On
+  ProxyPass / http://127.0.0.1:8080/ nocanon
+  ProxyPassReverse / http://127.0.0.1:8080/
+</VirtualHost>
+```
+</details>
 
 ### Configuring the database
 
