@@ -40,7 +40,7 @@ SPDX-License-Identifier: AGPL-3.0-only
 {{- else if $root.Values.initSecrets.enabled -}}
 {{- /* OK secret is generatable and initSecrets is on */ -}}
 {{- else -}}
-{{- fail (printf "initSecrets is disabled, but the Secret configuration at %s is not present" $secretPath) -}}
+{{- fail (printf "check-credential: initSecrets is disabled, but the Secret configuration at %s is not present" $secretPath) -}}
 {{- end -}}
 {{- end -}}
 {{- end }}
@@ -57,7 +57,7 @@ SPDX-License-Identifier: AGPL-3.0-only
   {{- if $root.Values.initSecrets.enabled -}}
   {{- printf "%s/%s" (printf "%s-generated" $root.Release.Name) $initSecretKey -}}
   {{- else -}}
-  {{- fail (printf "initSecrets is disabled, but the Secret configuration at %s is not present" $secretPath) -}}
+  {{- fail (printf "init-secret-path: initSecrets is disabled, but the Secret configuration at %s is not present" $secretPath) -}}
   {{- end -}}
 {{- else -}}
   {{- include "element-io.ess-library.provided-secret-path" (dict "root" $root "context" (dict "secretPath" $secretPath "defaultSecretName" $defaultSecretName "defaultSecretKey" $defaultSecretKey)) -}}
@@ -102,7 +102,7 @@ SPDX-License-Identifier: AGPL-3.0-only
     {{- if $root.Values.initSecrets.enabled -}}
     {{- printf "%s/%s" (printf "%s-generated" $root.Release.Name) $initSecretKey -}}
     {{- else -}}
-    {{- fail (printf "initSecrets is disabled, but the Secret configuration at %s is not present" $componentPasswordPath) -}}
+    {{- fail (printf "postgres-secret-path: initSecrets is disabled, but the Secret configuration at %s is not present" $componentPasswordPath) -}}
     {{- end -}}
   {{- else -}}
     {{- include "element-io.ess-library.provided-secret-path" (dict
@@ -154,7 +154,7 @@ SPDX-License-Identifier: AGPL-3.0-only
   {{- if $root.Values.initSecrets.enabled -}}
   {{- printf "%s-generated" $root.Release.Name -}}
   {{- else -}}
-  {{- fail (printf "initSecrets is disabled, but the Secret configuration at %s is not present" $componentPasswordPath) -}}
+  {{- fail (printf "postgres-secret-name: initSecrets is disabled, but the Secret configuration at %s is not present" $componentPasswordPath) -}}
   {{- end -}}
 {{- end -}}
 {{- end -}}
