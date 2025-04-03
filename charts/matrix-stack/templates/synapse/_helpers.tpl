@@ -165,6 +165,6 @@ app.kubernetes.io/version: {{ .image.tag }}
     }}
 - name: APPLICATION_NAME
   value: >-
-    {{ printf "{{ hostname | replace \"-synapse-\" \"\" | replace \"%s\" \"\" }}" $root.Release.Name }}
+    {{ printf "{{ hostname }}" }}
 {{- end }}
 {{- end }}
