@@ -102,7 +102,7 @@ async def test_has_redirect_to_element_web(release_name, values, make_templates)
             haproxy_cfg = template["data"]["haproxy.cfg"]
             assert (
                 re.search(
-                    rf"http-request redirect\s+code\s+301\s+location\s+http://{values['elementWeb']['ingress']['host']}\sunless\swell-known",
+                    rf"http-request redirect\s+code\s+301\s+location\s+https://{values['elementWeb']['ingress']['host']}\sunless\swell-known",
                     haproxy_cfg,
                 )
                 is not None
