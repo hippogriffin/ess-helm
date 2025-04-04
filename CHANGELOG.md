@@ -6,6 +6,35 @@ SPDX-License-Identifier: AGPL-3.0-only
 
 <!-- towncrier release notes start -->
 
+# ESS Community Helm Chart 0.9.0 (2025-04-04)
+
+### Added
+
+- Synapse: Allow to inject appservices registration from secrets. (#331)
+- Document how to migrate from existing installations. (#333)
+- Add an example for Apache2 to the reverse proxy documentation in the README. (#344)
+
+### Changed
+
+- Improved README.md structure and content. (#303)
+- Enable TLS by default on all ingresses. This can be disabled using `tlsEnabled: false` globally or per ingress. (#348)
+
+### Deprecated
+
+- `synapse.appservices[].registrationFileConfigMap` is now `synapse.appservices[].configMap`. (#331)
+
+### Fixed
+
+- Synapse/Matrix Authentication Service: Fix shared OIDC secret when init secret is disabled. (#336)
+- Postgres password: Generate only required passwords. (#342)
+- Synapse: Use consistenly the hostname of the pod as worker names. (#346)
+
+### Internal
+
+- Fix artifacthub chart versions list. (#334)
+- Enhance secrets path detection consistency with render-config containers. (#338)
+
+
 # ESS Community Helm Chart 0.8.0 (2025-03-27)
 
 ### Changed
