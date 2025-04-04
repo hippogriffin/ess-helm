@@ -302,6 +302,8 @@ traefik          LoadBalancer   10.43.184.49    172.20.1.60   8080:32100/TCP,844
 
 4. Configure your reverse proxy so that the DNS names you configured are routed to the external IP of traefik on port 8080 (HTTP) and 8443 (HTTPS).
 
+5. If the certificates are handled in your reverse proxy, you can point to port 8080 (HTTP) only and disable TLS in ESS. Copy the file `charts/matrix-stack/ci/fragments/quick-setup-external-cert.yaml` to `tls.yaml`.
+
 ##### Example configurations
 To make running ESS Community behind a reverse proxy as easy as possible, you can find below some configuration examples for popular webservers.
 
