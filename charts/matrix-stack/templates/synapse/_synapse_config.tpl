@@ -137,7 +137,7 @@ password_config:
 
 {{- if dig "appservice" "enabled" false .workers }}
 
-notify_appservices_from_worker: appservice-0
+notify_appservices_from_worker: {{ $root.Release.Name }}-synapse-appservice-0
 {{- end }}
 
 {{- with .appservices }}
@@ -153,7 +153,7 @@ app_service_config_files:
 
 {{- if dig "background" "enabled" false .workers }}
 
-run_background_tasks_on: background-0
+run_background_tasks_on: {{ $root.Release.Name }}-synapse-background-0
 {{- end }}
 
 {{- if dig "federation-sender" "enabled" false .workers }}
@@ -161,7 +161,7 @@ run_background_tasks_on: background-0
 send_federation: false
 federation_sender_instances:
 {{- range $index := untilStep 0 ((index .workers "federation-sender").replicas | int) 1 }}
-- federation-sender-{{ $index }}
+- {{ $root.Release.Name }}-synapse-federation-sender-{{ $index }}
 {{- end }}
 {{- else }}
 
@@ -172,7 +172,7 @@ send_federation: true
 media_store_path: "/media/media_store"
 max_upload_size: "{{ .media.maxUploadSize }}"
 {{- if dig "media-repository" "enabled" false .workers }}
-media_instance_running_background_jobs: "media-repository-0"
+media_instance_running_background_jobs: "{{ $root.Release.Name }}-synapse-media-repository-0"
 {{- end }}
 
 {{- if dig "pusher" "enabled" false .workers }}
@@ -180,7 +180,7 @@ media_instance_running_background_jobs: "media-repository-0"
 start_pushers: false
 pusher_instances:
 {{- range $index := untilStep 0 ((index .workers "pusher").replicas | int) 1 }}
-- pusher-{{ $index }}
+- {{ $root.Release.Name }}-synapse-pusher-{{ $index }}
 {{- end }}
 {{- else }}
 
@@ -189,7 +189,7 @@ start_pushers: true
 
 {{- if dig "user-dir" "enabled" false .workers }}
 
-update_user_directory_from_worker: user-dir-0
+update_user_directory_from_worker: {{ $root.Release.Name }}-synapse-user-dir-0
 {{- end }}
 {{- $enabledWorkers := (include "element-io.synapse.enabledWorkers" (dict "root" $root)) | fromJson }}
 
@@ -200,7 +200,7 @@ instance_map:
 {{- range $workerType, $workerDetails := $enabledWorkers }}
 {{- if include "element-io.synapse.process.hasReplication" (dict "root" $root "context" $workerType) }}
 {{- range $index := untilStep 0 ($workerDetails.replicas | int | default 1) 1 }}
-  {{ $workerType }}-{{ $index }}:
+  {{ $root.Release.Name }}-synapse-{{ $workerType }}-{{ $index }}:
     host: {{ $root.Release.Name }}-synapse-{{ $workerType }}-{{ $index }}.{{ $root.Release.Name }}-synapse-{{ $workerType }}.{{ $root.Release.Namespace }}.svc.cluster.local.
     port: 9093
 {{- end }}
@@ -220,7 +220,7 @@ stream_writers:
 {{- range $stream_writer := include "element-io.synapse.process.streamWriters" (dict "root" $root "context" $workerType) | fromJsonArray }}
   {{ $stream_writer }}:
 {{- range $index := untilStep 0 ($workerDetails.replicas | int | default 1) 1 }}
-  - {{ $workerType }}-{{ $index }}
+  - {{ $root.Release.Name }}-synapse-{{ $workerType }}-{{ $index }}
 {{- end }}
 {{- end }}
 {{- end }}
