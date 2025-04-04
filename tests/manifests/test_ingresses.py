@@ -219,6 +219,16 @@ async def test_component_ingress_tlsSecret_beats_global(deployables_details, val
 
 @pytest.mark.parametrize("values_file", values_files_with_ingresses)
 @pytest.mark.asyncio_cooperative
+async def test_tls_no_secretName_by_default(templates):
+    for template in templates:
+        if template["kind"] == "Ingress":
+            assert "tls" in template["spec"]
+            for tls_spec in template["spec"]["tls"]:
+                assert "secretName" not in tls_spec
+
+
+@pytest.mark.parametrize("values_file", values_files_with_ingresses)
+@pytest.mark.asyncio_cooperative
 async def test_no_ingressClassName_by_default(templates):
     for template in templates:
         if template["kind"] == "Ingress":
