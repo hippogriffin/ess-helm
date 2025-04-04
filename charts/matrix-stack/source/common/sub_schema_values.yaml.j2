@@ -155,6 +155,9 @@ imagePullSecrets: []
   ## What Ingress Class Name that should be used for {{ 'all Ingresses by default' if global else 'this Ingress' }}
   # className:
 
+  ## Disable TLS configuration by setting it to false
+  tlsEnabled: true
+
   ## The name of the Secret containing the TLS certificate and the key that should be used for {{ 'all Ingresses by default' if global else 'this Ingress' }}
   # tlsSecret:
 

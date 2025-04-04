@@ -16,6 +16,9 @@
     "className": {
       "type": "string"
     },
+    "tlsEnabled": {
+      "type": "boolean"
+    },
     "tlsSecret": {
       "type": "string"
     },

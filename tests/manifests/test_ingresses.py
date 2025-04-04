@@ -149,8 +149,21 @@ async def test_merges_global_and_component_ingress_annotations(deployables_detai
 
 @pytest.mark.parametrize("values_file", values_files_with_ingresses)
 @pytest.mark.asyncio_cooperative
-async def test_no_ingress_tlsSecret_by_default(templates):
-    for template in templates:
+async def test_no_ingress_tlsSecret_global(make_templates, values):
+    values.setdefault("ingress", {})["tlsEnabled"] = False
+    for template in await make_templates(values):
+        if template["kind"] == "Ingress":
+            assert "tls" not in template["spec"]
+
+
+@pytest.mark.parametrize("values_file", values_files_with_ingresses)
+@pytest.mark.asyncio_cooperative
+async def test_no_ingress_tlsSecret_beats_global(make_templates, values, deployables_details):
+    def set_tls_disabled(values_fragment: dict[str, Any], deployable_details: DeployableDetails):
+        values_fragment.setdefault("ingress", {})["tlsEnabled"] = False
+
+    iterate_deployables_ingress_parts(deployables_details, values, set_tls_disabled)
+    for template in await make_templates(values):
         if template["kind"] == "Ingress":
             assert "tls" not in template["spec"]
 
