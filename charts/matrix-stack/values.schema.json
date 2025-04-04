@@ -102,6 +102,9 @@
         "className": {
           "type": "string"
         },
+        "tlsEnabled": {
+          "type": "boolean"
+        },
         "tlsSecret": {
           "type": "string"
         },
@@ -571,6 +574,9 @@
             },
             "className": {
               "type": "string"
+            },
+            "tlsEnabled": {
+              "type": "boolean"
             },
             "tlsSecret": {
               "type": "string"
@@ -1532,6 +1538,9 @@
             },
             "className": {
               "type": "string"
+            },
+            "tlsEnabled": {
+              "type": "boolean"
             },
             "tlsSecret": {
               "type": "string"
@@ -2834,6 +2843,9 @@
             },
             "className": {
               "type": "string"
+            },
+            "tlsEnabled": {
+              "type": "boolean"
             },
             "tlsSecret": {
               "type": "string"
@@ -5410,6 +5422,9 @@
             },
             "className": {
               "type": "string"
+            },
+            "tlsEnabled": {
+              "type": "boolean"
             },
             "tlsSecret": {
               "type": "string"

@@ -58,6 +58,9 @@ ingress:
   ## What Ingress Class Name that should be used for all Ingresses by default
   # className:
 
+  ## Disable TLS configuration by setting it to false
+  tlsEnabled: true
+
   ## The name of the Secret containing the TLS certificate and the key that should be used for all Ingresses by default
   # tlsSecret:
 
@@ -276,6 +279,9 @@ elementWeb:
 
     ## What Ingress Class Name that should be used for this Ingress
     # className:
+
+    ## Disable TLS configuration by setting it to false
+    tlsEnabled: true
 
     ## The name of the Secret containing the TLS certificate and the key that should be used for this Ingress
     # tlsSecret:
@@ -756,6 +762,9 @@ matrixAuthenticationService:
 
     ## What Ingress Class Name that should be used for this Ingress
     # className:
+
+    ## Disable TLS configuration by setting it to false
+    tlsEnabled: true
 
     ## The name of the Secret containing the TLS certificate and the key that should be used for this Ingress
     # tlsSecret:
@@ -1525,6 +1534,9 @@ synapse:
     ## What Ingress Class Name that should be used for this Ingress
     # className:
 
+    ## Disable TLS configuration by setting it to false
+    tlsEnabled: true
+
     ## The name of the Secret containing the TLS certificate and the key that should be used for this Ingress
     # tlsSecret:
 
@@ -1847,6 +1859,9 @@ wellKnownDelegation:
 
     ## What Ingress Class Name that should be used for this Ingress
     # className:
+
+    ## Disable TLS configuration by setting it to false
+    tlsEnabled: true
 
     ## The name of the Secret containing the TLS certificate and the key that should be used for this Ingress
     # tlsSecret:

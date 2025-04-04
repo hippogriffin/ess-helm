@@ -149,8 +149,21 @@ async def test_merges_global_and_component_ingress_annotations(deployables_detai
 
 @pytest.mark.parametrize("values_file", values_files_with_ingresses)
 @pytest.mark.asyncio_cooperative
-async def test_no_ingress_tlsSecret_by_default(templates):
-    for template in templates:
+async def test_no_ingress_tlsSecret_global(make_templates, values):
+    values.setdefault("ingress", {})["tlsEnabled"] = False
+    for template in await make_templates(values):
+        if template["kind"] == "Ingress":
+            assert "tls" not in template["spec"]
+
+
+@pytest.mark.parametrize("values_file", values_files_with_ingresses)
+@pytest.mark.asyncio_cooperative
+async def test_no_ingress_tlsSecret_beats_global(make_templates, values, deployables_details):
+    def set_tls_disabled(values_fragment: dict[str, Any], deployable_details: DeployableDetails):
+        values_fragment.setdefault("ingress", {})["tlsEnabled"] = False
+
+    iterate_deployables_ingress_parts(deployables_details, values, set_tls_disabled)
+    for template in await make_templates(values):
         if template["kind"] == "Ingress":
             assert "tls" not in template["spec"]
 
@@ -202,6 +215,16 @@ async def test_component_ingress_tlsSecret_beats_global(deployables_details, val
             assert len(template["spec"]["tls"][0]["hosts"]) == 1
             assert template["spec"]["tls"][0]["hosts"][0] == template["spec"]["rules"][0]["host"]
             assert template["spec"]["tls"][0]["secretName"] == "component"
+
+
+@pytest.mark.parametrize("values_file", values_files_with_ingresses)
+@pytest.mark.asyncio_cooperative
+async def test_tls_no_secretName_by_default(templates):
+    for template in templates:
+        if template["kind"] == "Ingress":
+            assert "tls" in template["spec"]
+            for tls_spec in template["spec"]["tls"]:
+                assert "secretName" not in tls_spec
 
 
 @pytest.mark.parametrize("values_file", values_files_with_ingresses)
