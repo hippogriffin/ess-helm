@@ -32,24 +32,24 @@ annotations:
 
 {{- define "element-io.ess-library.ingress.tls" -}}
 {{- $root := .root -}}
-{{- with required "element-io.ess-library.ingress.tlsSecret missing context" .context -}}
+{{- with required "element-io.ess-library.ingress.tls missing context" .context -}}
 {{- $ingress := required "element-io.ess-library.ingress.tls missing ingress" .ingress -}}
 {{- $host := .host | default $ingress.host -}}
 {{- $tlsEnabled := and $root.Values.ingress.tlsEnabled .ingress.tlsEnabled -}}
 {{- $ingressName := required "element-io.ess-library.ingress.tls missing ingressName" .ingressName -}}
 {{- if $tlsEnabled }}
 tls:
-{{- with (include "element-io.ess-library.ingress.tlsSecret" (dict "root" $root "context" (dict "hosts" (list $host) "tlsSecret" $ingress.tlsSecret "ingressName" $ingressName))) }}
+{{- with (include "element-io.ess-library.ingress.tlsHostsSecret" (dict "root" $root "context" (dict "hosts" (list $host) "tlsSecret" $ingress.tlsSecret "ingressName" $ingressName))) }}
 {{ . | nindent 2 }}
 {{- end -}}
 {{- end -}}
 {{- end -}}
 {{- end -}}
 
-{{- define "element-io.ess-library.ingress.tlsSecret" -}}
+{{- define "element-io.ess-library.ingress.tlsHostsSecret" -}}
 {{- $root := .root -}}
-{{- with required "element-io.ess-library.ingress.tlsSecret missing context" .context -}}
-{{- $ingressName := required "element-io.ess-library.ingress.tlsSecret missing ingress name" .ingressName -}}
+{{- with required "element-io.ess-library.ingress.tlsHostsSecret missing context" .context -}}
+{{- $ingressName := required "element-io.ess-library.ingress.tlsHostsSecret missing ingress name" .ingressName -}}
 {{- $hosts := .hosts -}}
 {{- $tlsSecret := coalesce .tlsSecret $root.Values.ingress.tlsSecret -}}
 - hosts:
