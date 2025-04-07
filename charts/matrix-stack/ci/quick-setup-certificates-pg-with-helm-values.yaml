@@ -16,6 +16,9 @@ matrixAuthenticationService:
     tlsSecret: ess-auth-certificate
 matrixRTC:
   enabled: false
+  ingress:
+    host: mrtc.your.tld
+    tlsSecret: ess-auth-certificate
 serverName: your.tld
 synapse:
   ingress:

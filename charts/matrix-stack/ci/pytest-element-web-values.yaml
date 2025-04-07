@@ -16,8 +16,8 @@ elementWeb:
           }
         },
         "some_key": {
-          "some_value": "https://test.{{ $.Values.serverName }}",
-        },
+          "some_value": "https://test.{{ $.Values.serverName }}"
+        }
       }
   annotations:
     has-no-service-monitor: "true"

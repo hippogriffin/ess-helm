@@ -16,6 +16,8 @@ matrixAuthenticationService:
     host: account.your.tld
 matrixRTC:
   enabled: false
+  ingress:
+    host: mrtc.your.tld
 serverName: your.tld
 synapse:
   ingress:

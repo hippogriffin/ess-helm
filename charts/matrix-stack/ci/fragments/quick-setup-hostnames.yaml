@@ -8,6 +8,9 @@ elementWeb:
 matrixAuthenticationService:
   ingress:
     host: account.your.tld
+matrixRTC:
+  ingress:
+    host: mrtc.your.tld
 serverName: your.tld
 synapse:
   ingress:

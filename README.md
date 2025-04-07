@@ -80,6 +80,7 @@ ESS Community comes with the following components out-of-the box:
 
 - [Synapse](https://github.com/element-hq/synapse): The Matrix server
 - [Matrix Authentication Service](https://github.com/element-hq/matrix-authentication-service): Manages users and handles user authentication.
+- [Element Call's Matrix RTC Backend](https://github.com/element-hq/element-call/tree/livekit): Allows to use Element Call from Element X and Element Web apps.
 - [Element Web](https://github.com/element-hq/element-web): The Matrix Web Client provided by Element.
 - PostgreSQL: An optional packaged PostgreSQL server that allows you to quickly set up the stack out-of-the-box. For a better long-term experience, please consider using a dedicated PostgreSQL server. See the [advanced setup docs](./docs/advanced.md) for more information.
 - HAProxy: Provides the routing to Synapse processes.
@@ -140,6 +141,14 @@ You need to create DNS entries to set up ESS Community. All of these DNS entries
 - Synapse: For example, you could use `matrix.<server-name.tld>`.
 - Matrix Authentication Service: For example, you could use `account.<server-name.tld>`.
 - Element Web: This will be the address of the chat client of your server. For example, you could use `chat.<server-name.tld>`.
+
+### Ports
+
+For this simple setup you need to open the following ports :
+ - TCP 80: This port will be used for the HTTP connections of all services, which will redirect to the HTTPS connection.
+ - TCP 443: This port will be used for the HTTPS connections of all services.
+ - TCP 30881: This port will be used for the TCP WebRTC connections of Matrix RTC Backend.
+ - UDP 30882: This port will be used for the Muxed WebRTC connections of Matrix RTC Backend.
 
 ### K3s - Kubernetes single node setup
 
