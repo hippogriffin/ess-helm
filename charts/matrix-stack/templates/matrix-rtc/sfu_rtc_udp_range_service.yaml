@@ -20,7 +20,7 @@ spec:
   externalTrafficPolicy: Local
   ports:
 {{- with .exposedServices.rtcUdp.portRange }}
-{{- range $port := seq .startPort .endPort  }}
+{{- range $port := untilStep (.startPort | int) (.endPort | int) 1 }}
   - name: rtc-udp-{{ $port }}
     port: {{ $port }}
     targetPort: {{ $port }}

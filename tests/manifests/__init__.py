@@ -300,3 +300,11 @@ values_files_with_ingresses = [
     if any([deployable_details.has_ingress for deployable_details in deployables_details])
     and values_file not in secret_values_files_to_test
 ]
+_extra_services_values_files_to_test = [
+    "matrix-rtc-exposed-services-values.yaml",
+    "matrix-rtc-host-mode-values.yaml"
+]
+
+services_values_files_to_test = [
+    values_file for details in all_components_details for values_file in details.values_files
+] + _extra_services_values_files_to_test

@@ -157,12 +157,12 @@ spec:
   {{- if .enabled }}
     {{- $portType := .type -}}
     {{- with .portRange }}
-    {{- range $port := seq .startPort .endPort  }}
-          - containerPort: {{ $port }}
-            name: rtc-udp-{{ $port }}
-            protocol: UDP
-      {{ if eq .type "HostPort" }}
-            hostPort: {{ $port }}
+    {{- range $port := untilStep (.startPort | int) (.endPort | int) 1 }}
+        - containerPort: {{ $port }}
+          name: rtc-udp-{{ $port }}
+          protocol: UDP
+      {{ if eq $portType "HostPort" }}
+          hostPort: {{ $port }}
       {{- end }}
     {{- end }}
     {{- end }}
