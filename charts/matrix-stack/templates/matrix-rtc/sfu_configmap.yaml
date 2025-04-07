@@ -18,7 +18,7 @@ metadata:
 data:
   config.yaml: |
     {{- tpl ($.Files.Get "configs/matrix-rtc/sfu/config.yaml.tpl") (dict "root" $ "context" .) | nindent 4 }}
-  keys.yaml: |
+  keys-template.yaml: |
     ${LIVEKIT_KEY}: ${LIVEKIT_SECRET}
 {{- end -}}
 {{- end -}}

@@ -95,7 +95,7 @@ spec:
         - render-config
         - -output
         - /conf/keys.yaml
-        - /config-templates/keys.yaml
+        - /config-templates/keys-template.yaml
 {{- with .resources }}
         resources:
           {{- toYaml . | nindent 10 }}
