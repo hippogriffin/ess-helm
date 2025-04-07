@@ -24,6 +24,8 @@ async def test_well_known_files_can_be_accessed(
         assert json_content["org.matrix.msc4143.rtc_foci"] == [
             {"type": "livekit", "livekit_service_url": f"https://mrtc.{generated_data.server_name}"}
         ]
+    else:
+        assert "org.matrix.msc4143.rtc_foci" not in json_content
 
     json_content = await aiottp_get_json(f"https://{generated_data.server_name}/.well-known/matrix/server", ssl_context)
     if value_file_has("synapse.enabled", True):
