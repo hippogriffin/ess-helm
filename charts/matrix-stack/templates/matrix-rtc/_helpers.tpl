@@ -8,7 +8,7 @@ SPDX-License-Identifier: AGPL-3.0-only
 {{- $root := .root -}}
 {{- with required "element-io.matrix-rtc.labels missing context" .context -}}
 {{ include "element-io.ess-library.labels.common" (dict "root" $root "context" .labels) }}
-app.kubernetes.io/component: matrix-stack-sfu-jwt
+app.kubernetes.io/component: matrix-rtc-authorizer
 app.kubernetes.io/name: matrix-rtc-sfu-jwt
 app.kubernetes.io/instance: {{ $root.Release.Name }}-matrix-rtc-sfu-jwt
 app.kubernetes.io/version: {{ .image.tag }}
@@ -19,7 +19,7 @@ app.kubernetes.io/version: {{ .image.tag }}
 {{- $root := .root -}}
 {{- with required "element-io.matrix-rtc.labels missing context" .context -}}
 {{ include "element-io.ess-library.labels.common" (dict "root" $root "context" .labels) }}
-app.kubernetes.io/component: matrix-stack-rtc
+app.kubernetes.io/component: matrix-rtc-voip-server
 app.kubernetes.io/name: matrix-rtc-sfu
 app.kubernetes.io/instance: {{ $root.Release.Name }}-matrix-rtc-sfu
 app.kubernetes.io/version: {{ .image.tag }}
@@ -30,7 +30,7 @@ app.kubernetes.io/version: {{ .image.tag }}
 {{- $root := .root -}}
 {{- with required "element-io.matrix-rtc.labels missing context" .context -}}
 {{ include "element-io.ess-library.labels.common" (dict "root" $root "context" .labels) }}
-app.kubernetes.io/component: matrix-stack-rtc
+app.kubernetes.io/component: matrix-rtc-voip-server
 app.kubernetes.io/name: matrix-rtc-sfu-rtc
 app.kubernetes.io/instance: {{ $root.Release.Name }}-matrix-rtc-sfu-rtc
 app.kubernetes.io/version: {{ .image.tag }}
