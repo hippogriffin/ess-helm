@@ -164,7 +164,6 @@ async def matrix_stack(
             "hostnames": [
                 generated_data.server_name,
                 f"synapse.{generated_data.server_name}",
-                f"mas.{generated_data.server_name}",
             ],
         }
     ]
