@@ -269,6 +269,8 @@ _multi_component_values_files_to_base_components_names: dict[str, list[str]] = {
         "synapse",
     ],
     "matrix-authentication-service-synapse-secrets-in-helm-values.yaml": ["matrix-authentication-service", "synapse"],
+    "matrix-rtc-external-livekit-secrets-in-helm-values.yaml": ["matrix-rtc-sfu-jwt"],
+    "matrix-rtc-external-livekit-secrets-externally-values.yaml": ["matrix-rtc-sfu-jwt"]
 }
 
 
@@ -282,6 +284,8 @@ values_files_to_deployables_details = {
 _extra_secret_values_files_to_test = [
     "matrix-authentication-service-synapse-secrets-in-helm-values.yaml",
     "matrix-authentication-service-synapse-secrets-externally-values.yaml",
+    "matrix-rtc-external-livekit-secrets-in-helm-values.yaml",
+    "matrix-rtc-external-livekit-secrets-externally-values.yaml",
 ]
 secret_values_files_to_test = [
     values_file for details in all_components_details for values_file in details.secret_values_files

@@ -43,9 +43,10 @@ spec:
         {{- tpl (toYaml . | nindent 8) $ }}
 {{- end }}
 {{- include "element-io.ess-library.pods.commonSpec" (dict "root" $ "context" (dict "componentValues" . "key" "matrix-rtc-sfu" "deployment" true "usesMatrixTools" true)) | nindent 6 }}
+{{- if not (.livekitAuth).keysYaml }}
       initContainers:
       - name: render-config
-{{- with $.Values.matrixTools.image -}}
+{{- with $.Values.matrixTools.image }}
 {{- if .digest }}
         image: "{{ .registry }}/{{ .repository }}@{{ .digest }}"
         imagePullPolicy: {{ .pullPolicy | default "IfNotPresent" }}
@@ -61,26 +62,14 @@ spec:
         env:
         {{- (include "element-io.matrix-rtc-sfu.env" (dict "root" $ "context" .)) | nindent 8 }}
         - name: "LIVEKIT_KEY"
-          value: >-
-            {{ printf "{{ readfile \"/secrets/%s\" }}" (
-              include "element-io.ess-library.init-secret-path" (
-                  dict "root" $
-                  "context" (dict
-                    "secretPath" "matrixRTC.livekitKey"
-                    "initSecretKey" "ELEMENT_CALL_LIVEKIT_KEY"
-                    "defaultSecretName" (printf "%s-matrix-rtc-sfu-jwt" $.Release.Name)
-                    "defaultSecretKey" "LIVEKIT_KEY"
-                  )
-                )
-              )
-            }}
+          value: "{{ (.livekitAuth).key | default "matrix-rtc" }}"
         - name: LIVEKIT_SECRET
           value: >-
            {{ (printf "{{ readfile \"/secrets/%s\" }}" (
                 (include "element-io.ess-library.init-secret-path" (
                     dict "root" $
                     "context" (dict
-                      "secretPath" "matrixRTC.livekitSecret"
+                      "secretPath" "matrixRTC.livekitAuth.secret"
                       "initSecretKey" "ELEMENT_CALL_LIVEKIT_SECRET"
                       "defaultSecretName" (printf "%s-matrix-rtc-sfu-jwt" $.Release.Name)
                       "defaultSecretKey" "LIVEKIT_SECRET"
@@ -111,6 +100,7 @@ spec:
         - mountPath: /secrets/{{ tpl $secret $ }}
           name: "secret-{{ tpl $secret $ }}"
           readOnly: true
+{{- end }}
 {{- end }}
       hostNetwork: {{ .hostNetwork }}
       containers:

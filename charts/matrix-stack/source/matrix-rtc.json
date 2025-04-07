@@ -6,11 +6,43 @@
     "enabled": {
       "type": "boolean"
     },
-    "livekitKey": {
-      "$ref": "file://common/credential.json"
-    },
-    "livekitSecret": {
-      "$ref": "file://common/credential.json"
+    "livekitAuth": {
+      "type": "object",
+      "oneOf": [
+        {
+          "required": [
+            "keysYaml"
+          ],
+          "not": {
+            "required": [
+              "key",
+              "secret"
+            ]
+          }
+        },
+        {
+          "required": [
+            "key",
+            "secret"
+          ],
+          "not": {
+            "required": [
+              "keysYaml"
+            ]
+          }
+        }
+      ],
+      "properties": {
+        "keysYaml": {
+          "$ref": "file://common/credential.json"
+        },
+        "key": {
+          "type": "string"
+        },
+        "secret": {
+          "$ref": "file://common/credential.json"
+        }
+      }
     },
     "extraEnv": {
       "$ref": "file://common/extraEnv.json"

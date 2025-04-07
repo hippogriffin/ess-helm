@@ -506,32 +506,65 @@
         "enabled": {
           "type": "boolean"
         },
-        "livekitKey": {
+        "livekitAuth": {
           "type": "object",
-          "properties": {
-            "value": {
-              "type": "string"
+          "oneOf": [
+            {
+              "required": [
+                "keysYaml"
+              ],
+              "not": {
+                "required": [
+                  "key",
+                  "secret"
+                ]
+              }
             },
-            "secret": {
-              "type": "string"
-            },
-            "secretKey": {
-              "type": "string"
+            {
+              "required": [
+                "key",
+                "secret"
+              ],
+              "not": {
+                "required": [
+                  "keysYaml"
+                ]
+              }
             }
-          },
-          "additionalProperties": false
-        },
-        "livekitSecret": {
-          "type": "object",
+          ],
           "properties": {
-            "value": {
+            "keysYaml": {
+              "type": "object",
+              "properties": {
+                "value": {
+                  "type": "string"
+                },
+                "secret": {
+                  "type": "string"
+                },
+                "secretKey": {
+                  "type": "string"
+                }
+              },
+              "additionalProperties": false
+            },
+            "key": {
               "type": "string"
             },
             "secret": {
-              "type": "string"
-            },
-            "secretKey": {
-              "type": "string"
+              "type": "object",
+              "properties": {
+                "value": {
+                  "type": "string"
+                },
+                "secret": {
+                  "type": "string"
+                },
+                "secretKey": {
+                  "type": "string"
+                }
+              },
+              "additionalProperties": false
             }
           },
           "additionalProperties": false

@@ -46,7 +46,18 @@ rtc:
 
 prometheus_port: 6789
 
+{{- if (.livekitAuth).keysYaml -}}
+key_file: /secrets/{{ (printf "/secrets/%s"
+      (include "element-io.ess-library.provided-secret-path" (
+        dict "root" $root "context" (
+          dict "secretPath" "matrixRTC.livekitAuth.keysYaml"
+              "defaultSecretName" (printf "%s-matrix-rtc-sfu-jwt" $root.Release.Name)
+              "defaultSecretKey" "LIVEKIT_KEYS_YAML"
+              )
+        ))) }}
+{{- else }}
 key_file: /rendered-config/keys.yaml
+{{- end }}
 
 # Logging config
 logging:

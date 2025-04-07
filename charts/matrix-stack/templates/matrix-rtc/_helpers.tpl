@@ -44,25 +44,30 @@ app.kubernetes.io/version: {{ .image.tag }}
 {{- range $envEntry := .extraEnv -}}
 {{- $_ := set $resultEnv $envEntry.name $envEntry.value -}}
 {{- end -}}
-{{- $_ := set $resultEnv "LIVEKIT_KEY_FROM_FILE" (printf "/secrets/%s"
-      (include "element-io.ess-library.init-secret-path" (
+{{- if (.livekitAuth).keysYaml }}
+{{- $_ := set $resultEnv "LIVEKIT_KEY_FILE" (printf "/secrets/%s"
+      (include "element-io.ess-library.provided-secret-path" (
         dict "root" $root "context" (
-          dict "secretPath" "matrixRTC.livekitKey"
-              "initSecretKey" "ELEMENT_CALL_LIVEKIT_KEY"
+          dict "secretPath" "matrixRTC.livekitAuth.keysYaml"
               "defaultSecretName" (printf "%s-matrix-rtc-sfu-jwt" $root.Release.Name)
-              "defaultSecretKey" "LIVEKIT_KEY"
-          )
-      ))) }}
+              "defaultSecretKey" "LIVEKIT_KEYS_YAML"
+              )
+        ))) }}
+{{- else }}
+{{- $_ := set $resultEnv "LIVEKIT_KEY" ((.livekitAuth).key | default "matrix-rtc") -}}
 {{- $_ := set $resultEnv "LIVEKIT_SECRET_FROM_FILE" (printf "/secrets/%s"
       (include "element-io.ess-library.init-secret-path" (
         dict "root" $root "context" (
-          dict "secretPath" "matrixRTC.livekitSecret"
+          dict "secretPath" "matrixRTC.livekitAuth.secret"
               "initSecretKey" "ELEMENT_CALL_LIVEKIT_SECRET"
               "defaultSecretName" (printf "%s-matrix-rtc-sfu-jwt" $root.Release.Name)
               "defaultSecretKey" "LIVEKIT_SECRET"
               )
         ))) }}
+{{- end }}
+{{- if .sfu.enabled -}}
 {{- $_ := set $resultEnv "LIVEKIT_URL" (printf "wss://%s" (tpl .ingress.host $root)) -}}
+{{- end -}}
 {{- range $key, $value := $resultEnv }}
 - name: {{ $key | quote }}
   value: {{ $value | quote }}
@@ -91,13 +96,13 @@ app.kubernetes.io/version: {{ .image.tag }}
 {{- if and $root.Values.initSecrets.enabled (include "element-io.init-secrets.generated-secrets" (dict "root" $root)) }}
 {{ $configSecrets = append $configSecrets (printf "%s-generated" $root.Release.Name) }}
 {{- end }}
-{{- if or .livekitKey.value .livekitSecret.value -}}
+{{- if or ((.livekitAuth).keysYaml).value ((.livekitAuth).secret).value -}}
 {{ $configSecrets = append $configSecrets (printf "%s-matrix-rtc-sfu-jwt" $root.Release.Name) }}
 {{- end -}}
-{{- with .livekitKey.secret -}}
+{{- with ((.livekitAuth).keysYaml).secret -}}
 {{ $configSecrets = append $configSecrets (tpl . $root) }}
 {{- end -}}
-{{- with .livekitSecret.secret -}}
+{{- with ((.livekitAuth).secret).secret -}}
 {{ $configSecrets = append $configSecrets (tpl . $root) }}
 {{- end -}}
 {{ $configSecrets | uniq | toJson }}
