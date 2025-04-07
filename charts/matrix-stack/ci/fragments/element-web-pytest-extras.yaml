@@ -25,14 +25,7 @@ elementWeb:
             "base_url": "https://synapse.{{ $.Values.serverName }}"
           }
         },
-        "element_call": {
-          "url": "https://mrtc.{{ $.Values.serverName }}",
-          "use_exclusively": true
-        },
-        "features": {
-          "feature_video_rooms": true,
-          "feature_group_calls": true,
-          "feature_new_room_decoration_ui": true,
-          "feature_element_call_video_rooms": true
+        "some_key": {
+          "some_value": "https://test.{{ $.Values.serverName }}"
         }
       }

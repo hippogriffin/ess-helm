@@ -20,20 +20,28 @@ app.kubernetes.io/version: {{ .image.tag }}
 {{- with required "element-io.element-web.config missing context" .context -}}
 {{- $config := dict -}}
 {{- $mHomeserver := dict }}
+{{- $settingDefaults := dict -}}
 {{- if $root.Values.serverName }}
 {{- $_ := set $mHomeserver "server_name" $root.Values.serverName }}
 {{- end }}
 {{- if $root.Values.synapse.enabled }}
 {{- $_ := set $mHomeserver "base_url" (printf "https://%s" $root.Values.synapse.ingress.host) -}}
 {{- end }}
+{{- if $root.Values.matrixRTC.enabled }}
+{{- $_ := set $settingDefaults "feature_group_calls" true -}}
+{{- $_ := set $config "features" (dict "feature_video_rooms" true "feature_group_calls" true "feature_new_room_decoration_ui" true "feature_element_call_video_rooms" true) -}}
+{{- $_ := set $config "element_call" (dict "use_exclusively" true) -}}
+{{- end }}
 {{- if $root.Values.matrixAuthenticationService.enabled }}
 {{- $embeddedPages := dict "login_for_welcome" true -}}
 {{- $ssoRedirectOptions := dict "immediate" false -}}
-{{- $settingDefaults := dict "UIFeature.passwordReset" false "UIFeature.registration" false "UIFeature.deactivate" false -}}
+{{- $_ := set $settingDefaults "UIFeature.registration" false -}}
+{{- $_ := set $settingDefaults "UIFeature.passwordReset" false  -}}
+{{- $_ := set $settingDefaults "UIFeature.deactivate" false -}}
 {{- $_ := set $config "embedded_pages" $embeddedPages -}}
 {{- $_ := set $config "sso_redirect_options" $ssoRedirectOptions -}}
-{{- $_ := set $config "setting_defaults" $settingDefaults -}}
 {{- end }}
+{{- $_ := set $config "setting_defaults" $settingDefaults -}}
 {{- $defaultServerConfig := dict "m.homeserver" $mHomeserver -}}
 {{- $_ := set $config "default_server_config" $defaultServerConfig -}}
 {{- $_ := set $config "bug_report_endpoint_url" "https://element.io/bugreports/submit" -}}
