@@ -108,3 +108,12 @@ app.kubernetes.io/version: {{ .image.tag }}
 {{ $configSecrets | uniq | toJson }}
 {{- end }}
 {{- end }}
+
+
+{{- define "element-io.matrix-rtc-sfu.config" }}
+{{- $root := .root -}}
+{{- with required "element-io.matrix-rtc-sfu.config missing context" .context -}}
+{{- $config := (tpl ($root.Files.Get "configs/matrix-rtc/sfu/config.yaml.tpl") (dict "root" $root "context" .)) | fromYaml }}
+{{- toYaml (merge (.additional | fromYaml) $config) }}
+{{- end }}
+{{- end -}}

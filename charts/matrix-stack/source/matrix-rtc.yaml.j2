@@ -43,12 +43,11 @@ sfu:
     # when set to true, emit json fields
     json: false
 
-  # Wether to advertise the external IP of the SFU during ICE Negociations
-  # Should be true unless you are using `hostMode: true`
-  useExternalIp: true
-  # A list of stun servers to use
-  # The SFU will fallback to google stun servers if the list is empty
-  stunServers: []
+  ## Additional configuration to provide to all LiveKit processes.
+  ## This should be provided as yaml-string and will be merged into the default configuration.
+  ## Full details on available configuration options can be found at https://docs.livekit.io/home/self-hosting/deployment/#configuration
+  additional: ""
+
   # Whether to start the SFU in host network mode or not
   hostNetwork: false
   exposedServices:

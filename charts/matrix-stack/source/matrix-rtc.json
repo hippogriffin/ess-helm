@@ -104,17 +104,11 @@
         "annotations": {
           "$ref": "file://common/workloadAnnotations.json"
         },
-        "useExternalIp": {
-          "type": "boolean"
-        },
         "hostNetwork": {
           "type": "boolean"
         },
-        "stunServers": {
-          "type": "array",
-          "items": {
-            "type": "string"
-          }
+        "additional": {
+          "type": "string"
         },
         "logging": {
           "type": "object",

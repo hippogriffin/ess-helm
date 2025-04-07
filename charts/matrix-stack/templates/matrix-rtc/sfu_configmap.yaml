@@ -17,7 +17,7 @@ metadata:
   namespace: {{ $.Release.Namespace }}
 data:
   config.yaml: |
-    {{- tpl ($.Files.Get "configs/matrix-rtc/sfu/config.yaml.tpl") (dict "root" $ "context" .) | nindent 4 }}
+    {{- (include "element-io.matrix-rtc-sfu.config" (dict "root" $ "context" .)) | nindent 4 }}
 {{- if not ($.Values.matrixRTC.livekitAuth).keysYaml }}
   keys-template.yaml: |
     ${LIVEKIT_KEY}: ${LIVEKIT_SECRET}
