@@ -94,12 +94,11 @@ jobs:
         export HELM_NAMESPACE=ess
         for checkov_values in charts/matrix-stack/ci/*checkov*values.yaml; do
           echo "Testing matrix-stack with $checkov_values";
-          mkdir checkov-tmp
-          cd checkov-tmp
+          tmpdir=$(mktemp -d)
+          cd "$tmpdir"
           helm template checkov -f "../$checkov_values" ../charts/matrix-stack | sed 's/{{//' | yq -s '.kind + "-" + .metadata.name'
           checkov -d .  --skip-check CKV_SECRET_6 --quiet
           cd -
-          rm -rf checkov-tmp
         done
 
     - name: Run our manifest tests
