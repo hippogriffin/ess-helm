@@ -10,7 +10,7 @@ This Helm chart deploys a coherent Matrix Stack. It currently includes the follo
 * [Synapse](https://github.com/element-hq/synapse) as a Matrix homeserver
 * [Element Web](https://github.com/element-hq/element-web) as a Matrix client
 * [Matrix Authentication Service](https://github.com/element-hq/matrix-authentication-service) for authentication on the Matrix homeserver
-* [Matrix RTC Backend](https://github.com/element-hq/element-call/tree/livekit) for Matrix VOiP calls
+* [Matrix RTC Backend](https://github.com/element-hq/element-call/tree/livekit) for Matrix VoIP calls
 * [PostgreSQL](https://hub.docker.com/_/postgres) as a simple internal DB
 * Well Known Delegation file hosting to enable Matrix client and Matrix federation discovery of this deployment
 

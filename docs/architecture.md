@@ -43,7 +43,7 @@ Matrix Authentication Service provides the future OIDC-Based matrix authenticati
 
 ### Matrix RTC Backend
 
-Matrix RTC Backend provides Matrix VOiP calls. It allows users to make video calls between each other using their Matrix accounts.
+Matrix RTC Backend provides Matrix VoIP calls. It allows users to make video calls between each other using their Matrix accounts.
 
 ## Chart Features
 
