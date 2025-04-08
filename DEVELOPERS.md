@@ -125,7 +125,7 @@ From the `matrix-stack` directory: `bash scripts/ct-lint.sh --charts . --validat
 
 Detects misconfigurations and lack of hardening in the manifests.
 
-From the project root: `bash scripts/checkov.sh
+From `charts/matrix-stack`: `HELM_NAMESPACE=ess checkov -d . --framework helm --quiet --var-file ci/<checkov values file>`
 
 Other values files can be used but the values files named `checkov<something>values.yaml` will have
 any test suppression annotations required.
