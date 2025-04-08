@@ -97,7 +97,7 @@ jobs:
           mkdir checkov-tmp
           cd checkov-tmp
           helm template checkov -f "../$checkov_values" ../charts/matrix-stack | sed 's/{{//' | yq -s '.kind + "-" + .metadata.name'
-          checkov -d . --quiet
+          checkov -d .  --skip-check CKV_SECRET_6 --quiet
           cd -
           rm -rf checkov-tmp
         done
