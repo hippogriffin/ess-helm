@@ -1183,6 +1183,16 @@ matrixAuthenticationService:
     ## This can be set to `ingress-nginx`.
     # controllerType:
 
+  ## Kubernetes resources to allocate to each instance.
+  resources:
+    ## Requests describes the minimum amount of compute resources required. More info: https://kubernetes.io/docs/concepts/configuration/manage-compute-resources-container/
+    requests:
+      memory: 50Mi
+      cpu: 50m
+
+    ## Limits describes the maximum amount of compute resources allowed. More info: https://kubernetes.io/docs/concepts/configuration/manage-compute-resources-container/
+    limits:
+      memory: 350Mi
 
   ## Labels to add to all manifest for this component
   labels: {}

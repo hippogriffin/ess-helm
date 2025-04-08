@@ -91,10 +91,8 @@ jobs:
     - name: Run checkov
       run: |
         checkov --version
-        export HELM_NAMESPACE=ess
         for checkov_values in charts/matrix-stack/ci/*checkov*values.yaml; do
-          echo "Testing matrix-stack with $checkov_values";
-          checkov -d "charts/matrix-stack" --framework helm --var-file "$checkov_values" --quiet
+          bash scripts/checkov.sh $checkov_values
         done
 
     - name: Run our manifest tests
