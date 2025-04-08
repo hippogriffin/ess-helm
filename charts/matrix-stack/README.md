@@ -10,6 +10,7 @@ This Helm chart deploys a coherent Matrix Stack. It currently includes the follo
 * [Synapse](https://github.com/element-hq/synapse) as a Matrix homeserver
 * [Element Web](https://github.com/element-hq/element-web) as a Matrix client
 * [Matrix Authentication Service](https://github.com/element-hq/matrix-authentication-service) for authentication on the Matrix homeserver
+* [Matrix RTC Backend](https://github.com/element-hq/element-call/tree/livekit) for Matrix VoIP calls
 * [PostgreSQL](https://hub.docker.com/_/postgres) as a simple internal DB
 * Well Known Delegation file hosting to enable Matrix client and Matrix federation discovery of this deployment
 
@@ -19,6 +20,7 @@ The chart requires:
 * An ingress controller installed in the cluster already
 * TLS certificates for Ingresses
 * If using Synapse, the ability to create `PersistentVolumeClaims` to store media
+* Opening dedicated ports on your cluster for Matrix RTC backend
 
 ### Recommandations
 
@@ -137,6 +139,37 @@ matrixAuthenticationService:
 ```
 
 Other settings for MAS can be seen under the `matrixAuthenticationService` section of
+`helm show values` for this chart.
+
+## Matrix RTC Backend
+
+A minimal set of values to bring up Matrix RTC Backend would be
+```yaml
+
+matrixRTC:
+  ingress:
+    host: mrtc.ess.localhost
+```
+
+Additional Matrix RTC Backend SFU configuration can be provided inline in the values as a string with :
+```yaml
+matrixRTC:
+  ingress:
+    host: mrtc.ess.localhost
+  sfu:
+    additional: |
+      # Add your custom LiveKit configuration here.
+```
+
+Full details on available configuration options can be found at https://docs.livekit.io/home/self-hosting/deployment/#configuration
+
+Matrix RTC Backend is enabled for deployment by default. It can be disabled with the following values
+```yaml
+matrixRTC:
+  enabled: false
+```
+
+Other settings for Matrix RTC Backend can be seen under the `matrixRTC` section of
 `helm show values` for this chart.
 
 ## Element Web

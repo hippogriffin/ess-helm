@@ -4,10 +4,10 @@
 
 import pytest
 
-from . import values_files_to_test
+from . import services_values_files_to_test
 
 
-@pytest.mark.parametrize("values_file", values_files_to_test)
+@pytest.mark.parametrize("values_file", services_values_files_to_test)
 @pytest.mark.asyncio_cooperative
 async def test_ports_in_services_are_named(templates):
     for template in templates:

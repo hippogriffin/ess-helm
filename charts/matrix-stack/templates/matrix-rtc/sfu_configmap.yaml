@@ -1,0 +1,28 @@
+{{- /*
+Copyright 2024 New Vector Ltd
+
+SPDX-License-Identifier: AGPL-3.0-only
+*/ -}}
+
+{{- with $.Values.matrixRTC -}}
+{{- if .enabled -}}
+{{- with .sfu -}}
+{{- if .enabled -}}
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  labels:
+    {{- include "element-io.matrix-rtc-sfu.labels" (dict "root" $ "context" .) | nindent 4 }}
+  name: {{ $.Release.Name }}-matrix-rtc-sfu
+  namespace: {{ $.Release.Namespace }}
+data:
+  config.yaml: |
+    {{- (include "element-io.matrix-rtc-sfu.config" (dict "root" $ "context" .)) | nindent 4 }}
+{{- if not ($.Values.matrixRTC.livekitAuth).keysYaml }}
+  keys-template.yaml: |
+    ${LIVEKIT_KEY}: ${LIVEKIT_SECRET}
+{{- end -}}
+{{- end -}}
+{{- end -}}
+{{- end -}}
+{{- end -}}

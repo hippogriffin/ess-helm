@@ -8,6 +8,9 @@ elementWeb:
 matrixAuthenticationService:
   enabled: true
 
+matrixRTC:
+  enabled: true
+
 synapse:
   enabled: true
 

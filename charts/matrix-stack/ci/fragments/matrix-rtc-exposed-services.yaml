@@ -1,0 +1,16 @@
+# Copyright 2025 New Vector Ltd
+#
+# SPDX-License-Identifier: AGPL-3.0-only
+
+matrixRTC:
+  sfu:
+    exposedServices:
+      rtcTcp:
+        port: 33000
+      rtcMuxedUdp:
+        port: 33001
+      rtcUdp:
+        enabled: true
+        portRange:
+          startPort: 32500
+          endPort: 32900

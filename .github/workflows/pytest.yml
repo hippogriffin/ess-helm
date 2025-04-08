@@ -30,6 +30,7 @@ jobs:
         test-component:
         - element-web
         - matrix-authentication-service
+        - matrix-rtc
         - synapse
         - well-known-delegation
     steps:
