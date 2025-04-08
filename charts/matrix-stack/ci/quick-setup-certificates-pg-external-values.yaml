@@ -23,7 +23,6 @@ matrixAuthenticationService:
     sslMode: prefer
     user: your-matrix-auth-service-user
 matrixRTC:
-  enabled: false
   ingress:
     host: mrtc.your.tld
     tlsSecret: ess-auth-certificate
