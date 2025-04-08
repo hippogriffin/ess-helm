@@ -5,29 +5,17 @@
 # source_fragments: matrix-authentication-service-minimal.yaml matrix-authentication-service-checkov.yaml init-secrets-minimal.yaml init-secrets-checkov.yaml postgres-minimal.yaml postgres-checkov.yaml
 # DO NOT EDIT DIRECTLY. Edit the fragment files to add / modify / remove values
 
+# postgres don't have any required properties to be set and defaults to enabled
 elementWeb:
   enabled: false
 initSecrets:
   annotations:
-    checkov.io/skip1: CKV_K8S_11=We deliberately don't set CPU limits. Pod is BestEffort not Guaranteed
-    checkov.io/skip2: CKV_K8S_43=No digests
-    checkov.io/skip3: CKV2_K8S_6=No network policy yet
-    checkov.io/skip4: CKV_K8S_38=The job needs a service account
+    checkov.io/skip1: CKV_K8S_38=The job needs a service account
 matrixAuthenticationService:
-  annotations:
-    checkov.io/skip1: CKV_K8S_11=We deliberately don't set CPU limits. Pod is BestEffort not Guaranteed
-    checkov.io/skip2: CKV_K8S_43=No digests
-    checkov.io/skip3: CKV2_K8S_6=No network policy yet
   ingress:
     host: mas.ess.localhost
 matrixRTC:
   enabled: false
-postgres:
-  annotations:
-    checkov.io/skip1: CKV_K8S_11=We deliberately don't set CPU limits. Pod is BestEffort not Guaranteed
-    checkov.io/skip2: CKV_K8S_43=No digests
-    checkov.io/skip3: CKV2_K8S_6=No network policy yet
-    checkov.io/skip4: CKV_SECRET_6=Postgres annotations hash are triggering CKV_SECRET_6.
 synapse:
   enabled: false
 wellKnownDelegation:
