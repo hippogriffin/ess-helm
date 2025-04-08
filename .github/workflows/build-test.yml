@@ -90,16 +90,8 @@ jobs:
 
     - name: Run checkov
       run: |
-        checkov --version
-        export HELM_NAMESPACE=ess
-        for checkov_values in charts/matrix-stack/ci/*checkov*values.yaml; do
-          echo "Testing matrix-stack with $checkov_values";
-          tmpdir=$(mktemp -d)
-          cd "$tmpdir"
-          helm template checkov -f "../$checkov_values" ../charts/matrix-stack | sed 's/{{//' | yq -s '.kind + "-" + .metadata.name'
-          checkov -d .  --skip-check CKV_SECRET_6 --quiet
-          cd -
-        done
+        bash scripts/checkov.sh
+
 
     - name: Run our manifest tests
       run: poetry run pytest -vv tests/manifests
