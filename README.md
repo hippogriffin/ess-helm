@@ -140,6 +140,7 @@ You need to create DNS entries to set up ESS Community. All of these DNS entries
 - Server name: This DNS entry should point to the installation ingress. It should be the `server-name.tld` you chose above.
 - Synapse: For example, you could use `matrix.<server-name.tld>`.
 - Matrix Authentication Service: For example, you could use `account.<server-name.tld>`.
+- Matrix RTC Backend: For example, you could use `mrtc.<server-name.tld>`.
 - Element Web: This will be the address of the chat client of your server. For example, you could use `chat.<server-name.tld>`.
 
 ### Ports
