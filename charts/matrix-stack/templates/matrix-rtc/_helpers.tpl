@@ -4,13 +4,24 @@ Copyright 2024 New Vector Ltd
 SPDX-License-Identifier: AGPL-3.0-only
 */ -}}
 
-{{- define "element-io.matrix-rtc-sfu-jwt.labels" -}}
+{{- define "element-io.matrix-rtc-ingress.labels" -}}
+{{- $root := .root -}}
+{{- with required "element-io.matrix-rtc.labels missing context" .context -}}
+{{ include "element-io.ess-library.labels.common" (dict "root" $root "context" .labels) }}
+app.kubernetes.io/component: matrix-rtc
+app.kubernetes.io/name: matrix-rtc
+app.kubernetes.io/instance: {{ $root.Release.Name }}-matrix-rtc
+app.kubernetes.io/version: {{ .image.tag }}
+{{- end }}
+{{- end }}
+
+{{- define "element-io.matrix-rtc-authorizer.labels" -}}
 {{- $root := .root -}}
 {{- with required "element-io.matrix-rtc.labels missing context" .context -}}
 {{ include "element-io.ess-library.labels.common" (dict "root" $root "context" .labels) }}
 app.kubernetes.io/component: matrix-rtc-authorizer
-app.kubernetes.io/name: matrix-rtc-sfu-jwt
-app.kubernetes.io/instance: {{ $root.Release.Name }}-matrix-rtc-sfu-jwt
+app.kubernetes.io/name: matrix-rtc-authorizer
+app.kubernetes.io/instance: {{ $root.Release.Name }}-matrix-rtc-authorizer
 app.kubernetes.io/version: {{ .image.tag }}
 {{- end }}
 {{- end }}
@@ -37,9 +48,9 @@ app.kubernetes.io/version: {{ .image.tag }}
 {{- end }}
 {{- end }}
 
-{{- define "element-io.matrix-rtc-sfu-jwt.env" }}
+{{- define "element-io.matrix-rtc-authorizer.env" }}
 {{- $root := .root -}}
-{{- with required "element-io.sfu-jwt.env missing context" .context -}}
+{{- with required "element-io.authorizer.env missing context" .context -}}
 {{- $resultEnv := dict -}}
 {{- range $envEntry := .extraEnv -}}
 {{- $_ := set $resultEnv $envEntry.name $envEntry.value -}}
@@ -49,7 +60,7 @@ app.kubernetes.io/version: {{ .image.tag }}
       (include "element-io.ess-library.provided-secret-path" (
         dict "root" $root "context" (
           dict "secretPath" "matrixRTC.livekitAuth.keysYaml"
-              "defaultSecretName" (printf "%s-matrix-rtc-sfu-jwt" $root.Release.Name)
+              "defaultSecretName" (printf "%s-matrix-rtc-authorizer" $root.Release.Name)
               "defaultSecretKey" "LIVEKIT_KEYS_YAML"
               )
         ))) }}
@@ -60,7 +71,7 @@ app.kubernetes.io/version: {{ .image.tag }}
         dict "root" $root "context" (
           dict "secretPath" "matrixRTC.livekitAuth.secret"
               "initSecretKey" "ELEMENT_CALL_LIVEKIT_SECRET"
-              "defaultSecretName" (printf "%s-matrix-rtc-sfu-jwt" $root.Release.Name)
+              "defaultSecretName" (printf "%s-matrix-rtc-authorizer" $root.Release.Name)
               "defaultSecretKey" "LIVEKIT_SECRET"
               )
         ))) }}
@@ -77,7 +88,7 @@ app.kubernetes.io/version: {{ .image.tag }}
 
 {{- define "element-io.matrix-rtc-sfu.env" }}
 {{- $root := .root -}}
-{{- with required "element-io.sfu-jwt missing context" .context -}}
+{{- with required "element-io.authorizer missing context" .context -}}
 {{- $resultEnv := dict -}}
 {{- range $envEntry := .extraEnv -}}
 {{- $_ := set $resultEnv $envEntry.name $envEntry.value -}}
@@ -89,15 +100,15 @@ app.kubernetes.io/version: {{ .image.tag }}
 {{- end -}}
 {{- end -}}
 
-{{- define "element-io.matrix-rtc-sfu-jwt.configSecrets" -}}
+{{- define "element-io.matrix-rtc-authorizer.configSecrets" -}}
 {{- $root := .root -}}
-{{- with required "element-io.matrix-rtc-sfu-jwt.configSecrets missing context" .context -}}
+{{- with required "element-io.matrix-rtc-authorizer.configSecrets missing context" .context -}}
 {{- $configSecrets := list -}}
 {{- if and $root.Values.initSecrets.enabled (include "element-io.init-secrets.generated-secrets" (dict "root" $root)) }}
 {{ $configSecrets = append $configSecrets (printf "%s-generated" $root.Release.Name) }}
 {{- end }}
 {{- if or ((.livekitAuth).keysYaml).value ((.livekitAuth).secret).value -}}
-{{ $configSecrets = append $configSecrets (printf "%s-matrix-rtc-sfu-jwt" $root.Release.Name) }}
+{{ $configSecrets = append $configSecrets (printf "%s-matrix-rtc-authorizer" $root.Release.Name) }}
 {{- end -}}
 {{- with ((.livekitAuth).keysYaml).secret -}}
 {{ $configSecrets = append $configSecrets (tpl . $root) }}

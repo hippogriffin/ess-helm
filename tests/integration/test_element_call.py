@@ -31,7 +31,7 @@ async def test_element_call_livekit_jwt(ingress_ready, users, generated_data: ES
         "device_id": "something",
     }
 
-    await ingress_ready("matrix-rtc-sfu-jwt")
+    await ingress_ready("matrix-rtc")
     await ingress_ready("well-known")
     livekit_jwt = await aiohttp_post_json(
         f"https://mrtc.{generated_data.server_name}/sfu/get",

@@ -22,10 +22,8 @@ async def test_has_ingress(templates, template_to_deployable_details):
         if template["kind"] == "Ingress":
             seen_deployables_with_ingresses.add(deployable_details)
 
-    for seen_deployable in seen_deployables:
-        assert seen_deployable.has_ingress or seen_deployable.uses_shared_ingress == (
-            seen_deployable in seen_deployables_with_ingresses
-        )
+    for seen_deployable in seen_deployables_with_ingresses:
+        assert seen_deployable.has_ingress
 
 
 @pytest.mark.parametrize("values_file", values_files_with_ingresses)
@@ -320,7 +318,7 @@ async def test_ingress_certManager_clusterissuer(make_templates, values):
             )
             assert template["metadata"]["annotations"]["cert-manager.io/cluster-issuer"] == "cluster-issuer-name"
             assert template["spec"]["tls"][0]["secretName"] == f"{template['metadata']['name']}-certmanager-tls", (
-                f"Ingress {template['name']} does not have correct secret name for cert-manager tls"
+                f"Ingress {template['metadata']['name']} does not have correct secret name for cert-manager tls"
             )
 
 
@@ -335,7 +333,7 @@ async def test_ingress_certManager_issuer(make_templates, values):
             )
             assert template["metadata"]["annotations"]["cert-manager.io/issuer"] == "issuer-name"
             assert template["spec"]["tls"][0]["secretName"] == f"{template['metadata']['name']}-certmanager-tls", (
-                f"Ingress {template['name']} does not have correct secret name for cert-manager tls"
+                f"Ingress {template['metadata']['name']} does not have correct secret name for cert-manager tls"
             )
 
 

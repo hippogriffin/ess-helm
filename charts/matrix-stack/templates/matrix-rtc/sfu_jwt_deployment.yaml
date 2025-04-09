@@ -14,14 +14,14 @@ metadata:
     {{- toYaml . | nindent 4 }}
 {{- end }}
   labels:
-    {{- include "element-io.matrix-rtc-sfu-jwt.labels" (dict "root" $ "context" .) | nindent 4 }}
-  name: {{ $.Release.Name }}-matrix-rtc-sfu-jwt
+    {{- include "element-io.matrix-rtc-authorizer.labels" (dict "root" $ "context" .) | nindent 4 }}
+  name: {{ $.Release.Name }}-matrix-rtc-authorizer
   namespace: {{ $.Release.Namespace }}
 spec:
   replicas: 1
   selector:
     matchLabels:
-      app.kubernetes.io/instance: {{ $.Release.Name }}-matrix-rtc-sfu-jwt
+      app.kubernetes.io/instance: {{ $.Release.Name }}-matrix-rtc-authorizer
   strategy:
     type: RollingUpdate
     rollingUpdate:
@@ -30,7 +30,7 @@ spec:
   template:
     metadata:
       labels:
-        {{- include "element-io.matrix-rtc-sfu-jwt.labels" (dict "root" $ "context" .) | nindent 8 }}
+        {{- include "element-io.matrix-rtc-authorizer.labels" (dict "root" $ "context" .) | nindent 8 }}
 {{- with .annotations }}
       annotations:
         {{- toYaml . | nindent 8 }}
@@ -40,9 +40,9 @@ spec:
       hostAliases:
         {{- tpl (toYaml . | nindent 8) $ }}
 {{- end }}
-{{- include "element-io.ess-library.pods.commonSpec" (dict "root" $ "context" (dict "componentValues" . "key" "matrix-rtc-sfu-jwt" "deployment" true)) | nindent 6 }}
+{{- include "element-io.ess-library.pods.commonSpec" (dict "root" $ "context" (dict "componentValues" . "key" "matrix-rtc-authorizer" "deployment" true)) | nindent 6 }}
       containers:
-      - name: sfu-jwt
+      - name: authorizer
 {{- with .image -}}
 {{- if .digest }}
         image: "{{ .registry }}/{{ .repository }}@{{ .digest }}"
@@ -57,7 +57,7 @@ spec:
           {{- toYaml . | nindent 10 }}
 {{- end }}
         env:
-          {{- include "element-io.matrix-rtc-sfu-jwt.env" (dict "root" $ "context" .) | nindent 8 }}
+          {{- include "element-io.matrix-rtc-authorizer.env" (dict "root" $ "context" .) | nindent 8 }}
         ports:
         - containerPort: 8080
           name: http
@@ -79,13 +79,13 @@ spec:
           {{- toYaml . | nindent 10 }}
 {{- end }}
         volumeMounts:
-{{- range $secret := include "element-io.matrix-rtc-sfu-jwt.configSecrets" (dict "root" $ "context" $.Values.matrixRTC) | fromJsonArray }}
+{{- range $secret := include "element-io.matrix-rtc-authorizer.configSecrets" (dict "root" $ "context" $.Values.matrixRTC) | fromJsonArray }}
         - mountPath: /secrets/{{ tpl $secret $ }}
           name: "secret-{{ tpl $secret $ }}"
           readOnly: true
 {{- end }}
       volumes:
-{{- range $secret := include "element-io.matrix-rtc-sfu-jwt.configSecrets" (dict "root" $ "context" $.Values.matrixRTC) | fromJsonArray }}
+{{- range $secret := include "element-io.matrix-rtc-authorizer.configSecrets" (dict "root" $ "context" $.Values.matrixRTC) | fromJsonArray }}
       - secret:
           secretName: {{ tpl $secret $ }}
         name: secret-{{ tpl $secret $ }}

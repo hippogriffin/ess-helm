@@ -39,7 +39,6 @@ class DeployableDetails(abc.ABC):
     has_db: bool = field(default=False, hash=False)
     has_image: bool | None = field(default=None, hash=False)
     has_ingress: bool = field(default=True, hash=False)
-    uses_shared_ingress: bool = field(default=False, hash=False)
     has_workloads: bool = field(default=True, hash=False)
     has_service_monitor: bool = field(default=True, hash=False)
 
@@ -177,12 +176,9 @@ all_components_details = [
         is_shared_component=True,
     ),
     ComponentDetails(
-        name="matrix-rtc-sfu-jwt",
-        value_file_prefix="matrix-rtc",
+        name="matrix-rtc",
         helm_key="matrixRTC",
-        sub_components=[
-            SubComponentDetails(name="matrix-rtc-sfu", helm_key="sfu", has_ingress=False, uses_shared_ingress=True)
-        ],
+        sub_components=[SubComponentDetails(name="matrix-rtc-sfu", helm_key="sfu", has_ingress=False)],
         shared_component_names=["init-secrets"],
     ),
     ComponentDetails(
@@ -269,8 +265,8 @@ _multi_component_values_files_to_base_components_names: dict[str, list[str]] = {
         "synapse",
     ],
     "matrix-authentication-service-synapse-secrets-in-helm-values.yaml": ["matrix-authentication-service", "synapse"],
-    "matrix-rtc-external-livekit-secrets-in-helm-values.yaml": ["matrix-rtc-sfu-jwt"],
-    "matrix-rtc-external-livekit-secrets-externally-values.yaml": ["matrix-rtc-sfu-jwt"],
+    "matrix-rtc-external-livekit-secrets-in-helm-values.yaml": ["matrix-rtc"],
+    "matrix-rtc-external-livekit-secrets-externally-values.yaml": ["matrix-rtc"],
 }
 
 

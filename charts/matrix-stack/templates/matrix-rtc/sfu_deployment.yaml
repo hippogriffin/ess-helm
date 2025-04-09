@@ -71,7 +71,7 @@ spec:
                     "context" (dict
                       "secretPath" "matrixRTC.livekitAuth.secret"
                       "initSecretKey" "ELEMENT_CALL_LIVEKIT_SECRET"
-                      "defaultSecretName" (printf "%s-matrix-rtc-sfu-jwt" $.Release.Name)
+                      "defaultSecretName" (printf "%s-matrix-rtc-authorizer" $.Release.Name)
                       "defaultSecretKey" "LIVEKIT_SECRET"
                       )
                     )
@@ -96,7 +96,7 @@ spec:
         - mountPath: /conf
           name: rendered-config
           readOnly: false
-{{- range $secret := include "element-io.matrix-rtc-sfu-jwt.configSecrets" (dict "root" $ "context" $.Values.matrixRTC) | fromJsonArray }}
+{{- range $secret := include "element-io.matrix-rtc-authorizer.configSecrets" (dict "root" $ "context" $.Values.matrixRTC) | fromJsonArray }}
         - mountPath: /secrets/{{ tpl $secret $ }}
           name: "secret-{{ tpl $secret $ }}"
           readOnly: true
@@ -192,7 +192,7 @@ spec:
           name: plain-config
           subPath: config.yaml
       volumes:
-{{- range $secret := include "element-io.matrix-rtc-sfu-jwt.configSecrets" (dict "root" $ "context" $.Values.matrixRTC) | fromJsonArray }}
+{{- range $secret := include "element-io.matrix-rtc-authorizer.configSecrets" (dict "root" $ "context" $.Values.matrixRTC) | fromJsonArray }}
       - secret:
           secretName: {{ tpl $secret $ }}
         name: secret-{{ tpl $secret $ }}
