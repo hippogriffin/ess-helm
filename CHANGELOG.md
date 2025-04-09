@@ -6,6 +6,18 @@ SPDX-License-Identifier: AGPL-3.0-only
 
 <!-- towncrier release notes start -->
 
+# ESS Community Helm Chart 0.10.0 (2025-04-09)
+
+### Added
+
+- Add matrixRTC backend deployment. (#343)
+
+### Fixed
+
+- matrix-tools: Fix rendered file permissions, from 664 to 440. (#343, #350)
+- Fix Matrix Authentication Service Deployment missing resources. (#359)
+
+
 # ESS Community Helm Chart 0.9.0 (2025-04-04)
 
 ### Added
