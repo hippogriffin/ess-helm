@@ -1,5 +1,5 @@
 {{- /*
-Copyright 2024 New Vector Ltd
+Copyright 2024-2025 New Vector Ltd
 
 SPDX-License-Identifier: AGPL-3.0-only
 */ -}}
@@ -13,65 +13,72 @@ metadata:
   name: {{ $.Release.Name }}-element-web-nginx
   namespace: {{ $.Release.Namespace }}
 data:
-  nginx.conf: |-
-    worker_processes  auto;
+  default.conf: |-
+    # Copy of https://github.com/element-hq/element-web/blob/v1.11.97/docker/nginx-templates/default.conf.template but
+    # * not as a template, using a hard-coded port
+    # * the recommendations from https://github.com/element-hq/element-web/tree/v1.11.97?tab=readme-ov-file#configuration-best-practices added
+    # * /health added for k8s
+    # * a /health endpoint
+    # * setting a charset
+    server {
+      listen       8080;
+      listen  [::]:8080;
+      server_name  localhost;
 
-    error_log  stderr warn;
-    pid        /tmp/nginx.pid;
+      root   /usr/share/nginx/html;  # noqa
+      index  index.html;
+      charset utf-8;
 
-    events {
-        worker_connections  1024;
+      include /etc/nginx/security_headers.conf;
+
+      # Set no-cache for the version, config and index.html
+      # so that browsers always check for a new copy of Element Web.
+      # NB http://your-domain/ and http://your-domain/? are also covered by this
+
+      location = /index.html {
+          add_header Cache-Control "no-cache";
+          include /etc/nginx/security_headers.conf;
+      }
+      location = /version {
+          add_header Cache-Control "no-cache";
+          include /etc/nginx/security_headers.conf;
+      }
+      # covers config.json and config.hostname.json requests as it is prefix.
+      location /config {
+          # Serving /app/config.json as per https://github.com/element-hq/element-web/blob/v1.11.97/docker/docker-entrypoint.d/18-load-element-modules.sh#L15
+          root /tmp/element-web-config;
+          add_header Cache-Control "no-cache";
+          include /etc/nginx/security_headers.conf;
+      }
+      location /modules {
+          alias /modules;
+      }
+      location = /health {
+          allow all;
+          default_type 'application/json';
+          return 200 '{"status": "ok"}';
+      }
+      # redirect server error pages to the static page /50x.html
+      #
+      error_page   500 502 503 504  /50x.html;
     }
 
-    http {
-        client_body_temp_path /tmp/client_temp;
-        proxy_temp_path       /tmp/proxy_temp_path;
-        fastcgi_temp_path     /tmp/fastcgi_temp;
-        uwsgi_temp_path       /tmp/uwsgi_temp;
-        scgi_temp_path        /tmp/scgi_temp;
+  # Customisations that we do at the http rather than the server level
+  http_customisations.conf: |-
+    server_tokens off;
 
-        include       /etc/nginx/mime.types;
-        default_type  application/octet-stream;
+    set_real_ip_from 0.0.0.0/0;
+    real_ip_header X-Forwarded-For;
 
-        server_tokens off;
+  # For repeated inclusion in default.conf because the add_header directives need to be repeated as per
+  # https://nginx.org/en/docs/http/ngx_http_headers_module.html#add_header as they are only inherited from
+  # the server block iff there's no add_header directives in the location block
+  security_headers.conf: |-
+    add_header Content-Security-Policy "frame-ancestors 'self'";
+    add_header X-Content-Type-Options nosniff;
+    add_header X-Frame-Options SAMEORIGIN;
+    add_header X-Robots-Tag "noindex, nofollow, noarchive, noimageindex";
+    add_header X-XSS-Protection "1; mode=block";
 
-        set_real_ip_from 0.0.0.0/0;
-        real_ip_header X-Forwarded-For;
-
-        log_format  main  '$remote_addr - $remote_user [$time_local] "$request" '
-                          '$status $body_bytes_sent "$http_referer" '
-                          '"$http_user_agent"';
-
-        access_log  /var/log/nginx/access.log  main;
-
-        sendfile        on;
-        #tcp_nopush     on;
-
-        keepalive_timeout  65;
-
-        server {
-            listen       8080;
-
-            add_header X-Frame-Options SAMEORIGIN;
-            add_header X-Content-Type-Options nosniff;
-            add_header X-XSS-Protection "1; mode=block";
-            add_header Content-Security-Policy "frame-ancestors 'self'";
-            add_header X-Robots-Tag "noindex, nofollow, noarchive, noimageindex";
-
-            location / {
-                # Serving /app/config.json
-                root   /usr/share/nginx/html;
-                index  index.html index.htm;
-
-                charset utf-8;
-            }
-
-            location = /health {
-                allow all;
-                default_type 'application/json';
-                return 200 '{"status": "ok"}';
-            }
-        }
-    }
 {{- end }}
 {{- end }}

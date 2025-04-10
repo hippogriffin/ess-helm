@@ -186,12 +186,19 @@ all_components_details = [
         helm_key="elementWeb",
         has_service_monitor=False,
         paths_consistency_noqa=(
-            "/etc/nginx/nginx.conf",
-            "/etc/nginx/mime.types",
-            "/var/log/nginx/access.log",
-            "/usr/share/nginx/html",
-            "/health",
+            # Explicitly mounted but wildcard included by the base-image
+            "/etc/nginx/conf.d/default.conf",
+            "/etc/nginx/conf.d/http_customisations.conf",
+            # Env var we set to a deliberately non-existant path
             "/non-existant-so-that-this-works-with-read-only-root-filesystem",
+            # Various paths / path prefixes in the nginx config for adjusting headers.
+            # Files provided by the base image
+            "/50x.html",
+            "/config",
+            "/health",
+            "/index.html",
+            "/modules",
+            "/version",
         ),
     ),
     ComponentDetails(

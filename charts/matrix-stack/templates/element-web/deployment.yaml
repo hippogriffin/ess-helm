@@ -1,5 +1,5 @@
 {{- /*
-Copyright 2024 New Vector Ltd
+Copyright 2024-2025 New Vector Ltd
 
 SPDX-License-Identifier: AGPL-3.0-only
 */ -}}
@@ -104,10 +104,18 @@ spec:
           name: config
           readOnly: true
           subPath: config.json
-        - mountPath: /etc/nginx/nginx.conf
+        - mountPath: /etc/nginx/conf.d/default.conf
           name: nginx-config
           readOnly: true
-          subPath: nginx.conf
+          subPath: default.conf
+        - mountPath: /etc/nginx/conf.d/http_customisations.conf
+          name: nginx-config
+          readOnly: true
+          subPath: http_customisations.conf
+        - mountPath: /etc/nginx/security_headers.conf
+          name: nginx-config
+          readOnly: true
+          subPath: security_headers.conf
         - mountPath: /tmp
           name: nginx-tmp
       restartPolicy: Always
