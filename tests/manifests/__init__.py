@@ -41,6 +41,7 @@ class DeployableDetails(abc.ABC):
     has_ingress: bool = field(default=True, hash=False)
     has_workloads: bool = field(default=True, hash=False)
     has_service_monitor: bool = field(default=True, hash=False)
+    has_topology_spread_constraints: bool | None = field(default=True, hash=False)
 
     paths_consistency_noqa: tuple[str] = field(default=(), hash=False)
     skip_path_consistency_for_files: tuple[str] = field(default=(), hash=False)
@@ -161,6 +162,7 @@ all_components_details = [
         has_image=False,
         has_ingress=False,
         has_service_monitor=False,
+        has_topology_spread_constraints=False,
         is_shared_component=True,
     ),
     ComponentDetails(
@@ -178,7 +180,12 @@ all_components_details = [
     ComponentDetails(
         name="matrix-rtc",
         helm_key="matrixRTC",
-        sub_components=[SubComponentDetails(name="matrix-rtc-sfu", helm_key="sfu", has_ingress=False)],
+        has_topology_spread_constraints=False,
+        sub_components=[
+            SubComponentDetails(
+                name="matrix-rtc-sfu", helm_key="sfu", has_topology_spread_constraints=False, has_ingress=False
+            )
+        ],
         shared_component_names=["init-secrets"],
     ),
     ComponentDetails(
@@ -220,6 +227,7 @@ all_components_details = [
                 helm_key="redis",
                 has_ingress=False,
                 has_service_monitor=False,
+                has_topology_spread_constraints=False
             ),
             SubComponentDetails(
                 name="synapse-check-config-hook",
