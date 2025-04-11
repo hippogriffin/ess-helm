@@ -22,7 +22,9 @@ async def test_sets_no_topology_spread_constraint_default(templates):
 
 @pytest.mark.parametrize("values_file", values_files_to_test)
 @pytest.mark.asyncio_cooperative
-async def test_topology_spread_constraint_has_default(deployables_details, values, make_templates):
+async def test_topology_spread_constraint_has_default(
+    deployables_details, values, make_templates, template_to_deployable_details
+):
     def set_topology_spread_constraints(values_fragment, deployable_details):
         if deployable_details.has_topology_spread_constraints:
             values_fragment.setdefault(
@@ -41,27 +43,33 @@ async def test_topology_spread_constraint_has_default(deployables_details, value
     for template in await make_templates(values):
         if template["kind"] in ["Deployment", "StatefulSet", "Job"]:
             id = f"{template['kind']}/{template['metadata']['name']}"
+            if template_to_deployable_details(template).has_topology_spread_constraints:
+                assert "topologySpreadConstraints" in template["spec"]["template"]["spec"], (
+                    f"Pod topologySpreadConstraints unexpectedly absent for {id}"
+                )
 
-            assert "topologySpreadConstraints" in template["spec"]["template"]["spec"], (
-                f"Pod topologySpreadConstraints unexpectedly absent for {id}"
-            )
-
-            pod_topologySpreadConstraints = template["spec"]["template"]["spec"]["topologySpreadConstraints"]
-            assert pod_topologySpreadConstraints[0]["maxSkew"] == 1
-            assert pod_topologySpreadConstraints[0]["topologyKey"] == "kubernetes.io/hostname"
-            assert pod_topologySpreadConstraints[0]["whenUnsatisfiable"] == "DoNotSchedule"
-            assert pod_topologySpreadConstraints[0]["labelSelector"]["matchLabels"] == {
-                "app.kubernetes.io/instance": template["metadata"]["labels"]["app.kubernetes.io/instance"]
-            }
-            if template["kind"] == "Deployment":
-                assert pod_topologySpreadConstraints[0]["matchLabelKeys"] == ["pod-template-hash"]
+                pod_topologySpreadConstraints = template["spec"]["template"]["spec"]["topologySpreadConstraints"]
+                assert pod_topologySpreadConstraints[0]["maxSkew"] == 1
+                assert pod_topologySpreadConstraints[0]["topologyKey"] == "kubernetes.io/hostname"
+                assert pod_topologySpreadConstraints[0]["whenUnsatisfiable"] == "DoNotSchedule"
+                assert pod_topologySpreadConstraints[0]["labelSelector"]["matchLabels"] == {
+                    "app.kubernetes.io/instance": template["metadata"]["labels"]["app.kubernetes.io/instance"]
+                }
+                if template["kind"] == "Deployment":
+                    assert pod_topologySpreadConstraints[0]["matchLabelKeys"] == ["pod-template-hash"]
+                else:
+                    assert pod_topologySpreadConstraints[0]["matchLabelKeys"] == []
             else:
-                assert pod_topologySpreadConstraints[0]["matchLabelKeys"] is None
+                assert "topologySpreadConstraints" not in template["spec"]["template"]["spec"], (
+                    f"Pod topologySpreadConstraints unexpectedly present for {id}"
+                )
 
 
 @pytest.mark.parametrize("values_file", values_files_to_test)
 @pytest.mark.asyncio_cooperative
-async def test_can_nuke_topology_spread_constraint_defaults(deployables_details, values, make_templates):
+async def test_can_nuke_topology_spread_constraint_defaults(
+    deployables_details, values, make_templates, template_to_deployable_details
+):
     def set_topology_spread_constraints(values_fragment, deployable_details):
         if deployable_details.has_topology_spread_constraints:
             values_fragment.setdefault(
@@ -87,16 +95,20 @@ async def test_can_nuke_topology_spread_constraint_defaults(deployables_details,
     for template in await make_templates(values):
         if template["kind"] in ["Deployment", "StatefulSet", "Job"]:
             id = f"{template['kind']}/{template['metadata']['name']}"
+            if template_to_deployable_details(template).has_topology_spread_constraints:
+                assert "topologySpreadConstraints" in template["spec"]["template"]["spec"], (
+                    f"Pod topologySpreadConstraints unexpectedly absent for {id}"
+                )
 
-            assert "topologySpreadConstraints" in template["spec"]["template"]["spec"], (
-                f"Pod topologySpreadConstraints unexpectedly absent for {id}"
-            )
-
-            pod_topologySpreadConstraints = template["spec"]["template"]["spec"]["topologySpreadConstraints"]
-            assert pod_topologySpreadConstraints[0]["maxSkew"] == 1
-            assert pod_topologySpreadConstraints[0]["topologyKey"] == "kubernetes.io/hostname"
-            assert pod_topologySpreadConstraints[0]["whenUnsatisfiable"] == "DoNotSchedule"
-            assert pod_topologySpreadConstraints[0]["labelSelector"]["matchLabels"] == {
-                "app.kubernetes.io/testlabel": "testvalue"
-            }
-            assert pod_topologySpreadConstraints[0]["matchLabelKeys"] == ["app.kubernetes.io/testlabel"]
+                pod_topologySpreadConstraints = template["spec"]["template"]["spec"]["topologySpreadConstraints"]
+                assert pod_topologySpreadConstraints[0]["maxSkew"] == 1
+                assert pod_topologySpreadConstraints[0]["topologyKey"] == "kubernetes.io/hostname"
+                assert pod_topologySpreadConstraints[0]["whenUnsatisfiable"] == "DoNotSchedule"
+                assert pod_topologySpreadConstraints[0]["labelSelector"]["matchLabels"] == {
+                    "app.kubernetes.io/testlabel": "testvalue"
+                }
+                assert pod_topologySpreadConstraints[0]["matchLabelKeys"] == ["app.kubernetes.io/testlabel"]
+            else:
+                assert "topologySpreadConstraints" not in template["spec"]["template"]["spec"], (
+                    f"Pod topologySpreadConstraints unexpectedly present for {id}"
+                )

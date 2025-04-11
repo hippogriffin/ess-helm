@@ -227,7 +227,7 @@ all_components_details = [
                 helm_key="redis",
                 has_ingress=False,
                 has_service_monitor=False,
-                has_topology_spread_constraints=False
+                has_topology_spread_constraints=False,
             ),
             SubComponentDetails(
                 name="synapse-check-config-hook",
