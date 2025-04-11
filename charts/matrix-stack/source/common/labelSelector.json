@@ -37,7 +37,10 @@
         "null"
       ],
       "additionalProperties": {
-        "type": ["string", "null"]
+        "type": [
+          "string",
+          "null"
+        ]
       }
     }
   }
