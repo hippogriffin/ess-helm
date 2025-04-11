@@ -211,7 +211,10 @@
                   "null"
                 ],
                 "additionalProperties": {
-                  "type": "string"
+                  "type": [
+                    "string",
+                    "null"
+                  ]
                 }
               }
             },
@@ -966,7 +969,10 @@
                       "null"
                     ],
                     "additionalProperties": {
-                      "type": "string"
+                      "type": [
+                        "string",
+                        "null"
+                      ]
                     }
                   }
                 },
@@ -1832,7 +1838,10 @@
                       "null"
                     ],
                     "additionalProperties": {
-                      "type": "string"
+                      "type": [
+                        "string",
+                        "null"
+                      ]
                     }
                   }
                 },
@@ -2209,7 +2218,10 @@
                       "null"
                     ],
                     "additionalProperties": {
-                      "type": "string"
+                      "type": [
+                        "string",
+                        "null"
+                      ]
                     }
                   }
                 },
@@ -2864,7 +2876,10 @@
                       "null"
                     ],
                     "additionalProperties": {
-                      "type": "string"
+                      "type": [
+                        "string",
+                        "null"
+                      ]
                     }
                   }
                 },
@@ -3425,7 +3440,10 @@
                       "null"
                     ],
                     "additionalProperties": {
-                      "type": "string"
+                      "type": [
+                        "string",
+                        "null"
+                      ]
                     }
                   }
                 },
@@ -4240,7 +4258,10 @@
                       "null"
                     ],
                     "additionalProperties": {
-                      "type": "string"
+                      "type": [
+                        "string",
+                        "null"
+                      ]
                     }
                   }
                 },
@@ -4475,7 +4496,10 @@
                               "null"
                             ],
                             "additionalProperties": {
-                              "type": "string"
+                              "type": [
+                                "string",
+                                "null"
+                              ]
                             }
                           }
                         },
@@ -4668,7 +4692,10 @@
                               "null"
                             ],
                             "additionalProperties": {
-                              "type": "string"
+                              "type": [
+                                "string",
+                                "null"
+                              ]
                             }
                           }
                         },
@@ -4818,7 +4845,10 @@
                               "null"
                             ],
                             "additionalProperties": {
-                              "type": "string"
+                              "type": [
+                                "string",
+                                "null"
+                              ]
                             }
                           }
                         },
@@ -4968,7 +4998,10 @@
                               "null"
                             ],
                             "additionalProperties": {
-                              "type": "string"
+                              "type": [
+                                "string",
+                                "null"
+                              ]
                             }
                           }
                         },
@@ -5118,7 +5151,10 @@
                               "null"
                             ],
                             "additionalProperties": {
-                              "type": "string"
+                              "type": [
+                                "string",
+                                "null"
+                              ]
                             }
                           }
                         },
@@ -5268,7 +5304,10 @@
                               "null"
                             ],
                             "additionalProperties": {
-                              "type": "string"
+                              "type": [
+                                "string",
+                                "null"
+                              ]
                             }
                           }
                         },
@@ -5547,7 +5586,10 @@
                               "null"
                             ],
                             "additionalProperties": {
-                              "type": "string"
+                              "type": [
+                                "string",
+                                "null"
+                              ]
                             }
                           }
                         },
@@ -5740,7 +5782,10 @@
                               "null"
                             ],
                             "additionalProperties": {
-                              "type": "string"
+                              "type": [
+                                "string",
+                                "null"
+                              ]
                             }
                           }
                         },
@@ -5933,7 +5978,10 @@
                               "null"
                             ],
                             "additionalProperties": {
-                              "type": "string"
+                              "type": [
+                                "string",
+                                "null"
+                              ]
                             }
                           }
                         },

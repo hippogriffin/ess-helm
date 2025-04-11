@@ -51,7 +51,7 @@ spec:
                   - "{{ $.Release.Name }}-element-web"
               topologyKey: kubernetes.io/hostname
 {{- end }}
-{{- include "element-io.ess-library.pods.commonSpec" (dict "root" $ "context" (dict "componentValues" . "key" "element-web" "deployment" true)) | nindent 6 }}
+{{- include "element-io.ess-library.pods.commonSpec" (dict "root" $ "context" (dict "componentValues" . "instanceSuffix" "element-web" "deployment" true)) | nindent 6 }}
       containers:
       - name: element-web
 {{- with .image -}}

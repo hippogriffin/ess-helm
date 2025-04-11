@@ -42,7 +42,7 @@ spec:
       hostAliases:
         {{- tpl (toYaml . | nindent 8) $ }}
 {{- end }}
-{{- include "element-io.ess-library.pods.commonSpec" (dict "root" $ "context" (dict "componentValues" . "key" "matrix-rtc-sfu" "deployment" true "usesMatrixTools" true)) | nindent 6 }}
+{{- include "element-io.ess-library.pods.commonSpec" (dict "root" $ "context" (dict "componentValues" . "instanceSuffix" "matrix-rtc-sfu" "deployment" true "usesMatrixTools" true)) | nindent 6 }}
 {{- if not (.livekitAuth).keysYaml }}
       initContainers:
       - name: render-config

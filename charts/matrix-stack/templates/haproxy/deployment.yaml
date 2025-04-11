@@ -65,7 +65,7 @@ spec:
                   - "{{ $.Release.Name }}-haproxy"
               topologyKey: kubernetes.io/hostname
 {{- end }}
-{{- include "element-io.ess-library.pods.commonSpec" (dict "root" $ "context" (dict "componentValues" . "key" "haproxy" "deployment" true)) | nindent 6 }}
+{{- include "element-io.ess-library.pods.commonSpec" (dict "root" $ "context" (dict "componentValues" . "instanceSuffix" "haproxy" "deployment" true)) | nindent 6 }}
       containers:
       - name: haproxy
         args:

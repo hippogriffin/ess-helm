@@ -22,7 +22,7 @@ roleRef:
   name: {{ $.Release.Name }}-init-secrets
 subjects:
 - kind: ServiceAccount
-  name: {{ include "element-io.ess-library.serviceAccountName" (dict "root" $ "context" (dict "serviceAccount" .serviceAccount "key" "init-secrets")) }}
+  name: {{ include "element-io.ess-library.serviceAccountName" (dict "root" $ "context" (dict "serviceAccount" .serviceAccount "nameSuffix" "init-secrets")) }}
   namespace: {{ $.Release.Namespace }}
 {{- end -}}
 {{- end -}}
