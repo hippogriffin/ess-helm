@@ -40,7 +40,14 @@ template:
 {{- if $isHook }}
     restartPolicy: Never
 {{- end }}
-{{- include "element-io.ess-library.pods.commonSpec" (dict "root" $root "context" (dict "componentValues" . "key" ($isHook | ternary "synapse-check-config-hook" "synapse") "deployment" false "usesMatrixTools" true)) | nindent 4 }}
+{{- include "element-io.ess-library.pods.commonSpec"
+            (dict "root" $root "context"
+                                    (dict "componentValues" .
+                                          "instanceSuffix" ($isHook | ternary "synapse-check-config-hook" (printf "synapse-%s" $processType))
+                                          "serviceAccountNameSuffix" ($isHook | ternary "synapse-check-config-hook" "synapse")
+                                          "deployment" false
+                                          "usesMatrixTools" true)
+                                    ) | nindent 4 }}
 {{- with .hostAliases }}
     hostAliases:
       {{- tpl (toYaml . | nindent 6) $root }}

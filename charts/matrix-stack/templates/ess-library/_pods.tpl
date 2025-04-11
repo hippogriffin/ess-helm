@@ -7,13 +7,14 @@ SPDX-License-Identifier: AGPL-3.0-only
 {{- define "element-io.ess-library.pods.commonSpec" -}}
 {{- $root := .root -}}
 {{- with required "element-io.ess-library.pods.commonSpec missing context" .context -}}
-{{- $key := required "element-io.ess-library.pods.commonSpec missing context.key" .key -}}
+{{- $instanceSuffix := required "element-io.ess-library.pods.commonSpec missing context.instanceSuffix" .instanceSuffix -}}
+{{- $serviceAccountNameSuffix := .serviceAccountNameSuffix | default .instanceSuffix -}}
 {{- $usesMatrixTools := .usesMatrixTools | default false -}}
 {{- $mountServiceAccountToken := .mountServiceAccountToken | default false -}}
 {{- $deployment := required "element-io.ess-library.pods.commonSpec missing context.deployment" .deployment -}}
 {{- with required "element-io.ess-library.pods.commonSpec missing context.componentValues" .componentValues -}}
 automountServiceAccountToken: {{ $mountServiceAccountToken }}
-serviceAccountName: {{ include "element-io.ess-library.serviceAccountName" (dict "root" $root "context" (dict "serviceAccount" .serviceAccount "key" $key)) }}
+serviceAccountName: {{ include "element-io.ess-library.serviceAccountName" (dict "root" $root "context" (dict "serviceAccount" .serviceAccount "nameSuffix" $serviceAccountNameSuffix)) }}
 {{- include "element-io.ess-library.pods.pullSecrets" (dict "root" $root "context" (dict "pullSecrets" ((.image).pullSecrets | default list) "usesMatrixTools" $usesMatrixTools)) }}
 {{- with .podSecurityContext }}
 securityContext:
@@ -24,7 +25,7 @@ nodeSelector:
   {{- toYaml . | nindent 2 }}
 {{- end }}
 {{- include "element-io.ess-library.pods.tolerations" (dict "root" $root "context" .tolerations) }}
-{{- include "element-io.ess-library.pods.topologySpreadConstraints" (dict "root" $root "context" (dict "instanceSuffix" $key "deployment" $deployment "topologySpreadConstraints" .topologySpreadConstraints)) }}
+{{- include "element-io.ess-library.pods.topologySpreadConstraints" (dict "root" $root "context" (dict "instanceSuffix" $instanceSuffix "deployment" $deployment "topologySpreadConstraints" .topologySpreadConstraints)) }}
 {{- end }}
 {{- end }}
 {{- end }}

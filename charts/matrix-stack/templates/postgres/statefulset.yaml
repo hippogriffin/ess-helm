@@ -37,7 +37,7 @@ spec:
         {{- toYaml . | nindent 8 }}
 {{- end }}
     spec:
-{{- include "element-io.ess-library.pods.commonSpec" (dict "root" $ "context" (dict "componentValues" . "key" "postgres" "deployment" false)) | nindent 6 }}
+{{- include "element-io.ess-library.pods.commonSpec" (dict "root" $ "context" (dict "componentValues" . "instanceSuffix" "postgres" "deployment" false)) | nindent 6 }}
       containers:
       - name: postgres
 {{- with .image -}}

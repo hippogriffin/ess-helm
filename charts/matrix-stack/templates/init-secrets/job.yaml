@@ -37,7 +37,7 @@ spec:
         {{- include "element-io.init-secrets.labels" (dict "root" $ "context" .) | nindent 8 }}
     spec:
       restartPolicy: OnFailure
-{{- include "element-io.ess-library.pods.commonSpec" (dict "root" $ "context" (dict "componentValues" . "key" "init-secrets" "deployment" false "usesMatrixTools" true "mountServiceAccountToken" true)) | nindent 6 }}
+{{- include "element-io.ess-library.pods.commonSpec" (dict "root" $ "context" (dict "componentValues" . "instanceSuffix" "init-secrets" "deployment" false "usesMatrixTools" true "mountServiceAccountToken" true)) | nindent 6 }}
       containers:
       - name: init-secrets
 {{- with $.Values.matrixTools.image -}}
