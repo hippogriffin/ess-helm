@@ -83,7 +83,6 @@ A test cluster can be constructed with `./scripts/setup_test_cluster.sh`. It wil
     as a space separated list of namespaces.
   * Within each namespace a wildcard certificate for `*.<namespace>.localhost` and
     `<namespace>.localhost` will be created
-  * Within each namespace a Postgres will be available at `ess-postgres`
 
 The test cluster can then be deployed to with
 `helm -n <namespace> upgrade -i ess charts/matrix-stack -f charts/matrix-stack/ci/test-cluster-mixin.yaml -f <your values file>`.
