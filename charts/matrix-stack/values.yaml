@@ -1024,6 +1024,10 @@ matrixAuthenticationService:
     ## - name: dockerhub
     pullSecrets: []
 
+  ## Force the authentication to happen with legacy authentication.
+  ## Use this while migrating from legacy authentication.
+  keepAuthOnSynapse: false
+
 
   ## Details of the Postgres Database to use
   postgres: {}

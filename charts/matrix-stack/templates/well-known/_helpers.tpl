@@ -39,7 +39,7 @@ k8s.element.io/target-instance: {{ $root.Release.Name }}-haproxy
 {{- $_ := set $config "m.homeserver" $mHomeserver -}}
 {{- end -}}
 {{- end -}}
-{{- if $root.Values.matrixAuthenticationService.enabled -}}
+{{- if (and $root.Values.matrixAuthenticationService.enabled (not $root.Values.matrixAuthenticationService.keepAuthOnSynapse)) }}
 {{- with required "WellKnownDelegation requires matrixAuthenticationService.ingress.host set" $root.Values.matrixAuthenticationService.ingress.host -}}
 {{- $msc2965 := dict "issuer" (printf "https://%s/" .)
                      "account" (printf "https://%s/account" .)

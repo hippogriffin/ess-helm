@@ -8,6 +8,10 @@ SPDX-License-Identifier: AGPL-3.0-only
 enabled: true
 {{- sub_schema_values.image(registry='ghcr.io', repository='element-hq/matrix-authentication-service', tag='0.14.0') }}
 
+## Force the authentication to happen with legacy authentication.
+## Use this while migrating from legacy authentication.
+keepAuthOnSynapse: false
+
 {{ sub_schema_values.postgresLibPQ() }}
 
 {{ sub_schema_values.credential("Encryption secret", "encryptionSecret", initIfAbsent=True) }}
