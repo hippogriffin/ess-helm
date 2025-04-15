@@ -161,7 +161,7 @@ responsibleForMedia
                                                                 )
                                             )
                                         ) -}}
-{{- if (and $root.Values.matrixAuthenticationService.enabled (not $root.Values.matrixAuthenticationService.keepAuthOnSynapse)) }}
+{{- if (and $root.Values.matrixAuthenticationService.enabled (not $root.Values.matrixAuthenticationService.preMigrationSynapseHandlesAuth)) }}
 {{- with $root.Values.matrixAuthenticationService -}}
   {{- with .synapseSharedSecret -}}
     {{- with .value -}}
