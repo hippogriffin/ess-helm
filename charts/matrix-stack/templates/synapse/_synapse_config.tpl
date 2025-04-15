@@ -98,7 +98,7 @@ ip_range_blacklist:
 - 'ff00::/8'
 - 'fec0::/10'
 
-{{- if $root.Values.matrixAuthenticationService.enabled }}
+{{- if (and $root.Values.matrixAuthenticationService.enabled (not $root.Values.matrixAuthenticationService.preMigrationSynapseHandlesAuth)) }}
 experimental_features:
   msc3861:
     enabled: true

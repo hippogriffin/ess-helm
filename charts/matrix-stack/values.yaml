@@ -1024,6 +1024,12 @@ matrixAuthenticationService:
     ## - name: dockerhub
     pullSecrets: []
 
+  ## Force the authentication to happen with legacy authentication.
+  ## This can be used to deploy Matrix Authentication Service and keeping auth on Synapse.
+  ## Once MAS is deployed, you can run the syn2mas tool to migrate the data from Synapse to MAS.
+  ## This should be set back to false and never switch again after the migration to MAS has been run.
+  preMigrationSynapseHandlesAuth: false
+
 
   ## Details of the Postgres Database to use
   postgres: {}

@@ -279,6 +279,10 @@ _multi_component_values_files_to_base_components_names: dict[str, list[str]] = {
         "matrix-authentication-service",
         "synapse",
     ],
+    "matrix-authentication-service-keep-auth-in-synapse-values.yaml": [
+        "matrix-authentication-service",
+        "synapse",
+    ],
     "matrix-authentication-service-synapse-secrets-in-helm-values.yaml": ["matrix-authentication-service", "synapse"],
     "matrix-rtc-external-livekit-secrets-in-helm-values.yaml": ["matrix-rtc"],
     "matrix-rtc-external-livekit-secrets-externally-values.yaml": ["matrix-rtc"],

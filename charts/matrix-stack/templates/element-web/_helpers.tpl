@@ -32,7 +32,7 @@ app.kubernetes.io/version: {{ .image.tag }}
 {{- $_ := set $config "features" (dict "feature_video_rooms" true "feature_group_calls" true "feature_new_room_decoration_ui" true "feature_element_call_video_rooms" true) -}}
 {{- $_ := set $config "element_call" (dict "use_exclusively" true) -}}
 {{- end }}
-{{- if $root.Values.matrixAuthenticationService.enabled }}
+{{- if (and $root.Values.matrixAuthenticationService.enabled (not $root.Values.matrixAuthenticationService.preMigrationSynapseHandlesAuth)) }}
 {{- $embeddedPages := dict "login_for_welcome" true -}}
 {{- $ssoRedirectOptions := dict "immediate" false -}}
 {{- $_ := set $settingDefaults "UIFeature.registration" false -}}

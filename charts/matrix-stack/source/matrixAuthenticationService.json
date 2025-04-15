@@ -7,6 +7,9 @@
       "type": "boolean",
       "description": "Enable the Matrix Authentication Service (MAS) service."
     },
+    "preMigrationSynapseHandlesAuth": {
+      "type": "boolean"
+    },
     "additional": {
       "$ref": "file://common/additional.json"
     },
