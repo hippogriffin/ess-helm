@@ -7,7 +7,7 @@ SPDX-License-Identifier: AGPL-3.0-only
 {{- define "element-io.matrix-authentication-service.labels" -}}
 {{- $root := .root -}}
 {{- with required "element-io.matrix-authentication-service.labels missing context" .context -}}
-{{ include "element-io.ess-library.labels.common" (dict "root" $root "context" (dict "labels" .labels)) }}
+{{ include "element-io.ess-library.labels.common" (dict "root" $root "context" (dict "labels" .labels "withChartVersion" .withChartVersion)) }}
 app.kubernetes.io/component: matrix-authentication
 app.kubernetes.io/name: matrix-authentication-service
 app.kubernetes.io/instance: {{ $root.Release.Name }}-matrix-authentication-service
@@ -188,4 +188,69 @@ SYNAPSE_OIDC_CLIENT_SECRET: {{ . | b64enc }}
 {{- end }}
 {{- end -}}
 {{- end -}}
+{{- end -}}
+
+
+{{- define "element-io.matrix-authentication-service.configmap-data" }}
+{{- $root := .root -}}
+{{- with required "element-io.matrix-authentication-service.configmap-data" .context -}}
+config.yaml: |
+  {{- include "element-io.matrix-authentication-service.config" (dict "root" $root "context" .) | nindent 2 }}
+{{- end -}}
+{{- end -}}
+
+
+{{- define "element-io.matrix-authentication-service.secret-data" -}}
+{{- $root := .root -}}
+{{- with required "element-io.matrix-authentication-service.secret-data" .context -}}
+{{- with (include "element-io.matrix-authentication-service.synapse-secret-data" (dict "root" $root "context" .)) }}
+{{- . | nindent 2 }}
+{{- end }}
+{{- with .additional }}
+{{- range $key := (. | keys | uniq | sortAlpha) }}
+{{- $prop := index $root.Values.matrixAuthenticationService.additional $key }}
+{{- if $prop.config }}
+  user-{{ $key }}: {{ $prop.config | b64enc }}
+{{- end }}
+{{- end }}
+{{- end }}
+{{- with .postgres.password }}
+{{- include "element-io.ess-library.check-credential" (dict "root" $root "context" (dict "secretPath" "matrixAuthenticationService.postgres.password" "initIfAbsent" false)) }}
+{{- with .value }}
+  POSTGRES_PASSWORD: {{ . | b64enc }}
+{{- end }}
+{{- end }}
+{{- include "element-io.ess-library.check-credential" (dict "root" $root "context" (dict "secretPath" "matrixAuthenticationService.encryptionSecret" "initIfAbsent" true)) }}
+{{- with .encryptionSecret }}
+{{- with .value }}
+  ENCRYPTION_SECRET: {{ . | b64enc }}
+{{- end }}
+{{- end }}
+{{- with required "privateKeys is required for Matrix Authentication Service" .privateKeys }}
+{{- include "element-io.ess-library.check-credential" (dict "root" $root "context" (dict "secretPath" "matrixAuthenticationService.privateKeys.rsa" "initIfAbsent" true)) }}
+{{- with .rsa }}
+{{- with .value }}
+  RSA_PRIVATE_KEY: {{ . | b64enc }}
+{{- end }}
+{{- end }}
+{{- include "element-io.ess-library.check-credential" (dict "root" $root "context" (dict "secretPath" "matrixAuthenticationService.privateKeys.ecdsaPrime256v1" "initIfAbsent" true)) }}
+{{- with .ecdsaPrime256v1 }}
+{{- with .value }}
+  ECDSA_PRIME256V1_PRIVATE_KEY: {{ . | b64enc }}
+{{- end }}
+{{- end }}
+{{- with .ecdsaSecp256k1 }}
+{{- include "element-io.ess-library.check-credential" (dict "root" $root "context" (dict "secretPath" "matrixAuthenticationService.privateKeys.ecdsaSecp256k1" "initIfAbsent" false)) }}
+{{- with .value }}
+  ECDSA_SECP256K1_PRIVATE_KEY: {{ . | b64enc }}
+{{- end }}
+{{- end }}
+{{- with .ecdsaSecp384r1 }}
+{{- include "element-io.ess-library.check-credential" (dict "root" $root "context" (dict "secretPath" "matrixAuthenticationService.privateKeys.ecdsaSecp384r1" "initIfAbsent" false)) }}
+{{- with .value }}
+  ECDSA_SECP384R1_PRIVATE_KEY: {{ . | b64enc}}
+{{- end }}
+{{- end }}
+{{- end -}}
+{{- end }}
 {{- end -}}
