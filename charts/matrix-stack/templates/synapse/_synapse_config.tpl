@@ -280,7 +280,7 @@ worker_listeners:
   type: http
   x_forwarded: false
   resources:
-  - names: []
+  - names: [health]
     compress: false
 
 {{- $enabledWorkers := (include "element-io.synapse.enabledWorkers" (dict "root" $root)) | fromJson }}
