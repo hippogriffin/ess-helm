@@ -7,7 +7,7 @@ SPDX-License-Identifier: AGPL-3.0-only
 {{- define "element-io.init-secrets.labels" -}}
 {{- $root := .root -}}
 {{- with required "element-io.init-secrets.labels missing context" .context -}}
-{{ include "element-io.ess-library.labels.common" (dict "root" $root "context" (dict "labels" .labels)) }}
+{{ include "element-io.ess-library.labels.common" (dict "root" $root "context" (dict "labels" .labels "withChartVersion" .withChartVersion)) }}
 app.kubernetes.io/component: matrix-tools
 app.kubernetes.io/name: init-secrets
 app.kubernetes.io/instance: {{ $root.Release.Name }}-init-secrets
