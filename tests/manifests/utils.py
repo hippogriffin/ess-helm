@@ -5,7 +5,9 @@
 import copy
 import json
 import random
+import shutil
 import string
+import tempfile
 from collections.abc import Iterator
 from pathlib import Path
 from typing import Any, Callable
@@ -28,6 +30,13 @@ async def release_name():
 @pytest.fixture(scope="session")
 async def helm_client():
     return pyhelm3.Client()
+
+
+@pytest.fixture()
+async def temp_chart(helm_client):
+    with tempfile.TemporaryDirectory() as tmpdirname:
+        shutil.copytree("charts/matrix-stack", Path(tmpdirname) / "matrix-stack")
+        yield Path(tmpdirname) / "matrix-stack"
 
 
 @pytest.fixture(scope="session")
@@ -177,7 +186,11 @@ async def helm_template(
     ] + additional_apis_args
 
     template_cache_key = json.dumps(
-        {"values": values, "additional_apis": additional_apis, "release_name": release_name}
+        {
+            "values": values,
+            "additional_apis": additional_apis,
+            "release_name": release_name,
+        }
     )
 
     if skip_cache or template_cache_key not in template_cache:
