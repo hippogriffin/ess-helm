@@ -49,10 +49,10 @@ async def test_values_file_renders_only_itself(release_name, deployables_details
 @pytest.mark.asyncio_cooperative
 async def test_values_file_renders_idempotent(release_name, values, make_templates):
     first_render = {}
-    for template in await make_templates(values):
+    for template in await make_templates(values, skip_cache=True):
         first_render[template_id(template)] = template
     second_render = {}
-    for template in await make_templates(values):
+    for template in await make_templates(values, skip_cache=True):
         second_render[template_id(template)] = template
 
     assert set(first_render.keys()) == set(second_render.keys()), "Values file should render the same templates"
