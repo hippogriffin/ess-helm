@@ -43,3 +43,18 @@ async def test_values_file_renders_only_itself(release_name, deployables_details
         assert any(template["metadata"]["name"].startswith(allowed_start) for allowed_start in allowed_starts_with), (
             f"{template_id(template)} does not start with one of {allowed_starts_with}"
         )
+
+
+@pytest.mark.parametrize("values_file", values_files_to_test)
+@pytest.mark.asyncio_cooperative
+async def test_values_file_renders_idempotent(release_name, values, make_templates):
+    first_render = {}
+    for template in await make_templates(values):
+        first_render[template_id(template)] = template
+    second_render = {}
+    for template in await make_templates(values):
+        second_render[template_id(template)] = template
+
+    assert set(first_render.keys()) == set(second_render.keys()), "Values file should render the same templates"
+    for id in first_render:
+        assert first_render[id] == second_render[id], f"Template {id} should be rendered the same twice"
