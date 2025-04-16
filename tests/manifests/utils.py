@@ -155,7 +155,7 @@ def external_secrets(release_name, values):
 
 
 async def helm_template(
-    chart: pyhelm3.Chart, release_name: str, values: Any | None, has_service_monitor_crd=True
+    chart: pyhelm3.Chart, release_name: str, values: Any | None, has_service_monitor_crd=True, skip_cache=False
 ) -> Iterator[Any]:
     """Generate template with ServiceMonitor API Versions enabled
 
@@ -180,7 +180,7 @@ async def helm_template(
         {"values": values, "additional_apis": additional_apis, "release_name": release_name}
     )
 
-    if template_cache_key not in template_cache:
+    if skip_cache or template_cache_key not in template_cache:
         templates = list(
             [
                 template
@@ -196,8 +196,8 @@ async def helm_template(
 
 @pytest.fixture
 def make_templates(chart: pyhelm3.Chart, release_name: str):
-    async def _make_templates(values, has_service_monitor_crd=True):
-        return await helm_template(chart, release_name, values, has_service_monitor_crd)
+    async def _make_templates(values, has_service_monitor_crd=True, skip_cache=False):
+        return await helm_template(chart, release_name, values, has_service_monitor_crd, skip_cache)
 
     return _make_templates
 
