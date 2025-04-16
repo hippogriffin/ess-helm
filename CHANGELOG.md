@@ -6,6 +6,32 @@ SPDX-License-Identifier: AGPL-3.0-only
 
 <!-- towncrier release notes start -->
 
+# ESS Community Helm Chart 0.10.1 (2025-04-16)
+
+### Added
+
+- Matrix Authentication Service: Allow to setup without enabling auth delegation in Synapse using `matrixAuthenticationService.preMigrationSynapseHandlesAuth`. (#371)
+
+### Changed
+
+- Upgrade Element Web to 1.11.97. (#363)
+- Add caching headers for Element Web as per upstream. (#363)
+- Upgrade Synapse to 1.128.0. (#365)
+- Synapse: Longer startup probes for single workers. (#366)
+- Correct docs as `setup_test_cluster.sh` no longer manages a Postgres directly, the chart installs it. (#369)
+- Synapse: Make health listener resource name explicit. (#374)
+- Synapse: Add trailing slash to public_baseurl. (#375)
+
+### Fixed
+
+- Fix `topologySpreadConstraints` `selectorLabel.matchLabels` keys could not be nuked. (#367)
+- Fix Synapse default topologySpreadConstraints not matching pod labels. (#367)
+
+### Internal
+
+- Add tests to verify that template rendering is idempotent. (#372)
+
+
 # ESS Community Helm Chart 0.10.0 (2025-04-09)
 
 ### Added
