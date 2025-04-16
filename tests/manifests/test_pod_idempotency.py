@@ -9,7 +9,7 @@ from . import values_files_to_test
 from .utils import helm_template, template_id
 
 
-@pytest.mark.parametrize("values_file", ["element-web-minimal-values.yaml"])
+@pytest.mark.parametrize("values_file", values_files_to_test)
 @pytest.mark.asyncio_cooperative
 async def test_values_file_renders_idempotent_pods(release_name, values, helm_client, temp_chart):
     async def _patch_version_chart():
@@ -28,19 +28,21 @@ async def test_values_file_renders_idempotent_pods(release_name, values, helm_cl
     for template in await helm_template(
         (await _patch_version_chart()), release_name, values, has_service_monitor_crd=True, skip_cache=True
     ):
-          first_render[template_id(template)] = template
+        first_render[template_id(template)] = template
     for template in await helm_template(
         (await _patch_version_chart()), release_name, values, has_service_monitor_crd=True, skip_cache=True
     ):
-          second_render[template_id(template)] = template
+        second_render[template_id(template)] = template
 
     assert set(first_render.keys()) == set(second_render.keys()), "Values file should render the same templates"
     for id in first_render:
-      assert first_render[id] != second_render[id], (
-          "Templates should be different because the version changed, causing the chart version label to change"
-      )
-      first_render[id]["metadata"]["labels"].pop("helm.sh/chart")
-      second_render[id]["metadata"]["labels"].pop("helm.sh/chart")
-      assert first_render[id] == second_render[id], (
-        "Templates should be the same after removing the chart version label as it should be the only difference"
-      )
+        assert first_render[id] != second_render[id], (
+            f"Error with {template_id(first_render[id])} : "
+            "Templates should be different because the version changed, causing the chart version label to change"
+        )
+        first_render[id]["metadata"]["labels"].pop("helm.sh/chart")
+        second_render[id]["metadata"]["labels"].pop("helm.sh/chart")
+        assert first_render[id] == second_render[id], (
+            f"Error with {template_id(first_render[id])} : "
+            "Templates should be the same after removing the chart version label as it should be the only difference"
+        )
