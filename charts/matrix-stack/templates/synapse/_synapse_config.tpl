@@ -17,7 +17,7 @@ require_auth_for_profile_requests: true
 {{- $root := .root -}}
 {{- with required "element-io.synapse.config.shared-overrides missing context" .context -}}
 {{- $isHook := required "element-io.synapse.config.shared-overrides requires context.isHook" .isHook -}}
-public_baseurl: https://{{ .ingress.host }}
+public_baseurl: https://{{ .ingress.host }}/
 server_name: {{ required "Synapse requires serverName set" $root.Values.serverName }}
 signing_key_path: /secrets/{{
   include "element-io.ess-library.init-secret-path" (
