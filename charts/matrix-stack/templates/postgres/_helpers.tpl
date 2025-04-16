@@ -8,7 +8,7 @@ SPDX-License-Identifier: AGPL-3.0-only
 {{- $root := .root -}}
 
 {{- with required "element-io.postgres.labels missing context" .context -}}
-{{ include "element-io.ess-library.labels.common" (dict "root" $root "context" .labels) }}
+{{ include "element-io.ess-library.labels.common" (dict "root" $root "context" (dict "labels" .labels)) }}
 app.kubernetes.io/component: matrix-stack-db
 app.kubernetes.io/name: postgres
 app.kubernetes.io/instance: {{ $root.Release.Name }}-postgres

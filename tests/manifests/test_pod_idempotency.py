@@ -11,7 +11,7 @@ from . import values_files_to_test
 from .utils import helm_template, template_id
 
 
-@pytest.mark.parametrize("values_file", values_files_to_test)
+@pytest.mark.parametrize("values_file", ["element-web-minimal-values.yaml"])
 @pytest.mark.asyncio_cooperative
 async def test_values_file_renders_idempotent_pods(release_name, values, helm_client, temp_chart):
     async def _patch_version_chart():

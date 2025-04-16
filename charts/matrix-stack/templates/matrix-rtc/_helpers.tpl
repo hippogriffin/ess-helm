@@ -7,7 +7,7 @@ SPDX-License-Identifier: AGPL-3.0-only
 {{- define "element-io.matrix-rtc-ingress.labels" -}}
 {{- $root := .root -}}
 {{- with required "element-io.matrix-rtc.labels missing context" .context -}}
-{{ include "element-io.ess-library.labels.common" (dict "root" $root "context" .labels) }}
+{{ include "element-io.ess-library.labels.common" (dict "root" $root "context" (dict "labels" .labels)) }}
 app.kubernetes.io/component: matrix-rtc
 app.kubernetes.io/name: matrix-rtc
 app.kubernetes.io/instance: {{ $root.Release.Name }}-matrix-rtc
@@ -18,7 +18,7 @@ app.kubernetes.io/version: {{ .image.tag }}
 {{- define "element-io.matrix-rtc-authorizer.labels" -}}
 {{- $root := .root -}}
 {{- with required "element-io.matrix-rtc.labels missing context" .context -}}
-{{ include "element-io.ess-library.labels.common" (dict "root" $root "context" .labels) }}
+{{ include "element-io.ess-library.labels.common" (dict "root" $root "context" (dict "labels" .labels)) }}
 app.kubernetes.io/component: matrix-rtc-authorizer
 app.kubernetes.io/name: matrix-rtc-authorizer
 app.kubernetes.io/instance: {{ $root.Release.Name }}-matrix-rtc-authorizer
@@ -29,7 +29,7 @@ app.kubernetes.io/version: {{ .image.tag }}
 {{- define "element-io.matrix-rtc-sfu.labels" -}}
 {{- $root := .root -}}
 {{- with required "element-io.matrix-rtc.labels missing context" .context -}}
-{{ include "element-io.ess-library.labels.common" (dict "root" $root "context" .labels) }}
+{{ include "element-io.ess-library.labels.common" (dict "root" $root "context" (dict "labels" .labels)) }}
 app.kubernetes.io/component: matrix-rtc-voip-server
 app.kubernetes.io/name: matrix-rtc-sfu
 app.kubernetes.io/instance: {{ $root.Release.Name }}-matrix-rtc-sfu
@@ -40,7 +40,7 @@ app.kubernetes.io/version: {{ .image.tag }}
 {{- define "element-io.matrix-rtc-sfu-rtc.labels" -}}
 {{- $root := .root -}}
 {{- with required "element-io.matrix-rtc.labels missing context" .context -}}
-{{ include "element-io.ess-library.labels.common" (dict "root" $root "context" .labels) }}
+{{ include "element-io.ess-library.labels.common" (dict "root" $root "context" (dict "labels" .labels)) }}
 app.kubernetes.io/component: matrix-rtc-voip-server
 app.kubernetes.io/name: matrix-rtc-sfu-rtc
 app.kubernetes.io/instance: {{ $root.Release.Name }}-matrix-rtc-sfu-rtc
