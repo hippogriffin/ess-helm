@@ -16,12 +16,7 @@ metadata:
   name: {{ $.Release.Name }}-matrix-rtc-sfu
   namespace: {{ $.Release.Namespace }}
 data:
-  config.yaml: |
-    {{- (include "element-io.matrix-rtc-sfu.config" (dict "root" $ "context" .)) | nindent 4 }}
-{{- if not ($.Values.matrixRTC.livekitAuth).keysYaml }}
-  keys-template.yaml: |
-    ${LIVEKIT_KEY}: ${LIVEKIT_SECRET}
-{{- end -}}
+  {{- (include "element-io.matrix-rtc-sfu.configmap-data" (dict "root" $ "context" .)) | nindent 2 }}
 {{- end -}}
 {{- end -}}
 {{- end -}}
