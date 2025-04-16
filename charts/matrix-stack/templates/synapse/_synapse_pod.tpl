@@ -14,9 +14,9 @@ template:
   metadata:
     labels:
 {{- if $isHook }}
-      {{- include "element-io.synapse-check-config-hook.labels" (dict "root" $root "context" (dict "image" .image "labels" .labels "withChartVersion" false)) | nindent 6 }}
+      {{- include "element-io.synapse-check-config-hook.labels" (dict "root" $root "context" (dict "image" .image "labels" .labels "withChartVersion" false "processType" $processType)) | nindent 6 }}
 {{- else }}
-      {{- include "element-io.synapse.process.labels" (dict "root" $root "context" (dict "image" .image "labels" .labels "withChartVersion" false "isHook" $isHook)) | nindent 6 }}
+      {{- include "element-io.synapse.process.labels" (dict "root" $root "context" (dict "image" .image "labels" .labels "withChartVersion" false "isHook" $isHook "processType" $processType)) | nindent 6 }}
 {{- end }}
       k8s.element.io/configdatahash: "{{ include "element-io.synapse.configmap-data"  (dict "root" $root "context" .) | sha1sum }}"
       k8s.element.io/secretdatahash: "{{ include "element-io.synapse.secret-data"  (dict "root" $root "context" .) | sha1sum }}"
