@@ -13,8 +13,8 @@ metadata:
   name: {{ $.Release.Name }}-postgres
   namespace: {{ $.Release.Namespace }}
   annotations:
-    k8s.element.io/secrethash: "{{ include (print $.Template.BasePath "/postgres/secret.yaml") $ | sha1sum }}"
-    k8s.element.io/confighash: "{{ include (print $.Template.BasePath "/postgres/configmap.yaml") $ | sha1sum }}"
+    k8s.element.io/secrethash: "{{ include "element-io.postgres.secret-data" (dict "root" $ "context" .) | sha1sum }}"
+    k8s.element.io/confighash: "{{ include "element-io.postgres.configmap-data" (dict "root" $ "context" .) | sha1sum }}"
 {{- with .annotations }}
     {{- toYaml . | nindent 4 }}
 {{- end }}
@@ -29,10 +29,10 @@ spec:
   template:
     metadata:
       labels:
-        {{- include "element-io.postgres.labels" (dict "root" $ "context" .) | nindent 8 }}
+        {{- include "element-io.postgres.labels" (dict "root" $ "context" (dict "image" .image "labels" .labels "withChartVersion" false)) | nindent 8 }}
       annotations:
-        k8s.element.io/secrethash: "{{ include (print $.Template.BasePath "/postgres/secret.yaml") $ | sha1sum }}"
-        k8s.element.io/confighash: "{{ include (print $.Template.BasePath "/postgres/configmap.yaml") $ | sha1sum }}"
+        k8s.element.io/secrethash: "{{ include "element-io.postgres.secret-data" (dict "root" $ "context" .) | sha1sum }}"
+        k8s.element.io/confighash: "{{ include "element-io.postgres.configmap-data" (dict "root" $ "context" .) | sha1sum }}"
 {{- with .annotations }}
         {{- toYaml . | nindent 8 }}
 {{- end }}

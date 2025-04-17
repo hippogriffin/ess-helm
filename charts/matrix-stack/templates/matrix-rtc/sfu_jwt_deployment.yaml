@@ -15,6 +15,7 @@ metadata:
 {{- end }}
   labels:
     {{- include "element-io.matrix-rtc-authorizer.labels" (dict "root" $ "context" .) | nindent 4 }}
+    k8s.element.io/secrethash: {{ include "element-io.matrix-rtc-authorizer.secret-data" (dict "root" $ "context" .) | sha1sum }}
   name: {{ $.Release.Name }}-matrix-rtc-authorizer
   namespace: {{ $.Release.Namespace }}
 spec:
@@ -30,7 +31,8 @@ spec:
   template:
     metadata:
       labels:
-        {{- include "element-io.matrix-rtc-authorizer.labels" (dict "root" $ "context" .) | nindent 8 }}
+        {{- include "element-io.matrix-rtc-authorizer.labels" (dict "root" $ "context" (dict "image" .image "labels" .labels "withChartVersion" false)) | nindent 8 }}
+        k8s.element.io/secrethash: {{ include "element-io.matrix-rtc-authorizer.secret-data" (dict "root" $ "context" .) | sha1sum }}
 {{- with .annotations }}
       annotations:
         {{- toYaml . | nindent 8 }}

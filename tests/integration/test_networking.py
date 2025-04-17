@@ -23,6 +23,7 @@ async def test_services_have_matching_labels(
 ):
     ignored_labels = [
         "app.kubernetes.io/managed-by",
+        "helm.sh/chart",
         "k8s.element.io/service-type",
         "k8s.element.io/synapse-instance",
         "replica",

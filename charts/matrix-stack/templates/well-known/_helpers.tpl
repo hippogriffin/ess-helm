@@ -7,18 +7,18 @@ SPDX-License-Identifier: AGPL-3.0-only
 {{- define "element-io.well-known-delegation.labels" -}}
 {{- $root := .root -}}
 {{- with required "element-io.well-known-delegation.labels missing context" .context -}}
-{{ include "element-io.ess-library.labels.common" (dict "root" $root "context" .labels) }}
+{{ include "element-io.ess-library.labels.common" (dict "root" $root "context" (dict "labels" .labels)) }}
 app.kubernetes.io/component: matrix-delegation
 app.kubernetes.io/name: well-known-delegation
 app.kubernetes.io/instance: {{ $root.Release.Name }}-well-known-delegation
-app.kubernetes.io/version: {{ $root.Chart.Version }}
+app.kubernetes.io/version: {{ $root.Values.haproxy.image.tag }}
 {{- end }}
 {{- end }}
 
 {{- define "element-io.well-known-delegation-ingress.labels" -}}
 {{- $root := .root -}}
 {{- with required "element-io.well-known-delegation-ingress.labels missing context" .context -}}
-{{ include "element-io.ess-library.labels.common" (dict "root" $root "context" .labels) }}
+{{ include "element-io.ess-library.labels.common" (dict "root" $root "context" (dict "labels" .labels)) }}
 app.kubernetes.io/component: matrix-stack-ingress
 app.kubernetes.io/name: well-known-ingress
 app.kubernetes.io/instance: {{ $root.Release.Name }}-well-known-ingress
@@ -86,3 +86,17 @@ k8s.element.io/target-instance: {{ $root.Release.Name }}-haproxy
 {{- tpl (toPrettyJson (merge $config $additional)) $root -}}
 {{- end -}}
 {{- end }}
+
+{{- define "element-io.well-known-delegation.configmap-data" -}}
+{{- $root := .root -}}
+{{- with required "element-io.well-known-delegation.configmap-data missing context" .context -}}
+client: |
+  {{- (tpl (include "element-io.well-known-delegation.client" (dict "root" $root "context" .)) $root) | nindent 2 }}
+server: |
+  {{- (tpl (include "element-io.well-known-delegation.server" (dict "root" $root "context" .)) $root) | nindent 2 }}
+support: |
+  {{- (tpl (include "element-io.well-known-delegation.support" (dict "root" $root "context" .)) $root) | nindent 2 }}
+element.json: |
+  {{- (tpl (include "element-io.well-known-delegation.element" (dict "root" $root "context" .)) $root) | nindent 2 }}
+{{- end -}}
+{{- end -}}

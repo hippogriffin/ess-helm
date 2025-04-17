@@ -14,13 +14,6 @@ metadata:
   name: {{ $.Release.Name }}-well-known-haproxy
   namespace: {{ $.Release.Namespace }}
 data:
-  client: |
-    {{ (tpl (include "element-io.well-known-delegation.client" (dict "root" $ "context" .)) $) | nindent 4 }}
-  server: |
-    {{ (tpl (include "element-io.well-known-delegation.server" (dict "root" $ "context" .)) $) | nindent 4 }}
-  support: |
-    {{ (tpl (include "element-io.well-known-delegation.support" (dict "root" $ "context" .)) $) | nindent 4 }}
-  element.json: |
-    {{ (tpl (include "element-io.well-known-delegation.element" (dict "root" $ "context" .)) $) | nindent 4 }}
+  {{- include "element-io.well-known-delegation.configmap-data" (dict "root" $ "context" .) | nindent 2 }}
 {{- end -}}
 {{- end -}}

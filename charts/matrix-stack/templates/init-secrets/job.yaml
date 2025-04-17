@@ -34,7 +34,7 @@ spec:
         {{- toYaml . | nindent 8 }}
 {{- end }}
       labels:
-        {{- include "element-io.init-secrets.labels" (dict "root" $ "context" .) | nindent 8 }}
+        {{- include "element-io.init-secrets.labels" (dict "root" $ "context" (dict "labels" .labels "withChartVersion" false)) | nindent 8 }}
     spec:
       restartPolicy: OnFailure
 {{- include "element-io.ess-library.pods.commonSpec" (dict "root" $ "context" (dict "componentValues" . "instanceSuffix" "init-secrets" "deployment" false "usesMatrixTools" true "mountServiceAccountToken" true)) | nindent 6 }}
@@ -66,6 +66,6 @@ spec:
         - "-secrets"
         - {{ include "element-io.init-secrets.generated-secrets" (dict "root" $ "context" .) | fromYamlArray | join "," | quote }}
         - "-labels"
-        - {{ include "element-io.init-secrets.labels" (dict "root" $ "context" .) | trim  | replace ": " "="| replace "\n" "," | quote }}
+        - {{ include "element-io.init-secrets.labels" (dict "root" $ "context" (dict "labels" .labels "withChartVersion" false)) | trim  | replace ": " "="| replace "\n" "," | quote }}
 {{- end -}}
 {{- end -}}

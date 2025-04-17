@@ -19,8 +19,8 @@ metadata:
 {{- end }}
   labels:
     {{- include "element-io.synapse.process.labels" (dict "root" $ "context" $perProcessRoot) | nindent 4 }}
-    k8s.element.io/confighash: "{{ include (print $.Template.BasePath "/synapse/synapse_secret.yaml") $ | sha1sum }}"
-    k8s.element.io/logconfighash: "{{ include (print $.Template.BasePath "/synapse/synapse_configmap.yaml") $ | sha1sum }}"
+    k8s.element.io/configdatahash: "{{ include "element-io.synapse.configmap-data"  (dict "root" $ "context" $perProcessRoot) | sha1sum }}"
+    k8s.element.io/secretdatahash: "{{ include "element-io.synapse.secret-data"  (dict "root" $ "context" $perProcessRoot) | sha1sum }}"
 {{- range $index, $appservice := .appservices }}
 {{- if .configMap }}
     k8s.element.io/as-registration-{{ $index }}-hash: "{{ (lookup "v1" "ConfigMap" $.Release.Namespace (tpl $appservice.configMap $)) | toJson | sha1sum }}"

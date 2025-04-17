@@ -7,7 +7,7 @@ SPDX-License-Identifier: AGPL-3.0-only
 {{- define "element-io.synapse.labels" -}}
 {{- $root := .root -}}
 {{- with required "element-io.synapse.labels missing context" .context -}}
-{{ include "element-io.ess-library.labels.common" (dict "root" $root "context" .labels) }}
+{{ include "element-io.ess-library.labels.common" (dict "root" $root "context" (dict "labels" .labels)) }}
 app.kubernetes.io/component: matrix-server
 app.kubernetes.io/name: synapse
 app.kubernetes.io/instance: {{ $root.Release.Name }}-synapse
@@ -19,7 +19,7 @@ k8s.element.io/synapse-instance: {{ $root.Release.Name }}-synapse
 {{- define "element-io.synapse-check-config-hook.labels" -}}
 {{- $root := .root -}}
 {{- with required "element-io.synapse.labels missing context" .context -}}
-{{ include "element-io.ess-library.labels.common" (dict "root" $root "context" .labels) }}
+{{ include "element-io.ess-library.labels.common" (dict "root" $root "context" (dict "labels" .labels "withChartVersion" .withChartVersion)) }}
 app.kubernetes.io/component: matrix-server
 app.kubernetes.io/name: synapse-check-config-hook
 app.kubernetes.io/instance: {{ $root.Release.Name }}-synapse-check-config-hook
@@ -31,7 +31,7 @@ k8s.element.io/synapse-instance: {{ $root.Release.Name }}-synapse-check-config-h
 {{- define "element-io.synapse-ingress.labels" -}}
 {{- $root := .root -}}
 {{- with required "element-io.synapse-ingress.labels missing context" .context -}}
-{{ include "element-io.ess-library.labels.common" (dict "root" $root "context" .labels) }}
+{{ include "element-io.ess-library.labels.common" (dict "root" $root "context" (dict "labels" .labels)) }}
 app.kubernetes.io/component: matrix-stack-ingress
 app.kubernetes.io/name: synapse
 app.kubernetes.io/instance: {{ $root.Release.Name }}-synapse
@@ -44,7 +44,7 @@ app.kubernetes.io/version: {{ .image.tag }}
 {{- define "element-io.synapse.process.labels" -}}
 {{- $root := .root -}}
 {{- with required "element-io.synapse.process.labels missing context" .context -}}
-{{ include "element-io.ess-library.labels.common" (dict "root" $root "context" .labels) }}
+{{ include "element-io.ess-library.labels.common" (dict "root" $root "context" (dict "labels" .labels "withChartVersion" .withChartVersion)) }}
 app.kubernetes.io/component: matrix-server
 app.kubernetes.io/name: synapse-{{ .processType }}
 app.kubernetes.io/instance: {{ $root.Release.Name }}-synapse-{{ .processType }}
@@ -60,7 +60,7 @@ k8s.element.io/synapse-instance: {{ $root.Release.Name }}-synapse
 {{- define "element-io.synapse-redis.labels" -}}
 {{- $root := .root -}}
 {{- with required "element-io.synapse-redis.labels missing context" .context -}}
-{{ include "element-io.ess-library.labels.common" (dict "root" $root "context" .labels) }}
+{{ include "element-io.ess-library.labels.common" (dict "root" $root "context" (dict "labels" .labels "withChartVersion" .withChartVersion)) }}
 app.kubernetes.io/component: matrix-server-pubsub
 app.kubernetes.io/name: synapse-redis
 app.kubernetes.io/instance: {{ $root.Release.Name }}-synapse-redis
@@ -168,3 +168,19 @@ app.kubernetes.io/version: {{ .image.tag }}
     {{ printf "{{ hostname }}" }}
 {{- end }}
 {{- end }}
+
+
+{{- define "element-io.synapse-redis.configmap-data" -}}
+{{- $root := .root -}}
+redis.conf: |
+{{- ($root.Files.Get "configs/synapse/redis.conf") | nindent 2 -}}
+{{- end -}}
+
+
+{{- define "element-io.synapse-haproxy.configmap-data" -}}
+{{- $root := .root -}}
+path_map_file: |
+{{- (tpl ($root.Files.Get "configs/synapse/path_map_file.tpl") (dict "root" $root)) | nindent 2 }}
+path_map_file_get: |
+{{- (tpl ($root.Files.Get "configs/synapse/path_map_file_get.tpl") (dict "root" $root)) | nindent 2 -}}
+{{- end -}}

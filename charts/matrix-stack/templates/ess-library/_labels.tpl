@@ -11,8 +11,9 @@ SPDX-License-Identifier: AGPL-3.0-only
 {{- end }}
 {{- $userLabels := dict }}
 {{- $userLabels = mustMergeOverwrite $userLabels ($root.Values.labels | deepCopy) }}
-{{- $userLabels = mustMergeOverwrite $userLabels (.context | deepCopy) }}
+{{- $userLabels = mustMergeOverwrite $userLabels (.context.labels | deepCopy) }}
 {{- /* These labels are owned by the chart, don't allow overriding */}}
+{{- /* They must be skipped from pod templates to avoid restarting when unnecessary */}}
 {{- $userLabels = unset $userLabels "helm.sh/chart.sh" }}
 {{- $userLabels = unset $userLabels "app.kubernetes.io/managed-by" }}
 {{- $userLabels = unset $userLabels "app.kubernetes.io/part-of" }}
@@ -23,7 +24,9 @@ SPDX-License-Identifier: AGPL-3.0-only
 {{- if $userLabels }}
 {{- toYaml $userLabels }}
 {{- end }}
+{{- if ne .context.withChartVersion false }}
 helm.sh/chart: {{ $root.Chart.Name }}-{{ $root.Chart.Version | replace "+" "_" }}
+{{- end }}
 app.kubernetes.io/managed-by: {{ $root.Release.Service }}
 app.kubernetes.io/part-of: matrix-stack
 {{- end }}
