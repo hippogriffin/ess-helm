@@ -19,7 +19,7 @@ app.kubernetes.io/version: {{ .image.tag }}
 {{- $root := .root -}}
 {{- with required "element-io.haproxy.configmap-data missing context" .context -}}
 haproxy.cfg: |
-  {{ tpl ($root.Files.Get "configs/haproxy/haproxy.cfg.tpl") (dict "root" $root "context" .) | nindent 2 }}
+  {{- tpl ($root.Files.Get "configs/haproxy/haproxy.cfg.tpl") (dict "root" $root "context" .) | nindent 2 }}
 429.http: |
   HTTP/1.0 429 Too Many Requests
   Cache-Control: no-cache

@@ -91,12 +91,12 @@ k8s.element.io/target-instance: {{ $root.Release.Name }}-haproxy
 {{- $root := .root -}}
 {{- with required "element-io.well-known-delegation.configmap-data missing context" .context -}}
 client: |
-  {{ (tpl (include "element-io.well-known-delegation.client" (dict "root" $root "context" .)) $root) | nindent 2 }}
+  {{- (tpl (include "element-io.well-known-delegation.client" (dict "root" $root "context" .)) $root) | nindent 2 }}
 server: |
-  {{ (tpl (include "element-io.well-known-delegation.server" (dict "root" $root "context" .)) $root) | nindent 2 }}
+  {{- (tpl (include "element-io.well-known-delegation.server" (dict "root" $root "context" .)) $root) | nindent 2 }}
 support: |
-  {{ (tpl (include "element-io.well-known-delegation.support" (dict "root" $root "context" .)) $root) | nindent 2 }}
+  {{- (tpl (include "element-io.well-known-delegation.support" (dict "root" $root "context" .)) $root) | nindent 2 }}
 element.json: |
-  {{ (tpl (include "element-io.well-known-delegation.element" (dict "root" $root "context" .)) $root) | nindent 2 }}
+  {{- (tpl (include "element-io.well-known-delegation.element" (dict "root" $root "context" .)) $root) | nindent 2 }}
 {{- end -}}
 {{- end -}}

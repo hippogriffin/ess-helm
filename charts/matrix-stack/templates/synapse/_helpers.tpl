@@ -173,14 +173,14 @@ app.kubernetes.io/version: {{ .image.tag }}
 {{- define "element-io.synapse-redis.configmap-data" -}}
 {{- $root := .root -}}
 redis.conf: |
-  {{- ($root.Files.Get "configs/synapse/redis.conf") | nindent 2 -}}
+{{- ($root.Files.Get "configs/synapse/redis.conf") | nindent 2 -}}
 {{- end -}}
 
 
 {{- define "element-io.synapse-haproxy.configmap-data" -}}
 {{- $root := .root -}}
 path_map_file: |
-  {{- (tpl ($root.Files.Get "configs/synapse/path_map_file.tpl") (dict "root" $root)) | nindent 2 -}}
+{{- (tpl ($root.Files.Get "configs/synapse/path_map_file.tpl") (dict "root" $root)) | nindent 2 }}
 path_map_file_get: |
-  {{- (tpl ($root.Files.Get "configs/synapse/path_map_file_get.tpl") (dict "root" $root)) | nindent 2 -}}
+{{- (tpl ($root.Files.Get "configs/synapse/path_map_file_get.tpl") (dict "root" $root)) | nindent 2 -}}
 {{- end -}}
