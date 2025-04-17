@@ -29,13 +29,3 @@ SPDX-License-Identifier = "AGPL-3.0-only"
 path = "docs/assets/images/*.png"
 SPDX-FileCopyrightText = "Copyright 2025 New Vector Ltd"
 SPDX-License-Identifier = "AGPL-3.0-only"
-
-[[annotations]]
-path = "charts/matrix-stack/configs/haproxy/429.http"
-SPDX-FileCopyrightText = "Copyright 2025 New Vector Ltd"
-SPDX-License-Identifier = "AGPL-3.0-only"
-
-[[annotations]]
-path = "charts/matrix-stack/configs/matrix-rtc/sfu/keys-template.yaml"
-SPDX-FileCopyrightText = "Copyright 2025 New Vector Ltd"
-SPDX-License-Identifier = "AGPL-3.0-only"

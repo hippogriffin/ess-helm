@@ -129,7 +129,7 @@ config.yaml: |
 {{- toYaml (merge (.additional | fromYaml) $config) | nindent 2 }}
 {{- if not ($root.Values.matrixRTC.livekitAuth).keysYaml }}
 keys-template.yaml: |
-{{- ($root.Files.Get "configs/matrix-rtc/sfu/keys-template.yaml") | nindent 2 }}
+{{- (tpl ($root.Files.Get "configs/matrix-rtc/sfu/keys-template.yaml.tpl") dict) | nindent 2 }}
 {{- end -}}
 {{- end -}}
 {{- end -}}

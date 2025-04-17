@@ -21,6 +21,6 @@ app.kubernetes.io/version: {{ .image.tag }}
 haproxy.cfg: |
 {{- tpl ($root.Files.Get "configs/haproxy/haproxy.cfg.tpl") (dict "root" $root "context" .) | nindent 2 }}
 429.http: |
-{{- ($root.Files.Get "configs/haproxy/429.http") | nindent 2 }}
+{{- (tpl ($root.Files.Get "configs/haproxy/429.http.tpl") dict) | nindent 2 }}
 {{- end -}}
 {{- end -}}

@@ -1,3 +1,9 @@
+{{- /*
+Copyright 2024 New Vector Ltd
+
+SPDX-License-Identifier: AGPL-3.0-only
+*/ -}}
+
 HTTP/1.0 429 Too Many Requests
 Cache-Control: no-cache
 Connection: close
