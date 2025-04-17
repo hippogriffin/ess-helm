@@ -22,6 +22,9 @@
     "synapseOIDCClientSecret": {
       "$ref": "file://common/credential.json"
     },
+    "synapseOIDCClientId": {
+      "$ref": "file://common/credential.json"
+    },    
     "postgres": {
       "$ref": "file://common/postgres-libpq.json"
     },

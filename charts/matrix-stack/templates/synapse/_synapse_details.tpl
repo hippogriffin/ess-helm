@@ -179,6 +179,14 @@ responsibleForMedia
     {{ $configSecrets = append $configSecrets (tpl . $root) }}
     {{- end -}}
   {{- end -}}
+  {{- with .synapseOIDCClientId -}}
+    {{- with .value -}}
+    {{- $configSecrets = append $configSecrets (include "element-io.matrix-authentication-service.secret-name" (dict "root" $root "context" (dict "isHook" $isHook))) -}}
+    {{- end -}}
+    {{- with .secret -}}
+    {{ $configSecrets = append $configSecrets (tpl . $root) }}
+    {{- end -}}
+  {{- end -}}
 {{- end -}}
 {{- end -}}
 {{- with .macaroon.secret -}}

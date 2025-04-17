@@ -1098,6 +1098,7 @@ matrixAuthenticationService:
   ##   secret: existing-secret
   ##   secretKey: key-in-secret
   synapseOIDCClientSecret: {}
+  synapseOIDCClientId: {}
 
   ## Additional configuration to provide to Matrix Authentication Service.
   ## Each key under additional is an additioanal config to merge into Matrix Authentication Service config.yaml
