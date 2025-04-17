@@ -156,6 +156,21 @@ app.kubernetes.io/version: {{ .image.tag }}
           )
         )
     }}
+- name: SYNAPSE_OIDC_CLIENT_ID
+  value: >-
+    {{
+      printf "{{ readfile \"/secrets/%s\" | quote }}" (
+          include "element-io.ess-library.init-secret-path" (
+              dict "root" $root
+              "context" (dict
+                "secretPath" "matrixAuthenticationService.synapseOIDCClientSecret"
+                "initSecretKey" "MAS_SYNAPSE_OIDC_CLIENT_ID"
+                "defaultSecretName" (printf "%s-matrix-authentication-service" $root.Release.Name)
+                "defaultSecretKey" "SYNAPSE_OIDC_CLIENT_ID"
+              )
+          )
+        )
+    }}
 {{- end }}
 {{- end }}
 {{- end }}
