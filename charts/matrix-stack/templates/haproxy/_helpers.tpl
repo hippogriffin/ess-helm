@@ -19,16 +19,8 @@ app.kubernetes.io/version: {{ .image.tag }}
 {{- $root := .root -}}
 {{- with required "element-io.haproxy.configmap-data missing context" .context -}}
 haproxy.cfg: |
-  {{- tpl ($root.Files.Get "configs/haproxy/haproxy.cfg.tpl") (dict "root" $root "context" .) | nindent 2 }}
+{{- tpl ($root.Files.Get "configs/haproxy/haproxy.cfg.tpl") (dict "root" $root "context" .) | nindent 2 }}
 429.http: |
-  HTTP/1.0 429 Too Many Requests
-  Cache-Control: no-cache
-  Connection: close
-  Content-Type: application/json
-  access-control-allow-origin: *
-  access-control-allow-methods: GET, POST, PUT, DELETE, OPTIONS
-  access-control-allow-headers: Origin, X-Requested-With, Content-Type, Accept, Authorization
-
-  {"errcode":"M_UNKNOWN","error":"Server is unavailable"}
+{{- ($root.Files.Get "configs/haproxy/429.http") | nindent 2 }}
 {{- end -}}
 {{- end -}}
