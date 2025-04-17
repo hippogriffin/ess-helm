@@ -126,10 +126,10 @@ app.kubernetes.io/version: {{ .image.tag }}
 {{- with required "element-io.matrix-rtc-sfu.config missing context" .context -}}
 {{- $config := (tpl ($root.Files.Get "configs/matrix-rtc/sfu/config.yaml.tpl") (dict "root" $root "context" .)) | fromYaml }}
 config.yaml: |
-  {{- toYaml (merge (.additional | fromYaml) $config) | nindent 2 }}
+{{- toYaml (merge (.additional | fromYaml) $config) | nindent 2 }}
 {{- if not ($root.Values.matrixRTC.livekitAuth).keysYaml }}
 keys-template.yaml: |
-  ${LIVEKIT_KEY}: ${LIVEKIT_SECRET}
+{{- ($root.Files.Get "configs/matrix-rtc/sfu/keys-template.yaml") | nindent 2 }}
 {{- end -}}
 {{- end -}}
 {{- end -}}
