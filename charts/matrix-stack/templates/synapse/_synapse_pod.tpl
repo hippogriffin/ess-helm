@@ -14,7 +14,7 @@ template:
   metadata:
     labels:
 {{- if $isHook }}
-      {{- include "element-io.synapse-check-config-hook.labels" (dict "root" $root "context" (dict "image" .image "labels" .labels "withChartVersion" false "processType" $processType)) | nindent 6 }}
+      {{- include "element-io.synapse-check-config-hook.labels" (dict "root" $root "context" (dict "labels" .labels "withChartVersion" false)) | nindent 6 }}
 {{- else }}
       {{- include "element-io.synapse.process.labels" (dict "root" $root "context" (dict "image" .image "labels" .labels "withChartVersion" false "isHook" $isHook "processType" $processType)) | nindent 6 }}
 {{- end }}
