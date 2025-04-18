@@ -19,8 +19,6 @@ preMigrationSynapseHandlesAuth: false
 {{ sub_schema_values.credential("Encryption secret", "encryptionSecret", initIfAbsent=True) }}
 {{ sub_schema_values.credential("Synapse - MAS Shared Secret", "synapseSharedSecret", initIfAbsent=True) }}
 {{ sub_schema_values.credential("Synapse - MAS OIDC Client Secret", "synapseOIDCClientSecret", initIfAbsent=True) }}
-{{ sub_schema_values.credential("Synapse - MAS OIDC Client Id", "synapseOIDCClientId", initIfAbsent=True) }}
-
 
 ## Additional configuration to provide to Matrix Authentication Service.
 ## Each key under additional is an additioanal config to merge into Matrix Authentication Service config.yaml

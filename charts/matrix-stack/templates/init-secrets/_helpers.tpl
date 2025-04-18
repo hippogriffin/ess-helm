@@ -66,9 +66,6 @@ app.kubernetes.io/version: {{ $root.Values.matrixTools.image.tag }}
 {{- if not .synapseSharedSecret }}
 - {{ (printf "%s-generated" $root.Release.Name) }}:MAS_SYNAPSE_SHARED_SECRET:rand32
 {{- end -}}
-{{- if not .synapseOIDCClientId }}
-- {{ (printf "%s-generated" $root.Release.Name) }}:MAS_SYNAPSE_OIDC_CLIENT_ID:rand32
-{{- end -}}
 {{- if not .synapseOIDCClientSecret }}
 - {{ (printf "%s-generated" $root.Release.Name) }}:MAS_SYNAPSE_OIDC_CLIENT_SECRET:rand32
 {{- end -}}

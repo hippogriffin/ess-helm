@@ -104,6 +104,7 @@ experimental_features:
     enabled: true
 
     issuer: http://{{ $root.Release.Name }}-matrix-authentication-service.{{ $root.Release.Namespace }}.svc.cluster.local:8080/
+    client_auth_method: client_secret_basic
     client_id_path: /secrets/{{
       include "element-io.ess-library.init-secret-path" (
         dict "root" $root "context" (dict
@@ -113,8 +114,6 @@ experimental_features:
           "defaultSecretKey" "SYNAPSE_OIDC_CLIENT_ID"
         )
       ) }}
-    client_auth_method: client_secret_basic
-    # client.<client_id> in the MAS secret
     client_secret_path: /secrets/{{
       include "element-io.ess-library.init-secret-path" (
         dict "root" $root "context" (dict
